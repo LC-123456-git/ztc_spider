@@ -205,7 +205,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # 正式洗数据 解开注释需要当心！！！
-    cp = MyClean(engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4')
+    cp = MyClean(engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     # cp.run_clean_multi_thead_for_md5()
     cp.run_clean_multi_thead(tables_list=[
         # "notices_02",
@@ -216,7 +216,7 @@ if __name__ == "__main__":
     # cp.run_clean_ex_add_uuid(table_name="notices_00")
 
     # # 测试洗数据 默认测试
-    # cp = MyClean(engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4')
+    # cp = MyClean(engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4')
     # cp.run_clean_multi_thead(tables_list=[
     #     "notices_02"
     #     # "notices_00",

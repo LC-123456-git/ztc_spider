@@ -469,16 +469,16 @@ class CleanPipeline(object):
 if __name__ == "__main__":
     cp = CleanPipeline("1", "1", "1")
     # 正式洗数据 解开注释需要当心！！！
-    # cp.run_clean_ex(table_name="notices_00", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4')
-    # cp.run_clean(table_name="notices_00", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4')
-    # cp.run_clean(table_name="notices_02", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4')
-    # cp.run_clean(table_name="notices_11", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4')
-    # cp.run_clean(table_name="notices_13", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4')
-    # cp.run_clean(table_name="notices_15", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4')
+    # cp.run_clean_ex(table_name="notices_00", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
+    # cp.run_clean(table_name="notices_00", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
+    # cp.run_clean(table_name="notices_02", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
+    # cp.run_clean(table_name="notices_11", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
+    # cp.run_clean(table_name="notices_13", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
+    # cp.run_clean(table_name="notices_15", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     cp.run_clean(table_name="notices_3307",
-                 engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4')
+                 engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4')
 
     # # 测试洗数据 默认测试
-    # cp.run_clean_ex(table_name="notices_47", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4')
+    # cp.run_clean_ex(table_name="notices_47", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4')
 
     pass

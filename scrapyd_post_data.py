@@ -464,8 +464,8 @@ if __name__ == "__main__":
 
     # 正式推数据 解开注释需要当心！！！
     cp = ScrapyDataPost(table_name="notices_3316",
-                        # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4',
-                        engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4',
+                        # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4',
+                        engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
                         post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice")
     # cp.run_post(d_time='2021-04-20', e_time='2021-04-21')
     cp.run_post()
@@ -499,7 +499,7 @@ if __name__ == "__main__":
 
     # 测试推数据
     # cp = ScrapyDataPost(table_name="notices_21",
-    #                     engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4',
+    #                     engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
     #                     post_url="http://192.168.1.249:9007/feign/data/v1/notice/addGatherNotice")
     # cp.run_post()
     # # 测试多线程推数据
