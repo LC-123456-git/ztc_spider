@@ -86,11 +86,11 @@ class MySpider(Spider):
         super(MySpider, self).__init__()
 
     def start_requests(self):
-        for item in self.list_all_category_num:
-        # item = "071001001001"
-            count_url = "http://lssggzy.lishui.gov.cn/lsweb/jyxx/{}/{}/{}/".format(item[0:6], item[0:9], item[0:12])
-            yield scrapy.Request(count_url, callback=self.parse_urls, priority=0,
-                                 meta={"afficheType": str(item)})
+        # for item in self.list_all_category_num:
+        item = "071001001001"
+        count_url = "http://lssggzy.lishui.gov.cn/lsweb/jyxx/{}/{}/{}/".format(item[0:6], item[0:9], item[0:12])
+        yield scrapy.Request(count_url, callback=self.parse_urls, priority=0,
+                             meta={"afficheType": str(item)})
 
     def parse_urls(self, response):
         try:

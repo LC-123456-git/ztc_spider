@@ -180,57 +180,45 @@ if __name__ == "__main__":
 
     # 需要运行的spiders
     spider_list = [
-        "province_00_quanguo_spider",
-        "province_02_beijing_spider",
-        "province_03_tianjin_spider",
-        "province_04_hebei_spider",
-        "province_05_shanxi_spider",
-        "province_08_jilin_spider",
-        "province_10_heilongjiang_spider",
-        "province_11_shanghai_spider",
-        "province_13_jiangsu_spider",
-        "province_14_zhejiang_spider",
-        "province_15_zhejiang_spider",
-        "province_16_anhui_spider",
-        "province_18_fujian_spider",
-        "province_19_jiangxi_spider",
-        "province_21_shandong_spider",
-        "province_23_henan_spider",
-        "province_26_hubei_spider",
-        "province_40_sichuan_spider",
-        "ZJ_enterprise_3303_zhenengjituan_spider",
+        # "province_00_quanguo_spider",
+        # "province_02_beijing_spider",
+        # "province_03_tianjin_spider",
+        # "province_04_hebei_spider",
+        # "province_05_shanxi_spider",
+        # "province_08_jilin_spider",
+        # "province_10_heilongjiang_spider",
+        # "province_11_shanghai_spider",
+        # "province_13_jiangsu_spider",
+        # "province_14_zhejiang_spider",
+        # "province_15_zhejiang_spider",
+        # "province_16_anhui_spider",
+        # "province_18_fujian_spider",
+        # "province_19_jiangxi_spider",
+        # "province_21_shandong_spider",
+        # "province_23_henan_spider",
+        # "province_26_hubei_spider",
+<<<<<<< Updated upstream
+        # "province_40_sichuan_spider",
+        # "ZJ_enterprise_3303_zhenengjituan_spider",
         "ZJ_city_3306_jiaxing_spider",
-        "ZJ_city_3305_ningbo_spider",
-        "ZJ_enterprise_3304_shuiliting_spider",
-        "ZJ_city_3309_wenzhou_spider",
-        "province_49_ningxia_spider",
-        "province_30_guangdong_spider",
-        "province_40_sichuan_spider",
-        "province_44_xizang_spider",
+        # "ZJ_city_3305_ningbo_spider",
+        # "ZJ_enterprise_3304_shuiliting_spider",
+        # "ZJ_city_3309_wenzhou_spider",
+        # "province_49_ningxia_spider",
+=======
+        # "province_30_guangdong_spider",
+        # "province_40_sichuan_spider",
+        # "province_44_xizang_spider",
         "province_50_xinjiang_spider",
-        "province_52_pinming_spider",
-        "province_53_bilian_spider",
-        "province_55_tiangong_spider",
-        "ZJ_enterprise_3303_zhenengjituan_spider",
-        "ZJ_enterprise_3304_shuiliting_spider",
-        "ZJ_city_3305_ningbo_spider",
-        "ZJ_city_3306_jiaxing_spider",
-        "ZJ_city_3307_huzhou_spider",
-        "ZJ_city_3309_wenzhou_spider",
-        "ZJ_city_3312_shaoxing_spider",
-        "ZJ_city_3313_zhoushan_spider",
-        "ZJ_city_3314_yuhang_spider",
-        "ZJ_city_3319_changxing_spider",
-        "province_28_hunan_spider",
-        "province_50_xinjiang_spider",
-        "ZJ_city_3308_quzhou_spider",
-        "ZJ_city_3311_lishui_spider",
-        "ZJ_city_3315_keqiao_spider",
-        "ZJ_city_3316_zhuji_spider",
-        "ZJ_city_3318_jinhua_spider",
-
-
-
+        # "ZJ_enterprise_3303_zhenengjituan_spider",
+        # "ZJ_enterprise_3304_shuiliting_spider",
+        # "ZJ_city_3305_ningbo_spider",
+        # "ZJ_city_3306_jiaxing_spider",
+        # "ZJ_city_3307_huzhou_spider",
+        # "ZJ_city_3309_wenzhou_spider",
+        # "ZJ_city_3312_shaoxing_spider",
+        # "ZJ_city_3313_zhoushan_spider",
+>>>>>>> Stashed changes
     ]
 
     # 优先判断运行状态
@@ -256,8 +244,8 @@ if __name__ == "__main__":
                     rs, _ = scrapyd_schedule(
                         spider=item, job=f"{area_id}-{today}-{suffix}",
                         args={
-                            # "sdt": f"{get_back_date(10)}",
-                            # "edt": f"{end_day}",
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
                         },
                         setting=[
                             "DOWNLOAD_DELAY=0",                             # 下载延迟
@@ -288,7 +276,83 @@ if __name__ == "__main__":
                     )
                     if rs:
                         print(f"运行 {item} 成功!")
-                else:
+                elif item == "province_03_tianjin_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_04_hebei_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_05_shanxi_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_08_jilin_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_10_heilongjiang_spider":
                     start_day = today
                     end_day = today
                     rs, _ = scrapyd_schedule(
@@ -307,519 +371,372 @@ if __name__ == "__main__":
                     )
                     if rs:
                         print(f"运行 {item} 成功!")
-                # elif item == "province_03_tianjin_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_04_hebei_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_05_shanxi_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_08_jilin_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_10_heilongjiang_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             # "sdt": f"{get_back_date(10)}",
-                #             # "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_11_shanghai_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_13_jiangsu_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_14_zhejiang_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_15_zhejiang_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_16_anhui_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_18_fujian_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_19_jiangxi_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_21_shandong_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_23_henan_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_26_hubei_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_40_sichuan_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_44_xizang_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             # "sdt": f"{get_back_date(10)}",
-                #             # "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_50_xinjiang_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             # "sdt": f"{get_back_date(10)}",
-                #             # "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_52_pinming_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             # "sdt": f"{get_back_date(10)}",
-                #             # "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=True"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_53_bilian_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             # "sdt": f"{get_back_date(10)}",
-                #             # "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=True"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "province_55_tiangong_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             # "sdt": f"{get_back_date(10)}",
-                #             # "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=True"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "ZJ_enterprise_3303_zhenengjituan_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             # "sdt": f"{get_back_date(10)}",
-                #             # "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "ZJ_city_3306_jiaxing_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             # "sdt": f"{get_back_date(10)}",
-                #             # "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",  # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",  # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",  # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=True"]  # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "ZJ_city_3305_ningbo_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             # "sdt": f"{get_back_date(10)}",
-                #             # "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",  # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",  # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",  # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=True"]  # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "ZJ_enterprise_3304_shuiliting_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             # "sdt": f"{get_back_date(10)}",
-                #             # "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",  # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",  # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",  # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]  # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "ZJ_city_3307_huzhou_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             # "sdt": f"{get_back_date(10)}",
-                #             # "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "ZJ_city_3309_wenzhou_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             "sdt": f"{get_back_date(10)}",
-                #             "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",  # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",  # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",  # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=Flase"]  # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
+                elif item == "province_11_shanghai_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_13_jiangsu_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_14_zhejiang_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_15_zhejiang_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_16_anhui_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_18_fujian_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_19_jiangxi_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_21_shandong_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_23_henan_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_26_hubei_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_40_sichuan_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_44_xizang_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            # "sdt": f"{get_back_date(10)}",
+                            # "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "province_50_xinjiang_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            # "sdt": f"{get_back_date(10)}",
+                            # "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "ZJ_enterprise_3303_zhenengjituan_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            # "sdt": f"{get_back_date(10)}",
+                            # "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "ZJ_city_3306_jiaxing_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            # "sdt": f"{get_back_date(10)}",
+                            # "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",  # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",  # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",  # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=True"]  # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "ZJ_city_3305_ningbo_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            # "sdt": f"{get_back_date(10)}",
+                            # "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",  # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",  # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",  # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=True"]  # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+                elif item == "ZJ_enterprise_3304_shuiliting_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            # "sdt": f"{get_back_date(10)}",
+                            # "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",  # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",  # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",  # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]  # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+<<<<<<< Updated upstream
+=======
+                elif item == "ZJ_city_3307_huzhou_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            # "sdt": f"{get_back_date(10)}",
+                            # "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",                             # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]                       # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+>>>>>>> Stashed changes
+                elif item == "ZJ_city_3309_wenzhou_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            "sdt": f"{get_back_date(10)}",
+                            "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",  # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",  # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",  # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]  # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+<<<<<<< Updated upstream
+=======
                 # elif item == "ZJ_city_3312_shaoxing_spider":
                 #     start_day = today
                 #     end_day = today
@@ -835,49 +752,32 @@ if __name__ == "__main__":
                 #             "MAX_CONNECTIONS=50",  # MYSQL最大连接数
                 #             "CONCURRENT_REQUESTS=30",
                 #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=True"]  # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-                # elif item == "ZJ_city_3313_zhoushan_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             # "sdt": f"{get_back_date(10)}",
-                #             # "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",  # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",  # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",  # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
                 #             "ENABLE_PROXY_USE=Flase"]  # 是否启用ip代理
                 #     )
                 #     if rs:
                 #         print(f"运行 {item} 成功!")
-                # elif item == "ZJ_city_3319_changxing_spider":
-                #     start_day = today
-                #     end_day = today
-                #     rs, _ = scrapyd_schedule(
-                #         spider=item, job=f"{area_id}-{today}-{suffix}",
-                #         args={
-                #             # "sdt": f"{get_back_date(10)}",
-                #             # "edt": f"{end_day}",
-                #         },
-                #         setting=[
-                #             "DOWNLOAD_DELAY=0",                             # 下载延迟
-                #             "CONCURRENT_REQUESTS_PER_IP=30",                # 单个ip并发最大值
-                #             "MAX_CONNECTIONS=50",                           # MYSQL最大连接数
-                #             "CONCURRENT_REQUESTS=30",
-                #             "CURRENT_HTTP_PROXY_MAX=2",
-                #             "ENABLE_PROXY_USE=True"]                       # 是否启用ip代理
-                #     )
-                #     if rs:
-                #         print(f"运行 {item} 成功!")
-    # print(scrapyd_cancel(job=f"city-2021-04-28-11-6"))
+                elif item == "ZJ_city_3313_zhoushan_spider":
+                    start_day = today
+                    end_day = today
+                    rs, _ = scrapyd_schedule(
+                        spider=item, job=f"{area_id}-{today}-{suffix}",
+                        args={
+                            # "sdt": f"{get_back_date(10)}",
+                            # "edt": f"{end_day}",
+                        },
+                        setting=[
+                            "DOWNLOAD_DELAY=0",  # 下载延迟
+                            "CONCURRENT_REQUESTS_PER_IP=30",  # 单个ip并发最大值
+                            "MAX_CONNECTIONS=50",  # MYSQL最大连接数
+                            "CONCURRENT_REQUESTS=30",
+                            "CURRENT_HTTP_PROXY_MAX=2",
+                            "ENABLE_PROXY_USE=Flase"]  # 是否启用ip代理
+                    )
+                    if rs:
+                        print(f"运行 {item} 成功!")
+>>>>>>> Stashed changes
+
+    # print(scrapyd_cancel(job=f"23-2021-01-28-11-40"))
 
     # scrapyd_deploy()  # 打包上传
     # spider_list = [

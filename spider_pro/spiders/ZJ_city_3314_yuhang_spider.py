@@ -4,9 +4,7 @@
 import scrapy
 import re
 import copy
-import requests
 from lxml import etree
-from datetime import datetime
 
 from spider_pro import items, constans, utils
 
@@ -44,9 +42,6 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
             {'url': 'http://www.yuhang.gov.cn/col/col1229165987/index.html', 'category_type': '国有土地使用权出让',
              'unitid': '6089351', 'columnid': '1229165987'}
         ]
-    }
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36',
     }
 
     form_data = {
@@ -112,88 +107,6 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
                 start_record_list.append(i * 60 + 1)
         return start_record_list
 
-    def judge_in_interval(self, url, method='GET', ancestor_el='table', ancestor_attr='id', ancestor_val='',
-                          child_el='tr', time_sep='-', doc_type='html', **kwargs):
-        """
-        判断最末一条数据是否在区间内
-        Args:
-            url: 分页链接
-            method: 请求方式
-            ancestor_el: 祖先元素
-            ancestor_attr: 属性
-            ancestor_val: 属性值
-            child_el: 子孙元素
-            time_sep: 时间中间分隔符 默认：-
-            doc_type: 文档类型
-            **kwargs: POST请求体
-        Returns:
-            status: 结果状态
-                1 首条在区间内 可抓、可以翻页
-                0 首条不在区间内 停止翻页
-                2 末条大于最大时间 continue
-        """
-        status = 0
-        if all([self.start_time, self.end_time]):
-            try:
-                text = ''
-                if method == 'GET':
-                    text = requests.get(url=url, headers=self.headers).text
-                if method == 'POST':
-                    text = requests.post(url=url, data=kwargs.get('data'), headers=self.headers).text
-                if text:
-                    els = []
-                    if doc_type == 'html':
-                        doc = etree.HTML(text)
-                        _path = '//{ancestor_el}[@{ancestor_attr}="{ancestor_val}"]//{child_el}[last()]/text()[not(normalize-space()="")]'.format(
-                            **{
-                                'ancestor_el': ancestor_el,
-                                'ancestor_attr': ancestor_attr,
-                                'ancestor_val': ancestor_val,
-                                'child_el': child_el,
-                            })
-                        els = doc.xpath(_path)
-                    if doc_type == 'xml':
-                        doc = etree.XML(text)
-                        _path = '//{child_el}/text()'.format(**{
-                            'child_el': child_el,
-                        })
-                        els = doc.xpath(_path)
-                    if els:
-                        first_el = els[0]
-                        final_el = els[-1]
-
-                        el = els[-1]
-                        # 解析出时间
-                        t_com = re.compile('(\d+%s\d+%s\d+)' % (time_sep, time_sep))
-
-                        first_pub_time = t_com.findall(first_el)
-                        final_pub_time = t_com.findall(final_el)
-
-                        if all([first_pub_time, final_pub_time]):
-                            first_pub_time = datetime.strptime(first_pub_time[0],
-                                                               '%Y{0}%m{1}%d'.format(time_sep, time_sep))
-                            final_pub_time = datetime.strptime(final_pub_time[0],
-                                                               '%Y{0}%m{1}%d'.format(time_sep, time_sep))
-                            start_time = datetime.strptime(self.start_time, '%Y-%m-%d')
-                            end_time = datetime.strptime(self.end_time, '%Y-%m-%d')
-                            # 比最大时间大 continue
-                            # 比最小时间小 break
-                            # 1 首条在区间内 可抓、可以翻页
-                            # 0 首条不在区间内 停止翻页
-                            # 2 末条大于最大时间 continue
-
-                            if first_pub_time < start_time:
-                                status = 0
-                            elif final_pub_time > end_time:
-                                status = 2
-                            else:
-                                status = 1
-            except Exception as e:
-                self.log(e)
-        else:
-            status = 1  # 没有传递时间
-        return status
-
     def parse_urls(self, resp, column_id, unit_id):
         """
         获取总记录数
@@ -215,23 +128,12 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
                     form_data = self._form_data
                     form_data['columnid'] = column_id
                     form_data['unitid'] = unit_id
-
-                    # 判断是否翻下一个记录
-                    # 请求获取最后一条记录的时间
-                    c_url = self.query_url.format(startrecord=start_record)
-                    judge_status = self.judge_in_interval(
-                        c_url, method='POST', child_el='record', doc_type='xml', data=form_data,
-                    )
-                    if judge_status == 0:
-                        break
-                    elif judge_status == 2:
-                        continue
-                    else:
-                        yield scrapy.FormRequest(
-                            url=c_url, formdata=form_data, callback=self.parse_data_urls, meta={
-                                'category_type': resp.meta.get('category_type'),
-                                'notice_type': resp.meta.get('notice_type'),
-                            }, priority=(len(start_record_list) - n) * 10)
+                    yield scrapy.FormRequest(
+                        url=self.query_url.format(startrecord=start_record),
+                        formdata=form_data, callback=self.parse_data_urls, meta={
+                            'category_type': resp.meta.get('category_type'),
+                            'notice_type': resp.meta.get('notice_type'),
+                        }, priority=(len(start_record_list) - n) * 10)
 
     def parse_data_urls(self, resp):
         """
@@ -332,5 +234,5 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider -a sdt=2021-03-01 -a edt=2021-03-31".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider -a sdt=2021-01-01 -a edt=2021-04-31".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider".split(" "))

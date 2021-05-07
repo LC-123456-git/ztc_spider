@@ -248,7 +248,7 @@ class ScrapyDataPost(object):
                 # )
 
                 results = conn.execute(
-                        f"select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 0 limit {err_start},{rows} ").fetchall()
+                        f"select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 1 and pub_time >= '{d_time}' and pub_time < '{e_time}'limit {err_start},{rows} ").fetchall()
                         # f"-- select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' and pub_time < '{e_time}'limit {err_start},{rows} ").fetchall()
                 if len(results) != 0:
                     area_id = results[0]['area_id']
@@ -315,6 +315,8 @@ class ScrapyDataPost(object):
                 else:
                     print("没有数据可执行更新操作")
                     break
+
+
 
 
     def run_post_today_all_spider_data(self, tables_list):
@@ -463,7 +465,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # 正式推数据 解开注释需要当心！！！
-    cp = ScrapyDataPost(table_name="notices_3316",
+    cp = ScrapyDataPost(table_name="notices_3318",
                         # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4',
                         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4',
                         post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice")
