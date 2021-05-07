@@ -35,35 +35,28 @@ def remove_specific_element(content, ele_name, attr_name, attr_value, if_child=F
         els = doc.xpath('//{ele_name}'.format(**{
             'ele_name': ele_name,
         }))
-        same = 1
-        for el in els:
-            if attr_value in el.get(attr_name, ''):
-                if if_child:
-                    child_attr = kwargs.get('child_attr')
-                    child_els = el.xpath('.//{child_attr}'.format(**{'child_attr': child_attr}))
 
-                    for n, child_el in enumerate(child_els):
-                        if n == index -1:
-                            child_el.getparent().remove(child_el)
-                else:
-                    if same == index:
-                        el.getparent().remove(el)
-                        break
-                    same += 1
+        if attr_name:
+            same = 1
+            for el in els:
+                if attr_value in el.get(attr_name, ''):
+                    if if_child:
+                        child_attr = kwargs.get('child_attr')
+                        child_els = el.xpath('.//{child_attr}'.format(**{'child_attr': child_attr}))
 
-                # if same == index:
-                #     if if_child:
-                #         child_attr = kwargs.get('child_attr')
-                #         child_els = el.xpath('.//{child_attr}'.format(**{'child_attr': child_attr}))
-                #
-                #         for n, child_el in enumerate(child_els):
-                #             if n == index -1:
-                #                 child_el.getparent().remove(child_el)
-                #     else:
-                #         el.getparent().remove(el)
-                #     break
-                # same += 1
-        content = etree.tounicode(doc)
+                        for n, child_el in enumerate(child_els):
+                            if n == index -1:
+                                child_el.getparent().remove(child_el)
+                    else:
+                        if same == index:
+                            el.getparent().remove(el)
+                            break
+                        same += 1
+            content = etree.tounicode(doc)
+        else:  # 无属性元素 指定索引删除
+            for n, el in enumerate(els):
+                if n + 1 == index:
+                    el.getparent().remove(el)
     except Exception as e:
         msg = e
 
@@ -110,7 +103,7 @@ def catch_files(content, base_url):
             if file_name:
                 file_name = file_name[0]
                 # check file_name exists zip|doc|docx|xls|xlsx
-                if re.search('\.pdf|\.rar|\.zip|\.doc|\.docx|\.xls|\.xlsx|\.xml', file_name):
+                if re.search('\.pdf|\.rar|\.zip|\.doc|\.docx|\.xls|\.xlsx|\.xml|\.dwg', file_name):
                     file_url = href_el.get('href', '')
                     if not check_if_http_based(file_url):
                         file_url = base_url + file_url
