@@ -1,0 +1,743 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="dac7e17c-62c3-4127-bf8f-d94e6c14cddf" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/READ_ME.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/app_demo.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/app_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/appca_util.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/change_excel.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/huixin_enc_and_dec.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/icon/logo.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/icon/logof.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/installer_way" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/tool_util.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/ui/app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/ui/app.ui" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/ui/app_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/ui/app_test.ui" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/ui/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/ui/main.ui" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/ui/main_dec_and_enc.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/ui/main_dec_and_enc.ui" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../jinge_demo/zip_util.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spider_pro/spiders/ZJ_city_3316_zhuji_spider.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tb_yhcg/PyQtBegin.py" beforeDir="false" afterPath="$PROJECT_DIR$/../tb_yhcg/PyQtBegin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tb_yhcg/action/qz/XmxxFrame.py" beforeDir="false" afterPath="$PROJECT_DIR$/../tb_yhcg/action/qz/XmxxFrame.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tb_yhcg/template/ztx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/../tb_yhcg/template/ztx.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scrapyd_auto_start.py" beforeDir="false" afterPath="$PROJECT_DIR$/scrapyd_auto_start.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scrapyd_post_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/scrapyd_post_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scrapyd_timing.py" beforeDir="false" afterPath="$PROJECT_DIR$/scrapyd_timing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scrapyd_timing_post.py" beforeDir="false" afterPath="$PROJECT_DIR$/scrapyd_timing_post.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spider_pro/constans.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/constans.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spider_pro/pipelines/pipelines_clean.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/pipelines/pipelines_clean.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spider_pro/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spider_pro/spiders/ZJ_city_3311_lishui_spider.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/spiders/ZJ_city_3311_lishui_spider.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spider_pro/spiders/ZJ_city_3319_changxing_spider.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/spiders/ZJ_city_3319_changxing_spider.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spider_pro/spiders/province_08_jilin_spider.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/spiders/province_08_jilin_spider.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../版本记录.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../版本记录.txt" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="ProjectId" id="1lgE0sneSLgImdum6ZnPoUtxUsb" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../tb_gc" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\ztx_clone\ztx_spider\spider_pro\spiders" />
+      <recent name="D:\ztx_clone\ztx_spider\build\lib\spider_pro\spiders" />
+      <recent name="D:\ztx_clone\ztx_spider\spider_data" />
+      <recent name="D:\ztx_clone\ztx_spider" />
+      <recent name="D:\ztx_clone\ztx_spider\spider_pro" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\ztx_clone\ztx_spider" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.scrapyd_timing_post">
+    <configuration name="ZJ_city_3316_zhuji_spider" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ztx_spider" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/spider_pro/spiders" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/spider_pro/spiders/ZJ_city_3316_zhuji_spider.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="scrapyd_auto_start" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ztx_spider" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scrapyd_auto_start.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="scrapyd_post_data" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ztx_spider" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scrapyd_post_data.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="scrapyd_timing_post" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ztx_spider" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scrapyd_timing_post.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ztx_spider" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.scrapyd_timing_post" />
+        <item itemvalue="Python.scrapyd_auto_start" />
+        <item itemvalue="Python.scrapyd_post_data" />
+        <item itemvalue="Python.ZJ_city_3316_zhuji_spider" />
+        <item itemvalue="Python.test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="dac7e17c-62c3-4127-bf8f-d94e6c14cddf" name="Default Changelist" comment="" />
+      <created>1608010114102</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1608010114102</updated>
+      <workItem from="1608010115249" duration="10751000" />
+      <workItem from="1608079519968" duration="15083000" />
+      <workItem from="1608169119589" duration="24942000" />
+      <workItem from="1608253166821" duration="25379000" />
+      <workItem from="1608512789212" duration="20838000" />
+      <workItem from="1608618856500" duration="34631000" />
+      <workItem from="1608736759946" duration="39308000" />
+      <workItem from="1608886912914" duration="838000" />
+      <workItem from="1609116230418" duration="16282000" />
+      <workItem from="1609211303942" duration="993000" />
+      <workItem from="1609218885768" duration="3983000" />
+      <workItem from="1609224574451" duration="911000" />
+      <workItem from="1609225537648" duration="299000" />
+      <workItem from="1609226001821" duration="17736000" />
+      <workItem from="1609311502356" duration="302000" />
+      <workItem from="1609329632393" duration="18153000" />
+      <workItem from="1609721443965" duration="32091000" />
+      <workItem from="1609915610700" duration="1861000" />
+      <workItem from="1609999962793" duration="220171000" />
+      <workItem from="1610698907131" duration="75757000" />
+      <workItem from="1611039661183" duration="50976000" />
+      <workItem from="1611277473559" duration="30197000" />
+      <workItem from="1611622697178" duration="71744000" />
+      <workItem from="1611901048303" duration="155213000" />
+      <workItem from="1612924865385" duration="599000" />
+      <workItem from="1613694912121" duration="2989000" />
+      <workItem from="1613699042945" duration="67382000" />
+      <workItem from="1614131546296" duration="94471000" />
+      <workItem from="1614576499807" duration="5028000" />
+      <workItem from="1614645905251" duration="10173000" />
+      <workItem from="1614677632688" duration="1607000" />
+      <workItem from="1614733758459" duration="54965000" />
+      <workItem from="1614856796038" duration="23918000" />
+      <workItem from="1615165491141" duration="53321000" />
+      <workItem from="1615277902748" duration="341000" />
+      <workItem from="1615278305616" duration="34476000" />
+      <workItem from="1615428695860" duration="5228000" />
+      <workItem from="1615443259556" duration="3677000" />
+      <workItem from="1615447606682" duration="1925000" />
+      <workItem from="1615449933262" duration="5008000" />
+      <workItem from="1615768426572" duration="133442000" />
+      <workItem from="1616141540080" duration="7935000" />
+      <workItem from="1616383358139" duration="96416000" />
+      <workItem from="1616994758466" duration="91209000" />
+      <workItem from="1617278605395" duration="78346000" />
+      <workItem from="1618196291884" duration="2472000" />
+      <workItem from="1618211070536" duration="102186000" />
+      <workItem from="1618753044665" duration="17691000" />
+      <workItem from="1618887699005" duration="1002000" />
+      <workItem from="1618896817072" duration="5884000" />
+      <workItem from="1618911412285" duration="22613000" />
+      <workItem from="1618981970144" duration="21138000" />
+      <workItem from="1619052042797" duration="71017000" />
+      <workItem from="1619333410765" duration="1816000" />
+      <workItem from="1619397449404" duration="1606000" />
+      <workItem from="1619401101583" duration="4015000" />
+      <workItem from="1619430493753" duration="472000" />
+      <workItem from="1619487644381" duration="35019000" />
+      <workItem from="1619675345891" duration="24734000" />
+      <workItem from="1619772095711" duration="4583000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider/spiders/province_02_bj_spider.py</url>
+          <line>72</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$USER_HOME$/AppData/Local/Programs/Python/Python39/Lib/logging/config.py</url>
+          <line>563</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/middlewares/UrlDuplicateRemovalMiddleware.py</url>
+          <line>5</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/build/lib/spider_pro/middlewares/ProxyMiddleware.py</url>
+          <line>77</line>
+          <option name="timeStamp" value="51" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/build/lib/spider_pro/pipelines/pipelines_clean.py</url>
+          <line>58</line>
+          <option name="timeStamp" value="92" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/pipelines/pipelines_clean.py</url>
+          <line>58</line>
+          <option name="timeStamp" value="144" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_02_beijing_spider.py</url>
+          <line>136</line>
+          <option name="timeStamp" value="157" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_03_tianjin_spider.py</url>
+          <line>231</line>
+          <option name="timeStamp" value="160" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/scrapyd_post_data.py</url>
+          <line>230</line>
+          <option name="timeStamp" value="167" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_06_neimenggu_spider.py</url>
+          <line>76</line>
+          <option name="timeStamp" value="173" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/utils.py</url>
+          <line>424</line>
+          <option name="timeStamp" value="184" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/rules_clean.py</url>
+          <line>7</line>
+          <option name="timeStamp" value="195" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/rules_clean.py</url>
+          <line>260</line>
+          <option name="timeStamp" value="200" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/rules_clean.py</url>
+          <line>210</line>
+          <option name="timeStamp" value="203" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_19_jiangxi_spider.py</url>
+          <line>172</line>
+          <option name="timeStamp" value="221" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/scrapyd_auto_start.py</url>
+          <line>239</line>
+          <option name="timeStamp" value="225" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/scrapyd_auto_start.py</url>
+          <line>29</line>
+          <option name="timeStamp" value="226" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_16_anhui_spider.py</url>
+          <line>239</line>
+          <option name="timeStamp" value="269" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/build/lib/spider_pro/pipelines/pipelines_clean.py</url>
+          <line>378</line>
+          <option name="timeStamp" value="275" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_15_zhejiang_spider.py</url>
+          <line>178</line>
+          <option name="timeStamp" value="285" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_16_anhui_spider.py</url>
+          <line>165</line>
+          <option name="timeStamp" value="288" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_16_anhui_spider.py</url>
+          <line>209</line>
+          <option name="timeStamp" value="289" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_49_ningxia_spider.py</url>
+          <line>5</line>
+          <option name="timeStamp" value="294" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_49_ningxia_spider.py</url>
+          <line>160</line>
+          <option name="timeStamp" value="296" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_21_shandong_spider.py</url>
+          <line>86</line>
+          <option name="timeStamp" value="297" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_21_shandong_spider.py</url>
+          <line>60</line>
+          <option name="timeStamp" value="298" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$USER_HOME$/AppData/Local/Programs/Python/Python39/Lib/datetime.py</url>
+          <line>1753</line>
+          <option name="timeStamp" value="329" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$USER_HOME$/AppData/Local/Programs/Python/Python39/Lib/datetime.py</url>
+          <line>1761</line>
+          <option name="timeStamp" value="338" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$USER_HOME$/AppData/Local/Programs/Python/Python39/Lib/datetime.py</url>
+          <line>266</line>
+          <option name="timeStamp" value="339" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/scrapyd_clean_data.py</url>
+          <line>67</line>
+          <option name="timeStamp" value="343" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_40_sichuan_spider.py</url>
+          <line>174</line>
+          <option name="timeStamp" value="345" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_40_sichuan_spider.py</url>
+          <line>102</line>
+          <option name="timeStamp" value="348" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_21_shandong_spider.py</url>
+          <line>40</line>
+          <option name="timeStamp" value="350" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_41_guizhou_spider.py</url>
+          <line>77</line>
+          <option name="timeStamp" value="352" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_39_chongqing_spider.py</url>
+          <line>241</line>
+          <option name="timeStamp" value="358" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_39_chongqing_spider.py</url>
+          <line>243</line>
+          <option name="timeStamp" value="359" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/scrapyd_timing.py</url>
+          <line>89</line>
+          <option name="timeStamp" value="366" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_23_henan_spider.py</url>
+          <line>93</line>
+          <option name="timeStamp" value="368" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_03_tianjin_spider.py</url>
+          <line>161</line>
+          <option name="timeStamp" value="370" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_04_hebei_spider.py</url>
+          <line>80</line>
+          <option name="timeStamp" value="371" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_04_hebei_spider.py</url>
+          <line>59</line>
+          <option name="timeStamp" value="372" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_36_gansu_spider.py</url>
+          <line>144</line>
+          <option name="timeStamp" value="381" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/scrapyd_auto_start.py</url>
+          <line>383</line>
+          <option name="timeStamp" value="389" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/ZJ_city_3312_shaoxing_spider.py</url>
+          <line>149</line>
+          <option name="timeStamp" value="394" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_42_yunnan_spider.py</url>
+          <line>154</line>
+          <option name="timeStamp" value="404" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/ZJ_city_3308_quzhou_spider.py</url>
+          <line>184</line>
+          <option name="timeStamp" value="416" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/ZJ_city_3311_lishui_spider.py</url>
+          <line>161</line>
+          <option name="timeStamp" value="417" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/pipelines/pipelines_clean.py</url>
+          <line>423</line>
+          <option name="timeStamp" value="425" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_49_ningxia_spider.py</url>
+          <line>182</line>
+          <option name="timeStamp" value="430" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/file_download.py</url>
+          <line>121</line>
+          <option name="timeStamp" value="442" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/pipelines/pipelines_clean.py</url>
+          <line>392</line>
+          <option name="timeStamp" value="460" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/pipelines/pipelines_clean.py</url>
+          <line>378</line>
+          <option name="timeStamp" value="462" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/scrapyd_auto_start.py</url>
+          <line>108</line>
+          <option name="timeStamp" value="464" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/province_53_bilian_spider.py</url>
+          <line>149</line>
+          <option name="timeStamp" value="475" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/ZJ_city_3301_hangzhou_spider.py</url>
+          <line>209</line>
+          <option name="timeStamp" value="487" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/pipelines/pipelines_clean.py</url>
+          <line>128</line>
+          <option name="timeStamp" value="488" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/middlewares/ProxyMiddleware.py</url>
+          <line>162</line>
+          <option name="timeStamp" value="489" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/middlewares/ProxyMiddleware.py</url>
+          <line>142</line>
+          <option name="timeStamp" value="490" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/scrapyd_timing_post.py</url>
+          <line>252</line>
+          <option name="timeStamp" value="491" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/scrapyd_timing_post.py</url>
+          <line>226</line>
+          <option name="timeStamp" value="493" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/scrapyd_timing_post.py</url>
+          <line>302</line>
+          <option name="timeStamp" value="494" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/spider_pro/spiders/ZJ_city_3316_zhuji_spider.py</url>
+          <line>284</line>
+          <option name="timeStamp" value="504" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="self." language="Python" />
+        <watch expression="self.info_url" language="Python" />
+        <watch expression="content" language="Python" />
+        <watch expression="s" language="Python" />
+        <watch expression="item_dict" language="Python" />
+        <watch expression="item" language="Python" />
+        <watch expression="district_city" language="Python" />
+        <watch expression="i" language="Python" />
+        <watch expression="self.province_dict" language="Python" />
+        <watch expression="district_city" language="Python" />
+        <watch expression="district_city" language="Python" />
+        <watch expression="district_city" language="Python" />
+        <watch expression="self.province_dict" language="Python" />
+        <watch expression="deal_data" language="Python" />
+        <watch expression="item" language="Python" />
+        <watch expression="li_list" language="Python" />
+        <watch expression="ul" language="Python" />
+        <watch expression="item" language="Python" />
+        <watch expression="info_source" language="Python" />
+        <watch expression="content" language="Python" />
+        <watch expression="items" language="Python" />
+        <watch expression="data_url" language="Python" />
+        <watch expression="content" language="Python" />
+        <watch expression="urls" language="Python" />
+        <watch expression="title_name" language="Python" />
+        <watch expression="title_name" language="Python" />
+        <watch expression="records" language="Python" />
+        <watch expression="item" language="Python" />
+        <watch expression="pre_data" language="Python" />
+        <watch expression="publish_time" language="Python" />
+        <watch expression="deal_data" language="Python" />
+        <watch expression="result" language="Python" />
+        <watch expression="item" language="Python" />
+        <watch expression="pre_process_dict" language="Python" />
+        <watch expression="item" language="Python" />
+        <watch expression="pre_process_dict" language="Python" />
+        <watch expression="tiem" language="Python" />
+        <watch expression="item" language="Python" />
+        <watch expression="deal_data" language="Python" />
+        <watch expression="pre_data" language="Python" />
+        <watch expression="pre_process_dict" language="Python" />
+        <watch expression="notice_type" language="Python" />
+        <watch expression="data_list" language="Python" />
+        <watch expression="data_list" language="Python" />
+        <watch expression="content" language="Python" />
+        <watch expression="category_num" language="Python" />
+        <watch expression="temp_url" language="Python" />
+        <watch expression="origin" language="Python" />
+        <watch expression="all_results" language="Python" />
+        <watch expression="all_results" language="Python" />
+        <watch expression="results" language="Python" />
+        <watch expression="out" language="Python" />
+        <watch expression="r_dict" language="Python" />
+        <watch expression="response_text" language="Python" />
+        <watch expression="content" language="Python" />
+        <watch expression="item_dict" language="Python" />
+        <watch expression="li_list" language="Python" />
+        <watch expression="li_list" language="Python" />
+        <watch expression="data_url" language="Python" />
+        <watch expression="style_content" language="Python" />
+        <watch expression="style_content" language="Python" />
+        <watch expression="files_path" language="Python" />
+        <watch expression="item_dict" language="Python" />
+        <watch expression="item_dict" language="Python" />
+        <watch expression="item_dict" language="Python" />
+        <watch expression="out" language="Python" />
+        <watch expression="data" language="Python" />
+        <watch expression="data" language="Python" />
+        <watch expression="url_pdf_str" language="Python" />
+        <watch expression="item" language="Python" />
+        <watch expression="out" language="Python" />
+        <watch expression="url" language="Python" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/ztx_spider$test.coverage" NAME="test Coverage Results" MODIFIED="1619748804093" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_02_bj_spider__1_.coverage" NAME="province_02_bj_spider (1) Coverage Results" MODIFIED="1609731940711" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$pipelines_clean.coverage" NAME="pipelines_clean Coverage Results" MODIFIED="1619056211108" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/pipelines" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_04_hebei_spider.coverage" NAME="province_04_hebei_spider Coverage Results" MODIFIED="1617350565593" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_41_guizhou_spider.coverage" NAME="province_41_guizhou_spider Coverage Results" MODIFIED="1617157737652" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_19_jiangxi_a_spider.coverage" NAME="province_19_jiangxi_a_spider Coverage Results" MODIFIED="1609771262493" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_11_shanghai_data.coverage" NAME="province_11_shanghai_data Coverage Results" MODIFIED="1610259351197" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_data" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_47_qinghai_spider.coverage" NAME="province_47_qinghai_spider Coverage Results" MODIFIED="1619175591469" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_10_heilongjiang_b_spider.coverage" NAME="province_10_heilongjiang_b_spider Coverage Results" MODIFIED="1608727675720" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$pipelines_mysql.coverage" NAME="pipelines_mysql Coverage Results" MODIFIED="1610948598146" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/pipelines" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_42_yunnan_spider.coverage" NAME="province_42_yunnan_spider Coverage Results" MODIFIED="1618535636030" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_39_chongqing_spider.coverage" NAME="province_39_chongqing_spider Coverage Results" MODIFIED="1617256109697" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_40_sichuan_spider.coverage" NAME="province_40_sichuan_spider Coverage Results" MODIFIED="1617093195933" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$scrapyd_auto_start.coverage" NAME="scrapyd_auto_start Coverage Results" MODIFIED="1619770832230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_21_shandong_spider.coverage" NAME="province_21_shandong_spider Coverage Results" MODIFIED="1617171457302" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_19_jiangxi_spider.coverage" NAME="province_19_jiangxi_spider Coverage Results" MODIFIED="1615873652782" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_15_zhejiang_spider.coverage" NAME="province_15_zhejiang_spider Coverage Results" MODIFIED="1616722192424" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$utils.coverage" NAME="utils Coverage Results" MODIFIED="1618753921964" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_05_shanxi_spider.coverage" NAME="province_05_shanxi_spider Coverage Results" MODIFIED="1615277935976" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3311_lishui_spider.coverage" NAME="ZJ_city_3311_lishui_spider Coverage Results" MODIFIED="1619170557261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_33_guangxi_spider.coverage" NAME="province_33_guangxi_spider Coverage Results" MODIFIED="1617002752698" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_15_zhejiang_data.coverage" NAME="province_15_zhejiang_data Coverage Results" MODIFIED="1610260600376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_data" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_00_quanguo_spider.coverage" NAME="province_00_quanguo_spider Coverage Results" MODIFIED="1616048311888" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_03_tianjin_spider.coverage" NAME="province_03_tianjin_spider Coverage Results" MODIFIED="1617349841401" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$scrapyd_clean_data.coverage" NAME="scrapyd_clean_data Coverage Results" MODIFIED="1616738472562" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ztx_spider$scrapyd_timing_post.coverage" NAME="scrapyd_timing_post Coverage Results" MODIFIED="1620260922950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_23_henan_spider.coverage" NAME="province_23_henan_spider Coverage Results" MODIFIED="1617347932322" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$scrapyd_post_data.coverage" NAME="scrapyd_post_data Coverage Results" MODIFIED="1619751851709" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ztx_spider$pipelines_clean__1_.coverage" NAME="pipelines_clean (1) Coverage Results" MODIFIED="1612512143278" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/build/lib/spider_pro/pipelines" />
+    <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3307_huzhou_spider.coverage" NAME="ZJ_city_3307_huzhou_spider Coverage Results" MODIFIED="1618991255444" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_08_jilin_spider.coverage" NAME="province_08_jilin_spider Coverage Results" MODIFIED="1615434411062" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3301_hangzhou_spider.coverage" NAME="ZJ_city_3301_hangzhou_spider Coverage Results" MODIFIED="1619175755334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_11_shanghai_spider.coverage" NAME="province_11_shanghai_spider Coverage Results" MODIFIED="1613811962926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3316_zhuji_spider.coverage" NAME="ZJ_city_3316_zhuji_spider Coverage Results" MODIFIED="1619751350048" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3308_quzhou_spider.coverage" NAME="ZJ_city_3308_quzhou_spider Coverage Results" MODIFIED="1618755452940" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_00_quanguo_data.coverage" NAME="province_00_quanguo_data Coverage Results" MODIFIED="1610261086099" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_data" />
+    <SUITE FILE_PATH="coverage/ztx_spider$scrapyd_timing.coverage" NAME="scrapyd_timing Coverage Results" MODIFIED="1619322195563" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_53_bilian_spider.coverage" NAME="province_53_bilian_spider Coverage Results" MODIFIED="1619090284181" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_02_bj_spider.coverage" NAME="province_02_bj_spider Coverage Results" MODIFIED="1608629964848" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_13_jiangsu_spider.coverage" NAME="province_13_jiangsu_spider Coverage Results" MODIFIED="1614071630465" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$file_download.coverage" NAME="file_download Coverage Results" MODIFIED="1618984367455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_16_anhui_spider.coverage" NAME="province_16_anhui_spider Coverage Results" MODIFIED="1616140877460" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_02_beijing_spider.coverage" NAME="province_02_beijing_spider Coverage Results" MODIFIED="1615277921708" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3312_shaoxing_spider.coverage" NAME="ZJ_city_3312_shaoxing_spider Coverage Results" MODIFIED="1618370829002" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3310_taizhou_spider.coverage" NAME="ZJ_city_3310_taizhou_spider Coverage Results" MODIFIED="1618556160544" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_36_gansu_spider.coverage" NAME="province_36_gansu_spider Coverage Results" MODIFIED="1618297091795" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_49_ningxia_spider.coverage" NAME="province_49_ningxia_spider Coverage Results" MODIFIED="1618920316962" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_31_ningxia_spider.coverage" NAME="province_31_ningxia_spider Coverage Results" MODIFIED="1608618740265" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_03_tj_spider.coverage" NAME="province_03_tj_spider Coverage Results" MODIFIED="1609737299526" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_10_heilongjiang_b_spider__1_.coverage" NAME="province_10_heilongjiang_b_spider (1) Coverage Results" MODIFIED="1609313076586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_06_neimenggu_spider.coverage" NAME="province_06_neimenggu_spider Coverage Results" MODIFIED="1614843685100" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$scrapyd_api.coverage" NAME="scrapyd_api Coverage Results" MODIFIED="1610594446515" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ztx_spider$ProxyMiddleware.coverage" NAME="ProxyMiddleware Coverage Results" MODIFIED="1619401598057" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/middlewares" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_26_hubei_spider.coverage" NAME="province_26_hubei_spider Coverage Results" MODIFIED="1615381750441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+  </component>
+</project>
