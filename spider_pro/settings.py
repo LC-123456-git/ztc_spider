@@ -49,8 +49,11 @@ TELNETCONSOLE_ENABLED = False
 # }
 
 # spider_por path
-spider_pro_path = os.path.dirname(os.path.abspath(__file__))
+# spider_pro_path = os.path.dirname(os.path.abspath(__file__))
+spider_pro_path = os.path.dirname(os.getcwd())
 
+# print(os.path.dirname(os.getcwd()))
+# spider_pro_path = 'D:\Projects\ztx_spider\spider_pro'
 # Scrapy Log setting
 logs_spider_path = os.path.join(spider_pro_path, "logs")
 os.makedirs(logs_spider_path, 0o777, exist_ok=True)
