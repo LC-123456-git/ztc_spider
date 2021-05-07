@@ -3,20 +3,21 @@
   <component name="ChangeListManager">
     <list default="true" id="93111dab-ac1d-4395-9f11-5aa78e535427" name="Default Changelist" comment="提交">
       <change afterPath="$PROJECT_DIR$/cre.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spider_pro/spiders/daima_ceshi.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spider_pro/spiders/province_57_jingcaizongheng_spider.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spider_pro/text_exls.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spider_pro/logs/info_2021_05_07.log" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/spider_pro/招财进宝.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/read_me.md" beforeDir="false" afterPath="$PROJECT_DIR$/read_me.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scrapyd_auto_start.py" beforeDir="false" afterPath="$PROJECT_DIR$/scrapyd_auto_start.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report_output.py" beforeDir="false" afterPath="$PROJECT_DIR$/report_output.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scrapyd_clean_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/scrapyd_clean_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scrapyd_post_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/scrapyd_post_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spider_pro/ceshi.html" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/ceshi.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spider_pro/middlewares/UserAgentMiddleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/middlewares/UserAgentMiddleware.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scrapyd_timing_post.py" beforeDir="false" afterPath="$PROJECT_DIR$/scrapyd_timing_post.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spider_pro/logs/info_2021_04_29.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spider_pro/logs/info_2021_04_30.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spider_pro/middlewares/UrlDuplicateRemovalMiddleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/middlewares/UrlDuplicateRemovalMiddleware.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spider_pro/pipelines/pipelines_clean.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/pipelines/pipelines_clean.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spider_pro/pipelines/pipelines_mysql.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/pipelines/pipelines_mysql.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spider_pro/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spider_pro/spiders/ZJ_city_3318_jinhua_spider.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/spiders/ZJ_city_3318_jinhua_spider.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spider_pro/spiders/province_10_heilongjiang_spider.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/spiders/province_10_heilongjiang_spider.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spider_pro/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spider_pro/settings_scrapyd.py" beforeDir="false" afterPath="$PROJECT_DIR$/spider_pro/settings_scrapyd.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,7 +51,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1ppgx1TqD62Tweia2C4693tFg8O" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -63,7 +64,7 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../ztx/02猎云网爬虫/lyw" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
@@ -125,12 +126,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../.." />
+      <option name="WORKING_DIRECTORY" value="E:" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../keywords_extract.py" />
+      <option name="SCRIPT_NAME" value="E:/keywords_extract.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -252,6 +253,7 @@
       <workItem from="1619501294324" duration="53754000" />
       <workItem from="1619656204935" duration="72516000" />
       <workItem from="1620261209178" duration="43751000" />
+      <workItem from="1620372491791" duration="4856000" />
     </task>
     <servers />
   </component>
@@ -290,26 +292,26 @@
     </state>
     <state x="296" y="133" key="FileChooserDialogImpl/0.0.1440.860@0.0.1440.860" timestamp="1617266947849" />
     <state x="746" y="167" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1620354087645" />
-    <state width="1635" height="370" key="GridCell.Tab.0.bottom" timestamp="1620353998018">
+    <state width="1775" height="224" key="GridCell.Tab.0.bottom" timestamp="1620377241716">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1151" height="152" key="GridCell.Tab.0.bottom/0.0.1440.860@0.0.1440.860" timestamp="1617270204643" />
-    <state width="1635" height="370" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1620353998018" />
-    <state width="1635" height="370" key="GridCell.Tab.0.center" timestamp="1620353998018">
+    <state width="1775" height="224" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1620377241716" />
+    <state width="1775" height="224" key="GridCell.Tab.0.center" timestamp="1620377241716">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1151" height="152" key="GridCell.Tab.0.center/0.0.1440.860@0.0.1440.860" timestamp="1617270204643" />
-    <state width="1635" height="370" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1620353998018" />
-    <state width="1635" height="370" key="GridCell.Tab.0.left" timestamp="1620353998018">
+    <state width="1775" height="224" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1620377241716" />
+    <state width="1775" height="224" key="GridCell.Tab.0.left" timestamp="1620377241716">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1151" height="152" key="GridCell.Tab.0.left/0.0.1440.860@0.0.1440.860" timestamp="1617270204643" />
-    <state width="1635" height="370" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1620353998018" />
-    <state width="1635" height="370" key="GridCell.Tab.0.right" timestamp="1620353998018">
+    <state width="1775" height="224" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1620377241716" />
+    <state width="1775" height="224" key="GridCell.Tab.0.right" timestamp="1620377241716">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1151" height="152" key="GridCell.Tab.0.right/0.0.1440.860@0.0.1440.860" timestamp="1617270204643" />
-    <state width="1635" height="370" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1620353998018" />
+    <state width="1775" height="224" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1620377241716" />
     <state width="1635" height="370" key="GridCell.Tab.1.bottom" timestamp="1620353998018">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -354,11 +356,11 @@
     </state>
     <state x="384" y="267" key="com.intellij.ide.util.TipDialog/0.0.1440.860@0.0.1440.860" timestamp="1617237072271" />
     <state x="512" y="323" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1620261209452" />
-    <state x="-3" y="118" width="1248" height="699" key="dock-window-1" timestamp="1619752846498">
+    <state x="347" y="58" width="1265" height="900" key="dock-window-1" timestamp="1620374248394">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="67" y="99" width="1257" height="646" key="dock-window-1/0.0.1440.860@0.0.1440.860" timestamp="1617256638166" />
-    <state x="-3" y="118" width="1248" height="699" key="dock-window-1/0.0.1920.1040@0.0.1920.1040" timestamp="1619752846498" />
+    <state x="347" y="58" width="1265" height="900" key="dock-window-1/0.0.1920.1040@0.0.1920.1040" timestamp="1620374248394" />
     <state x="325" y="77" width="1255" height="850" key="dock-window-2" timestamp="1619753213921">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -493,7 +495,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/scrapyd_auto_start.py</url>
-          <line>391</line>
+          <line>390</line>
           <option name="timeStamp" value="398" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -502,7 +504,7 @@
           <option name="timeStamp" value="430" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/../../keywords_extract.py</url>
+          <url>file://E:/keywords_extract.py</url>
           <line>109</line>
           <option name="timeStamp" value="443" />
         </line-breakpoint>
@@ -525,7 +527,7 @@
     <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3318_jinhua_spider.coverage" NAME="ZJ_city_3318_jinhua_spider Coverage Results" MODIFIED="1619600957735" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
     <SUITE FILE_PATH="coverage/ztx_spider$enterprise_303_zhenengjituan_spider.coverage" NAME="enterprise_303_zhenengjituan_spider Coverage Results" MODIFIED="1617065340452" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders/zhejiang" />
     <SUITE FILE_PATH="coverage/ztx_spider$daima_ceshi.coverage" NAME="daima_ceshi Coverage Results" MODIFIED="1619399706255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
-    <SUITE FILE_PATH="coverage/ztx_spider$cmdline.coverage" NAME="cmdline Coverage Results" MODIFIED="1617065553354" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../ztx_lc/Lib/site-packages/scrapy" />
+    <SUITE FILE_PATH="coverage/ztx_spider$cmdline.coverage" NAME="cmdline Coverage Results" MODIFIED="1617065553354" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="E:/ztx_lc/Lib/site-packages/scrapy" />
     <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3312_shaoxing_spider.coverage" NAME="ZJ_city_3312_shaoxing_spider Coverage Results" MODIFIED="1619144676375" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
     <SUITE FILE_PATH="coverage/ztx_spider$file_download.coverage" NAME="file_download Coverage Results" MODIFIED="1618550158183" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ztx_spider$.coverage" NAME="招财进宝 Coverage Results" MODIFIED="1620295977601" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro" />
@@ -548,17 +550,17 @@
     <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3313_zhoushan_spider.coverage" NAME="ZJ_city_3313_zhoushan_spider Coverage Results" MODIFIED="1619060761368" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
     <SUITE FILE_PATH="coverage/ztx_spider$province_14_zhejiang_spider.coverage" NAME="province_14_zhejiang_spider Coverage Results" MODIFIED="1618292508615" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
     <SUITE FILE_PATH="coverage/ztx_spider$enterprise_303_zhenengjituan_spider__1_.coverage" NAME="enterprise_303_zhenengjituan_spider (1) Coverage Results" MODIFIED="1617080616474" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
-    <SUITE FILE_PATH="coverage/ztx_spider$python3_requests.coverage" NAME="python3_requests Coverage Results" MODIFIED="1617333931442" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../破解码/Python" />
+    <SUITE FILE_PATH="coverage/ztx_spider$python3_requests.coverage" NAME="python3_requests Coverage Results" MODIFIED="1617333931442" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="E:/破解码/Python" />
     <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3307_huzhou_spider.coverage" NAME="ZJ_city_3307_huzhou_spider Coverage Results" MODIFIED="1618973898147" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
     <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3315_keqiao_spider.coverage" NAME="ZJ_city_3315_keqiao_spider Coverage Results" MODIFIED="1619164784884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
     <SUITE FILE_PATH="coverage/ztx_spider$province_54_Egongxiang_spider.coverage" NAME="province_54_Egongxiang_spider Coverage Results" MODIFIED="1619523530586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
     <SUITE FILE_PATH="coverage/ztx_spider$cre.coverage" NAME="cre Coverage Results" MODIFIED="1620300090539" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ztx_spider$zcjb_xj.coverage" NAME="zcjb_xj Coverage Results" MODIFIED="1619764300228" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Downloads" />
-    <SUITE FILE_PATH="coverage/ztx_spider$province_57_jingcaizongheng_spider.coverage" NAME="province_57_jingcaizongheng_spider Coverage Results" MODIFIED="1620353924481" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_57_jingcaizongheng_spider.coverage" NAME="province_57_jingcaizongheng_spider Coverage Results" MODIFIED="1620377241709" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
     <SUITE FILE_PATH="coverage/ztx_spider$scrapyd_auto_start.coverage" NAME="scrapyd_auto_start Coverage Results" MODIFIED="1619658435230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3306_jiaxing_spider.coverage" NAME="ZJ_city_3306_jiaxing_spider Coverage Results" MODIFIED="1619061623679" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
     <SUITE FILE_PATH="coverage/ztx_spider$ZJ_enterprise_3304_shuiliting_spider.coverage" NAME="ZJ_enterprise_3304_shuiliting_spider Coverage Results" MODIFIED="1618298063087" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
-    <SUITE FILE_PATH="coverage/ztx_spider$keywords_extract.coverage" NAME="keywords_extract Coverage Results" MODIFIED="1620282480653" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../.." />
+    <SUITE FILE_PATH="coverage/ztx_spider$keywords_extract.coverage" NAME="keywords_extract Coverage Results" MODIFIED="1620282480653" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="E:" />
     <SUITE FILE_PATH="coverage/ztx_spider$province_18_fujian_spider.coverage" NAME="province_18_fujian_spider Coverage Results" MODIFIED="1617181189439" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
     <SUITE FILE_PATH="coverage/ztx_spider$text_exls.coverage" NAME="text_exls Coverage Results" MODIFIED="1620295264803" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro" />
     <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3309_wenzhou_spider.coverage" NAME="ZJ_city_3309_wenzhou_spider Coverage Results" MODIFIED="1618303285561" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />

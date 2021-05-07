@@ -139,11 +139,11 @@ DEBUG_MODE = True
 
 # Mysql setting
 BUCKET_SIZE = 10
-ENGINE_CONFIG = 'mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4'
-TEST_ENGINE_CONFIG = 'mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4'
+ENGINE_CONFIG = 'mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4'
+TEST_ENGINE_CONFIG = 'mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'
 
 # Redis setting
-REDIS_HOST = "192.168.1.248"
+REDIS_HOST = "114.67.84.76"
 MAX_CONNECTIONS = 50
 REDIS_PASSWORD = "Ly3sa%@D0$pJt0y6."
 NAME_DUPLICATE_URLS = "duplicate_urls"

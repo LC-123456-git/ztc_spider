@@ -45,7 +45,7 @@ class UrlDuplicateRemovalMiddleware(object):
 
 
 if __name__ == "__main__":
-    REDIS_HOST = "192.168.1.248"
+    REDIS_HOST = "114.67.84.76"
     MAX_CONNECTIONS = 50
     REDIS_PASSWORD = "Ly3sa%@D0$pJt0y6."
     redis_pool = redis.ConnectionPool(

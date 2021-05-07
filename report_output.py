@@ -335,7 +335,7 @@ class ReportOutput(DBQuery):
 
 if __name__ == '__main__':
     data = {
-        'host': '192.168.1.248',
+        'host': '114.67.84.76',
         'user': 'root',
         'password': 'Ly3sa%@D0$pJt0y6',
         # 'db': 'test2_data_collection',
