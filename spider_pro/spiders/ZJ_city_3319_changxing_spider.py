@@ -16,7 +16,7 @@ class ZjCity3319ChangxingSpiderSpider(scrapy.Spider):
     name = 'ZJ_city_3319_changxing_spider'
     allowed_domains = ['ggzy.zjcx.goc.cn']
     start_urls = ['http://ggzy.zjcx.goc.cn/']
-    basic_area = '浙江省-湖州-长兴县公共资源交易服务平台'
+    basic_area = '浙江省-湖州市-长兴县'
     area_id = 3319
     query_url = 'http://ggzy.zjcx.gov.cn'
     url_map = {
