@@ -16,7 +16,7 @@ class ZjCity3319ChangxingSpiderSpider(scrapy.Spider):
     name = 'ZJ_city_3319_changxing_spider'
     allowed_domains = ['ggzy.zjcx.goc.cn']
     start_urls = ['http://ggzy.zjcx.goc.cn/']
-    basic_area = '浙江省-湖州市-长兴县'
+    basic_area = '湖州-长兴县'
     area_id = 3319
     query_url = 'http://ggzy.zjcx.gov.cn'
     url_map = {
@@ -165,7 +165,8 @@ class ZjCity3319ChangxingSpiderSpider(scrapy.Spider):
     keywords_map = {
         '变更|答疑|澄清|补充|延期': '招标变更',
         '废标|流标': '招标异常',
-        '候选人|评标结果|成交公示': '中标预告',
+        '候选人|评标结果': '中标预告',
+        '中标|成交': '中标公告',
     }
 
     def __init__(self, *args, **kwargs):

@@ -67,8 +67,8 @@ class DBQuery(object):
         '3314': '余杭公共资源交易平台',
         '3315': '柯桥公共资源交易平台',
         '3319': '长兴公共资源交易平台',
-        '3303': '浙能集团电子招标投标交易平台',
-        '3304': '浙江省水利厅',
+        '3303': '浙能集团',
+        '3304': '水利厅',
     }
 
     def __new__(cls, **kwargs):
@@ -152,7 +152,7 @@ class ReportOutput(DBQuery):
                 'db_name': self.db_name,
             })
             push_sql = """SELECT area_id n, count FROM {db_name}.statistical
-            WHERE date_format(push_time,'%Y-%m-%d')='{cdt}' AND area_id={area_id}
+            WHERE push_time='{cdt}' AND area_id={area_id}
             """.format(**{
                 'db_name': self.db_name,
                 'area_id': area_id,
@@ -335,7 +335,7 @@ class ReportOutput(DBQuery):
 
 if __name__ == '__main__':
     data = {
-        'host': '192.168.1.248',
+        'host': '114.67.84.76',
         'user': 'root',
         'password': 'Ly3sa%@D0$pJt0y6',
         # 'db': 'test2_data_collection',

@@ -22,7 +22,7 @@ class MySpider(Spider):
     domain_url = "http://www.jl.gov.cn"
     count_url = "http://was.jl.gov.cn/was5/web/search?"
     page_size = "17"
-    area_province = "吉林省公共资源交易服务平台"
+    area_province = "吉林"
 
     def __init__(self, *args, **kwargs):
         super(MySpider, self).__init__()

@@ -16,7 +16,7 @@ import threading
 import platform
 from sqlalchemy import create_engine
 # from operator import itemgetter
-# from spider_pro.utils import get_accurate_pub_time
+from spider_pro.utils import get_accurate_pub_time
 
 
 def get_limit_char_from_data(data, name, limit=9999, not_null=False):
@@ -56,29 +56,6 @@ def process_data_by_type_begin_upload(data, data_type="datetime"):
             return ""
     else:
         return data
-
-
-def get_accurate_pub_time(pub_time):
-    if not pub_time:
-        return ""
-    if pub_time_str := re.search(r"\d{4}-\d{1,2}-\d{1,2} \d{1,2}:\d{1,2}", pub_time):
-        pub_time_a = pub_time_str.group(0)
-    elif pub_time_str := re.search(r"\d{4}-\d{1,2}-\d{1,2}", pub_time):
-        pub_time_a = pub_time_str.group(0)
-    elif pub_time_str := re.search(r"\d{4}\.\d{1,2}\.\d{1,2} \d{1,2}:\d{1,2}", pub_time):
-        pub_time_a = pub_time_str.group(0).replace(".", "-")
-    elif pub_time_str := re.search(r"\d{4}\.\d{1,2}\.\d{1,2}", pub_time):
-        pub_time_a = pub_time_str.group(0).replace(".", "-")
-    elif pub_time_str := re.search(r"\d{4}/\d{1,2}/\d{1,2}", pub_time):
-        pub_time_a = pub_time_str.group(0).replace("/", "-")
-    elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日\d{1,2}:\d{1,2}", pub_time):
-        pub_time_a = pub_time_str.group().replace("年", "-").replace("月", "-").replace("日", " ")
-    elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日", pub_time):
-        pub_time_a = pub_time_str.group(0).replace("年", "-").replace("月", "-").replace("日", "")
-
-    else:
-        pub_time_a = ""
-    return pub_time_a
 
 
 def deal_base_notices_data(data, is_hump=False):
@@ -504,7 +481,7 @@ if __name__ == "__main__":
     cp = ScrapyDataPost(
                         table_name="notices_00",
                         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4',
-                        # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
+                        # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4',
                         post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice"
     )
     # cp.run_post(d_time='2021-04-28')
@@ -514,40 +491,24 @@ if __name__ == "__main__":
 
     # 正式批量推数据 解开注释需要当心！！！
     cp.run_post_today_all_spider_data(tables_list=[
-        "province_00_quanguo_spider",
-        "province_02_beijing_spider",
-        "province_03_tianjin_spider",
-        "province_04_hebei_spider",
-        "province_05_shanxi_spider",
-        "province_08_jilin_spider",
-        "province_10_heilongjiang_spider",
-        "province_11_shanghai_spider",
-        "province_13_jiangsu_spider",
-        "province_14_zhejiang_spider",
-        "province_15_zhejiang_spider",
-        "province_16_anhui_spider",
-        "province_18_fujian_spider",
-        "province_19_jiangxi_spider",
-        "province_21_shandong_spider",
-        "province_23_henan_spider",
-        "province_26_hubei_spider",
-        "province_30_guangdong_spider",
-        "province_40_sichuan_spider",
-        "province_52_pinming_spider",
-        "province_53_bilian_spider",
-        "province_55_tiangong_spider",
-        "province_44_xizang_spider",
-        "province_50_xinjiang_spider",
-        "ZJ_enterprise_3303_zhenengjituan_spider",
-        "ZJ_enterprise_3304_shuiliting_spider",
-        "ZJ_city_3305_ningbo_spider",
-        "ZJ_city_8050_jiaxing_spider",
-        "ZJ_city_3307_huzhou_spider",
-        "ZJ_city_3309_wenzhou_spider",
-        "ZJ_city_3312_shaoxing_spider",
-        "ZJ_city_3313_zhoushan_spider",
-        "ZJ_city_3314_yuhang_spider",
-        "ZJ_city_3319_changxing_spider"
+        "notices_21",
+        "notices_00",
+        "notices_02",
+        "notices_03",
+        "notices_04",
+        "notices_05",
+        "notices_08",
+        "notices_11",
+        "notices_13",
+        "notices_15",
+        "notices_18",
+        "notices_19",
+        "notices_23",
+        "notices_26",
+        "notices_40",
+        "notices_3306",
+        "notices_3305",
+        "notices_3304",
     ])
     # 正式批量推今天之前的数据 解开注释需要当心！！！
     # cp.run_post_before_today_all_spider_data(tables_list=[
@@ -566,14 +527,14 @@ if __name__ == "__main__":
     #     "notices_23",
     #     "notices_26",
     #     "notices_40",
-    #     "notices_8050",
+    #     "notices_3306",
     #     "notices_3305",
     #     "notices_3304",
     # ])
 
     # 测试推数据
     # cp = ScrapyDataPost(table_name="notices_3311",
-    #                     engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
+    #                     engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4',
     #                     # post_url="http://192.168.1.249:9007/feign/data/v1/notice/addGatherNotice"
     #                     post_url ="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice"
     #                     )

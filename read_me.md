@@ -141,7 +141,7 @@
 - [] 3317 浙江招标网  https://zj.bidcenter.com.cn/
 - [] 3318 金华市公共资源交易中心  http://ggzyjy.jinhua.gov.cn/cms/
 - [] 3319 长兴县公共资源交易中心  http://ggzy.zjcx.goc.cn/cxweb/
-
+- [] 3320 苍南县公共资源交易中心  http://ggzy.cncn.gov.cn/TPFrontNew/
 
 
 ### 反爬策略汇总
@@ -159,6 +159,13 @@
 > >https://www.ebnew.com/businessShow/664346381.html，附件是一个展示链接
     不是一个下载链接，当前无解决方案                          ——2021-4-22
 
+> 57 精彩纵横
+> # 代理机构已解析   后期可以不用清洗
+> 该网站有两种分类 需要分别使用两种url请求 参数不一样          --2021-5-07
+
+
+>3318  浙江金华公共资源交易中心  附件是需要先请求的get_url()方法  获取相应的uid 进行拼接
+>                                                           --2021-04-28
 
 ### install 命令
 >C:\Users\PC\AppData\Local\Programs\Python\Python39\python.exe

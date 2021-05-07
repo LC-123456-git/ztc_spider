@@ -218,12 +218,12 @@ class CleanPipeline(object):
             if item["is_have_file"] == "1" or item["is_have_file"] == 1:
                 self.is_have_file = True
                 # self.content_str = item["content"]
-                # msg, content_str = self.request_download(files_path=str(item["files_path"]), content=item["content"],
-                #                                          is_have_file=item["is_have_file"])
-                # # 请求失败 修改 is_have_file
-                # # msg = 'test file request error'
-                # if msg:
-                #     item['is_have_file'] = "2"
+                msg, content_str = self.request_download(files_path=str(item["files_path"]), content=item["content"],
+                                                         is_have_file=item["is_have_file"])
+                # 请求失败 修改 is_have_file
+                # msg = 'test file request error'
+                if msg:
+                    item['is_have_file'] = "2"
 
         except Exception as e:
             self.logger.error(f"文件服务替换失败 {e} ")
@@ -236,8 +236,7 @@ class CleanPipeline(object):
             "classify_name": const.TYPE_NOTICE_DICT.get(str(item["notice_type"]), ""),
             "area_code": area_deal_dict.get("code", ""),
             "area": area_deal_dict.get("area", ""),
-            "content": item["content"],
-            # "content": content_str if self.is_have_file else item["content"],
+            "content": content_str if self.is_have_file else item["content"],
             "project_type": self.get_id_by_project_category(dict(item).get("category", "")),
             "is_have_file": item['is_have_file'],
         }
