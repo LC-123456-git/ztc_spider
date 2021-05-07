@@ -5,7 +5,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 
-SCRAPYD_URL = "http://114.67.84.76:9099/"
+SCRAPYD_URL = "http://114.67.84.76:8060/"
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 
 

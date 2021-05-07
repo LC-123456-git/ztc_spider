@@ -3,7 +3,7 @@ import json
 import requests
 import datetime
 
-SCRAPYD_URL = "http://114.67.84.76:9099/"
+SCRAPYD_URL = "http://114.67.84.76:8060/"
 
 
 def scrapyd_status():
