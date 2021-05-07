@@ -351,11 +351,11 @@
     </state>
     <state x="233" y="192" width="1102" height="553" maximized="true" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1440.860@0.0.1440.860" timestamp="1617020319759" />
     <state x="54" y="187" width="1783" height="692" maximized="true" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1619769243716" />
-    <state x="512" y="323" key="com.intellij.ide.util.TipDialog" timestamp="1620261209452">
+    <state x="512" y="323" key="com.intellij.ide.util.TipDialog" timestamp="1620379913011">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="384" y="267" key="com.intellij.ide.util.TipDialog/0.0.1440.860@0.0.1440.860" timestamp="1617237072271" />
-    <state x="512" y="323" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1620261209452" />
+    <state x="512" y="323" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1620379913011" />
     <state x="347" y="58" width="1265" height="900" key="dock-window-1" timestamp="1620374248394">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -556,7 +556,7 @@
     <SUITE FILE_PATH="coverage/ztx_spider$province_54_Egongxiang_spider.coverage" NAME="province_54_Egongxiang_spider Coverage Results" MODIFIED="1619523530586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
     <SUITE FILE_PATH="coverage/ztx_spider$cre.coverage" NAME="cre Coverage Results" MODIFIED="1620300090539" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ztx_spider$zcjb_xj.coverage" NAME="zcjb_xj Coverage Results" MODIFIED="1619764300228" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Downloads" />
-    <SUITE FILE_PATH="coverage/ztx_spider$province_57_jingcaizongheng_spider.coverage" NAME="province_57_jingcaizongheng_spider Coverage Results" MODIFIED="1620377241709" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
+    <SUITE FILE_PATH="coverage/ztx_spider$province_57_jingcaizongheng_spider.coverage" NAME="province_57_jingcaizongheng_spider Coverage Results" MODIFIED="1620379944020" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
     <SUITE FILE_PATH="coverage/ztx_spider$scrapyd_auto_start.coverage" NAME="scrapyd_auto_start Coverage Results" MODIFIED="1619658435230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ztx_spider$ZJ_city_3306_jiaxing_spider.coverage" NAME="ZJ_city_3306_jiaxing_spider Coverage Results" MODIFIED="1619061623679" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
     <SUITE FILE_PATH="coverage/ztx_spider$ZJ_enterprise_3304_shuiliting_spider.coverage" NAME="ZJ_enterprise_3304_shuiliting_spider Coverage Results" MODIFIED="1618298063087" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/spider_pro/spiders" />
