@@ -15,9 +15,9 @@ class UrlDuplicateRemovalMiddleware(object):
         super(UrlDuplicateRemovalMiddleware, self).__init__()
         self.logger = logger
         self.redis_pool = redis.ConnectionPool(
-            host=kwargs.get("REDIS_HOST"), decode_responses=True, max_connections=int(kwargs.get("MAX_CONNECTIONS")),
+            host=kwargs.get("REDIS_HOST"), port=8090, decode_responses=True, max_connections=int(kwargs.get("MAX_CONNECTIONS")),
             password=kwargs.get("REDIS_PASSWORD"), retry_on_timeout=True)
-        self.redis_bloom_client = Client(connection_pool=self.redis_pool)
+        self.redis_bloom_client = Client(connection_pool=self.redis_pool, port=8090)
         self.key = f"{kwargs.get('NAME_DUPLICATE_URLS')}:{area_id}"
         self.enable = True if kwargs.get("ENABLE_URL_DUP_REMOVE_USE") in const.TRUE_LIST else False
         if not self.redis_bloom_client.exists(self.key) and self.enable:
@@ -45,13 +45,13 @@ class UrlDuplicateRemovalMiddleware(object):
 
 
 if __name__ == "__main__":
-    REDIS_HOST = "192.168.1.248"
+    REDIS_HOST = "114.67.84.76"
     MAX_CONNECTIONS = 50
     REDIS_PASSWORD = "Ly3sa%@D0$pJt0y6."
     redis_pool = redis.ConnectionPool(
         host=REDIS_HOST, password=REDIS_PASSWORD, decode_responses=True, max_connections=MAX_CONNECTIONS,
         retry_on_timeout=True)
-    rb = Client(connection_pool=redis_pool)
+    rb = Client(connection_pool=redis_pool, port=8090)
     print(f'{rb.bfInfo("duplicate_urls:49").insertedNum=}')
     print(f'{rb.bfInfo("duplicate_urls:49").size=}')
     print(f'{rb.bfExists("duplicate_urls:49", "http://www.nxggzyjy.org/ningxiaweb/002/002004/002004003/2.html")}')
