@@ -16,7 +16,7 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
     area_id = 3314
     basic_area = '浙江-杭州市-余杭区-门户网站'
     query_url = 'http://www.yuhang.gov.cn/module/jpage/dataproxy.jsp?startrecord={startrecord}&perpage=20'
-    base_url = 'http://www.yuhang.gov.cn'
+    base_url = 'http://www.yuhang. gov.cn'
     url_map = {  # columnid unitid 6101313 6089351
         '招标公告': [
             {'url': 'http://www.yuhang.gov.cn/col/col1229165988/index.html', 'category_type': '政府集中采购',

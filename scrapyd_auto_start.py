@@ -197,7 +197,7 @@ if __name__ == "__main__":
         # "province_21_shandong_spider",
         # "province_23_henan_spider",
         # "province_26_hubei_spider",
-<<<<<<< Updated upstream
+
         # "province_40_sichuan_spider",
         # "ZJ_enterprise_3303_zhenengjituan_spider",
         "ZJ_city_3306_jiaxing_spider",
@@ -205,7 +205,7 @@ if __name__ == "__main__":
         # "ZJ_enterprise_3304_shuiliting_spider",
         # "ZJ_city_3309_wenzhou_spider",
         # "province_49_ningxia_spider",
-=======
+
         # "province_30_guangdong_spider",
         # "province_40_sichuan_spider",
         # "province_44_xizang_spider",
@@ -218,8 +218,7 @@ if __name__ == "__main__":
         # "ZJ_city_3309_wenzhou_spider",
         # "ZJ_city_3312_shaoxing_spider",
         # "ZJ_city_3313_zhoushan_spider",
->>>>>>> Stashed changes
-    ]
+]
 
     # 优先判断运行状态
     r_code, r_text = scrapyd_list_jobs()
@@ -694,8 +693,6 @@ if __name__ == "__main__":
                     )
                     if rs:
                         print(f"运行 {item} 成功!")
-<<<<<<< Updated upstream
-=======
                 elif item == "ZJ_city_3307_huzhou_spider":
                     start_day = today
                     end_day = today
@@ -715,7 +712,6 @@ if __name__ == "__main__":
                     )
                     if rs:
                         print(f"运行 {item} 成功!")
->>>>>>> Stashed changes
                 elif item == "ZJ_city_3309_wenzhou_spider":
                     start_day = today
                     end_day = today
@@ -735,8 +731,6 @@ if __name__ == "__main__":
                     )
                     if rs:
                         print(f"运行 {item} 成功!")
-<<<<<<< Updated upstream
-=======
                 # elif item == "ZJ_city_3312_shaoxing_spider":
                 #     start_day = today
                 #     end_day = today
@@ -775,7 +769,7 @@ if __name__ == "__main__":
                     )
                     if rs:
                         print(f"运行 {item} 成功!")
->>>>>>> Stashed changes
+
 
     # print(scrapyd_cancel(job=f"23-2021-01-28-11-40"))
 
