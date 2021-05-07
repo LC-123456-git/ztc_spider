@@ -29,7 +29,7 @@ DOWNLOADER_MIDDLEWARES = {
     # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
     'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
     'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-    'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+    # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
 }
 
 # item pipelines
