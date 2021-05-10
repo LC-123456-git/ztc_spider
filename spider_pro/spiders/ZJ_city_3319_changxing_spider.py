@@ -16,7 +16,7 @@ class ZjCity3319ChangxingSpiderSpider(scrapy.Spider):
     name = 'ZJ_city_3319_changxing_spider'
     allowed_domains = ['ggzy.zjcx.goc.cn']
     start_urls = ['http://ggzy.zjcx.goc.cn/']
-    basic_area = '湖州-长兴县'
+    basic_area = '浙江省-湖州市-长兴县'
     area_id = 3319
     query_url = 'http://ggzy.zjcx.gov.cn'
     url_map = {
@@ -230,7 +230,7 @@ class ZjCity3319ChangxingSpiderSpider(scrapy.Spider):
             if_turn_page = True
             for i in range(1, pages + 1):
                 if if_turn_page:
-                    print('%d翻页%d' % (pages, i))
+                    # print('%d翻页%d' % (pages, i))
                     try:
                         text = requests.post(url=url, data={
                             '__VIEWSTATE': init_view_state,
@@ -254,16 +254,17 @@ class ZjCity3319ChangxingSpiderSpider(scrapy.Spider):
                             title_name = li_el.xpath('.//a/@title')[0]
                             pub_time = li_el.xpath('.//td[position()=3]/text()')[0].strip()
 
-                            # 阻止往下翻页
-                            x, y, _ = utils.judge_dst_time_in_interval(pub_time, self.start_time, self.end_time)
+                            if all([self.start_time, self.end_time]):
+                                # 阻止往下翻页
+                                x, y, _ = utils.judge_dst_time_in_interval(pub_time, self.start_time, self.end_time)
 
-                            if x:
-                                pass
-                            elif y:
-                                if_turn_page = False
-                                break
-                            else:
-                                continue
+                                if x:
+                                    pass
+                                elif y:
+                                    if_turn_page = False
+                                    break
+                                else:
+                                    continue
                             hrefs = li_el.xpath('.//td[position()=2]/a/@href')
                             if hrefs:
                                 detail_url = self.query_url + hrefs[0]
@@ -326,5 +327,5 @@ class ZjCity3319ChangxingSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3319_changxing_spider -a sdt=2021-03-01 -a edt=2021-03-31".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3319_changxing_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3319_changxing_spider -a sdt=2021-03-01 -a edt=2021-05-10".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3319_changxing_spider".split(" "))
