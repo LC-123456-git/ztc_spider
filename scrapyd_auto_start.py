@@ -202,10 +202,11 @@ if __name__ == "__main__":
     # error_08: TypeError: argument of type 'NoneType' is not iterable
     # error_09: IndexError: string index out of range
     # error_10: 404
-    # error _11:  Crawled 1218 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+    # error_11:  Crawled 1218 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+    # error_12: TypeError: to_bytes must receive a str or bytes object, got NoneType
     # 需要运行的spiders
     spider_list = [
-        # "province_00_quanguo_spider",  # error
+        # "province_00_quanguo_spider",  # error_12
         # "province_02_beijing_spider",  # ok
         # "province_03_tianjin_spider",  # ok
         # "province_04_hebei_spider",  # error_04
