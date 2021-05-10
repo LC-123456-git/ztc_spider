@@ -235,7 +235,7 @@ if __name__ == "__main__":
         # "province_71_zhaocaijingbao_spider",  # error_04
         # "ZJ_enterprise_3303_zhenengjituan_spider",  # ok
         # "ZJ_enterprise_3304_shuiliting_spider",  # ok
-        # "ZJ_city_3305_ningbo_spider",  # ok  + TypeError: argument of type 'NoneType' is not iterable
+        # "ZJ_city_3305_ningbo_spider",  # ok  + error_08
         # "ZJ_city_3306_jiaxing_spider",  # error_01
         # "ZJ_city_3307_huzhou_spider",  # ok + error_01
         # "ZJ_city_3309_wenzhou_spider",  # error_02
