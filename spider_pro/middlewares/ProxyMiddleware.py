@@ -23,9 +23,9 @@ class ProxyMiddleware(RetryMiddleware):
         super(ProxyMiddleware, self).__init__(kwargs)
         self.logger = logger
         self.redis_pool = redis.ConnectionPool(
-            host=kwargs.get("REDIS_HOST"), port=8090,decode_responses=True, max_connections=int(kwargs.get("MAX_CONNECTIONS")),
+            host=kwargs.get("REDIS_HOST"),decode_responses=True, max_connections=int(kwargs.get("MAX_CONNECTIONS")),
             password=kwargs.get("REDIS_PASSWORD"), retry_on_timeout=True)
-        self.redis_client = redis.StrictRedis(connection_pool=self.redis_pool, port=8090)
+        self.redis_client = redis.StrictRedis(connection_pool=self.redis_pool)
         self.max_http = int(kwargs.get("CURRENT_HTTP_PROXY_MAX"))
         self.max_https = int(kwargs.get("CURRENT_HTTPS_PROXY_MAX"))
         self.time_wait = kwargs.get("TIME_WAIT_PROXY_SLEEP")
