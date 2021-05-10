@@ -245,26 +245,27 @@ class ZjCity3320CangnanSpiderSpider(scrapy.Spider):
         """
         获取detail_url, pub_time
         """
-        els = resp.xpath('//div[@class="data"]//tr')
+        els = resp.xpath('//div[@class="data"]/table//tr')
         for el in els:
             href = el.xpath(".//a/@href").get()
-            pub_time = el.xpath(".//td[last()]/text()").get()
-            pub_time = pub_time.replace('.', '-') if pub_time else ''
-            if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
-                yield scrapy.Request(url=self.query_url + href, callback=self.parse_item, meta={
-                    'notice_type': resp.meta.get('notice_type'),
-                    'category': resp.meta.get('category'),
-                    'pub_time': pub_time,
-                }, priority=1000)
+            if href:
+                pub_time = el.xpath(".//td[last()]/text()").get()
+                pub_time = pub_time.replace('.', '-') if pub_time else ''
+                if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
+                    yield scrapy.Request(url=self.query_url + href, callback=self.parse_item, meta={
+                        'notice_type': resp.meta.get('notice_type'),
+                        'category': resp.meta.get('category'),
+                        'pub_time': pub_time,
+                    }, priority=10000)
 
     def parse_item(self, resp):
         content = resp.xpath('//div[@class="container"]//tr[position()=3]').get()
         title_name = resp.xpath('//td[@id="tdTitle"]//b[position()=1]/text()').get()
         notice_type_ori = resp.meta.get('notice_type')
 
-        # 移除不必要信息: 发布时间、打印关闭
+        # 移除不必要信息: 删除第一个正文title/发布时间、打印关闭
         _, content = utils.remove_specific_element(
-            content, 'td', 'id', 'tdTitle', if_child=True, child_attr='div', index=3
+            content, 'td', 'id', 'tdTitle'
         )
         _, content = utils.remove_specific_element(content, 'a', 'href', 'javascript:void(0)')
         _, content = utils.remove_specific_element(content, 'a', 'href', 'javascript:window.close()')
@@ -294,7 +295,7 @@ class ZjCity3320CangnanSpiderSpider(scrapy.Spider):
         notice_item["content"] = content
         notice_item["area_id"] = self.area_id
         notice_item["category"] = resp.meta.get('category')
-        print(notice_item)
+        print(resp.meta.get('pub_time'), resp.url)
 
         return notice_item
 
@@ -302,5 +303,5 @@ class ZjCity3320CangnanSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3320_cangnan_spider -a sdt=2021-03-01 -a edt=2021-03-31".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3320_cangnan_spider -a sdt=2021-01-01 -a edt=2021-04-30".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3320_cangnan_spider".split(" "))

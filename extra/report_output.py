@@ -35,6 +35,7 @@ class DBQuery(object):
             password=kwargs.get('password'),
             db=self.db_name,
             charset='utf8mb4',
+            port=8050
         )
         self.msg = ''
 
@@ -309,21 +310,13 @@ class ReportOutput(DBQuery):
 
 
 if __name__ == '__main__':
-    # data = {
-    #     'host': '192.168.1.248',
-    #     'user': 'root',
-    #     'password': 'Ly3sa%@D0$pJt0y6',
-    #     # 'db': 'test2_data_collection',
-    #     'db': 'data_collection',
-    # }
     data = {
-        'host': '127.0.0.1',
+        'host': '114.67.84.76',
         'user': 'root',
-        'password': 'password',
+        'password': 'Ly3sa%@D0$pJt0y6',
         # 'db': 'test2_data_collection',
-        'db': 'test2_data_collection',
+        'db': 'data_collection',
     }
-    #
     rpt = ReportOutput(**data)
     start_time = datetime.now()
     rpt.output(sdt='2021-04-21', edt='2021-04-30')
