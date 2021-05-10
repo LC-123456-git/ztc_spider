@@ -86,8 +86,12 @@ FALSE_LIST = ["False", False, "FALSE"]  # 假集合
 
 DEFAULT_PUB_TIME = "1970-01-01"
 
-FILE_SERVER = 'http://192.168.1.220:8002/sapi/webfile/addWebFileTask'
-FAIL_TASK_SERVER = 'http://192.168.1.220:8002/sapi/webfile/getFailTask'
+# LOCAL
+# FILE_SERVER = 'http://192.168.1.220:8002/sapi/webfile/addWebFileTask'
+# FAIL_TASK_SERVER = 'http://192.168.1.220:8002/sapi/webfile/getFailTask'
+# SERVER
+FILE_SERVER = 'http://file.zhaotx.cn/sapi/webfile/addWebFileTask'
+FAIL_TASK_SERVER = 'http://zhaotx.ztx.cn/sapi/webfile/getFailTask'
 # clean fields **************************************************************
 NAME_NOTICES_NATURE_NORMAL = "正常公告"
 KEY_WORDS_DICT = {

@@ -114,6 +114,7 @@ class ReportOutput(DBQuery):
         '53': '必联网',
         '55': '天工开物',
         '54': 'E共享交易平台',
+        '57': '精彩纵横',
         '71': '招财进宝',
         '3301': '杭州市公共资源交易平台',
         '3305': '宁波公共资源交易平台',
@@ -129,6 +130,7 @@ class ReportOutput(DBQuery):
         '3315': '柯桥公共资源交易平台',
         '3318': '金华市公共资源交易中心',
         '3319': '长兴公共资源交易平台',
+        '3319': '苍南公共资源交易平台',
         '3303': '浙能集团电子招标投标交易平台',
         '3304': '浙江省水利厅',
     }
@@ -314,10 +316,10 @@ if __name__ == '__main__':
         'host': '114.67.84.76',
         'user': 'root',
         'password': 'Ly3sa%@D0$pJt0y6',
-        # 'db': 'test2_data_collection',
-        'db': 'data_collection',
+        'db': 'test2_data_collection',
+        # 'db': 'data_collection',
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-04-21', edt='2021-04-30')
+    rpt.output(sdt='2021-05-01', edt='2021-05-10')
     print((datetime.now() - start_time).total_seconds())

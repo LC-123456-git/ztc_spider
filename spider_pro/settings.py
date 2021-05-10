@@ -26,10 +26,10 @@ DEFAULT_REQUEST_HEADERS = {
 
 # download middleware
 DOWNLOADER_MIDDLEWARES = {
-    # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
+    'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
     'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
     'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-    # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+    'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
 }
 
 # item pipelines
@@ -137,6 +137,7 @@ DOWNLOAD_DELAY = 2
 # not scrapy setting **********************************************************************
 # DEBUG_MODE setting
 DEBUG_MODE = False
+# DEBUG_MODE = True
 # "True":切换为测试数据库，否则为正式库
 # "True":不启用URL去重，否则不启用
 

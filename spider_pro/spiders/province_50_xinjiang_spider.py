@@ -138,7 +138,7 @@ class MySpider(CrawlSpider):
                 title_name = info['title']
                 pub_time = info['infodate']
                 info_url = self.domain_url + info['linkurl']
-                if response.meta['noticn'] != 'null':
+                if response.meta['notice'] != 'null':
                     if re.search(r'资格预审', title_name):
                         notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
                     elif re.search(r'候选人', title_name):

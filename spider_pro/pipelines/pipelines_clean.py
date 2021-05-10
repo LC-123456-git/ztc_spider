@@ -217,7 +217,7 @@ class CleanPipeline(object):
                                                 area_id=item["area_id"]) or {}
             if item["is_have_file"] == "1" or item["is_have_file"] == 1:
                 self.is_have_file = True
-                # self.content_str = item["content"]
+                # content_str = item["content"]
                 msg, content_str = self.request_download(files_path=str(item["files_path"]), content=item["content"],
                                                          is_have_file=item["is_have_file"])
                 # 请求失败 修改 is_have_file
