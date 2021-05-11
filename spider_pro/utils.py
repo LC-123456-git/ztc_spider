@@ -114,7 +114,7 @@ def catch_files(content, base_url):
             if file_name:
                 file_name = file_name[0]
                 # check file_name exists zip|doc|docx|xls|xlsx
-                if re.search('\.pdf|\.rar|\.zip|\.doc|\.docx|\.xls|\.xlsx|\.xml|\.dwg', file_name):
+                if re.search('\.pdf|\.rar|\.zip|\.doc|\.docx|\.xls|\.xlsx|\.xml|\.dwg|\.AJZF', file_name):
                     file_url = href_el.get('href', '')
                     if not check_if_http_based(file_url):
                         file_url = base_url + file_url
