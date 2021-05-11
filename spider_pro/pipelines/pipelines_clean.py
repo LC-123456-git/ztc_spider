@@ -152,7 +152,6 @@ class CleanPipeline(object):
                                 web_url = v
                                 content = content.replace(web_url, system_url).replace(
                                     web_url_without_domain, system_url)
-                                print(content)
                     else:
                         text = dt['text']
                         code = dt['code']

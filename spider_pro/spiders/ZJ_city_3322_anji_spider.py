@@ -282,6 +282,8 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
         _, content = utils.remove_specific_element(content, 'div', 'class', 'ewb-route')
         _, content = utils.remove_specific_element(content, 'div', 'class', 'detail-tt')
 
+        _, content = utils.remove_element_contained(content, 'div', 'class', 'detail-body', 'input')
+
         content = utils.avoid_escape(content)  # 防止转义
         # 关键字重新匹配 notice_type
         matched, match_notice_type = self.match_title(title_name)
@@ -316,5 +318,5 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider -a sdt=2021-01-01 -a edt=2021-05-01".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider -a sdt=2021-01-01 -a edt=2021-05-11".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider".split(" "))

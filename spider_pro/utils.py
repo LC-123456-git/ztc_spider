@@ -17,6 +17,37 @@ import html
 import uuid
 
 
+def remove_element_contained(content, ele_name, attr_name, attr_value, specific_ele):
+    """
+    删除子节点中包含 指定 元素的节点
+    Args:
+        @content: html文档
+        @ele_name: 元素名称
+        @attr_name: 元素属性名
+        @attr_value: 元素属性值
+    Returns:
+        @msg: 错误信息
+        @content: 构造后的信息
+    """
+    msg = ''
+    try:
+        doc = etree.HTML(content)
+        els = doc.xpath('//{ele_name}[@{attr_name}={attr_value}]'.format(**{
+            'ele_name': ele_name,
+            'attr_name': attr_name,
+            'attr_value': attr_value,
+        }))
+        for el in els:
+            c_els = el.xpath('.//{specific_ele}'.format(specific_ele=specific_ele))
+            if c_els:
+                el.getparent().remove(el)
+        content = etree.tounicode(doc)
+    except Exception as e:
+        msg = e
+
+    return msg, content.replace('<html><body>', '').replace('</body></html>', '')
+
+
 def remove_specific_element(content, ele_name, attr_name, attr_value, if_child=False, index=1, text='', **kwargs):
     """
     remove specific html element attribute from content
