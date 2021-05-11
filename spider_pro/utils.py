@@ -56,7 +56,7 @@ def remove_specific_element(content, ele_name, attr_name, attr_value, if_child=F
         @ele_name: 元素名称
         @attr_name: 元素属性名
         @attr_value: 元素属性值
-        @index: 指定元素索引删除
+        @index: 指定元素索引删除 index:0统统删除
         @text: 指定包含文本的子节点删除
         @kwargs: if_child 移除的是否子元素
                  child_attr 子元素名称
@@ -90,10 +90,13 @@ def remove_specific_element(content, ele_name, attr_name, attr_value, if_child=F
                                     child_el.getparent().remove(child_el)
                                     break
                     else:
-                        if same == index:
+                        if index:
+                            if same == index:
+                                el.getparent().remove(el)
+                                break
+                            same += 1
+                        else:  # 删除所有匹配节点
                             el.getparent().remove(el)
-                            break
-                        same += 1
             content = etree.tounicode(doc)
         else:  # 无属性元素 指定索引删除
             for n, el in enumerate(els):

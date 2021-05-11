@@ -282,7 +282,9 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
         _, content = utils.remove_specific_element(content, 'div', 'class', 'ewb-route')
         _, content = utils.remove_specific_element(content, 'div', 'class', 'detail-tt')
 
-        _, content = utils.remove_element_contained(content, 'div', 'class', 'detail-body', 'input')
+        # 删除表单
+        _, content = utils.remove_specific_element(content, 'div', 'class', 'clearfix hidden', index=0)
+        _, content = utils.remove_specific_element(content, 'input', 'id', 'souceinfoid')
 
         content = utils.avoid_escape(content)  # 防止转义
         # 关键字重新匹配 notice_type

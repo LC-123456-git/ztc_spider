@@ -6,13 +6,14 @@
 @version       :1.0
 """
 
-
 import requests
 import gevent
 import re
 from lxml import etree
 from functools import wraps
 from datetime import datetime
+from openpyxl import Workbook, styles
+from openpyxl.styles import Border, Side
 
 
 def time_count(func):
@@ -38,10 +39,10 @@ class TYCCrawler(object):
     detail_xpath = '//div[@class="search-name"]/a/@href'
     detail_info = {}  # {'招天下': 'www.www.www'}
     basic_info_re = '法定代表人,.*?,(?P<法定代表人>.*?),.*?成立日期,(?P<成立日期>.*?),经营状态,(?P<经营状态>.*?),注册资本,(?P<注册资本>.*?),' + \
-    '实缴资本,(?P<实缴资本>.*?),统一社会信用代码,(?P<统一社会信用代码>.*?),工商注册号,(?P<工商注册号>.*?),组织机构代码,(?P<组织机构代码>.*?),' + \
-    '纳税人识别号,(?P<纳税人识别号>.*?),纳税人资质,(?P<纳税人资质>.*?),企业类型,(?P<企业类型>.*?),行业,(?P<行业>.*?),' + \
-    '营业期限,(?P<营业期限始>.*?)至(?P<营业期限末>.*?),人员规模,(?P<人员规模>.*?),参保人数,(?P<参保人数>.*?),' + \
-    '英文名称,(?P<英文名称>.*?),曾用名,(?P<曾用名>.*?),登记机关,(?P<登记机关>.*?),核准日期,(?P<核准日期>.*?),注册地址,(?P<注册地址>.*?),经营范围,(?P<经营范围>.*)'
+                    '实缴资本,(?P<实缴资本>.*?),统一社会信用代码,(?P<统一社会信用代码>.*?),工商注册号,(?P<工商注册号>.*?),组织机构代码,(?P<组织机构代码>.*?),' + \
+                    '纳税人识别号,(?P<纳税人识别号>.*?),纳税人资质,(?P<纳税人资质>.*?),企业类型,(?P<企业类型>.*?),行业,(?P<行业>.*?),' + \
+                    '营业期限,(?P<营业期限始>.*?)至(?P<营业期限末>.*?),人员规模,(?P<人员规模>.*?),参保人数,(?P<参保人数>.*?),' + \
+                    '英文名称,(?P<英文名称>.*?),曾用名,(?P<曾用名>.*?),登记机关,(?P<登记机关>.*?),核准日期,(?P<核准日期>.*?),注册地址,(?P<注册地址>.*?),经营范围,(?P<经营范围>.*)'
 
     def __init__(self, file_name):
         self.msg = ''
@@ -202,15 +203,82 @@ class TYCCrawler(object):
         except Exception as e:
             self.msg = 'error:{e}'.format(e=e)
 
+    @staticmethod
+    def to_excel(tts, data):
+        """
+        导出至excel
+        Args:
+            tts: 表头信息
+            data: 采集的数据
+
+        Returns:
+            msg: 错误信息
+        """
+        msg = ''
+        border_type = Side(border_style="medium", color='FF000000')
+        border = Border(
+            left=border_type,
+            right=border_type,
+            top=border_type,
+            bottom=border_type,
+            diagonal=border_type,
+            diagonal_direction=0,
+            outline=border_type,
+            vertical=border_type,
+            horizontal=border_type
+        )
+        try:
+            w = Workbook()
+            ws = w.active
+            for n, tt in enumerate(tts):
+                ws.cell(row=1, column=n + 1, value=tt)
+            # 样式
+            for col in [
+                'A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1', 'I1', 'J1', 'K1', 'L1', 'M1', 'N1', 'O1', 'P1',
+                'Q1', 'R1', 'S1'
+            ]:
+                ws[col].border = border
+            # {
+            # 上海特速: {'法定代表人': '郑鲁', '成立日期': '2005-10-08', '经营状态': '存续', '注册资本': '1200万人民币', '实缴资本': '500万人民币', '统一社会信用代码': '91310114781132988W',
+            # '工商注册号': '310114001535646', '组织机构代码': '781132988', '纳税人识别号': '91310114781132988W', '纳税人资质': '增值税一般纳税人', '企业类型': '有限责任公司(自然人投资或控股)',
+            # '行业': '科技推广和应用服务业', '营业期限始': '2005-10-08', '营业期限末': '2035-10-07', '人员规模': '小于50人', '参保人数': '15', '英文名称': 'ShanghaiTesuNetworkTechnologyCo.,Ltd.',
+            #  '曾用名': '-', '登记机关': '嘉定区市场监管局', '核准日期': '2017-12-13',
+            # '注册地址': '上海市嘉定区封周路655号14幢201室J2434', '经营范围': '网络科技（不得从事科技中介），从事网络系统、计算机、软件及辅助设备技术领域内的技术开发、技术转让、技术咨询、技术服务，计算机系统集成，计算机、软件及辅助设备、文具用品、办公用品的销售。【依法须经批准的项目，经相关部门批准后方可开展经营活动】,更多', '企业名称': '上海特速网络科技有限公司'}
+            # }
+            n = 1
+            for c, info in data.items():
+                ws.append(([
+                    n, c, info['统一社会信用代码'], info['工商注册号'], info['组织机构代码'], info['纳税人识别号'],
+                    info['行业'], info['法定代表人'], info['企业类型'], info['成立日期'],
+                    info['注册资本'], info['实缴资本'], info['核准日期'], info['营业期限始'],
+                    info['营业期限末'], info['登记机关'], info['经营状态'], info['注册地址'],
+                    info['经营范围'],
+                ]))
+                n += 1
+            w.save('企业信息{0:%Y-%m-%d}.xls'.format(datetime.now()))
+        except Exception as e:
+            print(e)
+            msg = 'error:{e}'.format(e=e)
+
+        return msg
+
     @time_count
-    def run(self):
+    def run(self, output_type=''):
         # 搜索所有关键字
         gevent.joinall([gevent.spawn(self.search_task, kd) for kd in self.kw_list])
         # 详情页信息
         gevent.joinall([gevent.spawn(self.parse_basic_info_task, name, url) for name, url in self.detail_info.items()])
 
+        # 以excel表格的方式导出
+        # '序号','企业名称','统一社会信用代码','注册号','组织机构代码','纳税人识别号','所属行业','法定代表人','公司类型','成立日期',
+        # '注册资本','实缴资本','核准日期','营业期限自','营业期限至','登记机关','登记状态','注册地址','经营范围'
+        tts = ['序号', '企业名称', '统一社会信用代码', '注册号', '组织机构代码', '纳税人识别号', '所属行业', '法定代表人', '公司类型',
+               '成立日期', '注册资本', '实缴资本', '核准日期', '营业期限自', '营业期限至', '登记机关', '登记状态', '注册地址', '经营范围']
+        self.to_excel(tts, self.basic_info)
+
         print(self.basic_info)
         print('finish.')
+
 
 if __name__ == '__main__':
     file_name = "./kw.xml"

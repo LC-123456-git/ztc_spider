@@ -130,7 +130,7 @@ class ReportOutput(DBQuery):
         '3315': '柯桥公共资源交易平台',
         '3318': '金华市公共资源交易中心',
         '3319': '长兴公共资源交易平台',
-        '3319': '苍南公共资源交易平台',
+        '3320': '苍南公共资源交易平台',
         '3303': '浙能集团电子招标投标交易平台',
         '3304': '浙江省水利厅',
     }
@@ -188,8 +188,8 @@ class ReportOutput(DBQuery):
             'area_id': area_id,
             'cdt': date,
         })
-        # print(download_sql + '\n')
-        # print(push_sql + '\n')
+        print(download_sql + '\n')
+        print(push_sql + '\n')
         download_data = self.fetch_all(download_sql)  # [(area_id, n),]
         push_data = self.fetch_all(push_sql)
 
@@ -316,10 +316,10 @@ if __name__ == '__main__':
         'host': '114.67.84.76',
         'user': 'root',
         'password': 'Ly3sa%@D0$pJt0y6',
-        'db': 'test2_data_collection',
-        # 'db': 'data_collection',
+        # 'db': 'test2_data_collection',
+        'db': 'data_collection',
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-05-01', edt='2021-05-10')
+    rpt.output(sdt='2021-05-10', edt='2021-05-11')
     print((datetime.now() - start_time).total_seconds())
