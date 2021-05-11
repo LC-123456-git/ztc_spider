@@ -270,6 +270,8 @@ class ZjCity3320CangnanSpiderSpider(scrapy.Spider):
         _, content = utils.remove_specific_element(content, 'a', 'href', 'javascript:void(0)')
         _, content = utils.remove_specific_element(content, 'a', 'href', 'javascript:window.close()')
 
+        content = utils.avoid_escape(content)  # 防止转义
+
         # 关键字重新匹配 notice_type
         matched, match_notice_type = self.match_title(title_name)
         if matched:

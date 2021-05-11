@@ -4,6 +4,7 @@
 # @Author : wwj
 # @Describe: notices item数据清洗
 import re
+import html
 import time
 import urllib
 import requests
@@ -208,6 +209,7 @@ class CleanPipeline(object):
 
     def get_pre_process_data(self, item):
         try:
+            item["content"] = html.unescape(item["content"])
             if item["title_name"] is None:
                 area_deal_dict = deal_area_data(info_source=item["info_source"], area_id=item["area_id"]) or {}
             elif item["info_source"] is None:

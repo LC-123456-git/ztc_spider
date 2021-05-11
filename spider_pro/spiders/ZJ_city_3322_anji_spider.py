@@ -1,4 +1,10 @@
-# -*- coding: utf-8 -*-
+"""
+@file          :ZJ_city_3322_anji_spider.py
+@description   :安吉
+@date          :2021/05/11 14:58:10
+@author        :miaokela
+@version       :1.0
+"""
 import re
 import requests
 from lxml import etree
@@ -18,7 +24,7 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
     basic_area = '浙江省-湖州市-安吉县'
     area_id = 3322
     keywords_map = {
-        '变更|答疑|澄清|补充|延期': '招标变更',
+        '变更|答疑|澄清|延期': '招标变更',
         '废标|流标': '招标异常',
         '候选人|预成交|中标公示|结果公示': '中标预告',
         '中标结果|成交|出让结果|交易结果': '中标公告',
@@ -66,17 +72,6 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
             {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007003/moreinfo.html'},
         ]
     }
-    #  $("#page").pagination({
-    #     pageIndex:pageIndex,
-    #     pageSize: 10,
-    #     total: 269,
-    #     pageBtnCount:7,
-    #     debug: true,
-    #     showInfo: true,
-    #     showJump: true,
-    #     showPageSizes: true,
-    #     pageElementSort: ['$page', '$jump'],
-    # });
     max_page_com = re.compile('\<script\>.*?\$\("#page"\).pagination.*?pageSize:\s*(.*?),.*?total:\s*(.*?),')
 
     def __init__(self, *args, **kwargs):
