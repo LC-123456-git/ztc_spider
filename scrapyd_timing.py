@@ -197,7 +197,7 @@ if __name__ == "__main__":
                 info = {}
 
                 if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
-                    info = {"ENABLE_PROXY_USE": False}  # ENABLE_PROXY_USE = True
+                    info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}  # ENABLE_PROXY_USE = True
 
                 resp = exec_each_schedule(item, area_id, days_before, today, if_incr=True, **info)
 
