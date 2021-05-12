@@ -23,7 +23,7 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
     allowed_domains = ['www.xiaoshan.gov.cn', 'www.xiaoshan.gov.cnBulletinBrowse.aspx.']
     start_urls = ['http://www.xiaoshan.gov.cn/']
     query_url = 'http://gzjy.xiaoshan.gov.cn/Bulletin'
-    basic_area = '浙江省-杭州市-萧山区'
+    basic_area = '浙江省-杭州市-萧山区-萧山政府门户网站'
     area_id = 3323
     keywords_map = {
         '变更|答疑|澄清|补充|延期': '招标变更',

@@ -21,7 +21,7 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
     allowed_domains = ['ggzy.anji.gov.cn']
     start_urls = ['http://ggzy.anji.gov.cn/']
     query_url = 'http://ggzy.anji.gov.cn'
-    basic_area = '浙江省-湖州市-安吉县'
+    basic_area = '浙江省-湖州市-安吉县-安吉公共资源交易中心'
     area_id = 3322
     keywords_map = {
         '变更|答疑|澄清|延期': '招标变更',
