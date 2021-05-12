@@ -5,8 +5,10 @@ LastEditTime: 2021-05-01 14:29:31
 Description: 每日采集数量、推送数量统计/指定时间段的采集数量、推送数量 以excel的形式输出
 """
 import pymysql
-from datetime import datetime, timedelta
+import re
 import gevent
+
+from datetime import datetime, timedelta
 from openpyxl import Workbook, styles
 from openpyxl.styles import Border, Side
 
@@ -69,15 +71,15 @@ class ReportOutput(DBQuery):
     采集信息输出
     """
     area_map = {
-        '0': '全国公共资源交易平台',
-        '1': '中国招标投标公共服务平台',
-        '2': '北京市公共资源交易服务平台',
-        '3': '天津市公共资源交易网',
-        '4': '河北省公共资源交易平台',
-        '5': '山西省公共资源交易平台',
-        '6': '内蒙古公共资源交易平台',
-        '7': '辽宁省公共资源交易平台',
-        '8': '吉林公共资源交易平台',
+        '00': '全国公共资源交易平台',
+        '01': '中国招标投标公共服务平台',
+        '02': '北京市公共资源交易服务平台',
+        '03': '天津市公共资源交易网',
+        '04': '河北省公共资源交易平台',
+        '05': '山西省公共资源交易平台',
+        '06': '内蒙古公共资源交易平台',
+        '07': '辽宁省公共资源交易平台',
+        '08': '吉林公共资源交易平台',
         '10': '黑龙江公共资源交易平台',
         '11': '上海市公共资源交易服务平台',
         '12': '上海建设工程交易服务中心',
@@ -211,14 +213,16 @@ class ReportOutput(DBQuery):
         Returns:
 
         """
+        com = re.compile('(\d+)')
         ta = []
         tables = [n[0] for n in self.fetch_all(self.tb_sql) if n and n[0].startswith('notices')]
         for t in tables:
-            area_ids = self.fetch_all(self.area_sql % t)
+            area_ids = com.findall(t)
+            # area_ids = self.fetch_all(self.area_sql % t)
             if area_ids:
                 ta.append({
                     'table_name': t,
-                    'area_id': area_ids[0][0]
+                    'area_id': area_ids[0]
                 })
         return ta
 
@@ -321,5 +325,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-05-10', edt='2021-05-11')
+    rpt.output(sdt='2021-05-12', edt='2021-05-12')
     print((datetime.now() - start_time).total_seconds())
