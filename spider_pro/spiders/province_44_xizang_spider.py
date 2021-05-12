@@ -188,12 +188,6 @@ class MySpider(CrawlSpider):
 
             files_path = {}
 
-            # if response.xpath("//div[@class='div-content']//div/p/a"):
-            #     str_content = response.xpath("//div[@class='div-content']//div/p/a")
-            """response.xpath("//div[@id='content']").get() or response.xpath('//table[@class="gycq-table"]').get() or\
-                      response.xpath('//table[@class="gycq-table2"]').get()"""
-            "{'www.xzzbtb.gov.cn': 'http://www.xzzbtb.gov.cn/', 'http://www.xzzbtb.gov.cn': 'http://www.xzzbtb.gov.cn/'}"
-
             value_list = ['http://www.creditchina.gov.cn', 'http://www.ccgp.gov.cn', 'https://baike.so.com/create/edit/?eid=4795154&sid=5011264',
                           'http://www.qichacha.com/firm_ad1609d9ecb71e090b1ee06395714cc2.html', 'http://www.creditchina.gov.cn）中列入失信被执行人和/',
                           'http://www.ccgp.gov.cn）等渠道查询2017', 'http://www.rkzw.cn/', 'https://wenshu.court.gov.cn/', 'http://www.jiathis.com/share',
@@ -212,11 +206,9 @@ class MySpider(CrawlSpider):
 
                         else:
                             value = self.domain_url + con.xpath('./@href').get()
-                            if self.get_url(value) in self.mimetypes:
-                                value = self.domain_url + con.xpath('./@href').get()
-                                if con.xpath('.//text()').get() not in keys_list:
-                                    keys = con.xpath('.//text()').get()
-                                    files_path[keys] = value
+                            if con.xpath('.//text()').get() not in keys_list:
+                                keys = con.xpath('.//text()').get()
+                                files_path[keys] = value
 
 
             notice_item = NoticesItem()

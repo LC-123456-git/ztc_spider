@@ -176,6 +176,7 @@ if __name__ == "__main__":
         "ZJ_city_3318_jinhua_spider",  # ok + error_01
         "ZJ_city_3319_changxing_spider",  # ok
         "ZJ_city_3320_cangnan_spider",  # error_01
+        "ZJ_city_3321_linhai_spider",  # error_01
     ]
 
     # 优先判断运行状态

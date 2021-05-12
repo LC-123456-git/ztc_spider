@@ -243,7 +243,7 @@ class MySpider(CrawlSpider):
                     notice_item["content"] = content
                     notice_item["area_id"] = self.area_id
                     notice_item["category"] = classifyShow
-                    # print(notice_item)
+
                     yield notice_item
 
         except Exception as e:

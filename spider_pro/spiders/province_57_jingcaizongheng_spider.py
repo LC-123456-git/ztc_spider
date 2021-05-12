@@ -18,6 +18,7 @@ from spider_pro import constans as const
 from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_time_in_interval
 from sqlalchemy import create_engine
 
+
 class MySpider(CrawlSpider):
     name = 'province_57_jingcaizongheng_spider'
     area_id = "57"
@@ -26,7 +27,7 @@ class MySpider(CrawlSpider):
     base_url = 'http://jczh.jczh100.com/JCZH//showinfo/IframeQycgZn.aspx?Infotype={}&Ggtype={}&StartDate=&EndDate=&title=&categoryNum=013'
     allowed_domains = ['jczh.jczh100.com']
     area_province = "精彩纵横"
-    engine_config = 'mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4'
+    engine_config = 'mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'
     engine = create_engine(engine_config, pool_size=105)
 
 
