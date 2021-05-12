@@ -27,7 +27,7 @@ class MySpider(CrawlSpider):
     allowed_domains = ['hb.zcjb.com.cn']
 
     area_province = "河北-招财进宝"
-    web_name = '河北招财进宝'
+
 
 
     # 招标公告
@@ -236,8 +236,8 @@ class MySpider(CrawlSpider):
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = classifyShow
-            notice_item['web_name'] = self.web_name
-            print(notice_item)
+
+
             yield notice_item
 
 

@@ -72,7 +72,7 @@ class MySpider(CrawlSpider):
                         pn += 1
                     else:
                         pn = 1
-                    yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info)
+                    yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info, priority=100)
             else:
                 page_list = response.xpath('//div[@class="Zy-Page FloatL"]/div/text()').get()
                 total = re.findall('共(\d+).*', page_list)[0]         #总条数
@@ -80,7 +80,7 @@ class MySpider(CrawlSpider):
                 self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
                 info_url = response.url[:response.url.rindex('/') + 1] + 'index_{}.htm'
                 for num in range(1, int(pages) + 1):
-                    yield scrapy.Request(url=info_url.format(num), callback=self.parse_info)
+                    yield scrapy.Request(url=info_url.format(num), callback=self.parse_info, priority=100)
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
@@ -119,7 +119,7 @@ class MySpider(CrawlSpider):
                         notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
                     else:
                         notice_type = notice
-                    yield scrapy.Request(url=all_info_url, callback=self.parse_item, dont_filter=True,
+                    yield scrapy.Request(url=all_info_url, callback=self.parse_item, dont_filter=True, priority=150,
                                      meta={'notice_type': notice_type, 'pub_time': pub_time,
                                            'title_name': title_name, 'category_name': category_name})
         except Exception as e:
@@ -129,7 +129,7 @@ class MySpider(CrawlSpider):
     def parse_item(self, response):
         if response.status == 200:
             origin = response.url
-            info_source = ''.join(re.findall('来源：(.*)', response.xpath('//div[@class="Content-Main FloatL"]/em/text()').get())).strip()
+            info_source = ''.join(re.findall('来源：(.*)', response.xpath('//div[@class="Content-Main FloatL"]//em/text()').get())).strip()
             if info_source:
                 info_source = self.area_province + info_source
             else:
