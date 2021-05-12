@@ -13,7 +13,7 @@ default_setting = {
     'CONCURRENT_REQUESTS_PER_IP': '30',  # 单个ip并发最大值
     'MAX_CONNECTIONS': '50',  # MYSQL最大连接数
     'CONCURRENT_REQUESTS': '2',
-    'ENABLE_PROXY_USE': 'Flase',  # 是否启用ip代理
+    'ENABLE_PROXY_USE': 'True',  # 是否启用ip代理
 }
 
 
@@ -244,46 +244,46 @@ if __name__ == "__main__":
     # 需要运行的spiders
     spider_list = [
         "province_00_quanguo_spider",  # error_12
-        "province_02_beijing_spider",  # ok
-        "province_03_tianjin_spider",  # ok
-        "province_04_hebei_spider",  # error_04
-        "province_05_shanxi_spider",
-        "province_08_jilin_spider",  # ok + error_06
-        "province_10_heilongjiang_spider",  # error
-        "province_11_shanghai_spider",  # ok
-        "province_13_jiangsu_spider",  # error_07 + error_01
-        "province_14_zhejiang_spider",  # error
-        "province_15_zhejiang_spider",  # ok
-        "province_16_anhui_spider",  # ok + error_02
-        "province_18_fujian_spider",  # ok + error_05
-        "province_19_jiangxi_spider",  # error
-        "province_21_shandong_spider",  # error
-        "province_23_henan_spider",  # error_11
-        "province_26_hubei_spider",  # ok
-        "province_30_guangdong_spider",  # error_01
-        "province_40_sichuan_spider",  # error
-        "province_44_xizang_spider",  # error_01
-        "province_49_ningxia_spider",  # error_03
-        "province_50_xinjiang_spider",  # ok + 附件没采
-        "province_52_pinming_spider",  # ok
-        "province_53_bilian_spider",  # ok
-        "province_54_Egongxiang_spider",  # ok + error_09
-        "province_55_tiangong_spider",  # ok
-        "province_57_jingcaizongheng_spider",  # error_01
-        "province_71_zhaocaijingbao_spider",  # error_04
-        "ZJ_enterprise_3303_zhenengjituan_spider",  # ok
-        "ZJ_enterprise_3304_shuiliting_spider",  # ok
-        "ZJ_city_3305_ningbo_spider",  # ok  + error_08
-        "ZJ_city_3306_jiaxing_spider",  # error_01
-        "ZJ_city_3307_huzhou_spider",  # ok + error_01
-        "ZJ_city_3309_wenzhou_spider",  # error_02
-        "ZJ_city_3312_shaoxing_spider",  # ok + error_01
-        "ZJ_city_3313_zhoushan_spider",  # ok
-        "ZJ_city_3314_yuhang_spider",  # ok
-        "ZJ_city_3315_keqiao_spider",  # ok
-        "ZJ_city_3318_jinhua_spider",  # ok + error_01
-        "ZJ_city_3319_changxing_spider",  # ok
-        "ZJ_city_3320_cangnan_spider",  # error_01
+        # "province_02_beijing_spider",  # ok
+        # "province_03_tianjin_spider",  # ok
+        # "province_04_hebei_spider",  # error_04
+        # "province_05_shanxi_spider",
+        # "province_08_jilin_spider",  # ok + error_06
+        # "province_10_heilongjiang_spider",  # error
+        # "province_11_shanghai_spider",  # ok
+        # "province_13_jiangsu_spider",  # error_07 + error_01
+        # "province_14_zhejiang_spider",  # error
+        # "province_15_zhejiang_spider",  # ok
+        # "province_16_anhui_spider",  # ok + error_02
+        # "province_18_fujian_spider",  # ok + error_05
+        # "province_19_jiangxi_spider",  # error
+        # "province_21_shandong_spider",  # error
+        # "province_23_henan_spider",  # error_11
+        # "province_26_hubei_spider",  # ok
+        # "province_30_guangdong_spider",  # error_01
+        # "province_40_sichuan_spider",  # error
+        # "province_44_xizang_spider",  # error_01
+        # "province_49_ningxia_spider",  # error_03
+        # "province_50_xinjiang_spider",  # ok + 附件没采
+        # "province_52_pinming_spider",  # ok
+        # "province_53_bilian_spider",  # ok
+        # "province_54_Egongxiang_spider",  # ok + error_09
+        # "province_55_tiangong_spider",  # ok
+        # "province_57_jingcaizongheng_spider",  # error_01
+        # "province_71_zhaocaijingbao_spider",  # error_04
+        # "ZJ_enterprise_3303_zhenengjituan_spider",  # ok
+        # "ZJ_enterprise_3304_shuiliting_spider",  # ok
+        # "ZJ_city_3305_ningbo_spider",  # ok  + error_08
+        # "ZJ_city_3306_jiaxing_spider",  # error_01
+        # "ZJ_city_3307_huzhou_spider",  # ok + error_01
+        # "ZJ_city_3309_wenzhou_spider",  # error_02
+        # "ZJ_city_3312_shaoxing_spider",  # ok + error_01
+        # "ZJ_city_3313_zhoushan_spider",  # ok
+        # "ZJ_city_3314_yuhang_spider",  # ok
+        # "ZJ_city_3315_keqiao_spider",  # ok
+        # "ZJ_city_3318_jinhua_spider",  # ok + error_01
+        # "ZJ_city_3319_changxing_spider",  # ok
+        # "ZJ_city_3320_cangnan_spider",  # error_01
     ]
 
     # 优先判断运行状态

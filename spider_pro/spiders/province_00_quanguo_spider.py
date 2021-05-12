@@ -69,7 +69,7 @@ class MySpider(CrawlSpider):
     def start_requests(self):
         self.type_dict = self.page_dict | self.r_dict | self.time_dict
         yield scrapy.FormRequest(
-            self.query_url, formdata=self.type_dict, callback=self.parse_urls, headers=self.page_headers)
+            self.query_url, formdata=self.type_dict, callback=self.parse_urls, priority=6, headers=self.page_headers)
 
     def parse_urls(self, response):
         try:
@@ -81,7 +81,7 @@ class MySpider(CrawlSpider):
                 pages = int(pages) + 1
                 for i in range(1, pages):
                     yield scrapy.FormRequest(
-                        self.query_url, formdata=self.r_dict | self.time_dict | {"PAGENUMBER": str(i)},
+                        self.query_url, formdata=self.r_dict | self.time_dict | {"PAGENUMBER": str(i)}, priority=8,
                         callback=self.parse_data_urls, headers=self.page_headers)
             else:
                 error = json.loads(response.text).get("error")
@@ -112,7 +112,7 @@ class MySpider(CrawlSpider):
                     cb_kwargs = {"name": const.TYPE_WIN_NOTICE}
                 data_headers = self.data_headers | {"Referer": data_url}
                 data_url = data_url.replace("/a/", "/b/")
-                yield scrapy.Request(url=data_url, callback=self.parse_item, cb_kwargs=cb_kwargs,
+                yield scrapy.Request(url=data_url, callback=self.parse_item, priority=10,
                                      meta={"cb_kwargs": cb_kwargs, "info_source": info_source,
                                            "classify_show": classify_show}, headers=data_headers)
         except Exception as e:
@@ -124,6 +124,7 @@ class MySpider(CrawlSpider):
             origin = origin.replace("/b/", "/a/")
             info_source = response.meta.get("info_source", "")
             classify_show = response.meta.get("classify_show", "")
+            notice_type = response.meta.get("notice_type", "")
             title_name = response.xpath("/html/body/div/h4/text()").get() or ""
             if re.search(r"终止|中止|流标|废标|异常", title_name):
                 name = const.TYPE_ZB_ABNORMAL
@@ -173,6 +174,7 @@ class MySpider(CrawlSpider):
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = classify_show
+            notice_item["notice_type"] = notice_type
             yield notice_item
 
 
