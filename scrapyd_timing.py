@@ -194,10 +194,12 @@ if __name__ == "__main__":
             else:
                 # 允许运行脚本
                 area_id = item.split("_")[1]
+                info = {}
 
-                if item == "province_00_quanguo_spider": pass  # 特殊处理,根据需求
+                if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
+                    info = {"ENABLE_PROXY_USE": False}  # ENABLE_PROXY_USE = True
 
-                resp = exec_each_schedule(item, area_id, days_before, today, if_incr=True)
+                resp = exec_each_schedule(item, area_id, days_before, today, if_incr=True, **info)
 
                 if resp:
                     print('运行{0}成功!'.format(item))

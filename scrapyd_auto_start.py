@@ -243,7 +243,7 @@ if __name__ == "__main__":
     # error_12: TypeError: to_bytes must receive a str or bytes object, got NoneType
     # 需要运行的spiders
     spider_list = [
-        "province_00_quanguo_spider",  # error_12
+        # "province_00_quanguo_spider",  # error_12
         # "province_02_beijing_spider",  # ok
         # "province_03_tianjin_spider",  # ok
         # "province_04_hebei_spider",  # error_04
@@ -282,8 +282,9 @@ if __name__ == "__main__":
         # "ZJ_city_3314_yuhang_spider",  # ok
         # "ZJ_city_3315_keqiao_spider",  # ok
         # "ZJ_city_3318_jinhua_spider",  # ok + error_01
-        # "ZJ_city_3319_changxing_spider",  # ok
+        "ZJ_city_3319_changxing_spider",  # ok
         # "ZJ_city_3320_cangnan_spider",  # error_01
+        # "ZJ_city_3321_linhai_spider",
     ]
 
     # 优先判断运行状态
@@ -303,10 +304,10 @@ if __name__ == "__main__":
             else:
                 # 允许运行脚本
                 area_id = item.split("_")[1]
-
-                if item == "province_00_quanguo_spider": pass  # 特殊处理,根据需求
-
-                resp = exec_each_schedule(item, area_id, days_before, today)
+                info = {}
+                if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
+                    info = {"ENABLE_PROXY_USE": False}
+                resp = exec_each_schedule(item, area_id, days_before, today, **info)
 
                 if resp:
                     print('运行{0}成功!'.format(item))
