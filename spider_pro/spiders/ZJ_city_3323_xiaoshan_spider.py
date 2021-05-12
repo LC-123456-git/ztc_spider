@@ -20,9 +20,9 @@ from spider_pro import utils, constans, items
 
 class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
     name = 'ZJ_city_3323_xiaoshan_spider'
-    allowed_domains = ['www.xiaoshan.gov.cn']
+    allowed_domains = ['www.xiaoshan.gov.cn', 'www.xiaoshan.gov.cnBulletinBrowse.aspx.']
     start_urls = ['http://www.xiaoshan.gov.cn/']
-    query_url = 'http://www.xiaoshan.gov.cn'
+    query_url = 'http://gzjy.xiaoshan.gov.cn/Bulletin'
     basic_area = '浙江省-杭州市-萧山区'
     area_id = 3323
     keywords_map = {
@@ -147,39 +147,71 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
                 max_pages = com.findall(el)
                 if max_pages:
                     max_page = int(max_pages[0])
+                    # max_page = 5
+                    if_turn_page = True
                     for i in range(1, max_page + 1):
-                        # 获取列表页
-                        c_text = ZjCity3323XiaoshanSpiderSpider.get_page(
-                            start_url, method='POST', data=init_data, headers=headers
-                        )
+                        if if_turn_page:
+                            # 获取列表页
+                            c_text = ZjCity3323XiaoshanSpiderSpider.get_page(
+                                start_url, method='POST', data=init_data, headers=headers
+                            )
 
-                        c_doc = etree.HTML(c_text)
-                        c_els = c_doc.xpath('//td[@class="DispLimitColumn"]/div/a/@href')
+                            c_doc = etree.HTML(c_text)
+                            c_els = c_doc.xpath('//tr[@class="Row"]')
 
-                        view_state = c_doc.xpath('//input[@id="__VIEWSTATE"]/@value')
-                        view_state_encrypted = c_doc.xpath('//input[@id="__VIEWSTATEENCRYPTED"]/@value')
-                        event_validation = c_doc.xpath('//input[@id="__EVENTVALIDATION"]/@value')
-                        txt_project_no = c_doc.xpath('//input[@id="txtProjectNo"]/@value')
-                        txt_project_name = c_doc.xpath('//input[@id="txtProjectName"]/@value')
-                        ddl_state = c_doc.xpath('//input[@id="ddlState"]/@value')
-                        drd_bulletin_btn_next = c_doc.xpath('//input[@id="grdBulletin$ctl18$BtnNext"]/@value')
-                        drd_bulletin_num_goto = c_doc.xpath('//input[@id="grdBulletin$ctl18$NumGoto"]/@value')
+                            view_state = c_doc.xpath('//input[@id="__VIEWSTATE"]/@value')
+                            view_state_encrypted = c_doc.xpath('//input[@id="__VIEWSTATEENCRYPTED"]/@value')
+                            event_validation = c_doc.xpath('//input[@id="__EVENTVALIDATION"]/@value')
+                            txt_project_no = c_doc.xpath('//input[@id="txtProjectNo"]/@value')
+                            txt_project_name = c_doc.xpath('//input[@id="txtProjectName"]/@value')
+                            ddl_state = c_doc.xpath('//input[@id="ddlState"]/@value')
+                            drd_bulletin_btn_next = c_doc.xpath('//input[@id="grdBulletin$ctl18$BtnNext"]/@value')
+                            drd_bulletin_num_goto = c_doc.xpath('//input[@id="grdBulletin$ctl18$NumGoto"]/@value')
 
-                        init_data['__VIEWSTATE'] = view_state[0] if view_state else ''
-                        init_data['__VIEWSTATEENCRYPTED'] = view_state_encrypted[0] if view_state_encrypted else ''
-                        init_data['__EVENTVALIDATION'] = event_validation[0] if event_validation else ''
-                        init_data['txtProjectNo'] = txt_project_no[0] if txt_project_no else ''
-                        init_data['txtProjectName'] = txt_project_name[0] if txt_project_name else ''
-                        init_data['ddlState'] = ddl_state[0] if ddl_state else ''
-                        init_data['grdBulletin$ctl18$BtnNext'] = drd_bulletin_btn_next[0] if drd_bulletin_btn_next else ''
-                        init_data['grdBulletin$ctl18$NumGoto'] = drd_bulletin_num_goto[0] if drd_bulletin_num_goto else ''
-                        del init_data['grdBulletin$ctl18$BtnFirst']
+                            init_data['__VIEWSTATE'] = view_state[0] if view_state else ''
+                            init_data['__VIEWSTATEENCRYPTED'] = view_state_encrypted[0] if view_state_encrypted else ''
+                            init_data['__EVENTVALIDATION'] = event_validation[0] if event_validation else ''
+                            init_data['txtProjectNo'] = txt_project_no[0] if txt_project_no else ''
+                            init_data['txtProjectName'] = txt_project_name[0] if txt_project_name else ''
+                            init_data['ddlState'] = ddl_state[0] if ddl_state else '0'
+                            init_data['grdBulletin$ctl18$BtnNext'] = \
+                                drd_bulletin_btn_next[0] if drd_bulletin_btn_next else ''
+                            init_data['grdBulletin$ctl18$NumGoto'] = \
+                                drd_bulletin_num_goto[0] if drd_bulletin_num_goto else ''
+                            if init_data.get('grdBulletin$ctl18$BtnFirst'):
+                                del init_data['grdBulletin$ctl18$BtnFirst']
 
-                        for c_el in c_els:
-                            yield scrapy.Request(url=self.query_url + c_el, callback=self.parse_item, meta={
-                                'notice_type': resp.meta.get('notice_type', ''),
-                                'category': resp.meta.get('category', ''),
-                            })
+                            for n, c_el in enumerate(c_els):
+                                href_els = c_el.xpath('./td[position()=2]/a/@href')
+                                date_els = c_el.xpath('./td[@class="DateColumn"][2]/text()')
+                                if all([href_els, date_els]):
+                                    href_el = href_els[0]
+                                    date_el = date_els[0]
+
+                                    if all([self.start_time, self.end_time]):
+                                        # 阻止往下翻页
+                                        x, y, _ = utils.judge_dst_time_in_interval(date_el, self.start_time, self.end_time)
+
+                                        if x:
+                                            pass
+                                        elif y:
+                                            if_turn_page = False
+                                            break
+                                        else:
+                                            continue
+
+                                    if not href_el.startswith('/'):
+                                        href_el = '/%s' % href_el
+                                    priority = (max_page + 1 - i) * (len(c_els) + 1 - n)
+                                    c_url = self.query_url + href_el
+
+                                    yield scrapy.Request(url=c_url, callback=self.parse_item, meta={
+                                        'notice_type': resp.meta.get('notice_type', ''),
+                                        'category': resp.meta.get('category', ''),
+                                        'pub_time': date_el,
+                                    }, dont_filter=True, priority=priority)
+                        else:
+                            break
         except Exception as e:
             self.log('error:{e}'.format(e=e))
 
@@ -189,7 +221,7 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
         notice_type_ori = resp.meta.get('notice_type')
 
         # 移除不必要信息: 删除第一个正文title/发布时间、打印关闭
-        _, content = utils.remove_specific_element(content, 'div', 'class', 'AfficheTitle')
+        _, content = utils.remove_specific_element(content, 'span', 'class', 'pubTime') if content else ['', '']
 
         content = utils.avoid_escape(content)  # 防止转义
         # 关键字重新匹配 notice_type
@@ -225,5 +257,5 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3323_xiaoshan_spider -a sdt=2021-01-01 -a edt=2021-05-11".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3323_xiaoshan_spider -a sdt=2020-08-01 -a edt=2021-04-30".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3323_xiaoshan_spider".split(" "))

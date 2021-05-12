@@ -279,7 +279,7 @@ class ZjCity3319ChangxingSpiderSpider(scrapy.Spider):
                     break
 
     def parse_item(self, resp):
-        '''
+        """
         解析详情页页面数据
         @param {
             resp: 响应
@@ -287,7 +287,7 @@ class ZjCity3319ChangxingSpiderSpider(scrapy.Spider):
         @return {
             notice_item
         }
-        '''
+        """
         content = resp.xpath('//table[@id="tblInfo"]').get()
         title_name = resp.meta.get('title_name')
         notice_type_ori = resp.meta.get('notice_type')
