@@ -67,13 +67,11 @@ class MySpider(CrawlSpider):
             self.enable_incr = False
 
     def start_requests(self):
-        # all_url = 'http://www.kq.gov.cn/art/2021/4/9/art_1658099_59063311.html'
-        # yield scrapy.Request(url=all_url, callback=self.parse_item)
         yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
 
     def parse_urls(self, response):
         try:
-            url_all = response.xpath('//div[@class="fun"]/a')[2:]
+            url_all = response.xpath('//div[@class="fun"]/a')
             for all in url_all:
                 type_url = self.domain_url + all.xpath('./@href').get()
                 classifyShow = all.xpath('./text()').get()
@@ -229,7 +227,7 @@ class MySpider(CrawlSpider):
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = classifyShow
-            print(notice_item)
+
             yield notice_item
 
 
