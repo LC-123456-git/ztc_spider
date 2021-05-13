@@ -60,7 +60,7 @@ class MysqlPipeline(object):
             self.table_name, metadata,
             # 采集自有字段
             Column('id', mysql.INTEGER(11), primary_key=True, nullable=False, comment="id"),
-            Column('origin', mysql.VARCHAR(500), nullable=True, comment="原始链接"),
+            Column('origin', mysql.VARCHAR(500), nullable=True, comment="原始链接", unique=True),
             Column('title_name', mysql.VARCHAR(2000), nullable=True, comment="标题"),
             Column('pub_time', mysql.DATETIME, nullable=True, comment="发布时间"),
             Column('info_source', mysql.VARCHAR(500), nullable=True, comment="来源"),
