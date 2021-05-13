@@ -63,12 +63,12 @@ class MySpider(CrawlSpider):
                        "DEAL_STAGE": "0000", "DEAL_CLASSIFY": "00", "BID_PLATFORM": "0", "DEAL_TRADE": "0",
                        "isShowAll": "1", "FINDTXT": ""}
 
-        self.time_dict = {"TIMEBEGIN_SHOW": kwargs.get("sdt"), "TIMEEND_SHOW": kwargs.get("edt"),
-                          "TIMEBEGIN": kwargs.get("sdt"), "TIMEEND": kwargs.get("edt"), "DEAL_TIME": "06"}
+        self.time_dict = {"TIMEBEGIN_SHOW": kwargs.get("sdt", ""), "TIMEEND_SHOW": kwargs.get("edt", ""),
+                          "TIMEBEGIN": kwargs.get("sdt", ""), "TIMEEND": kwargs.get("edt", ""), "DEAL_TIME": "06"}
 
     def start_requests(self):
         self.type_dict = self.page_dict | self.r_dict | self.time_dict
-        self.type_dict = {k: v if v else '' for k, v in self.type_dict.items()}
+        # self.type_dict = {k: v if v else '' for k, v in self.type_dict.items()}
         yield scrapy.FormRequest(
             self.query_url, formdata=self.type_dict, callback=self.parse_urls, priority=6, headers=self.page_headers)
 

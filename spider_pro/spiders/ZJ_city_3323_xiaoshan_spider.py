@@ -165,8 +165,8 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
                             txt_project_no = c_doc.xpath('//input[@id="txtProjectNo"]/@value')
                             txt_project_name = c_doc.xpath('//input[@id="txtProjectName"]/@value')
                             ddl_state = c_doc.xpath('//input[@id="ddlState"]/@value')
-                            drd_bulletin_btn_next = c_doc.xpath('//input[@id="grdBulletin$ctl18$BtnNext"]/@value')
-                            drd_bulletin_num_goto = c_doc.xpath('//input[@id="grdBulletin$ctl18$NumGoto"]/@value')
+                            # drd_bulletin_btn_next = c_doc.xpath('//input[@id="grdBulletin$ctl18$BtnNext"]/@value')
+                            # drd_bulletin_num_goto = c_doc.xpath('//input[@id="grdBulletin$ctl18$NumGoto"]/@value')
 
                             init_data['__VIEWSTATE'] = view_state[0] if view_state else ''
                             init_data['__VIEWSTATEENCRYPTED'] = view_state_encrypted[0] if view_state_encrypted else ''
@@ -174,10 +174,8 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
                             init_data['txtProjectNo'] = txt_project_no[0] if txt_project_no else ''
                             init_data['txtProjectName'] = txt_project_name[0] if txt_project_name else ''
                             init_data['ddlState'] = ddl_state[0] if ddl_state else '0'
-                            init_data['grdBulletin$ctl18$BtnNext'] = \
-                                drd_bulletin_btn_next[0] if drd_bulletin_btn_next else ''
-                            init_data['grdBulletin$ctl18$NumGoto'] = \
-                                drd_bulletin_num_goto[0] if drd_bulletin_num_goto else ''
+                            init_data['grdBulletin$ctl18$BtnNext'] = '下页'
+                            init_data['grdBulletin$ctl18$NumGoto'] = i
                             if init_data.get('grdBulletin$ctl18$BtnFirst'):
                                 del init_data['grdBulletin$ctl18$BtnFirst']
 
@@ -202,60 +200,64 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
 
                                     if not href_el.startswith('/'):
                                         href_el = '/%s' % href_el
-                                    priority = (max_page + 1 - i) * (len(c_els) + 1 - n)
                                     c_url = self.query_url + href_el
 
                                     yield scrapy.Request(url=c_url, callback=self.parse_item, meta={
                                         'notice_type': resp.meta.get('notice_type', ''),
                                         'category': resp.meta.get('category', ''),
                                         'pub_time': date_el,
-                                    }, dont_filter=True, priority=priority)
+                                    }, dont_filter=True, priority=100)
                         else:
                             break
         except Exception as e:
             self.log('error:{e}'.format(e=e))
 
     def parse_item(self, resp):
-        content = resp.xpath('//div[@class="Content"]').get()
-        title_name = resp.xpath('//div[@class="AfficheTitle"]/span[position()=1]/text()').get()
-        notice_type_ori = resp.meta.get('notice_type')
+        try:
+            content = resp.xpath('//div[@class="Content"]').get()
+            title_name = resp.xpath('//div[@class="AfficheTitle"]/span[position()=1]/text()').get()
+            notice_type_ori = resp.meta.get('notice_type')
 
-        # 移除不必要信息: 删除第一个正文title/发布时间、打印关闭
-        _, content = utils.remove_specific_element(content, 'span', 'class', 'pubTime') if content else ['', '']
+            # 移除不必要信息: 删除第一个正文title/发布时间、打印关闭
+            _, content = utils.remove_specific_element(content, 'span', 'class', 'pubTime') if content else ['', '']
 
-        content = utils.avoid_escape(content)  # 防止转义
-        # 关键字重新匹配 notice_type
-        matched, match_notice_type = self.match_title(title_name)
-        if matched:
-            notice_type_ori = match_notice_type
+            content = utils.avoid_escape(content)  # 防止转义
+            # 关键字重新匹配 notice_type
+            matched, match_notice_type = self.match_title(title_name)
+            if matched:
+                notice_type_ori = match_notice_type
 
-        notice_types = list(
-            filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
-        )
+            notice_types = list(
+                filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
+            )
 
-        # 匹配文件
-        _, files_path = utils.catch_files(content, self.query_url)
+            # 匹配文件
+            _, files_path = utils.catch_files(content, self.query_url)
 
-        notice_item = items.NoticesItem()
-        notice_item["origin"] = resp.url
+        except Exception as e:
+            self.log('error:{e}'.format(e=e))
+        else:
+            if '测试项目' not in title_name:
+                notice_item = items.NoticesItem()
+                notice_item["origin"] = resp.url
 
-        notice_item["title_name"] = title_name.strip() if title_name else ''
-        notice_item["pub_time"] = resp.meta.get('pub_time')
+                notice_item["title_name"] = title_name.strip() if title_name else ''
+                notice_item["pub_time"] = resp.meta.get('pub_time')
 
-        notice_item["info_source"] = self.basic_area
-        notice_item["is_have_file"] = constans.TYPE_HAVE_FILE if files_path else constans.TYPE_NOT_HAVE_FILE
-        notice_item["files_path"] = files_path
-        notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
-        notice_item["content"] = content
-        notice_item["area_id"] = self.area_id
-        notice_item["category"] = resp.meta.get('category')
-        print(resp.meta.get('pub_time'), resp.url)
+                notice_item["info_source"] = self.basic_area
+                notice_item["is_have_file"] = constans.TYPE_HAVE_FILE if files_path else constans.TYPE_NOT_HAVE_FILE
+                notice_item["files_path"] = files_path
+                notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
+                notice_item["content"] = content.replace('<title/>', '')
+                notice_item["area_id"] = self.area_id
+                notice_item["category"] = resp.meta.get('category')
+                print(resp.meta.get('pub_time'), resp.url)
 
-        return notice_item
+                return notice_item
 
 
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3323_xiaoshan_spider -a sdt=2020-08-01 -a edt=2021-04-30".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3323_xiaoshan_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3323_xiaoshan_spider -a sdt=2020-08-01 -a edt=2021-05-13".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3323_xiaoshan_spider -s CONCURRENT_REQUESTS=8".split(" "))

@@ -38,6 +38,7 @@ class MySpider(CrawlSpider):
                        "inDates": kwargs.get("day") if not kwargs.get("day") == "0" else "3650", }
 
     def start_requests(self):
+        self.r_dict = {k: v if v else '' for k, v in self.r_dict.items()}
         yield scrapy.FormRequest(self.query_url, formdata=self.r_dict, callback=self.parse_urls, priority=6)
 
     def parse_urls(self, response):
