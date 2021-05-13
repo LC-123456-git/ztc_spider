@@ -68,6 +68,7 @@ class MySpider(CrawlSpider):
 
     def start_requests(self):
         self.type_dict = self.page_dict | self.r_dict | self.time_dict
+        self.type_dict = {k: v if v else '' for k, v in self.type_dict.items()}
         yield scrapy.FormRequest(
             self.query_url, formdata=self.type_dict, callback=self.parse_urls, priority=6, headers=self.page_headers)
 
@@ -112,7 +113,7 @@ class MySpider(CrawlSpider):
                     cb_kwargs = {"name": const.TYPE_WIN_NOTICE}
                 data_headers = self.data_headers | {"Referer": data_url}
                 data_url = data_url.replace("/a/", "/b/")
-                yield scrapy.Request(url=data_url, callback=self.parse_item, priority=10,
+                yield scrapy.Request(url=data_url, callback=self.parse_item, priority=10, cb_kwargs=cb_kwargs,
                                      meta={"cb_kwargs": cb_kwargs, "info_source": info_source,
                                            "classify_show": classify_show}, headers=data_headers)
         except Exception as e:
@@ -124,8 +125,9 @@ class MySpider(CrawlSpider):
             origin = origin.replace("/b/", "/a/")
             info_source = response.meta.get("info_source", "")
             classify_show = response.meta.get("classify_show", "")
-            notice_type = response.meta.get("notice_type", "")
             title_name = response.xpath("/html/body/div/h4/text()").get() or ""
+
+            print(title_name)
             if re.search(r"终止|中止|流标|废标|异常", title_name):
                 name = const.TYPE_ZB_ABNORMAL
             if re.search(r"变更|更正|澄清", title_name):
@@ -174,7 +176,7 @@ class MySpider(CrawlSpider):
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = classify_show
-            notice_item["notice_type"] = notice_type
+            # notice_item["notice_type"] = notice_type
             yield notice_item
 
 
@@ -183,4 +185,4 @@ if __name__ == "__main__":
 
     # cmdline.execute("scrapy crawl province_00_quanguo_spider -a day=3".split(" "))
     # cmdline.execute("scrapy crawl province_00_quanguo_spider -a sdt=2021-01-01 -a edt=2021-01-26 -s DOWNLOAD_DELAY=0 -s CONCURRENT_REQUESTS_PER_IP=20".split(" "))
-    cmdline.execute("scrapy crawl province_00_quanguo_spider -a sdt=2021-02-18 -a edt=2021-03-18".split(" "))
+    cmdline.execute("scrapy crawl province_00_quanguo_spider -a sdt=2021-02-13 -a edt=2021-03-13 -s DOWNLOAD_DELAY=0 -s CONCURRENT_REQUESTS_PER_IP=20".split(" "))

@@ -68,6 +68,10 @@ def get_notice_type(category_num, title_name):
                                     "002008002", "002009002", "002010002", "002013002"]
     # 其他公告
     list_others_notice_num = ["002001003", "002003003", "002005003", "002006006"]
+    all_list = list_advance_notice_num + list_notice_category_num + list_qualifiction_advance_notice_num + \
+               list_alteration_category_num + list_zb_abnormal + list_win_advance_category_num + \
+               list_win_notice_category_num + list_others_notice_num
+
     if category_num in list_advance_notice_num:
         cb_kwargs = const.TYPE_ZB_ADVANCE_NOTICE
         return cb_kwargs
@@ -88,7 +92,7 @@ def get_notice_type(category_num, title_name):
         cb_kwargs = const.TYPE_ZB_ABNORMAL
         return cb_kwargs
     elif category_num in list_win_advance_category_num:
-        if category_num in ["002001004", "002002005", "002005004", "002006004"] and re.search(r"结果", title_name):
+        if category_num in ["002001004", "002002005", "002005004", "002006004"] and re.search(r"结果|候选人", title_name):
             cb_kwargs = const.TYPE_WIN_ADVANCE_NOTICE
             return cb_kwargs
         elif category_num in ["002010002"] and re.search(r"候选人", title_name):
@@ -111,16 +115,37 @@ class MySpider(Spider):
     area_province = "江西公共资源交易服务平台"
     allowed_domains = ['jxsggzy.cn']
     domain_url = "https://www.jxsggzy.cn/"
-    page_url = "https://www.jxsggzy.cn/jxggzy/services/JyxxWebservice/getListByCount?"
-    info_url = "https://www.jxsggzy.cn/jxggzy/services/JyxxWebservice/getList?"
+    page_url = "https://www.jxsggzy.cn/jxggzy/services/JyxxServicesForWeb/getListByCount?"
+    info_url = "https://www.jxsggzy.cn/jxggzy/services/JyxxServicesForWeb/getList?"
     data_url = "https://www.jxsggzy.cn/web/jyxx"
     page_size = "22"
+    # 招标预告
+    list_advance_notice_num = ["002002006", "002006007"]
+    # 招标公告
+    list_notice_category_num = ["002001001", "002002002", "002003001", "002005001", "002006001", "002006005", "002007001",
+                                "002008001", "002009001", "002010001", "002013001"]
+    # 资格预审公告
+    list_qualifiction_advance_notice_num = ["002010002"]
+    # 招标变更
+    list_alteration_category_num = ["002001002", "002002003", "002003002", "002005002", "002006002", "002006003",
+                                    "002008001", "002013002"]
+    # 招标异常
+    list_zb_abnormal = ["002013002", "002006004", "002006002"]
+    # 中标预告
+    list_win_advance_category_num = ["002001004", "002002005", "002003004", "002005004", "002006004"]
+    # 中标公告
+    list_win_notice_category_num = ["002001004", "002002005", "002003005", "002005004", "002006004", "002007002",
+                                    "002008002", "002009002", "002010002", "002013002"]
+    # 其他公告
+    list_others_notice_num = ["002001003", "002003003", "002005003", "002006006"]
+    all_list = list_advance_notice_num + list_notice_category_num + list_qualifiction_advance_notice_num + \
+               list_alteration_category_num + list_zb_abnormal + list_win_advance_category_num + \
+               list_win_notice_category_num + list_others_notice_num
 
     def __init__(self, *args, **kwargs):
         super(MySpider, self).__init__()
-        r_dict = {"response": "application/json", "pageSize": "22",
-                  "area": "", "xxTitle": "", "categorynum": "" }
-        self.page_dict = {"pageIndex": ""}
+        r_dict = {"response": "application/json", "area": "", "xxTitle": "", "pageSize": "22", "categorynum": ""}
+        # self.page_dict = {"pageIndex": "", "pageSize": "22"}
 
         if kwargs.get("sdt") and kwargs.get("edt"):
             time_dict = {"prepostDate": kwargs.get("sdt"), "nxtpostDate": kwargs.get("edt"), }
@@ -130,20 +155,21 @@ class MySpider(Spider):
         self.info_dict = r_dict | time_dict
 
     def start_requests(self):
-        yield scrapy.Request(
-            url=f"{self.page_url}{urllib.parse.urlencode(self.info_dict | self.page_dict)}",
-            callback=self.parse_page_urls)
+        for item in self.all_list:
+            yield scrapy.Request(
+                url=f"{self.page_url}{urllib.parse.urlencode(self.info_dict | {'categorynum':item})}",
+                priority=5, callback=self.parse_page_urls)
 
     def parse_page_urls(self, response):
         try:
-            pages = json.loads(response.text).get("return")
-            total = pages * 22
+            total = json.loads(response.text).get("return")
+            pages = total // 22 + 1
             self.logger.info(
                 f"初始总数提取成功 {total=} {response.url=} ")
             for i in range(1, pages):
                 yield scrapy.Request(
                     url=f"{self.info_url}{urllib.parse.urlencode(self.info_dict | {'pageIndex': str(i)})}",
-                    callback=self.parse_data_urls)
+                    priority=8, callback=self.parse_data_urls)
         except Exception as e:
             self.logger.error(f"初始总数提取错误 {response.meta=} {e} {response.url=}")
 
@@ -158,7 +184,7 @@ class MySpider(Spider):
                 if pub_time_str := re.search(r"\d{4}-\d{1,2}-\d{1,2}", pub_time):
                     self.pub_time_a = pub_time_str.group(0).replace("-", "")
                 temp_url = "/".join([self.data_url, category_num[0:6], category_num, self.pub_time_a, info_id + ".html"])
-                yield scrapy.Request(url=temp_url, callback=self.parse_item, meta={
+                yield scrapy.Request(url=temp_url, callback=self.parse_item, priority=10, meta={
                      "title_name": title_name, "pub_time": pub_time, "category_num": category_num})
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
@@ -227,4 +253,4 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl province_19_jiangxi_spider -a sdt=2021-01-01 -a edt=2021-01-26".split(" "))
+    cmdline.execute("scrapy crawl province_19_jiangxi_spider".split(" "))
