@@ -197,10 +197,23 @@ if __name__ == "__main__":
                 area_id = item.split("_")[1]
                 info = {}
 
-                if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
-                    info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}  # ENABLE_PROXY_USE = True
+                arg_choices = {
+                    'sdt': days_before, 
+                    'edt': today, 
+                    # 'day': 30
+                }
 
-                resp = exec_each_schedule(item, area_id, days_before, today, if_incr=True, **info)
+                if_incr = False
+                if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
+                    info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
+                if item == "province_57_jingcaizongheng_spider": 
+                    info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_TIMEOUT": 15, 'ROBOTSTXT_OBEY': False}
+                if item == "province_21_shandong_spider":  
+                    # if_incr = True
+                    arg_choices = {
+                        'day': 30
+                    }
+                resp = exec_each_schedule(item, area_id, arg_choices=arg_choices, if_incr=if_incr, **info)
 
                 if resp:
                     print('运行{0}成功!'.format(item))

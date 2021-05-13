@@ -17,7 +17,7 @@ default_setting = {
 }
 
 
-def exec_each_schedule(c_item, c_area_id, start_time, end_time, if_incr=False, **kwargs):
+def exec_each_schedule(c_item, c_area_id, arg_choices=None, if_incr=False, **kwargs):
     """
     执行站点自定义配置爬虫计划
     Args:
@@ -40,10 +40,7 @@ def exec_each_schedule(c_item, c_area_id, start_time, end_time, if_incr=False, *
 
     rs, _ = scrapyd_schedule(
         spider=c_item, job='{0}-{1}-{2}'.format(c_area_id, c_today, c_suffix),
-        args={
-            "sdt": start_time,
-            "edt": end_time,
-        } if if_incr else {},
+        args=arg_choices if if_incr else {},
         setting=['{k}={v}'.format(k=k, v=v) for k, v in c_setting.items()]
     )
     return rs
@@ -257,34 +254,34 @@ if __name__ == "__main__":
         # "province_16_anhui_spider",  # ok + error_02
         # "province_18_fujian_spider",  # ok + error_05
         # "province_19_jiangxi_spider",  # error
-        # "province_21_shandong_spider",  # error
+        "province_21_shandong_spider",  # error
         # "province_23_henan_spider",  # error_11
         # "province_26_hubei_spider",  # ok
         # "province_30_guangdong_spider",  # error_01
         # "province_40_sichuan_spider",  # error
-        "province_44_xizang_spider",  # error_01
+        # "province_44_xizang_spider",  # error_01
         # "province_49_ningxia_spider",  # error_03
-        "province_50_xinjiang_spider",  # ok + 附件没采
+        # "province_50_xinjiang_spider",  # ok + 附件没采
         # "province_52_pinming_spider",  # ok
         # "province_53_bilian_spider",  # ok
         # "province_54_Egongxiang_spider",  # ok + error_09
         # "province_55_tiangong_spider",  # ok
-        "province_57_jingcaizongheng_spider",  # error_01
-        "province_71_zhaocaijingbao_spider",  # error_04
+        # "province_57_jingcaizongheng_spider",  # error_01
+        # "province_71_zhaocaijingbao_spider",  # error_04
         # "ZJ_enterprise_3303_zhenengjituan_spider",  # ok
         # "ZJ_enterprise_3304_shuiliting_spider",  # ok
         # "ZJ_city_3305_ningbo_spider",  # ok  + error_08
         # "ZJ_city_3306_jiaxing_spider",  # error_01
         # "ZJ_city_3307_huzhou_spider",  # ok + error_01
-        "ZJ_city_3309_wenzhou_spider",  # error_02
+        # "ZJ_city_3309_wenzhou_spider",  # error_02
         # "ZJ_city_3312_shaoxing_spider",  # ok + error_01
         # "ZJ_city_3313_zhoushan_spider",  # ok
         # "ZJ_city_3314_yuhang_spider",  # ok
-        "ZJ_city_3315_keqiao_spider",  # ok
+        # "ZJ_city_3315_keqiao_spider",  # ok
         # "ZJ_city_3318_jinhua_spider",  # ok + error_01
         # "ZJ_city_3319_changxing_spider",  # ok
         # "ZJ_city_3320_cangnan_spider",  # error_01
-        "ZJ_city_3321_linhai_spider",
+        # "ZJ_city_3321_linhai_spider",
     ]
 
     # 优先判断运行状态
@@ -305,9 +302,24 @@ if __name__ == "__main__":
                 # 允许运行脚本
                 area_id = item.split("_")[1]
                 info = {}
+
+                arg_choices = {
+                    'sdt': days_before, 
+                    'edt': today, 
+                    # 'day': 30
+                }
+
+                if_incr = False
                 if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
                     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
-                resp = exec_each_schedule(item, area_id, days_before, today, **info)
+                if item == "province_57_jingcaizongheng_spider": 
+                    info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_TIMEOUT": 15, 'ROBOTSTXT_OBEY': False}
+                if item == "province_21_shandong_spider":  
+                    # if_incr = True
+                    arg_choices = {
+                        'day': 30
+                    }
+                resp = exec_each_schedule(item, area_id, arg_choices=arg_choices, if_incr=if_incr, **info)
 
                 if resp:
                     print('运行{0}成功!'.format(item))
