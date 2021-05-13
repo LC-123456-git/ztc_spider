@@ -188,7 +188,8 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
 
                                     if all([self.start_time, self.end_time]):
                                         # 阻止往下翻页
-                                        x, y, _ = utils.judge_dst_time_in_interval(date_el, self.start_time, self.end_time)
+                                        x, y, _ = utils.judge_dst_time_in_interval(date_el, self.start_time,
+                                                                                   self.end_time)
 
                                         if x:
                                             pass
@@ -213,9 +214,9 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
             self.log('error:{e}'.format(e=e))
 
     def parse_item(self, resp):
-        try:
+        title_name = resp.xpath('//div[@class="AfficheTitle"]/span[position()=1]/text()').get()
+        if title_name:
             content = resp.xpath('//div[@class="Content"]').get()
-            title_name = resp.xpath('//div[@class="AfficheTitle"]/span[position()=1]/text()').get()
             notice_type_ori = resp.meta.get('notice_type')
 
             # 移除不必要信息: 删除第一个正文title/发布时间、打印关闭
@@ -234,9 +235,6 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
             # 匹配文件
             _, files_path = utils.catch_files(content, self.query_url)
 
-        except Exception as e:
-            self.log('error:{e}'.format(e=e))
-        else:
             if '测试项目' not in title_name:
                 notice_item = items.NoticesItem()
                 notice_item["origin"] = resp.url
