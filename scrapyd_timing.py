@@ -213,6 +213,16 @@ if __name__ == "__main__":
                     arg_choices = {
                         'day': 30
                     }
+                if item == "province_00_quanguo_spider":  # 特殊处理,根据需求
+                    if_incr = True
+
+                    info = {
+                        "ENABLE_PROXY_USE": False,
+                        "DOWNLOAD_DELAY": 0,
+                        "DOWNLOAD_TIMEOUT": 20,
+                        "CONCURRENT_REQUESTS_PER_IP": 20,
+                        "CONCURRENT_REQUESTS": 5,
+                    }  # province_00_quanguo_spider       
                 resp = exec_each_schedule(item, area_id, arg_choices=arg_choices, if_incr=if_incr, **info)
 
                 if resp:

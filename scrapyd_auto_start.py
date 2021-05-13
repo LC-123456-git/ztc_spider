@@ -240,7 +240,7 @@ if __name__ == "__main__":
     # error_12: TypeError: to_bytes must receive a str or bytes object, got NoneType
     # 需要运行的spiders
     spider_list = [
-        # "province_00_quanguo_spider",  # error_12
+        "province_00_quanguo_spider",  # error_12
         # "province_02_beijing_spider",  # ok
         # "province_03_tianjin_spider",  # ok
         # "province_04_hebei_spider",  # error_04
@@ -254,7 +254,7 @@ if __name__ == "__main__":
         # "province_16_anhui_spider",  # ok + error_02
         # "province_18_fujian_spider",  # ok + error_05
         # "province_19_jiangxi_spider",  # error
-        "province_21_shandong_spider",  # error
+        # "province_21_shandong_spider",  # error
         # "province_23_henan_spider",  # error_11
         # "province_26_hubei_spider",  # ok
         # "province_30_guangdong_spider",  # error_01
@@ -319,6 +319,16 @@ if __name__ == "__main__":
                     arg_choices = {
                         'day': 30
                     }
+                if item == "province_00_quanguo_spider":  # 特殊处理,根据需求
+                    if_incr = True
+
+                    info = {
+                        "ENABLE_PROXY_USE": False,
+                        "DOWNLOAD_DELAY": 0,
+                        "DOWNLOAD_TIMEOUT": 20,
+                        "CONCURRENT_REQUESTS_PER_IP": 20,
+                        "CONCURRENT_REQUESTS": 5,
+                    }  # province_00_quanguo_spider
                 resp = exec_each_schedule(item, area_id, arg_choices=arg_choices, if_incr=if_incr, **info)
 
                 if resp:

@@ -577,11 +577,13 @@ if __name__ == "__main__":
         "notices_49",
         "notices_50",
         "notices_52",
+        "notices_53",
         "notices_54",
         "notices_55",
         "notices_57",
         "notices_71",
         "notices_3303",
+        "notices_3304",
         "notices_3305",
         "notices_3306",
         "notices_3307",
@@ -592,6 +594,7 @@ if __name__ == "__main__":
         "notices_3315",
         "notices_3318",
         "notices_3320",
+        "notices_3321",
     ])
 
     # 测试推数据
