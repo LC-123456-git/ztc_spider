@@ -8,11 +8,11 @@ import uuid
 import time
 import pandas as pd
 import requests
-from sqlalchemy import create_engine, MetaData, Table, Column, Index
+from sqlalchemy import create_engine, MetaData, Table, Column, Index, UniqueConstraint
 from sqlalchemy.dialects import mysql
 from spider_pro.items import NoticesItem
 from spider_pro import constans as const
-from spider_pro.utils import deal_base_notices_data
+from spider_pro.utils import deal_base_notices_data, get_uuid_md5_from_data
 
 
 class MysqlPipeline(object):
@@ -137,6 +137,7 @@ class MysqlPipeline(object):
 
             # uuid
             Column('uuid', mysql.VARCHAR(40), nullable=True, comment="UUID"),
+
         )
         # 索引
         Index("index_push", my_table.c.pub_time, my_table.c.is_upload, my_table.c.is_clean)
@@ -289,7 +290,7 @@ class MysqlPipeline(object):
                     new_item["is_storage"] = "0"  # 已经弃用
                     if new_item["pub_time"] in const.EMPTY_LIST:
                         new_item["pub_time"] = const.DEFAULT_PUB_TIME
-                    new_item["uuid"] = str(uuid.uuid4())
+                    new_item["uuid"] = get_uuid_md5_from_data(new_item["title_name"], new_item["content"])
                     # 启用推送
                     if self.enable and new_item["is_clean"] == const.TYPE_CLEAN_DONE:
                         result, reason = self.post_data_to_center(deal_base_notices_data(dict(new_item), is_hump=True))
