@@ -13,7 +13,7 @@ default_setting = {
     'CONCURRENT_REQUESTS_PER_IP': '30',  # 单个ip并发最大值
     'MAX_CONNECTIONS': '50',  # MYSQL最大连接数
     'CONCURRENT_REQUESTS': '2',
-    'ENABLE_PROXY_USE': 'True',  # 是否启用ip代理
+    'ENABLE_PROXY_USE': 'False',  # 是否启用ip代理
 }
 
 
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     # scrapyd_deploy()
 
     # scrapyd_cancel(job='city-2021-05-10-13-38')
-    days_before = get_back_date(10)
+    days_before = get_back_date(15)
     yesterday = get_back_date(1)
     today = '{0:%Y-%m-%d}'.format(datetime.datetime.now())
 
@@ -247,7 +247,7 @@ if __name__ == "__main__":
         # "province_04_hebei_spider",  # error_04
         # "province_05_shanxi_spider",
         # "province_08_jilin_spider",  # ok + error_06
-        # "province_10_heilongjiang_spider",  # error
+        "province_10_heilongjiang_spider",  # error
         # "province_11_shanghai_spider",  # ok
         # "province_13_jiangsu_spider",  # error_07 + error_01
         # "province_14_zhejiang_spider",  # error
@@ -260,7 +260,7 @@ if __name__ == "__main__":
         # "province_26_hubei_spider",  # ok
         # "province_30_guangdong_spider",  # error_01
         # "province_40_sichuan_spider",  # error
-        "province_44_xizang_spider",  # error_01
+        # "province_44_xizang_spider",  # error_01
         # "province_49_ningxia_spider",  # error_03
         # "province_50_xinjiang_spider",  # ok + 附件没采
         # "province_52_pinming_spider",  # ok
@@ -291,6 +291,7 @@ if __name__ == "__main__":
         scrapyd_deploy()  # 打包上传 TODO 如果是定时脚本则不需要上传
         pending_list = []
         running_list = []
+        # print(scrapyd_cancel(project="spider_pro", job="10-2021-05-14-16-25"))
         for item in r_text.get("pending"):
             pending_list.append(item.get("spider"))
         for item in r_text.get("running"):
@@ -305,17 +306,17 @@ if __name__ == "__main__":
                 info = {}
 
                 arg_choices = {
-                    'sdt': days_before, 
-                    'edt': today, 
+                    'sdt': days_before,
+                    'edt': today,
                     # 'day': 30
                 }
 
                 if_incr = False
                 if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
                     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
-                if item == "province_57_jingcaizongheng_spider": 
+                if item == "province_57_jingcaizongheng_spider":
                     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_TIMEOUT": 15, 'ROBOTSTXT_OBEY': False}
-                if item == "province_21_shandong_spider":  
+                if item == "province_21_shandong_spider":
                     if_incr = True
                     # CONCURRENT_REQUESTS_PER_IP
                     info = {

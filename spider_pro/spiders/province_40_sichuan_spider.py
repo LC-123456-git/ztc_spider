@@ -96,8 +96,8 @@ class MySpider(CrawlSpider):
     def start_requests(self):
         pages_dict = self.r_dict | self.time_dict
         self.type_dict = json.dumps(pages_dict | self.pn_dict)
-        # yield scrapy.Request(url=self.query_url, method="POST", body=self.type_dict, callback=self.parse_urls)
-        yield scrapy.Request(url=self.query_url, method="POST", body=self.type_dict, callback=self.parse_data_urls)
+        yield scrapy.Request(url=self.query_url, method="POST", body=self.type_dict, callback=self.parse_urls)
+        # yield scrapy.Request(url=self.query_url, method="POST", body=self.type_dict, callback=self.parse_data_urls)
 
     def parse_urls(self, response):
         try:
@@ -140,8 +140,8 @@ class MySpider(CrawlSpider):
                 pub_time = urls.get("webdate", "")
                 title_name = urls.get("title", "")
                 name_project_category = self.project_category_dict.get(category_num[0:6], "")
-                # data_url = self.domain_url + linkurl
-                data_url = "http://ggzyjy.sc.gov.cn/jyxx/002008/002008001/20210330/2b4a62a4-bfec-4ad3-8ba1-d43bc2542337.html"
+                data_url = self.domain_url + linkurl
+                # data_url = "http://ggzyjy.sc.gov.cn/jyxx/002008/002008001/20210330/2b4a62a4-bfec-4ad3-8ba1-d43bc2542337.html"
                 yield scrapy.Request(url=data_url, callback=self.parse_item, headers=self.data_headers,
                                      cb_kwargs=cb_kwargs, meta={"cb_kwargs": cb_kwargs, "area_in": area_in,
                                                                 "name_project_category": name_project_category,
@@ -153,7 +153,6 @@ class MySpider(CrawlSpider):
         if response.status == 200:
             origin = response.url
             test_text = response.text
-            print(test_text)
             title_name = response.meta.get("title_name")
             print(title_name)
             if not title_name:
@@ -220,6 +219,6 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl province_40_sichuan_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_40_sichuan_spider".split(" "))
     # cmdline.execute("scrapy crawl province_40_sichuan_spider -a day=0".split(" "))
-    # cmdline.execute("scrapy crawl province_40_sichuan_spider -a sdt=2021-01-28 -a edt=2021-01-28 ".split(" "))
+    cmdline.execute("scrapy crawl province_40_sichuan_spider -a sdt=2021-05-01 -a edt=2021-05-14".split(" "))

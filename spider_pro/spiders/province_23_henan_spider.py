@@ -142,6 +142,7 @@ class MySpider(Spider):
         if response.status == 200:
             origin = response.url
             title_name = response.meta["title_name"]
+            print(title_name)
             info_source = response.meta["city"]
             if not info_source:
                 info_source = self.area_province
@@ -197,7 +198,7 @@ class MySpider(Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_23_henan_spider -a sdt=2021-04-02 -a edt=2021-04-02".split(" "))
+    cmdline.execute("scrapy crawl province_23_henan_spider -a sdt=2021-05-01 -a edt=2021-05-14".split(" "))
     # cmdline.execute("scrapy crawl province_23_henan_spider ".split(" "))
     # cmdline.execute("scrapy crawl province_23_henan_spider -s DOWNLOAD_DELAY=0".split(" "))
     # cmdline.execute("scrapy crawl province_23_henan_spider -a day=0".split(" "))

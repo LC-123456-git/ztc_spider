@@ -108,7 +108,7 @@ class MySpider(CrawlSpider):
             "44",  # 其他
         ]:
             yield scrapy.FormRequest(
-                self.query_url, formdata=self.time_dict | {"channelId": item}, callback=self.parse_urls, meta={
+                self.query_url, formdata=self.time_dict | {"channelId": item},priority=6, callback=self.parse_urls, meta={
                     "channelId": item
                 })
 
@@ -122,7 +122,7 @@ class MySpider(CrawlSpider):
                 self.logger.info(f"初始链接提取成功： id={response.meta['channelId']} {count=} {self.time_dict}")
                 pages = math.ceil(count / limit) + 1
                 for i in range(1, pages):
-                    yield scrapy.FormRequest(self.query_page_url.format(i),
+                    yield scrapy.FormRequest(self.query_page_url.format(i), priority=10,
                                              formdata=self.time_dict | {"channelId": response.meta["channelId"]})
             else:
                 self.logger.error(f"初始链接数量提取异常：{response.url=} {response.meta=}")
@@ -133,6 +133,7 @@ class MySpider(CrawlSpider):
         if response.status == 200:
             origin = response.url
             title_name = response.xpath("/html/body/div[2]/div/div/p[1]/text()").get()
+            print(title_name)
             pub_time = response.xpath("/html/body/div[2]/div/div/p[2]/text()").get()
             info_source = self.area_province
             content = response.xpath("//*[@class='div-article2']").get()
@@ -175,4 +176,4 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_05_shanxi_spider".split(""))
+    cmdline.execute("scrapy crawl province_05_shanxi_spider -a sdt=2021-05-01 -a edt=2021-05-14".split(" "))

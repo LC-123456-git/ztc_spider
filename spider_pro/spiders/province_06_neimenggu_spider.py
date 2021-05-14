@@ -77,7 +77,7 @@ class MySpider(CrawlSpider):
         for item in self.list_all_category_num:
             random_int = random.randint(200, 500)
             list_url = self.query_url + item
-            yield scrapy.FormRequest(list_url, formdata=self.r_dict | {"scrollValue": "".format(random_int)} |
+            yield scrapy.FormRequest(list_url, priority=6, formdata=self.r_dict | {"scrollValue": "".format(random_int)} |
                                                         self.time_dict | {"currentPage": "1"}, callback=self.parse_urls)
 
     def parse_urls(self, response):
@@ -92,7 +92,7 @@ class MySpider(CrawlSpider):
                         self.query_url = "http://ggzyjy.shandong.gov.cn/queryContent_{}-jyxxgk.jspx".format(i)
                     else:
                         self.query_url = "http://ggzyjy.shandong.gov.cn/queryContent-jyxxgk.jspx"
-                    yield scrapy.FormRequest(self.query_url, formdata=self.r_dict, callback=self.parse_data_urls, )
+                    yield scrapy.FormRequest(self.query_url, priority=8, formdata=self.r_dict, callback=self.parse_data_urls, )
         except Exception as e:
             self.logger.error(f"初始总页数提取错误 {response.meta=} {e} {response.url=}")
 
@@ -117,7 +117,7 @@ class MySpider(CrawlSpider):
                 else:
                     self.cb_kwargs = {"name": const.TYPE_UNKNOWN_NOTICE}
 
-                yield scrapy.Request(url=data_url, callback=self.parse_item, cb_kwargs=self.cb_kwargs, dont_filter=True,
+                yield scrapy.Request(url=data_url, callback=self.parse_item,priority=10, cb_kwargs=self.cb_kwargs, dont_filter=True,
                                      meta={"cb_kwargs": self.cb_kwargs, "info_source": info_source,
                                            "classifyShow": classifyShow})
         except Exception as e:

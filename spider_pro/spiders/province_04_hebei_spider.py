@@ -44,7 +44,7 @@ class MySpider(CrawlSpider):
         else:
             self.enable_incr = False
         self.pn_dict = {"pn": 0}
-        self.r_dict = {"token": "", "rn": 12, "sdt": "", "edt": "", "wd": "", "inc_wd": "", "exc_wd": "",
+        self.r_dict = {"token": "", "rn": 10, "sdt": "", "edt": "", "wd": "", "inc_wd": "", "exc_wd": "",
                        "fields": "title", "cnum": "001", "sort": "{'webdate':'0'}", "ssort": "title", "cl": 200,
                        "terminal": "", "condition": [{"fieldName": "categorynum", "equal": "003001",
                        "notEqual": None, "equalList": None, "notEqualList": None, "isLike": True,
@@ -53,7 +53,7 @@ class MySpider(CrawlSpider):
 
     def start_requests(self):
         self.type_dict = json.dumps(self.r_dict | self.pn_dict)
-        yield scrapy.Request(url=self.query_url, method="POST", body=self.type_dict, callback=self.parse_urls)
+        yield scrapy.Request(url=self.query_url, method="POST", priority=4, body=self.type_dict, callback=self.parse_urls)
 
     def parse_urls(self, response):
         try:
@@ -71,7 +71,7 @@ class MySpider(CrawlSpider):
                 pn_dict = {"pn": pn}
                 self.page_dict = json.dumps(self.r_dict | pn_dict)
                 yield scrapy.Request(
-                    url=self.query_url, method="POST", body=self.page_dict,
+                    url=self.query_url, method="POST", body=self.page_dict, priority=6,
                     callback=self.parse_data_urls)
         except Exception as e:
             self.logger.error(f"初始总页数提取错误 {response.meta=} {e} {response.url=}")
@@ -105,7 +105,7 @@ class MySpider(CrawlSpider):
                         data_url = self.domain_url + linkurl
                         self.sss += 1
                         print(self.sss)
-                        yield scrapy.Request(url=data_url, callback=self.parse_item, meta={
+                        yield scrapy.Request(url=data_url, callback=self.parse_item, priority=7, meta={
                             "title_name": title_name,
                             "pub_time": pub_time,
                             "cb_kwargs": cb_kwargs,
@@ -115,7 +115,7 @@ class MySpider(CrawlSpider):
                         continue
                 else:
                     data_url = self.domain_url + linkurl
-                    yield scrapy.Request(url=data_url, callback=self.parse_item, meta={
+                    yield scrapy.Request(url=data_url, callback=self.parse_item, priority=8, meta={
                         "title_name": title_name,
                         "pub_time": pub_time,
                         "cb_kwargs": cb_kwargs,
@@ -173,4 +173,4 @@ if __name__ == "__main__":
     from scrapy import cmdline
 
     # cmdline.execute("scrapy crawl province_04_hebei_spider".split(" "))
-    cmdline.execute("scrapy crawl province_04_hebei_spider -a sdt=2021-04-02 -a edt=2021-04-02".split(" "))
+    cmdline.execute("scrapy crawl province_04_hebei_spider".split(" "))

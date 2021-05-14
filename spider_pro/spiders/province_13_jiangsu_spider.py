@@ -99,7 +99,7 @@ class MySpider(CrawlSpider):
                     pages_dict = self.r_dict | con_dict | self.time_dict
                     self.type_dict = json.dumps(pages_dict | self.pn_dict)
                     yield scrapy.Request(
-                        url=self.query_url, method="POST", body=self.type_dict, callback=self.parse_urls,
+                        url=self.query_url, method="POST",priority=5, body=self.type_dict, callback=self.parse_urls,
                         meta={"cont_id": item, "con_dict": con_dict}
                     )
         else:
@@ -110,7 +110,7 @@ class MySpider(CrawlSpider):
                 pages_dict = self.r_dict | con_dict | self.time_dict
                 self.type_dict = json.dumps(pages_dict | self.pn_dict)
                 yield scrapy.Request(
-                    url=self.query_url, method="POST", body=self.type_dict, callback=self.parse_urls,
+                    url=self.query_url, method="POST", body=self.type_dict,priority=6, callback=self.parse_urls,
                     meta={"cont_id": item, "con_dict": con_dict}
                 )
 
@@ -132,7 +132,7 @@ class MySpider(CrawlSpider):
                 self.page_dict = json.dumps(self.r_dict | pn_dict | con_dict | self.time_dict)
                 yield scrapy.Request(
                     url=self.query_url, method="POST", body=self.page_dict,
-                    callback=self.parse_data_urls, meta={"cont_id": response.meta['cont_id']})
+                    callback=self.parse_data_urls, priority=8, meta={"cont_id": response.meta['cont_id']})
         except Exception as e:
             self.logger.error(f"初始总页数提取错误 {response.meta=} {e} {response.url=}")
 
@@ -153,7 +153,7 @@ class MySpider(CrawlSpider):
                 area_in = urls.get("zhuanzai", "")
                 name_project_category = self.project_category_dict.get(category_num[0:6], "")
                 data_url = self.domain_url + linkurl
-                yield scrapy.Request(url=data_url, callback=self.parse_item, meta={
+                yield scrapy.Request(url=data_url, callback=self.parse_item,priority=10, meta={
                     "cb_kwargs": cb_kwargs,
                     "area_in": area_in,
                     "name_project_category": name_project_category,
@@ -165,6 +165,7 @@ class MySpider(CrawlSpider):
         if response.status == 200:
             origin = response.url
             title_name = response.xpath("/html/body/div[2]/div/div[3]/h2/text()").get() or ""
+            print(title_name)
             if re.search(r"终止|中止|流标|废标|异常", title_name):
                 name = const.TYPE_ZB_ABNORMAL
             if re.search(r"变更|更正", title_name):
@@ -217,5 +218,5 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_13_jiangsu_spider -a sdt=2021-01-26 -a edt=2021-01-26 -s DOWNLOAD_DELAY=0 -s CONCURRENT_REQUESTS_PER_IP=20".split(" "))
+    cmdline.execute("scrapy crawl province_13_jiangsu_spider -a sdt=2021-05-01 -a edt=2021-05-14".split(" "))
     # cmdline.execute("scrapy crawl province_13_jiangsu_spider -a sdt=2021-01-26 -a edt=2021-01-26".split(" "))
