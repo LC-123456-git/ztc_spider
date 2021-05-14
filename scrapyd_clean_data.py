@@ -12,18 +12,13 @@ from sqlalchemy import create_engine, text
 from spider_pro.utils import get_accurate_pub_time
 
 
-def get_uuid_md5_from_data(title_name, data_time, source):
+def get_uuid_md5_from_data(title_name, content):
     try:
         tmp = ""
         if title_name:
             tmp += title_name
-        if data_time:
-            if datetime.datetime.fromisoformat(data_time).strftime('%Y-%m-%d %H:%M:%S') == "1970-01-01 00:00:00":
-                pass
-            else:
-                tmp += datetime.datetime.fromisoformat(data_time).strftime("%a %b %d %H:%M:%S CST %Y")
-        if source:
-            tmp += source
+        if content:
+            tmp += content
         if tmp:
             return hashlib.md5(tmp.encode()).hexdigest()
         else:
@@ -75,7 +70,7 @@ class MyClean(object):
                     try:
                         item_dict = dict(item)
                         item_id = str(item["id"])
-                        uuid_field = item_dict.get("uuid", "")
+                        _field = item_dict.get("", "")
                         publish_time = get_accurate_pub_time(item_dict.get("publish_time"))
                         b = publish_time.split('-')
                         for i in range(2):
@@ -158,7 +153,8 @@ class MyClean(object):
                         item_dict = dict(item)
                         item_id = str(item["id"])
                         r_md5 = get_uuid_md5_from_data(
-                            item_dict.get("title"), item_dict.get("pub_time").strftime('%Y-%m-%d %H:%M:%S'), item_dict.get("source"))
+                            # item_dict.get("title"), item_dict.get("pub_time").strftime('%Y-%m-%d %H:%M:%S'), item_dict.get("source"))
+                            item_dict.get("title"), item_dict.get("content"))
                         if not r_md5:
                             continue
                         else:

@@ -637,18 +637,18 @@ def judge_dst_time_greater_than_src_time(dst_time: str, src_time: str):
     return False
 
 
-def get_uuid_md5_from_data(title_name, data_time, source):
+def get_uuid_md5_from_data(title_name, content):
     try:
         tmp = ""
         if title_name:
             tmp += title_name
-        if data_time:
-            if datetime.datetime.fromisoformat(data_time).strftime('%Y-%m-%d %H:%M:%S') == "1970-01-01 00:00:00":
-                pass
-            else:
-                tmp += datetime.datetime.fromisoformat(data_time).strftime("%a %b %d %H:%M:%S CST %Y")
-        if source:
-            tmp += source
+        # if data_time:
+        #     if datetime.datetime.fromisoformat(data_time).strftime('%Y-%m-%d %H:%M:%S') == "1970-01-01 00:00:00":
+        #         pass
+        #     else:
+        #         tmp += datetime.datetime.fromisoformat(data_time).strftime("%a %b %d %H:%M:%S CST %Y")
+        if content:
+            tmp += content
         if tmp:
             return hashlib.md5(tmp.encode()).hexdigest()
         else:
