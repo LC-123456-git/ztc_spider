@@ -203,19 +203,16 @@ if __name__ == "__main__":
                     # 'day': 30
                 }
 
-                if_incr = False
+                if_incr = True
                 if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
                     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
                 if item == "province_57_jingcaizongheng_spider": 
                     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_TIMEOUT": 15, 'ROBOTSTXT_OBEY': False}
                 if item == "province_21_shandong_spider":  
-                    # if_incr = True
                     arg_choices = {
                         'day': 30
                     }
                 if item == "province_00_quanguo_spider":  # 特殊处理,根据需求
-                    if_incr = True
-
                     info = {
                         "ENABLE_PROXY_USE": False,
                         "DOWNLOAD_DELAY": 0,
