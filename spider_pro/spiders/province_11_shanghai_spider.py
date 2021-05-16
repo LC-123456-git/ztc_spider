@@ -147,7 +147,7 @@ class MySpider(CrawlSpider):
             "39", "246", "247"  # 其他
         ]:
             yield scrapy.FormRequest(
-                self.query_url, formdata=self.time_dict | {"channelId": item}, callback=self.parse_urls, meta={
+                self.query_url, priority=6, formdata=self.time_dict | {"channelId": item}, callback=self.parse_urls, meta={
                     "channelId": item
                 })
 
@@ -163,7 +163,7 @@ class MySpider(CrawlSpider):
             pages = math.ceil(count / limit) + 1
             for i in range(1, pages):
                 yield scrapy.FormRequest(
-                    self.query_page_url.format(i), formdata=self.time_dict | {"channelId": response.meta["channelId"]})
+                    self.query_page_url.format(i), priority=10, formdata=self.time_dict | {"channelId": response.meta["channelId"]})
         else:
             self.logger.error(f"初始链接数量提取异常：{response.url=} {response.meta=}")
 

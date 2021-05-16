@@ -232,6 +232,7 @@ class MySpider(CrawlSpider):
         if response.status == 200:
             origin = response.url
             title_name = response.xpath("//div[@class='content-title']/text()").get()
+            print(title_name)
             pub_time = response.xpath("//span[@id='time']/text()").get()
             info_source = response.xpath("//div[@class='content-title2']/span/a/text()").get()
             if info_source:
@@ -260,4 +261,4 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_03_tianjin_spider -a sdt=2021-04-02 -a edt=2021-04-02".split(" "))
+    cmdline.execute("scrapy crawl province_03_tianjin_spider -a sdt=2021-05-01 -a edt=2021-05-14".split(" "))

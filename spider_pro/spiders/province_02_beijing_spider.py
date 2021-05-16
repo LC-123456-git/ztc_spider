@@ -149,7 +149,7 @@ class MySpider(CrawlSpider):
                       or response.xpath('//*[@class="div-article2"]').getall()
             content_text = content[0].replace("\r", "").replace("\t", "").replace("\n", "")
             classify_show = process_request_category(origin)
-
+            print(title_name)
             notice_item = NoticesItem()
             notice_item["origin"] = origin
             notice_item["title_name"] = title_name

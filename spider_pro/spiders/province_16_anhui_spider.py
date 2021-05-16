@@ -208,11 +208,11 @@ class MySpider(CrawlSpider):
 
     def parse_item(self, response):
         if response.status == 200:
-            print("sssss")
             origin = response.meta["origin"]
             title_name = response.xpath('//p[@class="article-title clamp-3 m-b-15"]/text()').get()
-            # title_name = response.meta["title_name"]
+            title_name = response.meta["title_name"]
             pub_time = response.meta["pub_time"]
+            print(title_name)
             info_source = response.meta["info_source"]
             tenderProjectType = response.meta["tenderProjectType"]
             info_list = re.split("-", re.sub("【", "", info_source))
@@ -237,9 +237,6 @@ class MySpider(CrawlSpider):
                 self.notice_type = const.TYPE_ZB_ALTERATION
             content = response.xpath("//*[@class='article-text-box m-b-50 m-t-50']").get()
             pub_time = get_accurate_pub_time(pub_time)
-            print(origin)
-            print(title_name)
-            print(pub_time)
             # print(content)
 
             files_path = []
@@ -274,4 +271,4 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_16_anhui_spider -a sdt=2021-03-19 -a edt=2021-03-19".split(" "))
+    cmdline.execute("scrapy crawl province_16_anhui_spider -a sdt=2021-05-01 -a edt=2021-05-14".split(" "))

@@ -36,7 +36,7 @@ class MySpider(Spider):
                        "_": "1614851549199"}
 
     def start_requests(self):
-        yield scrapy.Request(
+        yield scrapy.Request(priority=1,
             url=f"{self.count_url}{urllib.parse.urlencode(self.r_dict | {'page': '1'})}",
             callback=self.parse_page_urls)
 
@@ -49,7 +49,7 @@ class MySpider(Spider):
             pages = math.ceil(int(total) / int(self.page_size))
             print(pages)
             for i in range(1, pages):
-                yield scrapy.Request(
+                yield scrapy.Request(priority=6,
                     url=f"{self.count_url}{urllib.parse.urlencode(self.r_dict | {'page': '{}'.format(i)})}",
                     callback=self.parse_data_urls)
         except Exception as e:
@@ -107,7 +107,7 @@ class MySpider(Spider):
                             self.info_source = "白山市"
                         elif area in ["112200007710693483"]:
                             self.info_source = "长白山"
-                        yield scrapy.Request(url=origin, callback=self.parse_item, meta={"info_source": self.info_source,
+                        yield scrapy.Request(url=origin, callback=self.parse_item, priority=8, meta={"info_source": self.info_source,
                          "title": title, "notice_type": notice_type, "pub_time": pub_time, "classify_show": classify_show})
                     else:
                         continue
@@ -155,7 +155,7 @@ class MySpider(Spider):
                         self.info_source = "白山市"
                     elif area in ["112200007710693483"]:
                         self.info_source = "长白山"
-                    yield scrapy.Request(url=origin, callback=self.parse_item, meta={"info_source": self.info_source,
+                    yield scrapy.Request(url=origin, callback=self.parse_item, priority=10, meta={"info_source": self.info_source,
                              "title": title, "notice_type": notice_type, "pub_time": pub_time, "classify_show": classify_show})
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
@@ -172,7 +172,7 @@ class MySpider(Spider):
             title_name = response.xpath("//*[@id='content_Height']/div/div[2]/div[2]/h3/text()").get()
             if not title_name:
                 title_name = response.meta["title"]
-
+            print(title_name)
             info_source = response.meta["info_source"]
             if info_source:
                 info_source = f"{self.area_province}-{info_source}"
@@ -220,4 +220,4 @@ class MySpider(Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_08_jilin_spider -a sdt=2021-03-08 -a edt=2021-03-08".split(" "))
+    cmdline.execute("scrapy crawl province_08_jilin_spider -a sdt=2021-05-01 -a edt=2021-05-14".split(" "))

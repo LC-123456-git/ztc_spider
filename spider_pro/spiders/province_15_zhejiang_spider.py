@@ -210,6 +210,7 @@ class MySpider(CrawlSpider):
         if response.status == 200:
             origin = response.url
             title_name = response.xpath("//*[@id='tdTitle']/font[1]/b/text()").get() or ""
+            print(title_name)
             pub_time = response.xpath("//*[@id='tdTitle']/font[2]/text()").getall()
             pub_time = get_accurate_pub_time(str(pub_time))
             info_source = self.area_province

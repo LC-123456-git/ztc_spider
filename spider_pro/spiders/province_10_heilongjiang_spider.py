@@ -123,8 +123,8 @@ class MySpider(Spider):
                         yield scrapy.Request(url=base_url.format(i), callback=self.parse_data_urls,
                                              meta={'cid': response.meta.get('cid'), 'type': response.meta.get('type')})
             else:
-                pages = response.xpath('/html/body/div/div[2]/div[2]/div[3]/div/div/span[2]/b[2]/text()').get()  #页数
-                total = response.xpath('/html/body/div/div[2]/div[2]/div[3]/div/div/span[1]/b/text()')      #总条数
+                pages = response.xpath('//div[@class="page"]/span[2]/b[2]/text()').get()  #页数
+                total = response.xpath('//div[@class="page"]/span[1]/b/text()').get()      #总条数
                 base_url = response.url + '&pageNo={}'
                 self.logger.info(
                     f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
