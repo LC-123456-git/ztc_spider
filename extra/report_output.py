@@ -99,7 +99,6 @@ class ReportOutput(DBQuery):
         '26': '湖北省公共资源交易服务平台',
         '27': '湖北省公共资源电子交易服务系统',
         '28': '湖南省公共资源交易服务平台',
-        '30': '广东省公共资源交易服务平台',
         '33': '广西省公共资源交易服务平台',
         '36': '甘肃省公共资源交易服务平台',
         '39': '重庆省公共资源交易服务平台',
@@ -109,7 +108,6 @@ class ReportOutput(DBQuery):
         '44': '西藏自治区公共资源交易服务平台',
         '45': '陕西省公共资源交易服务平台',
         '47': '青海省公共资源交易服务平台',
-        '49': '宁夏回族自治区公共资源交易服务平台',
         '50': '新疆维吾尔族自治区公共资源交易服务平台',
         '51': '新疆生产建设兵团公共资源交易服务平台',
         '52': '嗨招电子招标采购平台',
@@ -179,7 +177,7 @@ class ReportOutput(DBQuery):
         today = date
         tomorrow = '{0:%Y-%m-%d}'.format(datetime.strptime(today, '%Y-%m-%d') + timedelta(days=1))
         download_sql = """SELECT area_id n, COUNT(id) c FROM {db_name}.{table_name}
-        WHERE update_time BETWEEN '{today}' AND '{tomorrow}'
+        WHERE pub_time BETWEEN '{today}' AND '{tomorrow}'
         GROUP BY area_id;""".format(**{
             'today': today,
             'tomorrow': tomorrow,
@@ -328,5 +326,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-05-12', edt='2021-05-12')
+    rpt.output(sdt='2021-05-01', edt='2021-05-14')
     print((datetime.now() - start_time).total_seconds())

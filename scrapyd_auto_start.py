@@ -215,7 +215,7 @@ if __name__ == "__main__":
     # scrapyd_deploy()
 
     # scrapyd_cancel(job='city-2021-05-10-13-38')
-    days_before = get_back_date(10)
+    days_before = get_back_date(200)
     yesterday = get_back_date(1)
     today = '{0:%Y-%m-%d}'.format(datetime.datetime.now())
 
@@ -260,7 +260,7 @@ if __name__ == "__main__":
         # "province_26_hubei_spider",  # ok
         # "province_30_guangdong_spider",  # error_01
         # "province_40_sichuan_spider",  # error
-        "province_44_xizang_spider",  # error_01
+        # "province_44_xizang_spider",  # error_01
         # "province_49_ningxia_spider",  # error_03
         # "province_50_xinjiang_spider",  # ok + 附件没采
         # "province_52_pinming_spider",  # ok
@@ -283,6 +283,8 @@ if __name__ == "__main__":
         # "ZJ_city_3319_changxing_spider",  # ok
         # "ZJ_city_3320_cangnan_spider",  # error_01
         # "ZJ_city_3321_linhai_spider",
+        # "ZJ_city_3322_anji_spider",
+        "ZJ_city_3323_xiaoshan_spider",
     ]
 
     # 优先判断运行状态
@@ -355,7 +357,9 @@ if __name__ == "__main__":
                 #         'DOWNLOAD_DELAY': 1,
                 #         'RETRY_ENABLED': False,
                 #     }
-
+                if item == "ZJ_city_3323_xiaoshan_spider":
+                    if_incr = True
+                    info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_TIMEOUT": 40}
                 resp = exec_each_schedule(item, area_id, arg_choices=arg_choices, if_incr=if_incr, **info)
 
                 if resp:

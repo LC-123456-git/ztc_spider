@@ -11,7 +11,8 @@ import logging.config
 BOT_NAME = 'spider_pro'
 
 # project spider modules
-SPIDER_MODULES = ['spider_pro.spiders']
+SPIDER_MODULES = ['spider_pro.spiders', 'spider_pro.extra_spiders']
+# SPIDER_MODULES = ['spider_pro.spiders']
 NEWSPIDER_MODULE = 'spider_pro.spiders'
 
 # Obey robots.txt rules
@@ -26,7 +27,7 @@ DEFAULT_REQUEST_HEADERS = {
 
 # download middleware
 DOWNLOADER_MIDDLEWARES = {
-    'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
+    # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
     'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
     'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
     'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
@@ -128,23 +129,43 @@ RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 400, 403, 404]
 
 # concurrent
 CONCURRENT_REQUESTS = 32  # 32 理论上可以支持 每小时10w数据 调式环境设置为1
-CONCURRENT_REQUESTS_PER_IP = 5     # 1
+CONCURRENT_REQUESTS_PER_IP = 0     # 1
 REACTOR_THREADPOOL_MAXSIZE = 20
 
 # download delay   延时下载
-DOWNLOAD_DELAY = 2
+DOWNLOAD_DELAY = 0.2
 
 # not scrapy setting **********************************************************************
 # DEBUG_MODE setting
-DEBUG_MODE = False
-# DEBUG_MODE = True
+# DEBUG_MODE = False
+DEBUG_MODE = True
 # "True":切换为测试数据库，否则为正式库
 # "True":不启用URL去重，否则不启用
 
 # Mysql setting
 BUCKET_SIZE = 10
-ENGINE_CONFIG = 'mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4'
-TEST_ENGINE_CONFIG = 'mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'
+
+MYSQL_USER_NAME = 'root'
+MYSQL_IP = '114.67.84.76'
+MYSQL_PASSWORD = 'Ly3sa%@D0$pJt0y6'
+MYSQL_PORT = 8050
+MYSQL_DB_NAME = 'data_collection'
+MYSQL_TEST_DB_NAME = 'test2_data_collection'
+
+ENGINE_CONFIG = 'mysql+pymysql://{username}:{password}@{ip}:{port}/{db_name}?charset=utf8mb4'.format(**{
+    'username': MYSQL_USER_NAME,
+    'password': MYSQL_PASSWORD,
+    'ip': MYSQL_IP,
+    'port': MYSQL_PORT,
+    'db_name': MYSQL_DB_NAME,
+})
+TEST_ENGINE_CONFIG = 'mysql+pymysql://{username}:{password}@{ip}:{port}/{test_db_name}?charset=utf8mb4'.format(**{
+    'username': MYSQL_USER_NAME,
+    'password': MYSQL_PASSWORD,
+    'ip': MYSQL_IP,
+    'port': MYSQL_PORT,
+    'test_db_name': MYSQL_TEST_DB_NAME,
+})
 
 # Redis setting
 REDIS_HOST = "114.67.84.76"
@@ -155,8 +176,8 @@ DEFAULT_ERROR_RATE = 0.0001
 DEFAULT_CAPACITY = 100000
 
 # Redis Proxy setting
-CURRENT_HTTP_PROXY_MAX = 1  # redis http 最大数量
-CURRENT_HTTPS_PROXY_MAX = 1  # redis https 最大数量
+CURRENT_HTTP_PROXY_MAX = 10  # redis http 最大数量
+CURRENT_HTTPS_PROXY_MAX = 10  # redis https 最大数量
 TIME_WAIT_PROXY_SLEEP = 10
 TIME_MAINTAIN_PROXY_POOL_AGAIN = 10
 TIME_EXIT_WHEN_LOCAL_PROXY_SET_EMPTY = 300  # 允许300s内未获得新的ip就退出spider
@@ -187,7 +208,8 @@ ENABLE_UPLOAD_ALL_WHEN_START = False  # 异常自动恢复上传功能
 ENABLE_PROXY_INFINITE = False
 NAME_PROXY_INFINITE = "proxy_infinite"
 
-ENABLE_PROXY_USE = True  # 启用代理
+# ENABLE_PROXY_USE = True  # 启用代理
+ENABLE_PROXY_USE = False
 ENABLE_URL_DUP_REMOVE_USE = False
 
 DEPTH_PRIORITY = 1

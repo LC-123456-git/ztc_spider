@@ -7,6 +7,47 @@
 import scrapy
 
 
+class QCCItem(scrapy.Item):
+    """
+    企查查基本信息
+        '法定代表人,.*?,(?P<法定代表人>.*?),.*?成立日期,(?P<成立日期>.*?),经营状态,(?P<经营状态>.*?),注册资本,(?P<注册资本>.*?),' + \
+        '实缴资本,(?P<实缴资本>.*?),统一社会信用代码,(?P<统一社会信用代码>.*?),工商注册号,(?P<工商注册号>.*?),组织机构代码,(?P<组织机构代码>.*?),' + \
+        '纳税人识别号,(?P<纳税人识别号>.*?),纳税人资质,(?P<纳税人资质>.*?),企业类型,(?P<企业类型>.*?),行业,(?P<行业>.*?),' + \
+        '营业期限,(?P<营业期限始>.*?)至(?P<营业期限末>.*?),人员规模,(?P<人员规模>.*?),参保人数,(?P<参保人数>.*?),' + \
+        '英文名称,(?P<英文名称>.*?),曾用名,(?P<曾用名>.*?),登记机关,(?P<登记机关>.*?),核准日期,(?P<核准日期>.*?),注册地址,(?P<注册地址>.*?),经营范围,(?P<经营范围>.*)'
+    """
+    table_name = "QCC"
+    table_desc = "公告"
+
+    category = scrapy.Field({'idx': 1, 'comment': '行业分类'})
+    industry_category = scrapy.Field({'idx': 2, 'comment': '行业大类'})
+    legal_representative = scrapy.Field({'idx': 3, 'comment': '法定代表人'})
+    date_of_establishment = scrapy.Field({'idx': 4, 'comment': '成立日期'})
+    operating_status = scrapy.Field({'idx': 5, 'comment': '经营状态'})
+    registered_capital = scrapy.Field({'idx': 6, 'comment': '注册资本'})
+    paid_in_capital = scrapy.Field({'idx': 7, 'comment': '实缴资本'})
+    unified_social_credit_code = scrapy.Field({'idx': 8, 'comment': '统一社会信用代码'})
+    business_registration_number = scrapy.Field({'idx': 9, 'comment': '工商注册号'})
+    organization_code = scrapy.Field({'idx': 10, 'comment': '组织机构代码'})
+    taxpayer_identification_number = scrapy.Field({'idx': 11, 'comment': '纳税人识别号'})
+    taxpayer_qualification = scrapy.Field({'idx': 12, 'comment': '纳税人资质'})
+    type_of_enterprise = scrapy.Field({'idx': 13, 'comment': '企业类型'})
+    industry = scrapy.Field({'idx': 14, 'comment': '行业'})
+    operating_period_std = scrapy.Field({'idx': 15, 'comment': '营业期限始'})
+    operating_period_edt = scrapy.Field({'idx': 16, 'comment': '营业期限末'})
+    staff_size = scrapy.Field({'idx': 17, 'comment': '人员规模'})
+    number_of_participants = scrapy.Field({'idx': 18, 'comment': '参保人数'})
+    english_name = scrapy.Field({'idx': 19, 'comment': '英文名称'})
+    former_name = scrapy.Field({'idx': 20, 'comment': '曾用名'})
+    registration_authority = scrapy.Field({'idx': 21, 'comment': '登记机关'})
+    approved_date = scrapy.Field({'idx': 22, 'comment': '核准日期'})
+    registered_address = scrapy.Field({'idx': 23, 'comment': '注册地址'})
+    business_scope = scrapy.Field({'idx': 24, 'comment': '经营范围'})
+    company_name = scrapy.Field({'idx': 25, 'comment': '企业名称'})
+    location = scrapy.Field({'idx': 26, 'comment': '所属地区'})
+    import_and_export_enterprise_code = scrapy.Field({'idx': 27, 'comment': '进出口企业代码'})
+
+
 class NoticesItem(scrapy.Item):
     table_name = "notices"
     table_desc = "公告"
