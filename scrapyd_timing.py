@@ -11,7 +11,7 @@ default_setting = {
     'CONCURRENT_REQUESTS_PER_IP': '30',  # 单个ip并发最大值
     'MAX_CONNECTIONS': '50',  # MYSQL最大连接数
     'CONCURRENT_REQUESTS': '2',
-    'ENABLE_PROXY_USE': 'Flase',  # 是否启用ip代理
+    'ENABLE_PROXY_USE': 'True',  # 是否启用ip代理
 }
 
 
