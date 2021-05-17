@@ -146,9 +146,13 @@ class ProxyMiddleware(RetryMiddleware):
         else:
             retry_times += 1
         if _type == 1:
-            r = requests.get(
-                url=f"http://webapi.http.zhimacangku.com/getip?num={num}&type={data_type}&pro=&city=0&yys={yys}&port={port}&time={_time}&ts={ts}&ys=0&cs=0&lb=1&sb=0&pb=4&mr={mr}&regions="
-            )
+            # 套餐
+            r = requests.get(url=f"http://webapi.http.zhimacangku.com/getip?num={num}&type={data_type}&pro=&city=0&yys={yys}&port={port}&pack=143415&ts={ts}&ys=0&cs=0&lb=1&sb=0&pb=4&mr={mr}&regions="
+                             )
+            # 单次
+            # r = requests.get(
+            #     url=f"http://webapi.http.zhimacangku.com/getip?num={num}&type={data_type}&pro=&city=0&yys={yys}&port={port}&time={_time}&ts={ts}&ys=0&cs=0&lb=1&sb=0&pb=4&mr={mr}&regions="
+            # )
         elif _type == 2:
             r = requests.get(
                 url=f"http://http.tiqu.letecs.com/getip3?num={num}&type={data_type}&pro=&city=0&yys={yys}&port={port}&time={_time}&ts={ts}&ys=0&cs=0&lb=1&sb=0&pb=4&mr={mr}&regions="
