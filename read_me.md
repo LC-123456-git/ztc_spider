@@ -143,6 +143,12 @@
 - [] 3318 金华市公共资源交易中心  http://ggzyjy.jinhua.gov.cn/cms/
 - [] 3319 长兴县公共资源交易中心  http://ggzy.zjcx.goc.cn/cxweb/
 - [] 3320 苍南县公共资源交易中心  http://ggzy.cncn.gov.cn/TPFrontNew/
+- [] 3321 临海市公共资源交易中心  http://www.linhai.gov.cn/
+- [] 3322 安吉公共资源交易中心    http://ggzy.anji.gov.cn/
+- [] 3323 萧山政府门户网站  http://www.xiaoshan.gov.cn/
+- [] 3324 南浔区公共资源交易中心  http://ggzy.nanxun.gov.cn/ 
+- [] 3325 德清县公共资源交易中心  http://116.62.168.209/zbgg/index.htm
+- [] 3326 龙游县公共资源交易中心  http://ztb.longyou.gov.cn/
 
 
 ### 反爬策略汇总
@@ -164,6 +170,10 @@
 > # 代理机构已解析   后期可以不用清洗
 > 该网站有两种分类 需要分别使用两种url请求 参数不一样          --2021-5-07
 
+> 62 新点电子交易平台
+> 该网站有两种请求方式 1. get   2. post
+> 同时写了两种 两种增量 没有项目类型 
+> 两种方式 都是通过详情页的url  在获取iframe的url 这步在item中进行
 
 >3318  浙江金华公共资源交易中心  附件是需要先请求的get_url()方法  获取相应的uid 进行拼接
 >                                                           --2021-04-28
