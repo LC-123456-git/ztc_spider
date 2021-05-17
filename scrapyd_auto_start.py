@@ -9,11 +9,11 @@ SCRAPYD_URL = "http://114.67.84.76:8060/"
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 
 default_setting = {
-    'DOWNLOAD_DELAY': '1',  # 下载延迟
-    'CONCURRENT_REQUESTS_PER_IP': '30',  # 单个ip并发最大值
-    'MAX_CONNECTIONS': '50',  # MYSQL最大连接数
-    'CONCURRENT_REQUESTS': '2',
-    'ENABLE_PROXY_USE': 'True',  # 是否启用ip代理
+    # 'DOWNLOAD_DELAY': '1',  # 下载延迟
+    # 'CONCURRENT_REQUESTS_PER_IP': '30',  # 单个ip并发最大值
+    # 'MAX_CONNECTIONS': '50',  # MYSQL最大连接数
+    # 'CONCURRENT_REQUESTS': '2',
+    # 'ENABLE_PROXY_USE': 'True',  # 是否启用ip代理
 }
 
 
@@ -247,7 +247,7 @@ if __name__ == "__main__":
         # "province_04_hebei_spider",  # error_04
         # "province_05_shanxi_spider",
         # "province_08_jilin_spider",  # ok + error_06
-        "province_10_heilongjiang_spider",  # error
+        # "province_10_heilongjiang_spider",  # error
         # "province_11_shanghai_spider",  # ok
         # "province_13_jiangsu_spider",  # error_07 + error_01
         # "province_14_zhejiang_spider",  # error
@@ -284,7 +284,9 @@ if __name__ == "__main__":
         # "ZJ_city_3320_cangnan_spider",  # error_01
         # "ZJ_city_3321_linhai_spider",
         # "ZJ_city_3322_anji_spider",
-        "ZJ_city_3323_xiaoshan_spider",
+        # "ZJ_city_3323_xiaoshan_spider",
+        "ZJ_city_3326_longyou_spider",
+        # "qcc_crawler",
     ]
 
     # 优先判断运行状态
@@ -332,6 +334,8 @@ if __name__ == "__main__":
                     arg_choices = {
                         'day': 30
                     }
+                # if item == "ZJ_city_3326_longyou_spider":
+                #     info = {"DOWNLOAD_TIMEOUT": 30}
                 # if item == "province_00_quanguo_spider":  # 特殊处理,根据需求
                 #     if_incr = True
                 #

@@ -15,6 +15,7 @@ from scrapy.downloadermiddlewares.retry import RetryMiddleware
 from scrapy.utils.response import response_status_message
 from scrapy.exceptions import IgnoreRequest
 from spider_pro import constans as const
+from lxml import etree
 
 
 class ProxyMiddleware(RetryMiddleware):
@@ -114,7 +115,14 @@ class ProxyMiddleware(RetryMiddleware):
 
     @staticmethod
     def get_local_network_ip():
-        return requests.get('http://ifconfig.me/ip', timeout=10).text.strip()
+        ret = requests.get('https://ip.cn/api/index?ip=&type=0').content.decode('utf-8')
+        ip = ''
+        try:
+            ip_info = json.loads(ret)
+            ip = ip_info.get('ip', '')
+        except Exception as e:
+            pass
+        return ip
 
     @staticmethod
     def add_while_list(ip):

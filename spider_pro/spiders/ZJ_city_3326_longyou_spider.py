@@ -167,7 +167,7 @@ class ZjCity3326LongyouSpiderSpider(scrapy.Spider):
         Returns:
 
         """
-        ret = json.loads(resp.body_as_unicode())
+        ret = json.loads(resp.text)
 
         max_pages = ret.get('totalPageCount', 0)
         for page in range(1, max_pages + 1):
@@ -187,7 +187,7 @@ class ZjCity3326LongyouSpiderSpider(scrapy.Spider):
                 }, cb_kwargs={'url': url}, headers=self.headers, priority=max_pages + 1 - page)
 
     def parse_list(self, resp, url):
-        ret = json.loads(resp.body_as_unicode())
+        ret = json.loads(resp.text)
 
         rows = ret.get('rows', [])
 
@@ -206,12 +206,21 @@ class ZjCity3326LongyouSpiderSpider(scrapy.Spider):
                                              'pub_time': pub_time,
                                          }, priority=(len(rows) + 1 - n) * 10)
 
+    @staticmethod
+    def check_has_body(content):
+        com = re.compile('<body[^>]*>([\s\S]*)<\/body>')
+        ret = com.findall(content)
+
+        return ret[0] if ret else content
+
     def parse_detail(self, resp):
-        ret = json.loads(resp.body_as_unicode())
+        ret = json.loads(resp.text)
 
         data = ret.get('data', {})
         if data:
             content = data.get('content', '').replace('\r\n', '').replace('\t', '')
+            content = ZjCity3326LongyouSpiderSpider.check_has_body(content)
+
             title_name = data.get('title')
             notice_type_ori = resp.meta.get('notice_type')
 
@@ -247,5 +256,5 @@ class ZjCity3326LongyouSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl ZJ_city_3326_longyou_spider -a sdt=2021-05-01 -a edt=2021-05-10".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3326_longyou_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3326_longyou_spider -a sdt=2021-01-01 -a edt=2021-05-17".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3326_longyou_spider".split(" "))
