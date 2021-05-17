@@ -167,6 +167,7 @@ class ReportOutput(DBQuery):
 
         self.download_sum = 0
         self.push_sum = 0
+        self.pub_sum = 0
 
     def get_statistic_data(self, date, table_with_area, serial_number):
         table_name = table_with_area['table_name']
@@ -177,6 +178,14 @@ class ReportOutput(DBQuery):
         today = date
         tomorrow = '{0:%Y-%m-%d}'.format(datetime.strptime(today, '%Y-%m-%d') + timedelta(days=1))
         download_sql = """SELECT area_id n, COUNT(id) c FROM {db_name}.{table_name}
+        WHERE update_time BETWEEN '{today}' AND '{tomorrow}'
+        GROUP BY area_id;""".format(**{
+            'today': today,
+            'tomorrow': tomorrow,
+            'table_name': table_name,
+            'db_name': self.db_name,
+        })
+        pub_sql = """SELECT area_id n, COUNT(id) c FROM {db_name}.{table_name}
         WHERE pub_time BETWEEN '{today}' AND '{tomorrow}'
         GROUP BY area_id;""".format(**{
             'today': today,
@@ -192,20 +201,29 @@ class ReportOutput(DBQuery):
             'cdt': date,
         })
         print(download_sql + '\n')
+        print(pub_sql + '\n')
         print(push_sql + '\n')
         download_data = self.fetch_all(download_sql)  # [(area_id, n),]
+        pub_data = self.fetch_all(pub_sql)
         push_data = self.fetch_all(push_sql)
 
-        if all([download_data, push_data]):
-            result.append(
-                [date, serial_number, area_id, download_data[0][1], push_data[0][1] if push_data[0][1] else 0])
-        if download_data and not push_data:
-            result.append([date, serial_number, area_id, download_data[0][1], 0])
-        if not download_data and push_data:
-            result.append([date, serial_number, area_id, 0, push_data[0][1] if push_data[0][1] else 0])
-        if not any([download_data, push_data]):
-            result.append([date, serial_number, area_id, 0, 0])
-        self.data_list.extend([[x[0], x[1], self.area_map.get(str(x[2]), x[2]), x[3], x[4]] for x in result])
+        try:
+            download_n = int(download_data[0][1])
+        except Exception as e:
+            download_n = 0
+        try:
+            pub_n = int(pub_data[0][1])
+        except Exception as e:
+            pub_n = 0
+        try:
+            push_n = int(push_data[0][1])
+        except Exception as e:
+            push_n = 0
+
+        result.append(
+            [date, serial_number, area_id, pub_n, download_n, push_n])
+
+        self.data_list.extend([[x[0], x[1], self.area_map.get(str(x[2]), x[2]), x[3], x[4], x[5]] for x in result])
 
     @property
     def table_info(self):
@@ -240,7 +258,7 @@ class ReportOutput(DBQuery):
         return date_list
 
     def output(self, **kwargs):
-        tts = ['日期', '序号', '网站名称', '采集数量', '推送数量', '发布数量', '待发布数量']
+        tts = ['日期', '序号', '网站名称', '站点发布数', '采集数量', '推送数量', '发布数量', '待发布数量']
         sdt = kwargs.get('sdt')
         edt = kwargs.get('edt')
 
@@ -270,7 +288,7 @@ class ReportOutput(DBQuery):
                     print(e)
                     self.msg = e
             # 合计
-            for n, v in enumerate(['合计', '', '', self.download_sum, self.push_sum, '']):
+            for n, v in enumerate(['合计', '', '', self.pub_sum, self.download_sum, self.push_sum, '']):
                 self.ws.cell(row=self.end + 1, column=n + 1, value=v)
             self.ws['A{0}'.format(self.end + 1)].border = self.border
             self.w.save('统计{0:%Y-%m-%d}.xls'.format(datetime.now()))
@@ -278,6 +296,12 @@ class ReportOutput(DBQuery):
     def to_excel(self, tts, data_list):
         """
         输出excel报表
+        @result: [
+            ['2021-04-16','医疗采购', 575， 1],
+            ['2021-04-16','工程建设', 138， 2],
+            ['2021-04-17','测试1', 157，0],
+            ['2021-04-17','测试2', 3，0],
+        ]
         params:
             @tts: 表头列表
             @data_list: 表体数据
@@ -286,19 +310,13 @@ class ReportOutput(DBQuery):
         for n, tt in enumerate(tts):
             self.ws.cell(row=1, column=n + 1, value=tt)
 
-        # @result: [
-        #     ['2021-04-16','医疗采购', 575， 1],
-        #     ['2021-04-16','工程建设', 138， 2],
-        #     ['2021-04-17','测试1', 157，0],
-        #     ['2021-04-17','测试2', 3，0],
-        # ]
-
         for n, dl in enumerate(data_list):
             self.ws.append(dl)
             self.end += 1
 
-            self.download_sum += dl[3]
-            self.push_sum += dl[4]
+            self.pub_sum += dl[3]
+            self.download_sum += dl[4]
+            self.push_sum += dl[5]
 
         # 合并
         self.ws.merge_cells('A{start}:A{end}'.format(start=self.start, end=self.end))
@@ -307,7 +325,7 @@ class ReportOutput(DBQuery):
             horizontal="center", vertical="center"
         )
         # 样式
-        for col in ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1']:
+        for col in ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1']:
             self.ws[col].border = self.border
         for row in self.ws['A']:
             row.border = self.border
@@ -326,5 +344,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-05-01', edt='2021-05-14')
+    rpt.output(sdt='2021-05-14', edt='2021-05-17')
     print((datetime.now() - start_time).total_seconds())

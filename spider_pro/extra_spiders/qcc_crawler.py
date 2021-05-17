@@ -2,8 +2,7 @@
 import scrapy
 import re
 from lxml import etree
-import random
-import requests
+
 from spider_pro import items
 
 
