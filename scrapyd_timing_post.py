@@ -14,6 +14,7 @@ from operator import itemgetter
 import requests
 import threading
 import platform
+import logging
 from sqlalchemy import create_engine
 # from operator import itemgetter
 # from spider_pro.utils import get_accurate_pub_time
@@ -209,6 +210,11 @@ class ScrapyDataPost(object):
         self.engine_config = engine_config
         self.post_url = post_url
         self.engine = create_engine(engine_config, pool_size=105)  # TODO pool_size need add
+        self.root_path = os.getcwd()
+        self.logger = logging.getLogger()
+        self.logger.setLevel(logging.INFO)
+        fh = logging.FileHandler(os.path.join(self.root_path, "timing_post.log"))
+        fh.setLevel(logging.INFO)
 
     @staticmethod
     def reset_file_url(content, files_path_string):
@@ -304,10 +310,12 @@ class ScrapyDataPost(object):
                                 r = requests.post(url=self.post_url, data=data, timeout=10)
                                 if r.status_code != 200:
                                     print(r.status_code)
+                                    self.logger.info(r.status_code)
                                     r = False
                                 else:
                                     r_dict = json.loads(r.text)
                                     print(r_dict)
+                                    self.logger.info(r_dict)
                                     if r_dict.get("code") in [200, "200"]:
                                         r = True
                                         itme_num += 1
@@ -316,10 +324,12 @@ class ScrapyDataPost(object):
                                         r = False
 
                                 if not r:
-                                    print("upload", item_id, r)
+                                    print("upload", item_id, r, table_name)
+                                    self.logger.info("upload", item_id, r, table_name)
                                 else:
                                     pass
-                                    print("upload", item_id, r)
+                                    print("upload", item_id, r, table_name)
+                                    self.logger.info("upload", item_id, r, table_name)
                         except Exception as e:
                             print(e)
 
@@ -345,7 +355,8 @@ class ScrapyDataPost(object):
                     if len(results) < rows:
                         break
                 else:
-                    print("没有数据可执行更新操作")
+                    print("{}没有数据可执行更新操作".format(table_name))
+                    self.logger.info("{}没有数据可执行更新操作".format(table_name))
                     break
 
     def run_post_today_all_spider_data(self, tables_list):
@@ -514,90 +525,90 @@ if __name__ == "__main__":
     # cp.run_multi_thead_prepare(st='2021-04-03', et='2021-04-05')
 
     # 正式批量推数据 解开注释需要当心！！！
-    # cp.run_post_today_all_spider_data(tables_list=[
-        # "notices_00",
-        # "notices_02",
-        # "notices_03",
-        # "notices_04",
-        # "notices_05",
-        # "notices_08",
-        # "notices_10",
-        # "notices_11",
-        # "notices_13",
-        # "notices_14",
-        # "notices_15",
-        # "notices_16",
-        # "notices_18",
-        # "notices_19",
-        # "notices_21",
-        # "notices_23",
-        # "notices_26",
-        # "notices_30",
-        # "notices_40",
-        # "notices_44",
-        # "notices_49",
-        # "notices_50",
-        # "notices_52",
-        # "notices_54",
-        # "notices_55",
-        # "notices_57",
-        # "notices_71",
-        # "notices_3303",
-        # "notices_3305",
-        # "notices_3306",
-        # "notices_3307",
-        # "notices_3309",
-        # "notices_3312",
-        # "notices_3313",
-        # "notices_3314",
-        # "notices_3315",
-        # "notices_3318",
-        # "notices_3320",
-    # ])
-    # 正式批量推今天之前的数据 解开注释需要当心！！！
-    cp.run_post_before_today_all_spider_data(tables_list=[
-    #     "notices_00",
-        # "notices_02",
+    cp.run_post_today_all_spider_data(tables_list=[
+        "notices_00",
+        "notices_02",
         "notices_03",
-        # "notices_04",
-        # "notices_05",
-        # "notices_08",
-        # "notices_10",
-        # "notices_11",
-        # "notices_13",
-        # "notices_14",
-        # "notices_15",
-        # "notices_16",
-        # "notices_18",
-        # "notices_19",
-        # "notices_21",
-        # "notices_23",
-        # "notices_26",
-        # "notices_30",
-        # "notices_40",
+        "notices_04",
+        "notices_05",
+        "notices_08",
+        "notices_10",
+        "notices_11",
+        "notices_13",
+        "notices_14",
+        "notices_15",
+        "notices_16",
+        "notices_18",
+        "notices_19",
+        "notices_21",
+        "notices_23",
+        "notices_26",
+        "notices_30",
+        "notices_40",
         # "notices_44",
-        # "notices_49",
-        # "notices_50",
-        # "notices_52",
-        # "notices_53",
-        # "notices_54",
-        # "notices_55",
+        "notices_49",
+        "notices_50",
+        "notices_52",
+        "notices_54",
+        "notices_55",
         # "notices_57",
-        # "notices_71",
-        # "notices_3303",
-        # "notices_3304",
-        # "notices_3305",
-        # "notices_3306",
-        # "notices_3307",
-        # "notices_3309",
-        # "notices_3312",
-        # "notices_3313",
-        # "notices_3314",
-        # "notices_3315",
-        # "notices_3318",
-        # "notices_3320",
-        # "notices_3321",
+        "notices_71",
+        "notices_3303",
+        "notices_3305",
+        "notices_3306",
+        "notices_3307",
+        "notices_3309",
+        "notices_3312",
+        "notices_3313",
+        "notices_3314",
+        "notices_3315",
+        "notices_3318",
+        "notices_3320",
     ])
+    # 正式批量推今天之前的数据 解开注释需要当心！！！
+    # cp.run_post_before_today_all_spider_data(tables_list=[
+    #     "notices_00",
+    #     "notices_02",
+    #     "notices_03",
+    #     "notices_04",
+    #     "notices_05",
+    #     "notices_08",
+    #     "notices_10",
+    #     "notices_11",
+    #     "notices_13",
+    #     "notices_14",
+    #     "notices_15",
+    #     "notices_16",
+    #     "notices_18",
+    #     "notices_19",
+    #     "notices_21",
+    #     "notices_23",
+    #     "notices_26",
+    #     "notices_30",
+    #     "notices_40",
+    #     # "notices_44",
+    #     "notices_49",
+    #     "notices_50",
+    #     "notices_52",
+    #     "notices_53",
+    #     "notices_54",
+    #     "notices_55",
+    #     # "notices_57",
+    #     "notices_71",
+    #     "notices_3303",
+    #     "notices_3304",
+    #     "notices_3305",
+    #     "notices_3306",
+    #     "notices_3307",
+    #     "notices_3309",
+    #     "notices_3312",
+    #     "notices_3313",
+    #     "notices_3314",
+    #     "notices_3315",
+    #     "notices_3318",
+    #     "notices_3320",
+    #     "notices_3321",
+    # ])
 
     # 测试推数据
     # cp = ScrapyDataPost(table_name="notices_3311",
