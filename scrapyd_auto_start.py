@@ -283,9 +283,9 @@ if __name__ == "__main__":
         # "ZJ_city_3319_changxing_spider",  # ok
         # "ZJ_city_3320_cangnan_spider",  # error_01
         # "ZJ_city_3321_linhai_spider",
-        # "ZJ_city_3322_anji_spider",
+        "ZJ_city_3322_anji_spider",
         # "ZJ_city_3323_xiaoshan_spider",
-        "ZJ_city_3326_longyou_spider",
+        # "ZJ_city_3326_longyou_spider",
         # "qcc_crawler",
     ]
 
@@ -315,25 +315,25 @@ if __name__ == "__main__":
                     # 'day': 30
                 }
 
-                if_incr = False
+                if_incr = True
                 # if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
                 #     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
                 # if item == "province_57_jingcaizongheng_spider":
                 #     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_TIMEOUT": 15, 'ROBOTSTXT_OBEY': False}
-                if item == "province_21_shandong_spider":
-                    if_incr = True
-                    # CONCURRENT_REQUESTS_PER_IP
-                    info = {
-                        # "ENABLE_PROXY_USE": False,
-                        # 'CONCURRENT_REQUESTS_PER_IP': 20,
-                        "DOWNLOAD_TIMEOUT": 0.5,
-                        'CONCURRENT_REQUESTS': 10,
-                        'RANDOMIZE_DOWNLOAD_DELAY': True,
-                    }
-
-                    arg_choices = {
-                        'day': 30
-                    }
+                # if item == "province_21_shandong_spider":
+                #     if_incr = True
+                #     # CONCURRENT_REQUESTS_PER_IP
+                #     info = {
+                #         # "ENABLE_PROXY_USE": False,
+                #         # 'CONCURRENT_REQUESTS_PER_IP': 20,
+                #         "DOWNLOAD_TIMEOUT": 0.5,
+                #         'CONCURRENT_REQUESTS': 10,
+                #         'RANDOMIZE_DOWNLOAD_DELAY': True,
+                #     }
+                #
+                #     arg_choices = {
+                #         'day': 30
+                #     }
                 # if item == "ZJ_city_3326_longyou_spider":
                 #     info = {"DOWNLOAD_TIMEOUT": 30}
                 # if item == "province_00_quanguo_spider":  # 特殊处理,根据需求

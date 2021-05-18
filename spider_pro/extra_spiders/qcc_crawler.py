@@ -93,11 +93,11 @@ class QccCrawlerSpider(scrapy.Spider):
         """
         获取最大分页 获取所有列表页
         """
-        max_pages = resp.xpath('//ul[@class="pagination pagination-md"]//a[@class="end"]/text()').get()
+        max_page = resp.xpath('//ul[@class="pagination pagination-md"]//a[@class="end"]/text()').get()
         category = resp.meta.get('category', '')
         industry_category = resp.meta.get('industry_category', '')
         try:
-            max_page = int(max_pages[0])
+            max_page = int(max_page)
         except (ValueError, IndexError, TypeError) as e:
             self.log('error:{e}'.format(e=e))
         else:
