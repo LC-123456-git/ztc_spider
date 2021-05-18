@@ -50,7 +50,7 @@ if __name__ == "__main__":
     REDIS_PASSWORD = "Ly3sa%@D0$pJt0y6."
     redis_pool = redis.ConnectionPool(
         host=REDIS_HOST, password=REDIS_PASSWORD, decode_responses=True, max_connections=MAX_CONNECTIONS,
-        retry_on_timeout=True)
+        retry_on_timeout=True, port=8090)
     rb = Client(connection_pool=redis_pool, port=8090)
     print(f'{rb.bfInfo("duplicate_urls:49").insertedNum=}')
     print(f'{rb.bfInfo("duplicate_urls:49").size=}')
