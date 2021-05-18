@@ -15,6 +15,7 @@ import requests
 import threading
 import platform
 import logging
+import psutil
 from sqlalchemy import create_engine
 # from operator import itemgetter
 # from spider_pro.utils import get_accurate_pub_time
@@ -495,15 +496,19 @@ class ScrapyDataPost(object):
 
 
 def test_current_is_running():
-    if "Linux" in platform.platform():
-        name = os.path.basename(sys.argv[0])
-        cmd_str = f"ps -ef|grep {name}|grep python3|grep -v grep"
-        with os.popen(cmd_str) as r:
-            t = r.read().split('\n')
-            if len(t) > 2:
-                return True
-            else:
-                return False
+    for i in psutil.process_iter():
+        if 'scrapyd_timing_post' in i.name():
+            return True
+    # if "Linux" in platform.platform():
+    #    name = os.path.basename(sys.argv[0])
+    #    cmd_str = f"ps -ef|grep {name}|grep python3|grep -v grep"
+    #    print(cmd_str)
+    #    with os.popen(cmd_str) as r:
+    #        t = r.read().split('\n')
+    #        if len(t) > 2:
+    #            return True
+    #       else:
+    #           return False
     else:
         return False
 
