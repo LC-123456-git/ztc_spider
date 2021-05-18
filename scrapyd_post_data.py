@@ -229,7 +229,7 @@ class ScrapyDataPost(object):
 
     def run_post(self, d_time="1970-01-01", table_name=None, e_time=None):
         table_name = table_name if table_name else self.table_name
-        rows = 1
+        rows = 200
         err_start = 0
         itme_num = 0
         with self.engine.connect() as conn:
@@ -248,8 +248,8 @@ class ScrapyDataPost(object):
                 # )
 
                 results = conn.execute(
-                        f"select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 1 and pub_time >= '{d_time}' and pub_time < '{e_time}'limit {err_start},{rows} ").fetchall()
-                        # f"-- select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' and pub_time < '{e_time}'limit {err_start},{rows} ").fetchall()
+                        # f"-- select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 1 and pub_time >= '{d_time}' and pub_time < '{e_time}'limit {err_start},{rows} ").fetchall()
+                        "select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' and pub_time < '{e_time}'limit {err_start},{rows} ").fetchall()
                 if len(results) != 0:
                     area_id = results[0]['area_id']
                     push_time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
@@ -277,10 +277,11 @@ class ScrapyDataPost(object):
                                 r_dict = json.loads(r.text)
                                 if r_dict.get("code") in [200, "200"]:
                                     r = True
+                                    itme_num += 1
                                 else:
                                     print(r_dict.get("code"))
                                     r = False
-                            itme_num += 1
+
                             if not r:
                                 print("upload", item_id, r)
                             else:
@@ -307,8 +308,6 @@ class ScrapyDataPost(object):
                     count = itme_num
                     result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
                     if result:
-                        conn.execute(f"update statistical set count='{count}', push_time='{push_time}' where area_id={area_id}")
-                    else:
                         conn.execute(f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
                     if len(results) < rows:
                         break
@@ -465,12 +464,12 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # 正式推数据 解开注释需要当心！！！
-    cp = ScrapyDataPost(table_name="notices_3323",
+    cp = ScrapyDataPost(table_name="notices_62",
                         # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4',
                         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
                         post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice")
-    # cp.run_post(d_time='2021-04-20', e_time='2021-04-21')
-    cp.run_post()
+    cp.run_post(d_time='2021-05-01', e_time='2021-05-07')
+    # cp.run_post()
 
     #'You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near \'14:02:50)\' at line 1'
     # 正式多线程推数据 解开注释需要当心！！！

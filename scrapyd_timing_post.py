@@ -142,7 +142,7 @@ def deal_base_notices_data(data, is_hump=False):
             "source": get_limit_char_from_data(data, "source", 500),  # '来源(采集的公告就填写采集网站、用户和平台发布就用用户名)'
             "sourceUrl": get_limit_char_from_data(data, "source_url", 500),  # 采集发布来源网站URL
 
-            "noticeId": data.get("uuid", ""),
+            "noticeId": data.get("", ""),
 
             # "is_upload": get_int_from_data(data, "0")
         }
@@ -310,10 +310,11 @@ class ScrapyDataPost(object):
                                     print(r_dict)
                                     if r_dict.get("code") in [200, "200"]:
                                         r = True
+                                        itme_num += 1
                                     else:
                                         print(r_dict.get("code"))
                                         r = False
-                                itme_num += 1
+
                                 if not r:
                                     print("upload", item_id, r)
                                 else:
@@ -340,8 +341,6 @@ class ScrapyDataPost(object):
                     count = itme_num
                     result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
                     if result:
-                        conn.execute(f"update statistical set count='{count}', push_time='{push_time}' where area_id={area_id}")
-                    else:
                         conn.execute(f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
                     if len(results) < rows:
                         break
@@ -510,7 +509,7 @@ if __name__ == "__main__":
                         post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice"
     )
     # cp.run_post(d_time='2021-04-28')
-    # cp.run_post()
+    cp.run_post()
     # 正式多线程推数据 解开注释需要当心！！！
     # cp.run_multi_thead_prepare(st='2021-04-03', et='2021-04-05')
 
