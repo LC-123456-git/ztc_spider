@@ -6,6 +6,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Index, UniqueCons
 from sqlalchemy.dialects import mysql
 from twisted.enterprise import adbapi
 from pymysql import cursors
+from datetime import datetime
 
 from spider_pro import items
 
@@ -22,7 +23,8 @@ class ExtraPipeline(object):
     def __init__(self, name, logger, **kwargs):
         self.name = name
         self.logger = logger
-        self.db_name = kwargs.get('MYSQL_TEST_DB_NAME', '') if kwargs.get("DEBUG_MODE") else kwargs.get('MYSQL_DB_NAME', '')
+        self.db_name = kwargs.get('MYSQL_TEST_DB_NAME', '') if kwargs.get("DEBUG_MODE") else kwargs.get('MYSQL_DB_NAME',
+                                                                                                        '')
 
         if kwargs.get("TEST_ENGINE_CONFIG") and kwargs.get("ENGINE_CONFIG"):
             self.engine = create_engine(
@@ -47,13 +49,14 @@ class ExtraPipeline(object):
         self.db_pool = adbapi.ConnectionPool('pymysql', **self.db_params)
         # insert
         self.insert_sql = """INSERT INTO {db_name}.{table_name} 
-        (QYMC,SSDQ,FDDBR,CLRQ,DJZT,ZCZB,SJZB,TYSHXYDM,GSZCH,ZZJGDM,NSRSBH,NSRZZ,QYLX,HY,YYQXS,YYQXM,RYGM,CBRY,YWM,CYM,DJJG,HZRQ,ZCDZ,JYFW,JCKQYDM,QYFL,HYDL) 
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        (QYMC,SSDQ,FDDBR,CLRQ,DJZT,ZCZB,SJZB,TYSHXYDM,GSZCH,ZZJGDM,NSRSBH,NSRZZ,QYLX,HY,YYQXS,YYQXM,RYGM,CBRY,YWM,CYM,DJJG,HZRQ,ZCDZ,JYFW,JCKQYDM,QYFL,HYDL,create_time,update_time) 
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """.format(db_name=self.db_name, table_name=self.table_name)
         # update
         self.update_sql = """UPDATE {db_name}.{table_name} SET
         QYMC=%s,SSDQ=%s,FDDBR=%s,CLRQ=%s,DJZT=%s,ZCZB=%s,SJZB=%s,TYSHXYDM=%s,GSZCH=%s,ZZJGDM=%s,NSRSBH=%s,NSRZZ=%s,QYLX=%s,
-        HY=%s,YYQXS=%s,YYQXM=%s,RYGM=%s,CBRY=%s,YWM=%s,CYM=%s,DJJG=%s,HZRQ=%s,ZCDZ=%s,JYFW=%s,JCKQYDM=%s,QYFL=%s,HYDL=%s
+        HY=%s,YYQXS=%s,YYQXM=%s,RYGM=%s,CBRY=%s,YWM=%s,CYM=%s,DJJG=%s,HZRQ=%s,ZCDZ=%s,JYFW=%s,JCKQYDM=%s,QYFL=%s,HYDL=%s,
+        update_time=%s
         WHERE QYMC=""".format(db_name=self.db_name, table_name=self.table_name)
         # fetch
         self.fetch_sql = """SELECT COUNT(QYMC) c FROM {db_name}.{table_name} WHERE QYMC='%s'
@@ -94,7 +97,10 @@ class ExtraPipeline(object):
             Column('JCKQYDM', mysql.VARCHAR(512), nullable=True, comment="进出口企业代码"),
             Column('QYFL', mysql.VARCHAR(256), nullable=True, comment="行业分类"),
             Column('HYDL', mysql.VARCHAR(256), nullable=True, comment="行业大类"),
+            Column('create_time', mysql.DATETIME, nullable=True, comment="创建时间"),
+            Column('update_time', mysql.DATETIME, nullable=True, comment="更新时间"),
         )
+        Index("update_time", my_table.c.update_time)
         metadata.create_all()
 
     def process_item(self, item, spider):
@@ -116,37 +122,70 @@ class ExtraPipeline(object):
         else:
             if ret.get('c'):
                 sql = "{0}'{1}'".format(self.update_sql, item['company_name'])
+                cursor.execute(sql, (
+                    item['company_name'],
+                    item['location'],
+                    item['legal_representative'],
+                    item['date_of_establishment'],
+                    item['operating_status'],
+                    item['registered_capital'],
+                    item['paid_in_capital'],
+                    item['unified_social_credit_code'],
+                    item['business_registration_number'],
+                    item['organization_code'],
+                    item['taxpayer_identification_number'],
+                    item['taxpayer_qualification'],
+                    item['type_of_enterprise'],
+                    item['industry'],
+                    item['operating_period_std'],
+                    item['operating_period_edt'],
+                    item['staff_size'],
+                    item['number_of_participants'],
+                    item['english_name'],
+                    item['former_name'],
+                    item['registration_authority'],
+                    item['approved_date'],
+                    item['registered_address'],
+                    item['business_scope'],
+                    item['import_and_export_enterprise_code'],
+                    item['category'],
+                    item['industry_category'],
+                    '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.now()),
+                ))
             else:
                 sql = self.insert_sql
-            cursor.execute(sql, (
-                item['company_name'],
-                item['location'],
-                item['legal_representative'],
-                item['date_of_establishment'],
-                item['operating_status'],
-                item['registered_capital'],
-                item['paid_in_capital'],
-                item['unified_social_credit_code'],
-                item['business_registration_number'],
-                item['organization_code'],
-                item['taxpayer_identification_number'],
-                item['taxpayer_qualification'],
-                item['type_of_enterprise'],
-                item['industry'],
-                item['operating_period_std'],
-                item['operating_period_edt'],
-                item['staff_size'],
-                item['number_of_participants'],
-                item['english_name'],
-                item['former_name'],
-                item['registration_authority'],
-                item['approved_date'],
-                item['registered_address'],
-                item['business_scope'],
-                item['import_and_export_enterprise_code'],
-                item['category'],
-                item['industry_category'],
-            ))
+
+                cursor.execute(sql, (
+                    item['company_name'],
+                    item['location'],
+                    item['legal_representative'],
+                    item['date_of_establishment'],
+                    item['operating_status'],
+                    item['registered_capital'],
+                    item['paid_in_capital'],
+                    item['unified_social_credit_code'],
+                    item['business_registration_number'],
+                    item['organization_code'],
+                    item['taxpayer_identification_number'],
+                    item['taxpayer_qualification'],
+                    item['type_of_enterprise'],
+                    item['industry'],
+                    item['operating_period_std'],
+                    item['operating_period_edt'],
+                    item['staff_size'],
+                    item['number_of_participants'],
+                    item['english_name'],
+                    item['former_name'],
+                    item['registration_authority'],
+                    item['approved_date'],
+                    item['registered_address'],
+                    item['business_scope'],
+                    item['import_and_export_enterprise_code'],
+                    item['category'],
+                    item['industry_category'],
+                    '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.now()),
+                    '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.now()),
+                ))
 
     def handle_error(self, error, item, spider):
         self.logger.info('DB INSERT ERROR: {0}'.format(error))

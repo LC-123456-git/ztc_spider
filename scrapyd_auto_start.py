@@ -283,10 +283,10 @@ if __name__ == "__main__":
         # "ZJ_city_3319_changxing_spider",  # ok
         # "ZJ_city_3320_cangnan_spider",  # error_01
         # "ZJ_city_3321_linhai_spider",
-        "ZJ_city_3322_anji_spider",
+        # "ZJ_city_3322_anji_spider",
         # "ZJ_city_3323_xiaoshan_spider",
         # "ZJ_city_3326_longyou_spider",
-        # "qcc_crawler",
+        "qcc_crawler",
     ]
 
     # 优先判断运行状态
@@ -315,7 +315,7 @@ if __name__ == "__main__":
                     # 'day': 30
                 }
 
-                if_incr = True
+                if_incr = False
                 # if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
                 #     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
                 # if item == "province_57_jingcaizongheng_spider":

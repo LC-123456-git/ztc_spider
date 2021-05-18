@@ -215,6 +215,7 @@ class ScrapyDataPost(object):
         self.logger.setLevel(logging.INFO)
         fh = logging.FileHandler(os.path.join(self.root_path, "timing_post.log"))
         fh.setLevel(logging.INFO)
+        self.logger.addHandler(fh)
 
     @staticmethod
     def reset_file_url(content, files_path_string):

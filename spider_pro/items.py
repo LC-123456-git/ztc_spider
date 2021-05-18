@@ -46,6 +46,8 @@ class QCCItem(scrapy.Item):
     company_name = scrapy.Field({'idx': 25, 'comment': '企业名称'})
     location = scrapy.Field({'idx': 26, 'comment': '所属地区'})
     import_and_export_enterprise_code = scrapy.Field({'idx': 27, 'comment': '进出口企业代码'})
+    create_time = scrapy.Field({"idx": 28, "comment": "创建时间"})
+    update_time = scrapy.Field({"idx": 29, "comment": "更新时间"})
 
 
 class NoticesItem(scrapy.Item):

@@ -11,7 +11,7 @@ import logging.config
 BOT_NAME = 'spider_pro'
 
 # project spider modules
-SPIDER_MODULES = ['spider_pro.spiders']
+SPIDER_MODULES = ['spider_pro.spiders', 'spider_pro.extra_spiders']
 NEWSPIDER_MODULE = 'spider_pro.spiders'
 
 # Obey robots.txt rules
@@ -62,7 +62,7 @@ FILES_STORE = FILES_STORE_PATH
 IMAGES_STORE = FILES_STORE_PATH
 
 # download timeout
-DOWNLOAD_TIMEOUT = 10
+DOWNLOAD_TIMEOUT = 30
 
 # retry setting
 RETRY_TIMES = 3

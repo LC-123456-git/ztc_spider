@@ -7,13 +7,42 @@ import os
 import sys
 import json
 import re
-import ast
 import time
+import ast
 import datetime
+from operator import itemgetter
 import requests
 import threading
 import platform
+import logging
 from sqlalchemy import create_engine
+# from operator import itemgetter
+# from spider_pro.utils import get_accurate_pub_time
+import psutil
+
+
+
+
+def get_accurate_pub_time(pub_time):
+    if not pub_time:
+        return ""
+    if pub_time_str := re.search(r"\d{4}-\d{1,2}-\d{1,2} \d{1,2}:\d{1,2}", pub_time):
+        pub_time_a = pub_time_str.group(0)
+    elif pub_time_str := re.search(r"\d{4}-\d{1,2}-\d{1,2}", pub_time):
+        pub_time_a = pub_time_str.group(0)
+    elif pub_time_str := re.search(r"\d{4}\.\d{1,2}\.\d{1,2} \d{1,2}:\d{1,2}", pub_time):
+        pub_time_a = pub_time_str.group(0).replace(".", "-")
+    elif pub_time_str := re.search(r"\d{4}\.\d{1,2}\.\d{1,2}", pub_time):
+        pub_time_a = pub_time_str.group(0).replace(".", "-")
+    elif pub_time_str := re.search(r"\d{4}/\d{1,2}/\d{1,2}", pub_time):
+        pub_time_a = pub_time_str.group(0).replace("/", "-")
+    elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日\d{1,2}:\d{1,2}", pub_time):
+        pub_time_a = pub_time_str.group().replace("年", "-").replace("月", "-").replace("日", " ")
+    elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日", pub_time):
+        pub_time_a = pub_time_str.group(0).replace("年", "-").replace("月", "-").replace("日", "")
+    else:
+        pub_time_a = ""
+    return pub_time_a
 
 
 def get_limit_char_from_data(data, name, limit=9999, not_null=False):
@@ -38,7 +67,7 @@ def process_data_by_type_begin_upload(data, data_type="datetime"):
         try:
             r = datetime.datetime.fromisoformat(data)
             return r.strftime("%Y-%m-%d %H:%M:%S")
-        except:
+        except :
             return ""
     elif data_type == "email":
         f = r'^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}$'
@@ -56,7 +85,6 @@ def process_data_by_type_begin_upload(data, data_type="datetime"):
 
 
 def deal_base_notices_data(data, is_hump=False):
-    # 判断驼峰
     if is_hump:
         return {
             "title": get_limit_char_from_data(data, "title", 9999),  # 公告标题
@@ -116,12 +144,9 @@ def deal_base_notices_data(data, is_hump=False):
             "source": get_limit_char_from_data(data, "source", 500),  # '来源(采集的公告就填写采集网站、用户和平台发布就用用户名)'
             "sourceUrl": get_limit_char_from_data(data, "source_url", 500),  # 采集发布来源网站URL
 
-            "noticeId": data.get("uuid", ""),
-            # "is_upload": get_int_from_data(data, "0")
+            "noticeId": data.get("", ""),
 
-            "pushTime": process_data_by_type_begin_upload(
-                get_limit_char_from_data(data, "push_time"), data_type="datetime"
-            ),  # 推送时间
+            # "is_upload": get_int_from_data(data, "0")
         }
     else:
         return {
@@ -172,10 +197,10 @@ def deal_base_notices_data(data, is_hump=False):
             "source": get_limit_char_from_data(data, "source", 500),  # '来源(采集的公告就填写采集网站、用户和平台发布就用用户名)'
             "source_url": get_limit_char_from_data(data, "source_url", 500),  # 采集发布来源网站URL
 
+            "noticeId": data.get("uuid", ""),
+
             # 自有字段
             "is_clean": get_limit_char_from_data(data, "is_clean") or "0",
-
-            "push_time": get_limit_char_from_data(data, "push_time"),  # 推送时间
         }
 
 
@@ -185,7 +210,18 @@ class ScrapyDataPost(object):
         self.table_name = table_name
         self.engine_config = engine_config
         self.post_url = post_url
+        print('before engine')
         self.engine = create_engine(engine_config, pool_size=105)  # TODO pool_size need add
+        self.root_path = os.getcwd()
+        print('before log')
+        self.logger = logging.getLogger()
+        self.logger.setLevel(logging.INFO)
+        fh = logging.FileHandler(os.path.join(self.root_path, "timing_post.log"))
+        formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s - %(message)s")
+        fh.setFormatter(formatter)
+        fh.setLevel(logging.INFO)
+        self.logger.addHandler(fh)
+        print('after log')
 
     @staticmethod
     def reset_file_url(content, files_path_string):
@@ -229,82 +265,99 @@ class ScrapyDataPost(object):
 
     def run_post(self, d_time="1970-01-01", table_name=None, e_time=None):
         table_name = table_name if table_name else self.table_name
-        rows = 200
+        rows = 10
         err_start = 0
         itme_num = 0
+        print('数据库链接前')
         with self.engine.connect() as conn:
             while True:
                 print("start query data")
-                """ # 正式推  放开
+                results = conn.execute(
+                        f"select * from {table_name} where id>=2126 limit {err_start},{rows} ").fetchall()
+                # s = conn.execute(f"select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 0 limit {err_start},{rows} ").fetchall()
                 # if not e_time:
                 #     results = conn.execute(
                 #         f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' limit {err_start},{rows} ").fetchall()
                 # else:
                 #     results = conn.execute(
                 #         f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' and pub_time < '{e_time}' limit {err_start},{rows} ").fetchall()
-                """
-                # results = conn.execute(
-                #     f"select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 0 limit {rows}"
-                # )
-
-                results = conn.execute(
-                        # f"-- select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 1 and pub_time >= '{d_time}' and pub_time < '{e_time}'limit {err_start},{rows} ").fetchall()
-                        f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' and pub_time < '{e_time}'limit {err_start},{rows} ").fetchall()
                 if len(results) != 0:
+                    self.logger.info(table_name)
                     area_id = results[0]['area_id']
                     push_time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
                     for item in results:
                         item_dict = dict(item)
                         item_id = item_dict.get("id")
+                        if item_dict['is_have_file'] != 0:
+                            if_push, item_dict['content'] = ScrapyDataPost.reset_file_url(
+                                item_dict['content'], item_dict['files_path']
+                            )
 
-                        # if item_dict['is_have_file'] != 0:
-                        #     if_push, item_dict['content'] = ScrapyDataPost.reset_file_url(
-                        #         item_dict['content'], item_dict['files_path']
-                        #     )
-                        #
-                        #     if not if_push:
-                        #         continue
+                            if not if_push:
+                                continue
 
+                        publish_time = get_accurate_pub_time(item_dict.get("publish_time"))
+                        b = publish_time.split('-')
+                        for i in range(2):
+                            b[1] = b[1].zfill(2)  # 左填充
+                            b[2] = b[2].zfill(2)
+                            sss = '-'.join(b)
+                        item_dict["publish_time"] = sss
                         r = False
                         try:
-                            r = requests.post(url=self.post_url, data=deal_base_notices_data(item_dict, is_hump=True),
-                                              timeout=10)
-                            if r.status_code != 200:
-                                print(r.status_code)
-                                r = False
+                            data = deal_base_notices_data(item_dict, is_hump=True)
+                            # 因为浙江没有项目类型，这里做特殊处理
+                            if table_name == "notices_15" or table_name == "notices_3304":
+                                keys = ["title", "content", "classifyName", "area", "publishTime", "sourceUrl"]
                             else:
+                                keys = ["title", "content", "projectType", "classifyName", "area", "publishTime", "sourceUrl"]
 
-                                r_dict = json.loads(r.text)
-                                if r_dict.get("code") in [200, "200"]:
-                                    r = True
-                                    itme_num += 1
-                                else:
-                                    print(r_dict.get("code"))
-                                    r = False
-
-                            if not r:
-                                print("upload", item_id, r)
-                            else:
+                            out = list(itemgetter(*keys)(data))
+                            if not all(out):
                                 pass
-                                print("upload", item_id, r)
+                            else:
+                                r = requests.post(url=self.post_url, data=data, timeout=10)
+                                if r.status_code != 200:
+                                    print(r.status_code, )
+                                    self.logger.info(r.status_code, table_name)
+                                    r = False
+                                else:
+                                    r_dict = json.loads(r.text)
+                                    print(r_dict)
+                                    self.logger.info(r_dict)
+                                    if r_dict.get("code") in [200, "200"]:
+                                        r = True
+                                        itme_num += 1
+                                    else:
+                                        print(r_dict.get("code"))
+                                        r = False
+                                print('{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+                                if not r:
+                                    print("upload", item_id, r, table_name)
+                                    self.logger.info("upload", item_id, r, table_name)
+                                else:
+                                    pass
+                                    print("upload", item_id, r, table_name)
+                                    # self.logger.info("upload", item_id, r, table_name)
                         except Exception as e:
+                            self.logger.error(e)
                             print(e)
+
 
                         if r:
                             try:
-                                update_sql = f"update {table_name} set is_upload = 1 where id = {item_id}"  # 推送
+                                push_time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
+                                update_sql = f"update {table_name} set is_upload = 1 where id = {item_id}"
                                 result = conn.execute(update_sql)
                                 if result.rowcount != 1:
                                     print("update", item_id, False)
                                 else:
                                     print("update", item_id, True)
-
                             except:
                                 pass
                         else:
                             err_start += 1
                             print("不执行更新操作")
-
                     count = itme_num
                     result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
                     if result:
@@ -312,15 +365,14 @@ class ScrapyDataPost(object):
                     if len(results) < rows:
                         break
                 else:
-                    print("没有数据可执行更新操作")
+                    print("{}没有数据可执行更新操作".format(table_name))
+                    self.logger.info("{}没有数据可执行更新操作".format(table_name))
                     break
-
-
-
 
     def run_post_today_all_spider_data(self, tables_list):
         today = datetime.datetime.now().strftime("%Y-%m-%d")
         thread_list = []
+        print(today)
         for item in tables_list:
             temp_thread = threading.Thread(
                 target=self.run_post,
@@ -341,7 +393,7 @@ class ScrapyDataPost(object):
         for item in tables_list:
             temp_thread = threading.Thread(
                 target=self.run_post,
-                args=("2021-02-03", item, today))
+                args=("2016-03-01", item, today))
             thread_list.append(temp_thread)
 
         for i in thread_list:
@@ -390,7 +442,7 @@ class ScrapyDataPost(object):
         print("all done...")
 
     def run_multi_thead_post(self, s_datetime, e_datetime, i_id):
-        rows = 500
+        rows = 1000
         err_start = 0
         with self.engine.connect() as conn:
             while True:
@@ -402,24 +454,31 @@ class ScrapyDataPost(object):
                     item_id = item_dict.get("id")
                     r = False
                     try:
-                        r = requests.post(url=self.post_url, data=deal_base_notices_data(item_dict, is_hump=True),
-                                          timeout=10)
-                        if r.status_code != 200:
-                            print(i_id, r.status_code)
-                            r = False
+                        data = deal_base_notices_data(item_dict, is_hump=True)
+                        keys = ["title", "content", "projectType", "classifyName", "area", "publishTime", "sourceUrl"]
+                        # 一次性取多个key
+                        out = list(itemgetter(*keys)(data))
+                        if not all(out):
+                            pass
                         else:
-                            r_dict = json.loads(r.text)
-                            if r_dict.get("code") in [200, "200"]:
-                                r = True
-                            else:
-                                print(i_id, r_dict.get("code"))
+                            r = requests.post(url=self.post_url, data=deal_base_notices_data(item_dict, is_hump=True),
+                                              timeout=10)
+                            if r.status_code != 200:
+                                print(i_id, r.status_code)
                                 r = False
-                        if not r:
-                            pass
-                            print(f"upload_{i_id}", item_id, r)
-                        else:
-                            pass
-                            print(f"upload_{i_id}", item_id, r)
+                            else:
+                                r_dict = json.loads(r.text)
+                                if r_dict.get("code") in [200, "200"]:
+                                    r = True
+                                else:
+                                    print(i_id, r_dict.get("code"))
+                                    r = False
+                            if not r:
+                                pass
+                                print(f"upload_{i_id}", item_id, r)
+                            else:
+                                pass
+                                print(f"upload_{i_id}", item_id, r)
                     except Exception as e:
                         print(e)
 
@@ -446,71 +505,144 @@ class ScrapyDataPost(object):
 
 
 def test_current_is_running():
-    if "Linux" in platform.platform():
-        name = os.path.basename(sys.argv[0])
-        cmd_str = f"ps -ef|grep {name}|grep python3|grep -v grep"
-        with os.popen(cmd_str) as r:
-            t = r.read().split('\n')
-            if len(t) > 2:
-                return True
-            else:
-                return False
+    for i in psutil.process_iter():
+        if 'scrapyd_timing_post' in i.name():
+            return True
+    #if "Linux" in platform.platform():
+    #    name = os.path.basename(sys.argv[0])
+    #    cmd_str = f"ps -ef|grep {name}|grep python3|grep -v grep"
+    #    print(cmd_str)
+    #    with os.popen(cmd_str) as r:
+    #        t = r.read().split('\n')
+    #        if len(t) > 2:
+    #            return True
+    #       else:
+    #           return False
     else:
         return False
 
 
 if __name__ == "__main__":
+    print('{0:%Y-%m-%d %H:%M:%S} 跑'.format(datetime.datetime.now()))
     if test_current_is_running():
         sys.exit(0)
 
     # 正式推数据 解开注释需要当心！！！
-    cp = ScrapyDataPost(table_name="notices_3326",
-                        # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4',
-                        engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
-                        post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice")
-    # cp.run_post(d_time='2021-05-01', e_time='2021-05-18')
-    cp.run_post()
 
-    #'You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near \'14:02:50)\' at line 1'
+    cp = ScrapyDataPost(
+                        table_name="notices_00",
+                        engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4',
+                        # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4',
+                        post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice"
+    )
+    # cp.run_post(d_time='2021-04-28')
+    # cp.run_post()
     # 正式多线程推数据 解开注释需要当心！！！
-    # cp.run_multi_thead_prepare(st='2019-03-01', et='2019-04-01')
+    # cp.run_multi_thead_prepare(st='2021-04-03', et='2021-04-05')
+    print('connect')
 
     # 正式批量推数据 解开注释需要当心！！！
-    # cp.run_post_today_all_spider_data(tables_list=[
-    #     # "notices_00",
-    #     # "notices_11",
-    #     # "notices_13",
-    #     # "notices_15",
-    #     # "notices_02",
-    #     # "notices_03",
-    #     # "notices_04",
-    #     # "notices_05",
-    #     # "notices_08",
-    #     # "notices_26",
-    #     "notices_21"
-    # ])
-    # 正式批量推今天之前的数据 解开注释需要当心！！！
-    # cp.run_post_before_today_all_spider_data(tables_list=[
-        # "notices_21"
+    cp.run_post_today_all_spider_data(tables_list=[
         # "notices_00",
+        # "notices_02",
+        "notices_03",
+        # "notices_04",
+        # "notices_05",
+        # "notices_08",
+        # "notices_10",
         # "notices_11",
         # "notices_13",
+        # "notices_14",
         # "notices_15",
+        # "notices_16",
+        # "notices_18",
+        # "notices_19",
+        # "notices_21",
+        # "notices_23",
+        # "notices_26",
+        # "notices_30",
+        # "notices_40",
+        # # "notices_44",
+        # "notices_49",
+        # "notices_50",
+        # "notices_52",
+        # "notices_54",
+        # "notices_55",
+        # # "notices_57",
+        # "notices_71",
+        # "notices_3303",
+        # "notices_3305",
+        # "notices_3306",
+        # "notices_3307",
+        # "notices_3309",
+        # "notices_3312",
+        # "notices_3313",
+        # "notices_3314",
+        # "notices_3315",
+        # "notices_3318",
+        # "notices_3320",
+    ])
+    # 正式批量推今天之前的数据 解开注释需要当心！！！
+    # cp.run_post_before_today_all_spider_data(tables_list=[
+    #     "notices_00",
+    #     "notices_02",
+    #     "notices_03",
+    #     "notices_04",
+    #     "notices_05",
+    #     "notices_08",
+    #     "notices_10",
+    #     "notices_11",
+    #     "notices_13",
+    #     "notices_14",
+    #     "notices_15",
+    #     "notices_16",
+    #     "notices_18",
+    #     "notices_19",
+    #     "notices_21",
+    #     "notices_23",
+    #     "notices_26",
+    #     "notices_30",
+    #     "notices_40",
+    #     # "notices_44",
+    #     "notices_49",
+    #     "notices_50",
+    #     "notices_52",
+    #     "notices_53",
+    #     "notices_54",
+    #     "notices_55",
+    #     # "notices_57",
+    #     "notices_71",
+    #     "notices_3303",
+    #     "notices_3304",
+    #     "notices_3305",
+    #     "notices_3306",
+    #     "notices_3307",
+    #     "notices_3309",
+    #     "notices_3312",
+    #     "notices_3313",
+    #     "notices_3314",
+    #     "notices_3315",
+    #     "notices_3318",
+    #     "notices_3320",
+    #     "notices_3321",
     # ])
+    print('{0:%Y-%m-%d %H:%M:%S} 结束'.format(datetime.datetime.now()))
 
     # 测试推数据
-    # cp = ScrapyDataPost(table_name="notices_21",
+    # cp = ScrapyDataPost(table_name="notices_3311",
     #                     engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4',
-    #                     post_url="http://192.168.1.249:9007/feign/data/v1/notice/addGatherNotice")
+    #                     # post_url="http://192.168.1.249:9007/feign/data/v1/notice/addGatherNotice"
+    #                     post_url ="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice"
+    #                     )
     # cp.run_post()
     # # 测试多线程推数据
     # cp.run_multi_thead_prepare(st='2018-10-08', et='2018-12-31')
     # # 测试批量推数据
-    # # cp.run_post_today_all_spider_data()
+    # cp.run_post_today_all_spider_data()
     # cp.run_post_before_today_all_spider_data([
-    #     "notices_02",
-    #     "notices_03",
-    #     "notices_26",
+    #     # "notices_00",
+    #     "notices_11",
+    #     # "notices_13",
     #     # "notices_15",
     # ])
     pass
