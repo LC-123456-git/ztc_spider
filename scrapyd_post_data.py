@@ -305,12 +305,15 @@ class ScrapyDataPost(object):
                             err_start += 1
                             print("不执行更新操作")
 
-                    count = itme_num
-                    result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
-                    if result:
-                        conn.execute(f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
-                    if len(results) < rows:
-                        break
+                count = itme_num
+                result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
+                if result:
+                    count_nun = conn.execute(f"select count from statistical where area_id={area_id}").fetchone()[0] + count
+                    conn.execute(f"update statistical set count='{count_nun}', push_time='{push_time}' where area_id={area_id}")
+                else:
+                    conn.execute(f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
+                if len(results) < rows:
+                    break
                 else:
                     print("没有数据可执行更新操作")
                     break

@@ -22,51 +22,62 @@ def process_value_s(value):
         return value
 
 
-def process_request_category(request, response):
-    r_url = request.url
-    for item in ["jyxxgczs", "jyxxgcgg", "jyxxgchx", "jyxxgcgs"]:
-        if item in r_url:
-            request.meta["classify_show"] = "工程建设"
-            return request
-    for item in ["jyxxzcxm", "jyxxzcgg", "jyxxzcgs", "jyxxzcht"]:
-        if item in r_url:
-            request.meta["classify_show"] = "政府采购"
-            return request
-    for item in ["jyxxtdgg", "jyxxtdgs"]:
-        if item in r_url:
-            request.meta["classify_show"] = "土地出让"
-            return request
-    for item in ["jyxxcqgg", "jyxxcqgs"]:
-        if item in r_url:
-            request.meta["classify_show"] = "国有产权"
-            return request
+def process_request_category(item):
+    if item in ["jyxxgczs", "jyxxgcgg", "jyxxgchx", "jyxxgcgs"]:
+            classify_show = "工程建设"
+    elif item in ["jyxxzcxm", "jyxxzcgg", "jyxxzcgs", "jyxxzcht"]:
+        classify_show = "政府采购"        
+    elif item in ["jyxxtdgg", "jyxxtdgs"]:
+        classify_show = "土地出让"           
+    elif item in ["jyxxcqgg", "jyxxcqgs"]:
+        classify_show = "国有产权"         
     # TODO 机电设备
-    for item in ["jyxxtpfgg", "jyxxtpfgs"]:
-        if item in r_url:
-            request.meta["classify_show"] = "碳排放权"
-            return request
-    for item in ["jyxxypgg"]:
-        if item in r_url:
-            request.meta["classify_show"] = "药品采购"
-            return request
+    elif item in ["jyxxtpfgg", "jyxxtpfgs"]:
+        classify_show = "碳排放权"          
+    elif item in ["jyxxypgg"]:
+        classify_show = "药品采购"            
     # TODO 技术交易
-    for item in ["jyxxncgg", "jyxxncgs"]:
-        if item in r_url:
-            request.meta["classify_show"] = "农村产权"
-            return request
-    for item in ["jyxxpmgg"]:  # TODO 司法拍卖-结果公告
-        if item in r_url:
-            request.meta["classify_show"] = "司法拍卖"
-            return request
-    for item in ["jyxxxnyba"]:  # TODO 新能源汽车补助-除备案外
-        if item in r_url:
-            request.meta["classify_show"] = "新能源汽车补助"
-            return request
-    for item in ["jyxxzfbz"]:  # TODO 住房保障-除共有产权保障住房外
-        if item in r_url:
-            request.meta["classify_show"] = "住房保障"
-            return request
+    elif item in ["jyxxncgg", "jyxxncgs"]:
+        classify_show = "农村产权"            
+    elif item in ["jyxxpmgg"]:  # TODO 司法拍卖-结果公告
+        classify_show = "司法拍卖"            
+    elif item in ["jyxxxnyba"]:  # TODO 新能源汽车补助-除备案外
+        classify_show = "新能源汽车补助"           
+    elif item in ["jyxxzfbz"]:  # TODO 住房保障-除共有产权保障住房外
+        classify_show = "住房保障"
+    else:
+        classify_show = "其他"
+    return classify_show
+            
     # TODO 物资采购
+
+
+def get_notice_type(item):
+    # 招标公告
+    if item in ['jyxxgcgg', 'jyxxzcgg', 'jyxxtdgg', 'jyxxcqgg','jyxxtpfgg', 'jyxxypgg', 'jyxxncgg/\d+\.html',
+                'jyxxpmgg']:
+        notice_type = const.TYPE_ZB_NOTICE
+    # 资格预审公告
+    elif item in ['jyxxgczs']:
+        notice_type =  const.TYPE_QUALIFICATION_ADVANCE_NOTICE
+    # 招标变更根据标题带有关键词“更正”归类
+    elif item in ['jyxxzcgz']:
+        notice_type =  const.TYPE_ZB_ALTERATION
+    # 招标异常
+    elif item in ['jyxxzcgz']:
+        notice_type =  const.TYPE_ZB_ABNORMAL
+    # 中标预告
+    elif item in ['jyxxgchx',]:
+        notice_type =  const.TYPE_WIN_ADVANCE_NOTICE
+    # 中标公告
+    elif item in['jyxxgcgs', 'jyxxzcgs', 'jyxxtdgs', 'jyxxcqgs','jyxxtpfgs','jyxxncgs','jyxxpmgs']:
+        notice_type = const.TYPE_WIN_NOTICE
+    # 其他公告
+    elif item in ['jyxxxnyba', 'jyxxzfbz']:
+        notice_type = const.TYPE_WIN_NOTICE
+    else:
+        notice_type = const.TYPE_UNKNOWN_NOTICE
+    return notice_type
 
 
 class MySpider(CrawlSpider):
@@ -77,55 +88,6 @@ class MySpider(CrawlSpider):
     domain_url = "https://www.shggzy.com"
     query_url = "https://www.shggzy.com/queryContent-jyxx.jspx"
     query_page_url = "https://www.shggzy.com/queryContent_{}-jyxx.jspx"
-
-    rules = (
-        # 招标公告
-        Rule(LinkExtractor(allow=[
-            r'/jyxxgcgg/\d+\.jhtml', r'/jyxxzcgg/\d+\.jhtml', r'/jyxxtdgg/\d+\.jhtml', r'/jyxxcqgg/\d+\.jhtml',
-            r'/jyxxtpfgg/\d+\.jhtml', r'/jyxxypgg/\d+\.jhtml', r'/jyxxncgg/\d+\.html', r'/jyxxpmgg/\d+\.jhtml',
-            # r'/jyxxjdgg/\d+\.jhtml',  # TODO 待验证
-            # r'/jyxxjsgg/\d+\.jhtml'  # TODO 待验证
-        ], tags=('li'), attrs=('onclick'), process_value=process_value_s), process_request=process_request_category,
-            cb_kwargs={"name": const.TYPE_ZB_NOTICE}, callback="parse_item", follow=False),
-        # 资格预审公告
-        Rule(LinkExtractor(allow=[
-            r'/jyxxgczs/\d+\.jhtml',
-            # r'/jyxxjdzs/\d+\.jhtml'  # TODO 待验证
-        ],
-            tags=('li'), attrs=('onclick'), process_value=process_value_s), process_request=process_request_category,
-            cb_kwargs={"name": const.TYPE_QUALIFICATION_ADVANCE_NOTICE}, callback="parse_item", follow=False),
-        # 招标变更根据标题带有关键词“更正”归类
-        Rule(LinkExtractor(allow=[r'/jyxxzcgz/\d+\.jhtml'], tags=('li'), attrs=('onclick'),
-                           process_value=process_value_s), process_request=process_request_category,
-             cb_kwargs={"name": const.TYPE_ZB_ALTERATION}, callback="parse_item", follow=False),
-        # 招标异常
-        Rule(LinkExtractor(allow=[r'/jyxxzcgz/\d+\.jhtml'], tags=('li'), attrs=('onclick'),
-                           process_value=process_value_s), process_request=process_request_category,
-             cb_kwargs={"name": const.TYPE_ZB_ABNORMAL}, callback="parse_item", follow=False),
-        # 中标预告
-        Rule(LinkExtractor(allow=[
-            r'/jyxxgchx/\d+\.jhtml',
-            # r'/jyxxjdhx/\d+\.jhtml'  # TODO 待验证
-        ],
-            tags=('li'), attrs=('onclick'), process_value=process_value_s),
-            process_request=process_request_category,
-            cb_kwargs={"name": const.TYPE_WIN_ADVANCE_NOTICE}, callback="parse_item", follow=False),
-        # 中标公告
-        Rule(LinkExtractor(
-            allow=[r'/jyxxgcgs/\d+\.jhtml', r'/jyxxzcgs/\d+\.jhtml', r'/jyxxtdgs/\d+\.jhtml', r'/jyxxcqgs/\d+\.jhtml',
-                   # r'/jyxxjdgs/\d+\.jhtml',  # TODO 待验证
-                   r'/jyxxtpfgs/\d+\.jhtml',
-                   # r'/jyxxjsgs/\d+\.jhtml',  # TODO 待验证
-                   r'/jyxxncgs/\d+\.jhtml',
-                   r'/jyxxpmgs/\d+\.jhtml'], tags=('li'), attrs=('onclick'), process_value=process_value_s),
-            process_request=process_request_category,
-            cb_kwargs={"name": const.TYPE_WIN_NOTICE}, callback="parse_item", follow=False),
-        # 其他公告
-        Rule(LinkExtractor(allow=[
-            r'/jyxxxnyba/\d+\.jhtml', r'/jyxxzfbz/\d+\.jhtml'],
-            tags=('li'), attrs=('onclick'), process_value=process_value_s), process_request=process_request_category,
-            cb_kwargs={"name": const.TYPE_WIN_NOTICE}, callback="parse_item", follow=False),
-    )
 
     def __init__(self, *args, **kwargs):
         super(MySpider, self).__init__()
@@ -163,11 +125,26 @@ class MySpider(CrawlSpider):
             pages = math.ceil(count / limit) + 1
             for i in range(1, pages):
                 yield scrapy.FormRequest(
-                    self.query_page_url.format(i), priority=10, formdata=self.time_dict | {"channelId": response.meta["channelId"]})
+                    self.query_page_url.format(i), priority=8, callback=self.parse_data_urls,
+                    formdata=self.time_dict | {"channelId": response.meta["channelId"]})
         else:
             self.logger.error(f"初始链接数量提取异常：{response.url=} {response.meta=}")
 
-    def parse_item(self, response, name):
+    def parse_data_urls(self, response):
+        li_list = response.xpath("//div[@class='gui-title-bottom']/ul/li")
+        for item in li_list:
+            info_url_str = item.xpath("./@onclick").get()
+            info_url = re.search(r"http://www.shggzy.com:80/\w+/\d+.jhtml", info_url_str).group(0)
+            pub_time = item.xpath("./span[4]/text()").get()
+            title_name = item.xpath("./span[2]/text()").get().replace("\n", "").replace("\t", "").replace("\r", "").split()
+            title_name = "".join(title_name)
+            project_number = item.xpath("./span[2]/text()").get().replace("\n", "").replace("\t", "").replace("\r", "").split()
+            project_number = "".join(project_number)
+            yield scrapy.Request(url=info_url, callback=self.parse_item, priority=10, meta={"pub_time": pub_time,
+                                                                                            "title_name": title_name,
+                                                                                            "project_number": project_number})
+
+    def parse_item(self, response):
         """
         :param response: response
         :param name: 类别
@@ -175,7 +152,9 @@ class MySpider(CrawlSpider):
         """
         if response.status == 200:
             origin = response.url
-            title_name = response.xpath("//*[@id='content']/div[2]/h2/text()").get() or ""
+            title_name = response.meta.get("title_name", "")
+            pub_time = response.meta.get("pub_time", "")
+            project_number = response.meta.get("project_number", "")
             info_source = ""
             info_data = response.xpath("//*[@id='content']/div[2]/p/text()").get()
             try:
@@ -186,23 +165,12 @@ class MySpider(CrawlSpider):
                 info_source = f"{self.area_province}-{info_source}"
             else:
                 info_source = self.area_province
-            pub_time = get_accurate_pub_time(info_data)
+            pub_time = get_accurate_pub_time(pub_time)
             content = response.xpath('//*[@class="content"]').get()
-            classify_show = response.meta.get("classify_show", "")
-            files_path = []
-            # if content:
-            #     pub_time_simple = pub_time.split(" ")[0]
-            #     if files := re.findall(r"https://sh-gov-open-doc.oss-cn-shanghai.aliyuncs.com/.*?\"", content):
-            #         for item in files:
-            #             item = item.replace("\"", "")
-            #             file_item = FileItem()
-            #             unquote_name = parse.unquote(item).split("/")[-1]
-            #             file_item["file_url"] = parse.urljoin(self.domain_url, item)
-            #             file_item["file_name"] = unquote_name.split('.')[0]
-            #             file_item["file_type"] = unquote_name.split('.')[1]
-            #             file_item["file_path"] = fr"{self.name}/{pub_time_simple}/{unquote_name}"
-            #             files_path.append(file_item["file_path"])
-            #             yield file_item
+            item_str = origin.split("https://www.shggzy.com/")[1].split("/")[0]
+            classify_show = process_request_category(item_str)
+            notice_type = get_notice_type(item_str)
+            files_path = {}
 
             notice_item = NoticesItem()
             notice_item["origin"] = origin
@@ -214,17 +182,18 @@ class MySpider(CrawlSpider):
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = classify_show
+            notice_item["project_number"] = project_number
 
-            if name == const.TYPE_ZB_ALTERATION and re.search(r"更正", title_name):
+            if notice_type == const.TYPE_ZB_ALTERATION and re.search(r"更正", title_name):
                 notice_item["notice_type"] = const.TYPE_ZB_ALTERATION
-            elif name == const.TYPE_ZB_ABNORMAL and re.search(r"终止", title_name):
+            elif notice_type == const.TYPE_ZB_ABNORMAL and re.search(r"终止", title_name):
                 notice_item["notice_type"] = const.TYPE_ZB_ABNORMAL
             else:
-                notice_item["notice_type"] = name
+                notice_item["notice_type"] = notice_type
             yield notice_item
 
 
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_11_shanghai_spider".split(" "))
+    cmdline.execute("scrapy crawl province_11_shanghai_spider -a day=15".split(" "))
