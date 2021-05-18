@@ -185,4 +185,4 @@ if __name__ == "__main__":
 
     # cmdline.execute("scrapy crawl province_00_quanguo_spider -a day=3".split(" "))
     # cmdline.execute("scrapy crawl province_00_quanguo_spider -a sdt=2021-01-01 -a edt=2021-01-26 -s DOWNLOAD_DELAY=0 -s CONCURRENT_REQUESTS_PER_IP=20".split(" "))
-    cmdline.execute("scrapy crawl province_00_quanguo_spider -a sdt=2021-02-13 -a edt=2021-03-13 -s DOWNLOAD_DELAY=0 -s CONCURRENT_REQUESTS_PER_IP=20".split(" "))
+    cmdline.execute("scrapy crawl province_00_quanguo_spider -a sdt=2021-05-18 -a edt=2021-05-18 -s DOWNLOAD_DELAY=0 -s CONCURRENT_REQUESTS_PER_IP=20".split(" "))

@@ -215,6 +215,8 @@ class ScrapyDataPost(object):
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
         fh = logging.FileHandler(os.path.join(self.root_path, "timing_post.log"))
+        formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s - %(message)s")
+        fh.setFormatter(formatter)
         fh.setLevel(logging.INFO)
         self.logger.addHandler(fh)
 
@@ -267,7 +269,7 @@ class ScrapyDataPost(object):
             while True:
                 print("start query data")
                 # results = conn.execute(
-                #         f"select * from {table_name} where id>=43680 limit {err_start},{rows} ").fetchall()
+                #         f"select * from {table_name} where id>=2126 limit {err_start},{rows} ").fetchall()
                 # s = conn.execute(f"select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 0 limit {err_start},{rows} ").fetchall()
                 if not e_time:
                     results = conn.execute(
@@ -276,6 +278,7 @@ class ScrapyDataPost(object):
                     results = conn.execute(
                         f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' and pub_time < '{e_time}' limit {err_start},{rows} ").fetchall()
                 if len(results) != 0:
+                    self.logger.info(table_name)
                     area_id = results[0]['area_id']
                     push_time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
                     for item in results:
@@ -311,13 +314,13 @@ class ScrapyDataPost(object):
                             else:
                                 r = requests.post(url=self.post_url, data=data, timeout=10)
                                 if r.status_code != 200:
-                                    print(r.status_code)
-                                    self.logger.info(r.status_code)
+                                    print(r.status_code, )
+                                    self.logger.info(r.status_code, table_name)
                                     r = False
                                 else:
                                     r_dict = json.loads(r.text)
-                                    print(r_dict)
-                                    self.logger.info(r_dict)
+                                    # print(r_dict)
+                                    # self.logger.info(r_dict)
                                     if r_dict.get("code") in [200, "200"]:
                                         r = True
                                         itme_num += 1
@@ -331,8 +334,9 @@ class ScrapyDataPost(object):
                                 else:
                                     pass
                                     print("upload", item_id, r, table_name)
-                                    self.logger.info("upload", item_id, r, table_name)
+                                    # self.logger.info("upload", item_id, r, table_name)
                         except Exception as e:
+                            self.logger.error(e)
                             print(e)
 
 
@@ -351,11 +355,14 @@ class ScrapyDataPost(object):
                             err_start += 1
                             print("不执行更新操作")
                     count = itme_num
-                    result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
-                    if result:
-                        conn.execute(f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
-                    if len(results) < rows:
-                        break
+                result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
+                if result:
+                    count_nun = conn.execute(f"select count from statistical where area_id={area_id}").fetchone()[0] + count
+                    conn.execute(f"update statistical set count='{count_nun}', push_time='{push_time}' where area_id={area_id}")
+                else:
+                    conn.execute(f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
+                if len(results) < rows:
+                    break
                 else:
                     print("{}没有数据可执行更新操作".format(table_name))
                     self.logger.info("{}没有数据可执行更新操作".format(table_name))
@@ -515,8 +522,8 @@ def test_current_is_running():
 
 
 if __name__ == "__main__":
-    if test_current_is_running():
-        sys.exit(0)
+    # if test_current_is_running():
+    #     sys.exit(0)
 
     # 正式推数据 解开注释需要当心！！！
 
@@ -527,50 +534,50 @@ if __name__ == "__main__":
                         post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice"
     )
     # cp.run_post(d_time='2021-04-28')
-    cp.run_post()
+    # cp.run_post()
     # 正式多线程推数据 解开注释需要当心！！！
-    # cp.run_multi_thead_prepare(st='2021-04-03', et='2021-04-05')
+    # cp.run_multi_thead_prepare(st='2021-05-01', et='2021-05-18')
 
     # 正式批量推数据 解开注释需要当心！！！
     cp.run_post_today_all_spider_data(tables_list=[
         "notices_00",
-        "notices_02",
-        "notices_03",
-        "notices_04",
-        "notices_05",
-        "notices_08",
-        "notices_10",
-        "notices_11",
-        "notices_13",
-        "notices_14",
-        "notices_15",
-        "notices_16",
-        "notices_18",
-        "notices_19",
-        "notices_21",
-        "notices_23",
-        "notices_26",
-        "notices_30",
-        "notices_40",
-        # "notices_44",
-        "notices_49",
-        "notices_50",
-        "notices_52",
-        "notices_54",
-        "notices_55",
-        # "notices_57",
-        "notices_71",
-        "notices_3303",
-        "notices_3305",
-        "notices_3306",
-        "notices_3307",
-        "notices_3309",
-        "notices_3312",
-        "notices_3313",
-        "notices_3314",
-        "notices_3315",
-        "notices_3318",
-        "notices_3320",
+        # "notices_02",
+        # "notices_03",
+        # "notices_04",
+        # "notices_05",
+        # "notices_08",
+        # "notices_10",
+        # "notices_11",
+        # "notices_13",
+        # "notices_14",
+        # "notices_15",
+        # "notices_16",
+        # "notices_18",
+        # "notices_19",
+        # "notices_21",
+        # "notices_23",
+        # "notices_26",
+        # "notices_30",
+        # "notices_40",
+        # # "notices_44",
+        # "notices_49",
+        # "notices_50",
+        # "notices_52",
+        # "notices_54",
+        # "notices_55",
+        # # "notices_57",
+        # "notices_71",
+        # "notices_3303",
+        # "notices_3305",
+        # "notices_3306",
+        # "notices_3307",
+        # "notices_3309",
+        # "notices_3312",
+        # "notices_3313",
+        # "notices_3314",
+        # "notices_3315",
+        # "notices_3318",
+        # "notices_3320",
     ])
     # 正式批量推今天之前的数据 解开注释需要当心！！！
     # cp.run_post_before_today_all_spider_data(tables_list=[
