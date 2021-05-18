@@ -497,9 +497,10 @@ class ScrapyDataPost(object):
 
 def test_current_is_running():
     for i in psutil.process_iter():
-        if 'scrapyd_timing_post' in i.name():
-            return True
-    # if "Linux" in platform.platform():
+        for p in i.cmdline():
+            if 'scrapyd_timing_post' in p:
+                return True
+    #if "Linux" in platform.platform():
     #    name = os.path.basename(sys.argv[0])
     #    cmd_str = f"ps -ef|grep {name}|grep python3|grep -v grep"
     #    print(cmd_str)
