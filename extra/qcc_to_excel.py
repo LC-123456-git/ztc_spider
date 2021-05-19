@@ -19,11 +19,16 @@ class QCCToExcel(object):
             port=credit.get('port', 3306),
         )
         self.cur = self.conn.cursor()
+        # self.header = (
+        #     '序号', '企业名称', '所属地区', '法定代表人', '成立日期', '登记状态', '注册资本', '实缴资本', '统一社会信用代码',
+        #     '工商注册号', '组织机构代码', '纳税人识别号', '纳税人资质', '企业类型', '行业', '营业期限始', '营业期限末',
+        #     '人员规模', '参保人数', '英文名', '曾用名', '登记机关', '核准日期', '注册地址', '经营范围', '进出口企业代码',
+        #     '企业分类', '行业大类', '创建时间', '更新时间'
+        # )
         self.header = (
-            '序号', '企业名称', '所属地区', '法定代表人', '成立日期', '登记状态', '注册资本', '实缴资本', '统一社会信用代码',
-            '工商注册号', '组织机构代码', '纳税人识别号', '纳税人资质', '企业类型', '行业', '营业期限始', '营业期限末',
-            '人员规模', '参保人数', '英文名', '曾用名', '登记机关', '核准日期', '注册地址', '经营范围', '进出口企业代码',
-            '企业分类', '行业大类', '创建时间', '更新时间'
+            '序号', '统一社会信用代码', '企业名称', '工商注册号', '组织机构代码', '纳税人识别号', '行业', '法定代表人', '企业类型',
+            '成立日期', '注册资本', '实缴资本', '核准日期', '营业期限始', '营业期限末', '登记机关', '注册地址', '经营范围',
+            '创建时间', '更新时间',
         )
 
     def __del__(self):
@@ -66,8 +71,11 @@ class QCCToExcel(object):
         'industry_category': resp.meta.get('industry_category_name', ''),
         :return:
         """
-        qcc_sql = """SELECT id, QYMC, SSDQ, FDDBR, CLRQ, DJZT, ZCZB, SJZB, TYSHXYDM, GSZCH, ZZJGDM, NSRSBH, NSRZZ, QYLX, HY,
-        YYQXS, YYQXM, RYGM, CBRY, YWM, CYM, DJJG, HZRQ, ZCDZ, JYFW, JCKQYDM, QYFL, HYDL, create_time, update_time
+        # qcc_sql = """SELECT id, QYMC, SSDQ, FDDBR, CLRQ, DJZT, ZCZB, SJZB, TYSHXYDM, GSZCH, ZZJGDM, NSRSBH, NSRZZ, QYLX, HY,
+        # YYQXS, YYQXM, RYGM, CBRY, YWM, CYM, DJJG, HZRQ, ZCDZ, JYFW, JCKQYDM, QYFL, HYDL, create_time, update_time
+        # FROM data_collection.QCC_qcc_crawler"""
+        qcc_sql = """SELECT id, TYSHXYDM, QYMC, GSZCH, ZZJGDM, NSRSBH, HY, FDDBR, QYLX, CLRQ, ZCZB, SJZB, HZRQ, YYQXS,
+        YYQXM, DJJG, ZCDZ, JYFW, create_time, update_time
         FROM data_collection.QCC_qcc_crawler"""
 
         file_name = '企业基本信息{0:%Y-%m-%d}.xlsx'.format(datetime.now())
