@@ -17,10 +17,10 @@ import platform
 import logging
 import psutil
 from sqlalchemy import create_engine
+
+
 # from operator import itemgetter
 # from spider_pro.utils import get_accurate_pub_time
-
-
 
 
 def get_accurate_pub_time(pub_time):
@@ -67,7 +67,7 @@ def process_data_by_type_begin_upload(data, data_type="datetime"):
         try:
             r = datetime.datetime.fromisoformat(data)
             return r.strftime("%Y-%m-%d %H:%M:%S")
-        except :
+        except:
             return ""
     elif data_type == "email":
         f = r'^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}$'
@@ -306,7 +306,8 @@ class ScrapyDataPost(object):
                             if table_name == "notices_15" or table_name == "notices_3304":
                                 keys = ["title", "content", "classifyName", "area", "publishTime", "sourceUrl"]
                             else:
-                                keys = ["title", "content", "projectType", "classifyName", "area", "publishTime", "sourceUrl"]
+                                keys = ["title", "content", "projectType", "classifyName", "area", "publishTime",
+                                        "sourceUrl"]
 
                             out = list(itemgetter(*keys)(data))
                             if not all(out):
@@ -339,7 +340,6 @@ class ScrapyDataPost(object):
                             self.logger.error(e)
                             print(e)
 
-
                         if r:
                             try:
                                 push_time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
@@ -357,10 +357,13 @@ class ScrapyDataPost(object):
                     count = itme_num
                     result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
                     if result:
-                        count_nun = conn.execute(f"select count from statistical where area_id={area_id}").fetchone()[0] + count
-                        conn.execute(f"update statistical set count='{count_nun}', push_time='{push_time}' where area_id={area_id}")
+                        count_nun = conn.execute(f"select count from statistical where area_id={area_id}").fetchone()[
+                                        0] + count
+                        conn.execute(
+                            f"update statistical set count='{count_nun}', push_time='{push_time}' where area_id={area_id}")
                     else:
-                        conn.execute(f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
+                        conn.execute(
+                            f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
                     if len(results) < rows:
                         break
                 else:
@@ -504,10 +507,9 @@ class ScrapyDataPost(object):
 
 def test_current_is_running():
     for i in psutil.process_iter():
-        for p in i.cmdline():
-            if 'scrapyd_timing_post' in p:
-                return True
-    #if "Linux" in platform.platform():
+        if 'scrapyd_timing_post' in i.cmdline() and 'python3' in i.cmdline():
+            return True
+    # if "Linux" in platform.platform():
     #    name = os.path.basename(sys.argv[0])
     #    cmd_str = f"ps -ef|grep {name}|grep python3|grep -v grep"
     #    print(cmd_str)
@@ -528,10 +530,10 @@ if __name__ == "__main__":
     # 正式推数据 解开注释需要当心！！！
 
     cp = ScrapyDataPost(
-                        table_name="notices_00",
-                        engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4',
-                        # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4',
-                        post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice"
+        table_name="notices_00",
+        engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4',
+        # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4',
+        post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice"
     )
     # cp.run_post(d_time='2021-04-28')
     # cp.run_post()
