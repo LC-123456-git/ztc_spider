@@ -249,7 +249,7 @@ class ScrapyDataPost(object):
                 if len(results) != 0:
                     area_id = results[0]['area_id']
                     push_time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
-                    push_day = datetime.datetime.today()
+                    push_day = datetime.date.today()
                     itme_num = 0
                     for item in results:
                         item_dict = dict(item)
