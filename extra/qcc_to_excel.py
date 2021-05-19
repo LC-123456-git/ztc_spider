@@ -5,6 +5,7 @@
 from datetime import datetime
 import pandas as pd
 import pymysql
+import re
 
 
 class QCCToExcel(object):
@@ -26,7 +27,7 @@ class QCCToExcel(object):
         #     '企业分类', '行业大类', '创建时间', '更新时间'
         # )
         self.header = (
-            '序号', '统一社会信用代码', '企业名称', '工商注册号', '组织机构代码', '纳税人识别号', '行业', '法定代表人', '企业类型',
+            '序号', '统一社会信用代码', '企业名称', '工商注册号', '组织机构代码', '纳税人识别号', '纳税人资质', '行业', '法定代表人', '企业类型',
             '成立日期', '注册资本', '实缴资本', '核准日期', '营业期限始', '营业期限末', '登记机关', '注册地址', '经营范围',
             '创建时间', '更新时间',
         )
@@ -74,7 +75,7 @@ class QCCToExcel(object):
         # qcc_sql = """SELECT id, QYMC, SSDQ, FDDBR, CLRQ, DJZT, ZCZB, SJZB, TYSHXYDM, GSZCH, ZZJGDM, NSRSBH, NSRZZ, QYLX, HY,
         # YYQXS, YYQXM, RYGM, CBRY, YWM, CYM, DJJG, HZRQ, ZCDZ, JYFW, JCKQYDM, QYFL, HYDL, create_time, update_time
         # FROM data_collection.QCC_qcc_crawler"""
-        qcc_sql = """SELECT id, TYSHXYDM, QYMC, GSZCH, ZZJGDM, NSRSBH, HY, FDDBR, QYLX, CLRQ, ZCZB, SJZB, HZRQ, YYQXS,
+        qcc_sql = """SELECT id, TYSHXYDM, QYMC, GSZCH, ZZJGDM, NSRSBH, NSRZZ,HY, FDDBR, QYLX, CLRQ, ZCZB, SJZB, HZRQ, YYQXS,
         YYQXM, DJJG, ZCDZ, JYFW, create_time, update_time
         FROM data_collection.QCC_qcc_crawler"""
 
@@ -82,7 +83,14 @@ class QCCToExcel(object):
 
         qcc_data = self.fetchall(qcc_sql)
 
-        df_data = pd.DataFrame.from_records(list(qcc_data))
+        # DATA CUSTOM
+        qcc_data = [
+            [
+                qd[0], qd[1], qd[2], qd[3], qd[4], qd[5], qd[6], qd[7], qd[8], qd[9],
+                qd[10], qd[11], qd[12], qd[13], qd[14], qd[15], qd[16], qd[17], qd[18], qd[19], qd[20],
+            ] for qd in qcc_data]
+
+        df_data = pd.DataFrame.from_records(qcc_data)
 
         df_data.to_excel(file_name, index=False, header=self.header)
 
