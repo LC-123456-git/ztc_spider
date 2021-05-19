@@ -7,6 +7,7 @@ from sqlalchemy.dialects import mysql
 from twisted.enterprise import adbapi
 from pymysql import cursors
 from datetime import datetime
+import re
 
 from spider_pro import items
 
@@ -120,72 +121,60 @@ class ExtraPipeline(object):
         except Exception as e:
             print(e)
         else:
+
+            com = re.compile('(.*?)关联\d+')
+
+            legal_representatives= com.findall(item['legal_representative'])
+            if legal_representatives:
+                legal_representative = legal_representatives[0]
+            else:
+                legal_representative = item['legal_representative']
+
+            taxpayer_qualification = item['taxpayer_qualification']
+            if taxpayer_qualification in ['-', '增值税一般纳税人']:
+                taxpayer_qualification = '一般纳税人'
+
+            default_items = [
+                    item['company_name'],
+                    item['location'],
+                    legal_representative,
+                    item['date_of_establishment'],
+                    item['operating_status'],
+                    item['registered_capital'],
+                    item['paid_in_capital'],
+                    item['unified_social_credit_code'],
+                    item['business_registration_number'],
+                    item['organization_code'],
+                    item['taxpayer_identification_number'],
+                    taxpayer_qualification,
+                    item['type_of_enterprise'],
+                    item['industry'],
+                    item['operating_period_std'],
+                    item['operating_period_edt'],
+                    item['staff_size'],
+                    item['number_of_participants'],
+                    item['english_name'],
+                    item['former_name'],
+                    item['registration_authority'],
+                    item['approved_date'],
+                    item['registered_address'],
+                    item['business_scope'],
+                    item['import_and_export_enterprise_code'],
+                    item['category'],
+                    item['industry_category'],
+            ]
+
             if ret.get('c'):
                 sql = "{0}'{1}'".format(self.update_sql, item['company_name'])
-                cursor.execute(sql, (
-                    item['company_name'],
-                    item['location'],
-                    item['legal_representative'],
-                    item['date_of_establishment'],
-                    item['operating_status'],
-                    item['registered_capital'],
-                    item['paid_in_capital'],
-                    item['unified_social_credit_code'],
-                    item['business_registration_number'],
-                    item['organization_code'],
-                    item['taxpayer_identification_number'],
-                    item['taxpayer_qualification'],
-                    item['type_of_enterprise'],
-                    item['industry'],
-                    item['operating_period_std'],
-                    item['operating_period_edt'],
-                    item['staff_size'],
-                    item['number_of_participants'],
-                    item['english_name'],
-                    item['former_name'],
-                    item['registration_authority'],
-                    item['approved_date'],
-                    item['registered_address'],
-                    item['business_scope'],
-                    item['import_and_export_enterprise_code'],
-                    item['category'],
-                    item['industry_category'],
-                    '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.now()),
-                ))
+                default_items.extend(['{0:%Y-%m-%d %H:%M:%S}'.format(datetime.now())])
+                cursor.execute(sql, default_items)
             else:
                 sql = self.insert_sql
-
-                cursor.execute(sql, (
-                    item['company_name'],
-                    item['location'],
-                    item['legal_representative'],
-                    item['date_of_establishment'],
-                    item['operating_status'],
-                    item['registered_capital'],
-                    item['paid_in_capital'],
-                    item['unified_social_credit_code'],
-                    item['business_registration_number'],
-                    item['organization_code'],
-                    item['taxpayer_identification_number'],
-                    item['taxpayer_qualification'],
-                    item['type_of_enterprise'],
-                    item['industry'],
-                    item['operating_period_std'],
-                    item['operating_period_edt'],
-                    item['staff_size'],
-                    item['number_of_participants'],
-                    item['english_name'],
-                    item['former_name'],
-                    item['registration_authority'],
-                    item['approved_date'],
-                    item['registered_address'],
-                    item['business_scope'],
-                    item['import_and_export_enterprise_code'],
-                    item['category'],
-                    item['industry_category'],
+                default_items.extend([
                     '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.now()),
                     '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.now()),
-                ))
+                ])
+                cursor.execute(sql, default_items)
 
     def handle_error(self, error, item, spider):
         self.logger.info('DB INSERT ERROR: {0}'.format(error))
