@@ -15,8 +15,8 @@ import threading
 import platform
 from operator import itemgetter
 from sqlalchemy import create_engine
-from spider_pro.utils import get_accurate_pub_time
 import psutil
+import logging
 
 
 def get_accurate_pub_time(pub_time):
@@ -232,7 +232,7 @@ class ScrapyDataPost(object):
         if_push = True
         try:
             files_path = ast.literal_eval(files_path_string)
-            ret = requests.post(url='http://192.168.1.220:8002/sapi/webfile/getDownloadState', data={
+            ret = requests.post(url='http://file.zhaotx.cn/sapi/webfile/getDownloadState', data={
                 'jsonString': files_path
             })
             if ret.status_code == 200:
@@ -496,8 +496,9 @@ class ScrapyDataPost(object):
 
 def test_current_is_running():
     for i in psutil.process_iter():
-        if 'scrapyd_timing_post' in i.cmdline() and 'python3' in i.cmdline():
-            return True
+        for cmd in i.cmdline():
+            if '/usr/bin/python3 /database/ztx_data/TIME/scrapyd_timing_post.py' in cmd:
+                return True
     # if "Linux" in platform.platform():
     #    name = os.path.basename(sys.argv[0])
     #    cmd_str = f"ps -ef|grep {name}|grep python3|grep -v grep"
@@ -531,7 +532,7 @@ if __name__ == "__main__":
 
     # 正式批量推数据 解开注释需要当心！！！
     cp.run_post_today_all_spider_data(tables_list=[
-        "notices_00",
+        # "notices_00",
         # "notices_02",
         # "notices_03",
         # "notices_04",
@@ -568,6 +569,7 @@ if __name__ == "__main__":
         # "notices_3314",
         # "notices_3315",
         # "notices_3318",
+        "notices_3319",
         # "notices_3320",
     ])
     # 正式批量推今天之前的数据 解开注释需要当心！！！
