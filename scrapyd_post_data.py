@@ -204,7 +204,7 @@ class ScrapyDataPost(object):
         if_push = True
         try:
             files_path = ast.literal_eval(files_path_string)
-            ret = requests.post(url='http://192.168.1.220:8002/sapi/webfile/getDownloadState', data={
+            ret = requests.post(url='http://file.zhaotx.cn/sapi/webfile/getDownloadState', data={
                 'jsonString': files_path
             })
             if ret.status_code == 200:
