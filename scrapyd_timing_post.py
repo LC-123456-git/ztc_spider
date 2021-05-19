@@ -7,18 +7,15 @@ import os
 import sys
 import json
 import re
-import time
 import ast
+import time
 import datetime
-from operator import itemgetter
 import requests
 import threading
 import platform
-import logging
-import psutil
+from operator import itemgetter
 from sqlalchemy import create_engine
-# from operator import itemgetter
-# from spider_pro.utils import get_accurate_pub_time
+from spider_pro.utils import get_accurate_pub_time
 
 
 
@@ -264,7 +261,6 @@ class ScrapyDataPost(object):
         table_name = table_name if table_name else self.table_name
         rows = 1000
         err_start = 0
-        itme_num = 0
         with self.engine.connect() as conn:
             while True:
                 print("start query data")
@@ -281,6 +277,7 @@ class ScrapyDataPost(object):
                     self.logger.info(table_name)
                     area_id = results[0]['area_id']
                     push_time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
+                    itme_num = 0
                     for item in results:
                         item_dict = dict(item)
                         item_id = item_dict.get("id")
@@ -303,10 +300,11 @@ class ScrapyDataPost(object):
                         try:
                             data = deal_base_notices_data(item_dict, is_hump=True)
                             # 因为浙江没有项目类型，这里做特殊处理
-                            if table_name == "notices_15" or table_name == "notices_3304":
+                            if table_name == "notices_15" or table_name == "notices_3304" or table_name == "notices_3324":
                                 keys = ["title", "content", "classifyName", "area", "publishTime", "sourceUrl"]
                             else:
-                                keys = ["title", "content", "projectType", "classifyName", "area", "publishTime", "sourceUrl"]
+                                keys = ["title", "content", "projectType", "classifyName", "area", "publishTime",
+                                        "sourceUrl"]
 
                             out = list(itemgetter(*keys)(data))
                             if not all(out):
@@ -314,13 +312,10 @@ class ScrapyDataPost(object):
                             else:
                                 r = requests.post(url=self.post_url, data=data, timeout=10)
                                 if r.status_code != 200:
-                                    print(r.status_code, )
-                                    self.logger.info(r.status_code, table_name)
+                                    print(r.status_code)
                                     r = False
                                 else:
                                     r_dict = json.loads(r.text)
-                                    # print(r_dict)
-                                    # self.logger.info(r_dict)
                                     if r_dict.get("code") in [200, "200"]:
                                         r = True
                                         itme_num += 1
@@ -329,43 +324,41 @@ class ScrapyDataPost(object):
                                         r = False
 
                                 if not r:
-                                    print("upload", item_id, r, table_name)
-                                    self.logger.info("upload", item_id, r, table_name)
+                                    print("upload", item_id, r)
                                 else:
                                     pass
-                                    print("upload", item_id, r, table_name)
-                                    # self.logger.info("upload", item_id, r, table_name)
+                                    print("upload", item_id, r)
                         except Exception as e:
-                            self.logger.error(e)
                             print(e)
-
-
                         if r:
                             try:
-                                push_time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
-                                update_sql = f"update {table_name} set is_upload = 1 where id = {item_id}"
+                                update_sql = f"update {table_name} set is_upload = 1 where id = {item_id}"  # 推送
                                 result = conn.execute(update_sql)
                                 if result.rowcount != 1:
                                     print("update", item_id, False)
                                 else:
                                     print("update", item_id, True)
+
                             except:
                                 pass
                         else:
                             err_start += 1
                             print("不执行更新操作")
+
                     count = itme_num
-                result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
-                if result:
-                    count_nun = conn.execute(f"select count from statistical where area_id={area_id}").fetchone()[0] + count
-                    conn.execute(f"update statistical set count='{count_nun}', push_time='{push_time}' where area_id={area_id}")
-                else:
-                    conn.execute(f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
+                    result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
+                    if result:
+                        count_num = conn.execute(f"select count from statistical where area_id={area_id}").fetchone()[
+                                        0] + count
+                        conn.execute(
+                            f"update statistical set count='{count_num}', push_time='{push_time}' where area_id={area_id}")
+                    else:
+                        conn.execute(
+                            f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
                 if len(results) < rows:
                     break
                 else:
-                    print("{}没有数据可执行更新操作".format(table_name))
-                    self.logger.info("{}没有数据可执行更新操作".format(table_name))
+                    print("没有数据可执行更新操作")
                     break
 
     def run_post_today_all_spider_data(self, tables_list):

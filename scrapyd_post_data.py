@@ -13,8 +13,9 @@ import datetime
 import requests
 import threading
 import platform
+from operator import itemgetter
 from sqlalchemy import create_engine
-
+from spider_pro.utils import get_accurate_pub_time
 
 def get_limit_char_from_data(data, name, limit=9999, not_null=False):
     try:
@@ -231,7 +232,6 @@ class ScrapyDataPost(object):
         table_name = table_name if table_name else self.table_name
         rows = 200
         err_start = 0
-        itme_num = 0
         with self.engine.connect() as conn:
             while True:
                 print("start query data")
@@ -243,53 +243,65 @@ class ScrapyDataPost(object):
                 #     results = conn.execute(
                 #         f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' and pub_time < '{e_time}' limit {err_start},{rows} ").fetchall()
                 """
-                # results = conn.execute(
-                #     f"select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 0 limit {rows}"
-                # )
-
                 results = conn.execute(
                         # f"-- select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 1 and pub_time >= '{d_time}' and pub_time < '{e_time}'limit {err_start},{rows} ").fetchall()
-                        f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' and pub_time < '{e_time}'limit {err_start},{rows} ").fetchall()
+                        f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time > '{d_time}' and pub_time <= '{e_time}'limit {err_start},{rows} ").fetchall()
                 if len(results) != 0:
                     area_id = results[0]['area_id']
                     push_time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
+                    itme_num = 0
                     for item in results:
                         item_dict = dict(item)
                         item_id = item_dict.get("id")
+                        if item_dict['is_have_file'] != 0:
+                            if_push, item_dict['content'] = ScrapyDataPost.reset_file_url(
+                                item_dict['content'], item_dict['files_path']
+                            )
 
-                        # if item_dict['is_have_file'] != 0:
-                        #     if_push, item_dict['content'] = ScrapyDataPost.reset_file_url(
-                        #         item_dict['content'], item_dict['files_path']
-                        #     )
-                        #
-                        #     if not if_push:
-                        #         continue
+                            if not if_push:
+                                continue
 
+                        publish_time = get_accurate_pub_time(item_dict.get("publish_time"))
+                        b = publish_time.split('-')
+                        for i in range(2):
+                            b[1] = b[1].zfill(2)  # 左填充
+                            b[2] = b[2].zfill(2)
+                            sss = '-'.join(b)
+                        item_dict["publish_time"] = sss
                         r = False
                         try:
-                            r = requests.post(url=self.post_url, data=deal_base_notices_data(item_dict, is_hump=True),
-                                              timeout=10)
-                            if r.status_code != 200:
-                                print(r.status_code)
-                                r = False
+                            data = deal_base_notices_data(item_dict, is_hump=True)
+                            # 因为浙江没有项目类型，这里做特殊处理
+                            if table_name == "notices_15" or table_name == "notices_3304" or table_name == "notices_3324":
+                                keys = ["title", "content", "classifyName", "area", "publishTime", "sourceUrl"]
                             else:
+                                keys = ["title", "content", "projectType", "classifyName", "area", "publishTime",
+                                        "sourceUrl"]
 
-                                r_dict = json.loads(r.text)
-                                if r_dict.get("code") in [200, "200"]:
-                                    r = True
-                                    itme_num += 1
-                                else:
-                                    print(r_dict.get("code"))
-                                    r = False
-
-                            if not r:
-                                print("upload", item_id, r)
-                            else:
+                            out = list(itemgetter(*keys)(data))
+                            if not all(out):
                                 pass
-                                print("upload", item_id, r)
+                            else:
+                                r = requests.post(url=self.post_url, data=data, timeout=10)
+                                if r.status_code != 200:
+                                    print(r.status_code)
+                                    r = False
+                                else:
+                                    r_dict = json.loads(r.text)
+                                    if r_dict.get("code") in [200, "200"]:
+                                        r = True
+                                        itme_num += 1
+                                    else:
+                                        print(r_dict.get("code"))
+                                        r = False
+
+                                if not r:
+                                    print("upload", item_id, r)
+                                else:
+                                    pass
+                                    print("upload", item_id, r)
                         except Exception as e:
                             print(e)
-
                         if r:
                             try:
                                 update_sql = f"update {table_name} set is_upload = 1 where id = {item_id}"  # 推送
@@ -305,13 +317,13 @@ class ScrapyDataPost(object):
                             err_start += 1
                             print("不执行更新操作")
 
-                count = itme_num
-                result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
-                if result:
-                    count_nun = conn.execute(f"select count from statistical where area_id={area_id}").fetchone()[0] + count
-                    conn.execute(f"update statistical set count='{count_nun}', push_time='{push_time}' where area_id={area_id}")
-                else:
-                    conn.execute(f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
+                    count = itme_num
+                    result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
+                    if result:
+                        count_num = conn.execute(f"select count from statistical where area_id={area_id}").fetchone()[0] + count
+                        conn.execute(f"update statistical set count='{count_num}', push_time='{push_time}' where area_id={area_id}")
+                    else:
+                        conn.execute(f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
                 if len(results) < rows:
                     break
                 else:
@@ -467,12 +479,12 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # 正式推数据 解开注释需要当心！！！
-    cp = ScrapyDataPost(table_name="notices_3326",
+    cp = ScrapyDataPost(table_name="notices_3324",
                         # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4',
                         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
                         post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice")
-    # cp.run_post(d_time='2021-05-01', e_time='2021-05-18')
-    cp.run_post()
+    cp.run_post(d_time='2021-05-11', e_time='2021-05-12')
+    # cp.run_post()
 
     #'You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near \'14:02:50)\' at line 1'
     # 正式多线程推数据 解开注释需要当心！！！
