@@ -136,7 +136,7 @@ class MysqlPipeline(object):
                    server_default="0"),
 
             # uuid
-            Column('uuid', mysql.VARCHAR(40), nullable=True, comment="UUID"),
+            Column('uuid', mysql.VARCHAR(40), nullable=True, comment="UUID", unique=True),
 
         )
         # 索引
