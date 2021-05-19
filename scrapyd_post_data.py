@@ -324,7 +324,7 @@ class ScrapyDataPost(object):
                         count_num = conn.execute(f"select count from statistical where area_id={area_id} and push_day={push_day}").fetchone()[0] + count
                         conn.execute(f"update statistical set count='{count_num}', push_time='{push_time}' where area_id={area_id}")
                     else:
-                        conn.execute(f"INSERT INTO statistical (area_id, count, push_time, push_day) values ('{area_id}', '{count}', '{push_time}')")
+                        conn.execute(f"INSERT INTO statistical (area_id, count, push_time, push_day) values ('{area_id}', '{count}', '{push_time}', '{push_day}')")
                 if len(results) < rows:
                     break
                 else:
