@@ -249,6 +249,7 @@ class ScrapyDataPost(object):
                 if len(results) != 0:
                     area_id = results[0]['area_id']
                     push_time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
+                    push_day = datetime.datetime.today()
                     itme_num = 0
                     for item in results:
                         item_dict = dict(item)
@@ -318,12 +319,12 @@ class ScrapyDataPost(object):
                             print("不执行更新操作")
 
                     count = itme_num
-                    result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
+                    result = conn.execute(f"select * from statistical where area_id={area_id} and push_day={push_day}").fetchall()
                     if result:
-                        count_num = conn.execute(f"select count from statistical where area_id={area_id}").fetchone()[0] + count
+                        count_num = conn.execute(f"select count from statistical where area_id={area_id} and push_day={push_day}").fetchone()[0] + count
                         conn.execute(f"update statistical set count='{count_num}', push_time='{push_time}' where area_id={area_id}")
                     else:
-                        conn.execute(f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
+                        conn.execute(f"INSERT INTO statistical (area_id, count, push_time, push_day) values ('{area_id}', '{count}', '{push_time}')")
                 if len(results) < rows:
                     break
                 else:
@@ -483,7 +484,7 @@ if __name__ == "__main__":
                         # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4',
                         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
                         post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice")
-    cp.run_post(d_time='2021-05-11', e_time='2021-05-12')
+    cp.run_post(d_time='2020-12-01', e_time='2021-05-14')
     # cp.run_post()
 
     #'You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near \'14:02:50)\' at line 1'

@@ -13,6 +13,7 @@ import datetime
 import requests
 import threading
 import platform
+import logging
 from operator import itemgetter
 from sqlalchemy import create_engine
 from spider_pro.utils import get_accurate_pub_time
@@ -141,7 +142,7 @@ def deal_base_notices_data(data, is_hump=False):
             "source": get_limit_char_from_data(data, "source", 500),  # '来源(采集的公告就填写采集网站、用户和平台发布就用用户名)'
             "sourceUrl": get_limit_char_from_data(data, "source_url", 500),  # 采集发布来源网站URL
 
-            "noticeId": data.get("", ""),
+            "noticeId": data.get("uuid", ""),
 
             # "is_upload": get_int_from_data(data, "0")
         }
@@ -277,6 +278,7 @@ class ScrapyDataPost(object):
                     self.logger.info(table_name)
                     area_id = results[0]['area_id']
                     push_time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
+                    push_day = datetime.datetime.today()
                     itme_num = 0
                     for item in results:
                         item_dict = dict(item)
@@ -346,15 +348,14 @@ class ScrapyDataPost(object):
                             print("不执行更新操作")
 
                     count = itme_num
-                    result = conn.execute(f"select * from statistical where area_id={area_id}").fetchall()
+                    result = conn.execute(
+                        f"select * from statistical where area_id={area_id} and push_day={push_day}").fetchall()
                     if result:
-                        count_num = conn.execute(f"select count from statistical where area_id={area_id}").fetchone()[
-                                        0] + count
-                        conn.execute(
-                            f"update statistical set count='{count_num}', push_time='{push_time}' where area_id={area_id}")
+                        count_num = conn.execute( f"select count from statistical where area_id={area_id} and push_day={push_day}").fetchone()[0] + count
+                        conn.execute( f"update statistical set count='{count_num}', push_time='{push_time}' where area_id={area_id}")
                     else:
                         conn.execute(
-                            f"INSERT INTO statistical (area_id, count, push_time) values ('{area_id}', '{count}', '{push_time}')")
+                            f"INSERT INTO statistical (area_id, count, push_time, push_day) values ('{area_id}', '{count}', '{push_time}')")
                 if len(results) < rows:
                     break
                 else:
