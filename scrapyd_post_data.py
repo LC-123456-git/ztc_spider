@@ -484,7 +484,7 @@ if __name__ == "__main__":
                         # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4',
                         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
                         post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice")
-    cp.run_post(d_time='2020-12-01', e_time='2021-05-14')
+    cp.run_post(d_time='2021-03-01', e_time='2021-05-14')
     # cp.run_post()
 
     #'You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near \'14:02:50)\' at line 1'
