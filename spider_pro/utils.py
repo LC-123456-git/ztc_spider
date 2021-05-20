@@ -17,6 +17,37 @@ import html
 import uuid
 
 
+def remove_element_contained(content, ele_name, attr_name, attr_value, specific_ele):
+    """
+    删除子节点中包含 指定 元素的节点
+    Args:
+        @content: html文档
+        @ele_name: 元素名称
+        @attr_name: 元素属性名
+        @attr_value: 元素属性值
+    Returns:
+        @msg: 错误信息
+        @content: 构造后的信息
+    """
+    msg = ''
+    try:
+        doc = etree.HTML(content)
+        els = doc.xpath('//{ele_name}[@{attr_name}={attr_value}]'.format(**{
+            'ele_name': ele_name,
+            'attr_name': attr_name,
+            'attr_value': attr_value,
+        }))
+        for el in els:
+            c_els = el.xpath('.//{specific_ele}'.format(specific_ele=specific_ele))
+            if c_els:
+                el.getparent().remove(el)
+        content = etree.tounicode(doc)
+    except Exception as e:
+        msg = e
+
+    return msg, content.replace('<html><body>', '').replace('</body></html>', '')
+
+
 def remove_specific_element(content, ele_name, attr_name, attr_value, if_child=False, index=1, text='', **kwargs):
     """
     remove specific html element attribute from content
@@ -25,7 +56,7 @@ def remove_specific_element(content, ele_name, attr_name, attr_value, if_child=F
         @ele_name: 元素名称
         @attr_name: 元素属性名
         @attr_value: 元素属性值
-        @index: 指定元素索引删除
+        @index: 指定元素索引删除 index:0统统删除
         @text: 指定包含文本的子节点删除
         @kwargs: if_child 移除的是否子元素
                  child_attr 子元素名称
@@ -59,10 +90,13 @@ def remove_specific_element(content, ele_name, attr_name, attr_value, if_child=F
                                     child_el.getparent().remove(child_el)
                                     break
                     else:
-                        if same == index:
+                        if index:
+                            if same == index:
+                                el.getparent().remove(el)
+                                break
+                            same += 1
+                        else:  # 删除所有匹配节点
                             el.getparent().remove(el)
-                            break
-                        same += 1
             content = etree.tounicode(doc)
         else:  # 无属性元素 指定索引删除
             for n, el in enumerate(els):
@@ -114,7 +148,7 @@ def catch_files(content, base_url):
             if file_name:
                 file_name = file_name[0]
                 # check file_name exists zip|doc|docx|xls|xlsx
-                if re.search('\.pdf|\.rar|\.zip|\.doc|\.docx|\.xls|\.xlsx|\.xml|\.dwg', file_name):
+                if re.search('\.pdf|\.rar|\.zip|\.doc|\.docx|\.xls|\.xlsx|\.xml|\.dwg|\.AJZF', file_name):
                     file_url = href_el.get('href', '')
                     if not check_if_http_based(file_url):
                         file_url = base_url + file_url
@@ -425,6 +459,18 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
     elif area_id == "3321":
+        area_dict = const.zhe_jiang
+        province_name = area_dict["name"]
+        province_code = area_dict["code"]
+        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
+        return deal_area_dict
+    elif area_id == "3322":
+        area_dict = const.zhe_jiang
+        province_name = area_dict["name"]
+        province_code = area_dict["code"]
+        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
+        return deal_area_dict
+    elif area_id == "3323":
         area_dict = const.zhe_jiang
         province_name = area_dict["name"]
         province_code = area_dict["code"]
