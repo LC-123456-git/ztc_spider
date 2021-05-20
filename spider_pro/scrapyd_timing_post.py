@@ -144,7 +144,7 @@ def deal_base_notices_data(data, is_hump=False):
             "source": get_limit_char_from_data(data, "source", 500),  # '来源(采集的公告就填写采集网站、用户和平台发布就用用户名)'
             "sourceUrl": get_limit_char_from_data(data, "source_url", 500),  # 采集发布来源网站URL
 
-            "noticeId": data.get("", ""),
+            "noticeId": data.get("uuid", ""),
 
             # "is_upload": get_int_from_data(data, "0")
         }
@@ -239,7 +239,7 @@ class ScrapyDataPost(object):
         if_push = True
         try:
             files_path = ast.literal_eval(files_path_string)
-            ret = requests.post(url='http://192.168.1.220:8002/sapi/webfile/getDownloadState', data={
+            ret = requests.post(url='http://file.zhaotx.cn/sapi/webfile/getDownloadState', data={
                 'jsonString': files_path
             })
             if ret.status_code == 200:

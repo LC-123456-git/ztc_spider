@@ -137,8 +137,8 @@ DOWNLOAD_DELAY = 0.2
 
 # not scrapy setting **********************************************************************
 # DEBUG_MODE setting
-# DEBUG_MODE = False
-DEBUG_MODE = True
+DEBUG_MODE = False
+# DEBUG_MODE = True
 # "True":切换为测试数据库，否则为正式库
 # "True":不启用URL去重，否则不启用
 
