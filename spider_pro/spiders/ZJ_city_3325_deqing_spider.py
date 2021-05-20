@@ -12,7 +12,7 @@ from spider_pro import items, constans, utils
 
 
 class ZjCity3325DeqingSpiderSpider(scrapy.Spider):
-    name = 'ZJ_city_deqing_spider'
+    name = 'ZJ_city_3325_deqing_spider'
     allowed_domains = ['116.62.168.209']
     start_urls = ['http://116.62.168.209/']
     query_url = 'http://116.62.168.209'
@@ -41,7 +41,7 @@ class ZjCity3325DeqingSpiderSpider(scrapy.Spider):
             {'category': '集体产权', 'url': 'http://116.62.168.209/sqjyjygg/index.htm'},
             {'category': '非政府采购项目', 'url': 'http://116.62.168.209/fsqjyjygg/index.htm'},
         ],
-        '资格预审公告': [
+        '资格预审结果公告': [
             {'category': '工程交易', 'url': 'http://116.62.168.209/zsgs/index.htm'},
         ],
         '招标变更': [
@@ -226,52 +226,62 @@ class ZjCity3325DeqingSpiderSpider(scrapy.Spider):
 
     def get_max_page(self, resp, url):
         max_page_str = resp.xpath('//div[@class="pgPanel clearfix"]/div/text()[not(normalize-space()="")]').get()
-        max_page_com = re.compile('共\d+条')
+        max_page_com = re.compile('共(\d+)条')
 
-        max_pages = max_page_com.findall(max_page_str)
+        if max_page_str:
+            max_pages = max_page_com.findall(max_page_str)
 
-        try:
-            max_page = int(max_pages[0])
-        except Exception as e:
-            self.log('error:{0}'.format(e))
-        else:
-            for i in range(max_page):
-                page = i + 1
-
-                if page > 1:
-                    url = url.replace('index.htm', 'index%d.htm' % page)
-
-                yield scrapy.Request(url=url, callback=self.parse_list, meta={
-                    'notice_type': resp.get('notice_type', ''),
-                    'category': resp.get('category', ''),
-                }, priority=5 * (max_page - i))
+            try:
+                max_page = int(max_pages[0])
+            except Exception as e:
+                self.log('error:{0}'.format(e))
+            else:
+                for p in range(0, max_page):
+                    if p > 0:
+                        c_url = url.replace('index.htm', 'index_%d.htm' % (p + 1))
+                    else:
+                        c_url = url
+                    # 最末一条符合时间区间则翻页
+                    # 解析详情页时再次根据区间判断去采集
+                    judge_status = self.judge_in_interval(
+                        c_url, method='GET', resp=resp, ancestor_el='div', ancestor_attr='class',
+                        ancestor_val='ListNews FloatL hidden',
+                        child_el='span'
+                    )
+                    if judge_status == 0:
+                        break
+                    elif judge_status == 2:
+                        continue
+                    else:
+                        yield scrapy.Request(url=c_url, callback=self.parse_list, meta={
+                            'notice_type': resp.meta.get('notice_type', ''),
+                            'category': resp.meta.get('category', ''),
+                        }, priority=5 * (max_page - p), dont_filter=True)
 
     def parse_list(self, resp):
         detail_els = resp.xpath('//div[@class="ListNews FloatL hidden"]/ul/li')
         for n, d_el in enumerate(detail_els):
-            pub_time = d_el.xpath('./span').get()
+            pub_time = d_el.xpath('./span/text()').get()
             c_href = d_el.xpath('./a/@href').get()
-            
-            yield scrapy.Request(url=''.join([self.query_url, c_href]), callback=self.parse_detail, meta={
-                'notice_type': resp.get('notice_type', ''),
-                'category': resp.get('category', ''),
-                'pub_time': pub_time,
-            }, priority=10 * (len(detail_els) - n))
+
+            if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
+                yield scrapy.Request(url=''.join([self.query_url, c_href]), callback=self.parse_detail, meta={
+                    'notice_type': resp.meta.get('notice_type', ''),
+                    'category': resp.meta.get('category', ''),
+                    'pub_time': pub_time,
+                }, priority=10000 * (len(detail_els) - n))
 
     def parse_detail(self, resp):
         content = resp.xpath('//div[@class="Content_Border hidden"]').get()
-        title_name = resp.xpath('//div[@class="Content_Border hidden"]/div[2]/text()').get()
+        title_name = resp.xpath('//div[@class="Content_Border hidden"]/div[2]/font/text()').get()
         notice_type_ori = resp.meta.get('notice_type')
 
         # 移除不必要信息: 删除面包屑导航, 发布时间
-        _, content = utils.remove_specific_element(content, 'div', 'class', 'detail-info')
-        _, content = utils.remove_specific_element(content, 'div', 'class', 'detail-info')
+        _, content = utils.remove_specific_element(
+            content, 'div', 'class', 'Content_Border hidden', if_child=True, child_attr='h6', index=2
+        )
+        _, content = utils.remove_specific_element(content, 'div', 'class', 'title')
 
-        # 删除表单
-        _, content = utils.remove_specific_element(content, 'div', 'class', 'clearfix hidden', index=0)
-        _, content = utils.remove_specific_element(content, 'input', 'id', 'souceinfoid')
-
-        content = utils.avoid_escape(content)  # 防止转义
         # 关键字重新匹配 notice_type
         matched, match_notice_type = self.match_title(title_name)
         if matched:
@@ -300,28 +310,6 @@ class ZjCity3325DeqingSpiderSpider(scrapy.Spider):
         print(resp.meta.get('pub_time'), resp.url)
 
         return notice_item
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
