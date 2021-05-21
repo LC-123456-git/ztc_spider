@@ -264,15 +264,18 @@ class ScrapyDataPost(object):
         with self.engine.connect() as conn:
             while True:
                 print("start query data")
+                self.logger.info('表{0}开始无情的推送'.format(table_name))
                 # results = conn.execute(
                 #         f"select * from {table_name} where id>=2126 limit {err_start},{rows} ").fetchall()
                 # s = conn.execute(f"select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 0 limit {err_start},{rows} ").fetchall()
                 if not e_time:
-                    results = conn.execute(
-                        f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' limit {err_start},{rows} ").fetchall()
+                    c_sql = f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' limit {err_start},{rows} "
                 else:
-                    results = conn.execute(
-                        f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' and pub_time < '{e_time}' limit {err_start},{rows} ").fetchall()
+                    c_sql = f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' and pub_time < '{e_time}' limit {err_start},{rows} "
+
+                self.logger.info('表{0}推送的SQL：{0}'.format(table_name))
+                results = conn.execute(c_sql).fetchall()
+
                 if len(results) != 0:
                     self.logger.info(table_name)
                     area_id = results[0]['area_id']
@@ -314,6 +317,7 @@ class ScrapyDataPost(object):
                                 r = requests.post(url=self.post_url, data=data, timeout=10)
                                 if r.status_code != 200:
                                     print(r.status_code)
+                                    self.logger.info('表{0}此次推送状态码:{1}'.format(table_name, r.status_code))
                                     r = False
                                 else:
                                     r_dict = json.loads(r.text)
@@ -327,21 +331,22 @@ class ScrapyDataPost(object):
                                 if not r:
                                     print("upload", item_id, r)
                                 else:
-                                    pass
                                     print("upload", item_id, r)
+                                self.logger.info('表{0}upload item_id: {1} r: {2}'.format(table_name, item_id, r))
                         except Exception as e:
-                            print(e)
+                            self.logger.info('表{0}推送失败啦:{1}'.format(table_name, e))
                         if r:
                             try:
                                 update_sql = f"update {table_name} set is_upload = 1 where id = {item_id}"  # 推送
                                 result = conn.execute(update_sql)
                                 if result.rowcount != 1:
                                     print("update", item_id, False)
+                                    self.logger.info('表{0}upload item_id: {1} r: {2}'.format(table_name, item_id, False))
                                 else:
                                     print("update", item_id, True)
-
-                            except:
-                                pass
+                                    self.logger.info('表{0}upload item_id: {1} r: {2}'.format(table_name, item_id, True))
+                            except Exception as e:
+                                self.logger.info('表{0}推送记录更新失败:{1}'.format(table_name, e))
                         else:
                             err_start += 1
                             print("不执行更新操作")
@@ -359,6 +364,7 @@ class ScrapyDataPost(object):
                     break
                 else:
                     print("没有数据可执行更新操作")
+                    self.logger.info('表{0}没有数据可执行更新操作'.format(table_name))
                     break
 
     def run_post_today_all_spider_data(self, tables_list):
@@ -510,8 +516,7 @@ def test_current_is_running():
     #            return True
     #       else:
     #           return False
-    else:
-        return False
+    return False
 
 
 if __name__ == "__main__":
