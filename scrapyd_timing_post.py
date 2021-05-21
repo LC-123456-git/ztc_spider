@@ -273,7 +273,7 @@ class ScrapyDataPost(object):
                 else:
                     c_sql = f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' and pub_time < '{e_time}' limit {err_start},{rows} "
 
-                self.logger.info('表{0}推送的SQL：{0}'.format(table_name))
+                self.logger.info('表{0}推送的SQL：{0}'.format(table_name, c_sql))
                 results = conn.execute(c_sql).fetchall()
 
                 if len(results) != 0:
