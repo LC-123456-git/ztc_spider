@@ -14,7 +14,6 @@ class QccCrawlerSpider(scrapy.Spider):
 
     custom_settings = {
         'ITEM_PIPELINES': {
-            # 'spider_pro.pipelines.pipelines_qcc_json.JsonPipeline': 100,
             'spider_pro.pipelines.pipelines_extra.ExtraPipeline': 200,
         },
         'DOWNLOADER_MIDDLEWARES': {

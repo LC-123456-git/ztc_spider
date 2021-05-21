@@ -1,4 +1,9 @@
 # @Time : 2021/5/14 9:02 
-# @Author : xx
+# @Author : miaokela
 # @File : __init__.py.py 
-# @Description: PyCharm
+# @Description: 导入配置文件
+import configparser
+
+
+cf = configparser.ConfigParser()
+cf.read('./config/sql.ini')
