@@ -207,8 +207,9 @@ class TYCCrawler(object):
         # 详情页信息
         gevent.joinall([gevent.spawn(self.parse_basic_info_task, name, url) for name, url in self.detail_info.items()])
 
+        print(1)
 
 if __name__ == '__main__':
-    file_name = "./kw.xml"
+    file_name = "./files/kw.xml"
     tyc = TYCCrawler(file_name)
     tyc.run()

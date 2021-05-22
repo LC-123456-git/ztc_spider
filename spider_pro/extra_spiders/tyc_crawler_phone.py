@@ -13,12 +13,12 @@ from spider_pro.extra_spiders.public import db
 
 
 class TycCrawlerSpider(scrapy.Spider):
-    name = 'tyc_crawler'
+    name = 'tyc_crawler_phone'
     area_id = 9999999
-    allowed_domains = ['www.tianyancha.com']
-    start_urls = ['http://www.tianyancha.com/']
-    domain = 'https://www.tianyancha.com/'
-    search_url = 'https://www.tianyancha.com/search?key={key}'
+    allowed_domains = ['m.tianyancha.com']
+    start_urls = ['http://m.tianyancha.com/']
+    domain = 'https://m.tianyancha.com/'
+    search_url = 'https://m.tianyancha.com/search?key={key}'
     custom_settings = {
         'ITEM_PIPELINES': {
             'spider_pro.pipelines.pipelines_extra.ExtraPipeline': 200,
@@ -39,73 +39,17 @@ class TycCrawlerSpider(scrapy.Spider):
     })
     # QYMC,SSDQ,FDDBR,CLRQ,DJZT,ZCZB,SJZB,TYSHXYDM,GSZCH,ZZJGDM,NSRSBH,NSRZZ,QYLX,HY,YYQXS,YYQXM,RYGM,CBRY,
     # YWM,CYM,DJJG,HZRQ,ZCDZ,JYFW,JCKQYDM,QYFL,HYDL
-    basic_info_re = '法定代表人.*?经营状态,(?P<FDDBR>.*?),成立日期,(?P<CLRQ>.*?),注册资本,(?P<ZCZB>.*?),' + \
-                    '实缴资本,(?P<SJZB>.*?),工商注册号,(?P<GSZCH>.*?),统一社会信用代码,(?P<TYSHXYDM>.*?),' + \
-                    '纳税人识别号,(?P<NSRSBH>.*?),组织机构代码,(?P<ZZJGDM>.*?),营业期限,(?P<YYQXS>.*?)至(?P<YYQXM>.*?),纳税人资质,(?P<NSRZZ>.*?),' + \
-                    '核准日期,(?P<HZRQ>.*?),公司类型,(?P<QYLX>.*?),行业,(?P<HY>.*?),人员规模,(?P<RYGM>.*?),参保人数,(?P<CBRY>.*?),' + \
-                    '登记机关,(?P<DJJG>.*?),曾用名,(?P<CYM>.*?),英文名称,(?P<YWM>.*?),注册地址,(?P<ZCDZ>.*?),经营范围,(?P<JYFW>.*)'
+    basic_info_re = '法定代表人,.*?,(?P<FDDBR>.*?),.*?成立日期,(?P<CLRQ>.*?),经营状态,(?P<DJZT>.*?),注册资本,(?P<ZCZB>.*?),' + \
+                    '实缴资本,(?P<SJZB>.*?),统一社会信用代码,(?P<TYSHXYDM>.*?),工商注册号,(?P<GSZCH>.*?),组织机构代码,(?P<ZZJGDM>.*?),' + \
+                    '纳税人识别号,(?P<NSRSBH>.*?),纳税人资质,(?P<NSRZZ>.*?),企业类型,(?P<QYLX>.*?),行业,(?P<HY>.*?),' + \
+                    '营业期限,(?P<YYQXS>.*?)至(?P<YYQXM>.*?),人员规模,(?P<RYGM>.*?),参保人数,(?P<CBRY>.*?),' + \
+                    '英文名称,(?P<YWM>.*?),曾用名,(?P<CYM>.*?),登记机关,(?P<DJJG>.*?),核准日期,(?P<HZRQ>.*?),注册地址,(?P<ZCDZ>.*?),经营范围,(?P<JYFW>.*)'
 
     @staticmethod
-    def remove_specific_element(content, ele_name, attr_name, attr_value, if_child=False, index=1, text='', **kwargs):
-        """
-        remove specific html element attribute from content
-        params:
-            @content: html文档
-            @ele_name: 元素名称
-            @attr_name: 元素属性名
-            @attr_value: 元素属性值
-            @index: 指定元素索引删除
-            @text: 指定包含文本的子节点删除
-            @kwargs: if_child 移除的是否子元素
-                    child_attr 子元素名称
-        """
-        msg = ''
-        try:
-            doc = etree.HTML(content)
-            els = doc.xpath('//{ele_name}'.format(**{
-                'ele_name': ele_name,
-            }))
-
-            if attr_name:
-                same = 1
-                for el in els:
-                    if attr_value in el.get(attr_name, ''):
-                        if if_child:
-                            child_attr = kwargs.get('child_attr')
-
-                            # if not text:
-                            child_els = el.xpath(
-                                './/{child_attr}'.format(**{'child_attr': child_attr}))
-
-                            if not text:
-                                for n, child_el in enumerate(child_els):
-                                    if n == index - 1:
-                                        child_el.getparent().remove(child_el)
-                                        break
-                            else:
-                                for child_el in child_els:
-                                    child_el_text = ','.join(
-                                        child_el.xpath('.//text()'))
-                                    if text in child_el_text:
-                                        child_el.getparent().remove(child_el)
-                                        break
-                        else:
-                            if index:
-                                if same == index:
-                                    el.getparent().remove(el)
-                                    break
-                                same += 1
-                            else:  # index = 0 删除所有匹配节点
-                                el.getparent().remove(el)
-                content = etree.tounicode(doc)
-            else:  # 无属性元素 指定索引删除
-                for n, el in enumerate(els):
-                    if n + 1 == index:
-                        el.getparent().remove(el)
-        except Exception as e:
-            msg = e
-
-        return msg, content.replace('<html><body>', '').replace('</body></html>', '')
+    def get_headers(resp):
+        default_headers = resp.request.headers
+        headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
+        return headers
 
     def start_requests(self):
         """
@@ -127,7 +71,7 @@ class TycCrawlerSpider(scrapy.Spider):
     def parse_list(self, resp):
         try:
             doc = etree.HTML(resp.text)
-            detail_xpath = '//*[@id="search_company_0"]//div[@class="header"]//a/@href'
+            detail_xpath = '//div[@class="search-name"]/a/@href'
             detail_urls = doc.xpath(detail_xpath)
             if detail_urls:
                 detail_url = detail_urls[0]
@@ -151,23 +95,20 @@ class TycCrawlerSpider(scrapy.Spider):
             qymc = qcc_data.get('QYMC', '')
             doc = etree.HTML(resp.text)
             # 企业名称
-            company_els = doc.xpath('//*[@id="company_web_top"]//div[@class="header"]/h1/text()')
+            company_els = doc.xpath('//div[@class="inner-name inner-title"]/text()')
             company = company_els[0] if company_els else ''
 
-            els = doc.xpath('//div[@id="_container_baseInfo"]')
+            els = doc.xpath('//div[@class="content" and position()=1]')
 
             if els and qymc == company:
                 doc_content = etree.tounicode(els[0])
 
-                _, content = TycCrawlerSpider.remove_specific_element(
-                    doc_content, 'div', 'class', 'data-describe ', index=0)
+                c_doc = etree.HTML(doc_content)
 
-                c_doc = etree.HTML(content)
-
-                c_els = c_doc.xpath('//tr/*')
+                c_els = c_doc.xpath('//div[@class="divide-content"]/*')
                 t = []
                 for el in c_els:
-                    t.append(''.join(
+                    t.append(','.join(
                         el.xpath('.//text()')
                     ).strip().replace(' ', '').replace('\n', ''))
 
@@ -223,4 +164,4 @@ class TycCrawlerSpider(scrapy.Spider):
 if __name__ == '__main__':
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl tyc_crawler".split(" "))
+    cmdline.execute("scrapy crawl tyc_crawler_phone".split(" "))
