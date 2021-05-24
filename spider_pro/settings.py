@@ -138,14 +138,34 @@ DOWNLOAD_DELAY = 2
 # not scrapy setting **********************************************************************
 # DEBUG_MODE setting
 # DEBUG_MODE = False
-DEBUG_MODE = False
+DEBUG_MODE = True
 # "True":切换为测试数据库，否则为正式库
 # "True":不启用URL去重，否则不启用
 
 # Mysql setting
 BUCKET_SIZE = 10
-ENGINE_CONFIG = 'mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4'
-TEST_ENGINE_CONFIG = 'mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'
+
+MYSQL_USER_NAME = 'root'
+MYSQL_IP = '114.67.84.76'
+MYSQL_PASSWORD = 'Ly3sa%@D0$pJt0y6'
+MYSQL_PORT = 8050
+MYSQL_DB_NAME = 'data_collection'
+MYSQL_TEST_DB_NAME = 'test2_data_collection'
+
+ENGINE_CONFIG = 'mysql+pymysql://{username}:{password}@{ip}:{port}/{db_name}?charset=utf8mb4'.format(**{
+    'username': MYSQL_USER_NAME,
+    'password': MYSQL_PASSWORD,
+    'ip': MYSQL_IP,
+    'port': MYSQL_PORT,
+    'db_name': MYSQL_DB_NAME,
+})
+TEST_ENGINE_CONFIG = 'mysql+pymysql://{username}:{password}@{ip}:{port}/{test_db_name}?charset=utf8mb4'.format(**{
+    'username': MYSQL_USER_NAME,
+    'password': MYSQL_PASSWORD,
+    'ip': MYSQL_IP,
+    'port': MYSQL_PORT,
+    'test_db_name': MYSQL_TEST_DB_NAME,
+})
 
 # Redis setting
 REDIS_HOST = "114.67.84.76"
