@@ -11,7 +11,7 @@ default_setting = {
     # 'CONCURRENT_REQUESTS_PER_IP': '30',  # 单个ip并发最大值
     # 'MAX_CONNECTIONS': '50',  # MYSQL最大连接数
     # 'CONCURRENT_REQUESTS': '2',
-    # 'ENABLE_PROXY_USE': 'True',  # 是否启用ip代理
+    'ENABLE_PROXY_USE': 'True',  # 是否启用ip代理
 }
 
 
@@ -127,7 +127,7 @@ def get_back_date(day):
 
 
 if __name__ == "__main__":
-    days_before = get_back_date(15)
+    days_before = get_back_date(2)
     yesterday = get_back_date(1)
     today = '{0:%Y-%m-%d}'.format(datetime.datetime.now())
 
@@ -151,9 +151,9 @@ if __name__ == "__main__":
         "province_23_henan_spider",  # error_11
         "province_26_hubei_spider",  # ok
         "province_30_guangdong_spider",  # error_01
-        "province_40_sichuan_spider",  # error
+        # "province_40_sichuan_spider",  # error
         "province_44_xizang_spider",  # error_01
-        "province_49_ningxia_spider",  # error_03
+        # "province_49_ningxia_spider",  # error_03
         "province_50_xinjiang_spider",  # ok + 附件没采
         "province_52_pinming_spider",  # ok
         "province_53_bilian_spider",  # ok
@@ -199,12 +199,34 @@ if __name__ == "__main__":
                 info = {}
 
                 arg_choices = {
-                    'sdt': days_before,
+                    'sdt': yesterday,
                     'edt': today,
                     # 'day': 30
                 }
 
                 if_incr = True
+                if item == "province_02_beijing_spider":
+                    if_incr = True
+                    # CONCURRENT_REQUESTS_PER_IP
+                    info = {
+                        'RANDOMIZE_DOWNLOAD_DELAY': True,
+                        'ENABLE_PROXY_USE': 'True',
+                    }
+
+                    arg_choices = {
+                        'day': 1
+                    }
+                if item == "province_21_shandong_spider":
+                    if_incr = True
+                    # CONCURRENT_REQUESTS_PER_IP
+                    info = {
+                        'RANDOMIZE_DOWNLOAD_DELAY': True,
+                        'ENABLE_PROXY_USE': 'True',
+                    }
+
+                    arg_choices = {
+                        'day': 1
+                    }
                 # if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
                 #     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
                 # if item == "province_57_jingcaizongheng_spider":

@@ -324,6 +324,14 @@ class ScrapyDataPost(object):
                                     if r_dict.get("code") in [200, "200"]:
                                         r = True
                                         itme_num += 1
+                                    elif r_dict.get("code") in [411, "411"]:
+                                        r = False  # 重复数据，is_upload为2
+                                        update_sql = f"update {table_name} set is_upload = 2 where id = {item_id}"  # 推送
+                                        result = conn.execute(update_sql)
+                                        if result.rowcount != 2:
+                                            print("update", item_id, False)
+                                        else:
+                                             print("update", item_id, True)
                                     else:
                                         print(r_dict.get("code"))
                                         r = False
@@ -524,7 +532,7 @@ if __name__ == "__main__":
     #     sys.exit(0)
 
     # 正式推数据 解开注释需要当心！！！
-
+    print('{0:%Y-%m-%d %H:%M:%S} post_star...'.format(datetime.datetime.now()))
     cp = ScrapyDataPost(
         table_name="notices_00",
         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4',
