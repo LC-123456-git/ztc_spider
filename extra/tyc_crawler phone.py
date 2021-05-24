@@ -255,7 +255,7 @@ class TYCCrawler(object):
                     info['经营范围'],
                 ]))
                 n += 1
-            w.save('企业信息{0:%Y-%m-%d}.xls'.format(datetime.now()))
+            w.save('./files/企业信息{0:%Y-%m-%d}.xls'.format(datetime.now()))
         except Exception as e:
             print(e)
             msg = 'error:{e}'.format(e=e)
@@ -281,6 +281,6 @@ class TYCCrawler(object):
 
 
 if __name__ == '__main__':
-    file_name = "./kw.xml"
+    file_name = "./files/kw.xml"
     tyc = TYCCrawler(file_name)
     tyc.run()

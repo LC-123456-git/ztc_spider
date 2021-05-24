@@ -334,7 +334,7 @@ class ReportOutput(DBQuery):
         for row in self.ws['A']:
             row.border = self.border
 
-        self.w.save('统计{0:%Y-%m-%d}.xls'.format(datetime.now()))
+        self.w.save('./files/统计{0:%Y-%m-%d}.xls'.format(datetime.now()))
         self.start = self.end + 1
 
 
@@ -348,5 +348,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-05-20', edt='2021-05-20')
+    rpt.output(sdt='2021-05-21', edt='2021-05-21')
     print((datetime.now() - start_time).total_seconds())

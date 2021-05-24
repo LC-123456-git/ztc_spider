@@ -66,6 +66,7 @@ class ExtraPipeline(object):
     def create_table(self):
         """
         建表
+            检查表中是否有列字段更新 新增表列
         """
         metadata = MetaData(self.engine)
         my_table = Table(
