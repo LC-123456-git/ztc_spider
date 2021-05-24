@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # author: miaokela
-# Date: 2021-05-24 11:54:42
-# Description: 常山县公共交易资源网
+# Date: 2021-05-24 17:27:42
+# Description: 平阳县县公共交易资源网
 import scrapy
 import copy
 import re
@@ -13,14 +13,14 @@ from datetime import datetime
 from spider_pro import utils, constans, items
 
 
-class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
-    name = 'ZJ_city_3328_changshan_spider'
-    allowed_domains = ['qzcs.zjzwfw.gov.cn']
-    start_urls = ['http://qzcs.zjzwfw.gov.cn/']
+class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
+    name = 'ZJ_city_3327_pingyang_spider'
+    allowed_domains = ['www.zjpy.gov.cn']
+    start_urls = ['http://www.zjpy.gov.cn/']
     area_id = 3328
-    basic_area = '浙江省-衢州市-常山县-常山县公共交易资源网'
-    query_url = 'http://qzcs.zjzwfw.gov.cn/module/jpage/dataproxy.jsp?startrecord={startrecord}&perpage=15'
-    base_url = 'http://qzcs.zjzwfw.gov.cn'
+    basic_area = '浙江省-温州市-苍南县-苍南县公共交易资源网'
+    query_url = 'http://www.zjpy.gov.cn/module/jpage/dataproxy.jsp?startrecord={startrecord}&perpage=25'
+    base_url = 'http://www.zjpy.gov.cn'
     keywords_map = {
         '中标|成交|结果': '中标公告',
         '意向': '招标预告',
@@ -29,34 +29,34 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
         '评标结果': '中标预告',
     }
     url_map = {
-        '建设工程': {
-            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341070/index.html',
-        },
         '政府采购': {
-            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341069/index.html',
-        },
-        '综合交易': {  # add
-            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341072/index.html',
+            'url': 'http://www.zjpy.gov.cn/col/col1250951/index.html',
         },
         '土地交易': {
-            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341071/index.html',
+            'url': 'http://www.zjpy.gov.cn/col/col1251141/index.html',
         },
-        '农村产权': {
-            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341073/index.html',
+        '建设项目': {
+            'url': 'http://www.zjpy.gov.cn/col/col1251142/index.html',
         },
-        '乡镇平台': {  # add
-            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341074/index.html',
-        }
+        '中标结果': {
+            'url': 'http://www.zjpy.gov.cn/col/col1229003086/index.html',
+        },
+        '审批信息': {
+            'url': 'http://www.zjpy.gov.cn/col/col1228970283/index.html',
+        },
+        '失信记录': {
+            'url': 'http://www.zjpy.gov.cn/col/col1228970288/index.html',
+        },
     }
     form_data = {
         'col': '1',
         'appid': '1',
-        'webid': '76',
+        'webid': '1830',
         'path': '/',
         'columnid': '',  # ok
         'sourceContentType': '1',
-        'unitid': '4359341',
-        'webname': '浙江政务服务网（衢州市常山县）',
+        'unitid': '4130883',
+        'webname': '平阳县政府门户网站',
         'permissiontype': '0'
     }
 
@@ -99,7 +99,7 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
                 2 末条大于最大时间 continue
         """
         status = 0
-        headers = ZjCity3328ChangshanSpiderSpider.get_headers(resp)
+        headers = ZjCity3327PingyangSpiderSpider.get_headers(resp)
         if all([self.start_time, self.end_time]):
             try:
                 text = ''
@@ -239,7 +239,7 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
             except ValueError as e:
                 self.log(e)
             else:
-                start_record_list = ZjCity3328ChangshanSpiderSpider.get_start_record_list(total_record)
+                start_record_list = ZjCity3327PingyangSpiderSpider.get_start_record_list(total_record)
                 for n, start_record in enumerate(start_record_list):
                     form_data = self._form_data
                     form_data['columnid'] = column_id
@@ -349,5 +349,5 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3328_changshan_spider -a sdt=2020-01-01 -a edt=2021-05-24".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3328_changshan_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3327_pingyang_spider -a sdt=2020-01-01 -a edt=2021-05-24".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3327_pingyang_spider".split(" "))
