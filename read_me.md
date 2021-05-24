@@ -149,6 +149,8 @@
 - [] 3324 南浔区公共资源交易中心  http://ggzy.nanxun.gov.cn/ 
 - [] 3325 德清县公共资源交易中心  http://116.62.168.209/zbgg/index.htm
 - [] 3326 龙游县公共资源交易中心  http://ztb.longyou.gov.cn/
+- [] 3327 平阳县公共资源交易中心  http://www.zjpy.gov.cn/
+- [] 3328 常山县公共资源交易网  http://qzcs.zjzwfw.gov.cn/
 
 
 ### 反爬策略汇总
