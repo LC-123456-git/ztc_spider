@@ -144,15 +144,24 @@ def catch_files(content, base_url):
         # files
         href_els = doc.xpath('//a')
         for href_el in href_els:
-            file_name = href_el.xpath('./text()')
+            file_name = href_el.xpath('.//text()')
             if file_name:
                 file_name = file_name[0]
                 # check file_name exists zip|doc|docx|xls|xlsx
+                # RECORDS ALL LINKS EXCEPT CONTENT-TYPE CONTAINS 'text/html'
+                file_url = href_el.get('href', '')
+                if not check_if_http_based(file_url):
+                    file_url = base_url + file_url
+
                 if re.search('\.pdf|\.rar|\.zip|\.doc|\.docx|\.xls|\.xlsx|\.xml|\.dwg|\.AJZF', file_name):
-                    file_url = href_el.get('href', '')
-                    if not check_if_http_based(file_url):
-                        file_url = base_url + file_url
                     files_path[file_name] = file_url
+                else:
+                    content_type = requests.get(url=file_url, headers={
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+                                      '(KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
+                    }).headers.get('Content-Type')
+                    if 'text/html' not in content_type:
+                        files_path[file_name] = file_url
     except Exception as e:
         msg = e
     return msg, files_path

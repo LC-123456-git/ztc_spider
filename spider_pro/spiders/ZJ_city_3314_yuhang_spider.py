@@ -357,5 +357,5 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider -a sdt=2021-03-01 -a edt=2021-05-24".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider -a sdt=2021-03-01 -a edt=2021-05-24".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider".split(" "))

@@ -326,6 +326,7 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
             # REMOVE WINDOW-CLOSE
             _, content = utils.remove_specific_element(content, 'table', 'align', 'center', index=2)
 
+            content = content.replace('<a/>', '')
             # 投标文件
             _, files_path = utils.catch_files(content, self.base_url)
 
@@ -349,5 +350,5 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3328_changshan_spider -a sdt=2020-01-01 -a edt=2021-05-24".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3328_changshan_spider -a sdt=2018-05-01 -a edt=2021-05-24".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3328_changshan_spider".split(" "))
