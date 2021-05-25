@@ -150,12 +150,14 @@ class MySpider(CrawlSpider):
             records = json.loads(response.text).get("result").get("records")
             for urls in records:
                 linkurl = urls["linkurl"]
+                title_name = urls["title"]
                 area_in = urls.get("zhuanzai", "")
                 name_project_category = self.project_category_dict.get(category_num[0:6], "")
                 data_url = self.domain_url + linkurl
                 yield scrapy.Request(url=data_url, callback=self.parse_item,priority=10, meta={
                     "cb_kwargs": cb_kwargs,
                     "area_in": area_in,
+                    "title_name": title_name,
                     "name_project_category": name_project_category,
                 }, cb_kwargs=cb_kwargs)
         except Exception as e:
@@ -164,7 +166,7 @@ class MySpider(CrawlSpider):
     def parse_item(self, response, name):
         if response.status == 200:
             origin = response.url
-            title_name = response.xpath("/html/body/div[2]/div/div[3]/h2/text()").get() or ""
+            title_name = response.meta["title_name"]
             print(title_name)
             if re.search(r"终止|中止|流标|废标|异常", title_name):
                 name = const.TYPE_ZB_ABNORMAL
@@ -218,5 +220,5 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_13_jiangsu_spider -a sdt=2021-05-01 -a edt=2021-05-14".split(" "))
+    cmdline.execute("scrapy crawl province_13_jiangsu_spider -a sdt=2021-05-20 -a edt=2021-05-21".split(" "))
     # cmdline.execute("scrapy crawl province_13_jiangsu_spider -a sdt=2021-01-26 -a edt=2021-01-26".split(" "))

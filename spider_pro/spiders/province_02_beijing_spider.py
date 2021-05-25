@@ -119,15 +119,16 @@ class MySpider(CrawlSpider):
     def __init__(self, *args, **kwargs):
         super(MySpider, self).__init__()
         if inDates := kwargs.get("day"):
-            self.time_dict = {
-                                 "inDates": inDates,
-                             }
 
+            self.time_dict = {"inDates": inDates}
+        else:
+            self.time_dict = {"inDates": inDates}
 
     def start_requests(self):
         for item in self.all_list:
             channelId = process_request_category(item).get("channelId")
-            info_dict = {"c1": "", "c2": "", "c3": item, "c4": "", "e": "", "ext8": "", "inDates": "1", "channelId":channelId, "q": ""}
+            info_dict = {"c1": "", "c2": "", "c3": item, "c4": "", "e": "", "ext8": "", "channelId": channelId,
+                         "q": ""} | self.time_dict
             yield scrapy.Request(url=f"{self.info_url}{urllib.parse.urlencode(info_dict)}", priority=2,
                                  callback=self.parse_urls, meta={"info_dict": info_dict})
 
@@ -160,7 +161,6 @@ class MySpider(CrawlSpider):
             pub_time = li.xpath("./div[@class='list-times1']/p/text()").get()
             info_url = self.domain_url + info_url
             self.list_1.append(info_url)
-            print(len(self.list_1))
             yield scrapy.Request(url=info_url, priority=10,
                                  callback=self.parse_items, meta={"title_name": title_name, "pub_time": pub_time,
                                                                       "info_dict": response.meta["info_dict"]})
@@ -170,8 +170,7 @@ class MySpider(CrawlSpider):
             origin = response.url
             self.list_2.append(origin)
             title_name = response.meta["title_name"]
-            print(len(self.list_2))
-            # print(title_name)
+            print(title_name)
             title_2 = response.xpath("//div[@class='div-title2']/text()").get()
             pub_time = response.meta["pub_time"]
             info_source = "".join(re.findall(r"信息来源：(.+) ", title_2))
@@ -215,4 +214,4 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_02_beijing_spider".split(" "))
+    cmdline.execute("scrapy crawl province_02_beijing_spider -a day=1".split(" "))

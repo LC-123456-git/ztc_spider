@@ -129,16 +129,16 @@ RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 400, 403, 404]
 
 # concurrent
 CONCURRENT_REQUESTS = 32  # 32 理论上可以支持 每小时10w数据 调式环境设置为1
-CONCURRENT_REQUESTS_PER_IP = 0     # 1
+CONCURRENT_REQUESTS_PER_IP = 30     # 1
 REACTOR_THREADPOOL_MAXSIZE = 20
 
 # download delay   延时下载
-DOWNLOAD_DELAY = 0.2
+DOWNLOAD_DELAY = 2
 
 # not scrapy setting **********************************************************************
 # DEBUG_MODE setting
-DEBUG_MODE = False
-# DEBUG_MODE = True
+# DEBUG_MODE = False
+DEBUG_MODE = True
 # "True":切换为测试数据库，否则为正式库
 # "True":不启用URL去重，否则不启用
 
@@ -192,7 +192,7 @@ NAME_HTTPS_USED_PROXY = "used:https_proxy"  # 已使用的代理池
 NAME_RETRY_TIMES = "retry_times"  # 代理重试池
 
 NAME_DELAY_REQUEST = "delay_request"  # 延迟请求
-TIME_DELAY_REQUEST = 5  # 延迟请求5s
+TIME_DELAY_REQUEST = 2  # 延迟请求5s
 
 NAME_HTTP_ABANDON_PROXY = "http_abandon_proxy"  # redis http废弃池
 NAME_HTTPS_ABANDON_PROXY = "https_abandon_proxy"  # redis https废弃池
@@ -208,8 +208,7 @@ ENABLE_UPLOAD_ALL_WHEN_START = False  # 异常自动恢复上传功能
 ENABLE_PROXY_INFINITE = False
 NAME_PROXY_INFINITE = "proxy_infinite"
 
-# ENABLE_PROXY_USE = True  # 启用代理
-ENABLE_PROXY_USE = False
+ENABLE_PROXY_USE = True  # 启用代理
 ENABLE_URL_DUP_REMOVE_USE = False
 
 DEPTH_PRIORITY = 1

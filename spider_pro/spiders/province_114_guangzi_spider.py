@@ -91,8 +91,8 @@ class MySpider(CrawlSpider):
         if json.loads(response.text).get("message") == "成功":
             categoryId = response.meta["categoryId"]
             classifyShow = response.meta["classifyShow"]
-            total = json.loads(response.text).get("total")
-            pages = total/100 + 1
+            total = json.loads(json.loads(response.text).get("data")).get("total")
+            pages = total // 100 + 1
             self.logger.info(f"本次获取总条数为：{total} ")
             for num in range(1, pages):
                 data_dict = {"categoryId": categoryId, "pageNumber": num, "pageSize": "100", "title": "", "pubshTime": ""}
@@ -120,8 +120,7 @@ class MySpider(CrawlSpider):
 
     def parse_item(self, response):
         if json.loads(response.text).get("success"):
-            content = json.loads(response.text).get("context")
-
+            content = json.loads(json.loads(response.text).get("data")).get("context")
             origin = response.url
             info_source = response.meta['info_source']
             if info_source:
@@ -131,32 +130,11 @@ class MySpider(CrawlSpider):
             notice_type = response.meta['notice_type']
             classifyShow = response.meta.get("classifyShow")
             title_name = response.meta.get("title_name")
-            pub_time = response.meta['put_time']
+            pub_time = response.meta['pub_time']
             if not pub_time:
                 pub_time = "null"
             pub_time = get_accurate_pub_time(pub_time)
 
-            content = response.xpath('//div[@class="article-content"]').get()
-            # 去除第一个广告
-            pattern = re.compile(r'<a class="broadcast_flb_05".*?>(.*?)</a>', re.S)
-            content = content.replace(''.join(re.findall(pattern, content)), '')
-            # 去除title
-            pattern = re.compile(r'<div class="article-title"*?>(.*?)</div>', re.S)
-            content = content.replace(''.join(re.findall(pattern, content)), '')
-            # 去除 发布时间
-            pattern = re.compile(r'<div class="article-author"*?>(.*?)</div>', re.S)
-            content = content.replace(''.join(re.findall(pattern, content)), '')
-            # 去除最后一个广告
-            pattern = re.compile(r'<div class="article-bottom"*?>(.*?)</a>', re.S)
-            content = content.replace(''.join(re.findall(pattern, content)), '')
-
-            pattern = re.compile(r'<div class="fileDownload"*?>(.*?)</table>', re.S)
-            content = content.replace(''.join(re.findall(pattern, content)), '')
-            # 去除隐藏表格
-            pattern = re.compile(r'<h3>(.*?)</i>', re.S)
-            content = content.replace(''.join(re.findall(pattern, content)), '')
-            pattern = re.compile(r'<div class="modalBody">(.*?)</div>', re.S)
-            content = content.replace(''.join(re.findall(pattern, content)), '')
             list_name = ['本公告发布媒体', '发布媒介']
             for name in list_name:
                 if name in content:

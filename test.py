@@ -1,9 +1,19 @@
-import re
-
-#
-# time_str = "1233455发布日期：2021-04-27 10:29,sdsadsdasdsadsadsadsad"
-# str_s = re.sub("发布日期：\d+-\d+-\d+ \d+:\d+", "", time_str)
-# print(str_s)
-
-sss = [1111].append([2222])
-print(sss)
+"""555211838366814209,555249600151293953,555242729281556480,555236397165973504,555267312034385921,555189152563466241,555184124280836097,555232007457738753,555277437696610305
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555277436593508353
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555276952545660928
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555201796095741953
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555193573653483520
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555191669577879553
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555068303550320641
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555293245038530560
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555292422967529473
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555287099619807232
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555257659233800192
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555254610410999809
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555174097436413953
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555174098875060225
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555166917542940672
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555286236096499712
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555284849740615681
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555282407837798401
+http://ggzy.guizhou.gov.cn/jyxx/view.html?meteIds=555279795428134913"""

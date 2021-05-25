@@ -1,6 +1,8 @@
 *.pyc
 *.dat
 *.log
+*.xls
+*.xlsx
 venv/
 dist/
 __pycache__/
