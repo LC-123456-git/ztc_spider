@@ -17,16 +17,15 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
     name = 'ZJ_city_3327_pingyang_spider'
     allowed_domains = ['www.zjpy.gov.cn']
     start_urls = ['http://www.zjpy.gov.cn/']
-    area_id = 3328
-    basic_area = '浙江省-温州市-苍南县-苍南县公共交易资源网'
+    area_id = 3327
+    basic_area = '浙江省-温州市-平阳县-平阳县公共交易资源网'
     query_url = 'http://www.zjpy.gov.cn/module/jpage/dataproxy.jsp?startrecord={startrecord}&perpage=25'
     base_url = 'http://www.zjpy.gov.cn'
     keywords_map = {
-        '中标|成交|结果': '中标公告',
-        '意向': '招标预告',
-        '澄清|变更|补充|取消|更正|延期': '招标变更',
-        '流标|废标|终止|中止': '招标异常',
-        '评标结果': '中标预告',
+        '结果': '中标公告',
+        '流标|废标': '招标异常',
+        '澄清|变更|补充': '招标变更',
+        '采购公告|询价公告|招标公告|要求|单一来源|磋商|出让公告|转让公告|招租|出租|使用权': '招标公告',
     }
     url_map = {
         '政府采购': {
@@ -35,16 +34,16 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
         '土地交易': {
             'url': 'http://www.zjpy.gov.cn/col/col1251141/index.html',
         },
-        '建设项目': {
+        '建设项目': {  # add
             'url': 'http://www.zjpy.gov.cn/col/col1251142/index.html',
         },
-        '中标结果': {
+        '中标结果': {  # add
             'url': 'http://www.zjpy.gov.cn/col/col1229003086/index.html',
         },
-        '审批信息': {
+        '审批信息': {  # add
             'url': 'http://www.zjpy.gov.cn/col/col1228970283/index.html',
         },
-        '失信记录': {
+        '失信记录': {  # add
             'url': 'http://www.zjpy.gov.cn/col/col1228970288/index.html',
         },
     }
@@ -291,7 +290,7 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
 
             for record in record_set:
                 # 因内容被注释 正则匹配 (链接 标题 时间)
-                record_com = re.compile("href='(.*?)'.*?46px\">(.*?)</span>")
+                record_com = re.compile("href='(.*?)'.*?888;\">(.*?)</div>")
                 record_infos = record_com.findall(record.text)
                 if record_infos:
                     record_info = record_infos[0]
@@ -305,8 +304,8 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
 
     def parse_item(self, resp):
         try:
-            content = resp.xpath('//div[@class="wzy_content"]/div').get()
-            title_name = resp.xpath('//td[@class="title"]/text()').get()
+            content = resp.xpath('//table[@id="c"]').get()
+            title_name = resp.xpath('//div[@class="wenzhnag"]//tr[1]/td[@align="center"]/text()').get()
             category_type = resp.meta.get('category_type')
 
             # 关键词匹配 修改notice_type
@@ -315,7 +314,6 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
                 notice_type_ori = match_notice_type
             else:
                 notice_type_ori = '招标公告'
-
             notice_types = list(
                 filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
             )
@@ -323,9 +321,6 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
             _, content = utils.remove_specific_element(content, 'table', 'align', 'center', if_child=True,
                                                        child_attr='tr',
                                                        index=2)
-            # REMOVE WINDOW-CLOSE
-            _, content = utils.remove_specific_element(content, 'table', 'align', 'center', index=2)
-
             # 投标文件
             _, files_path = utils.catch_files(content, self.base_url)
 
@@ -349,5 +344,5 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3327_pingyang_spider -a sdt=2020-01-01 -a edt=2021-05-24".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3327_pingyang_spider -a sdt=2020-01-01 -a edt=2021-05-25".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3327_pingyang_spider".split(" "))
