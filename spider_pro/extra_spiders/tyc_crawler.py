@@ -13,7 +13,7 @@ from spider_pro.extra_spiders.public import db
 
 
 class TycCrawlerSpider(scrapy.Spider):
-    name = 'tyc_crawler'
+    name = 'tyc_crawler'  # 写入企查查表
     area_id = 9999999
     allowed_domains = ['www.tianyancha.com']
     start_urls = ['http://www.tianyancha.com/']
@@ -216,6 +216,10 @@ class TycCrawlerSpider(scrapy.Spider):
                     })
                     print(qcc_data.get('QYMC', ''))
                     return notice_item
+                else:
+                    self.log('{0}公司 没匹配着关键字'.format(company))
+            else:
+                self.log('{0}公司没找到'.format(company))
         except Exception as e:
             self.log('error:{e}'.format(e=e))
 
