@@ -24,7 +24,7 @@ CATEGORY_PROPERTY_LIST = [
     "土地矿产", "产权交易", "矿权交易", "土地及矿业权", "碳排放权交易", "排污权交易", "土矿交易", "土地矿业交易", "土地/矿业权",
     "农村集体产权", "国土资源交易", "林权交易", "土地及矿产权信息", "国有产权信息", "煤炭产能指标交易", "要素交易", "土地矿权", "矿业权交易"
     "国有建设用地使用权和采矿权", "土地矿业", "拓展资源", "矿业成交信息", "矿业权出让", "土地交易", "土地矿产交易", "矿权及土地",
-    "产权", "环境权", "国有土地使用权出让", "要素资源", "土地交易", "国土交易", "小额交易", "资源要素交易","土地使用权和矿业权出让",
+    "产权", "环境权", "国有土地使用权出让", "要素资源", "土地交易", "国土交易", "小额交易", "资源要素交易", "土地使用权和矿业权出让",
     "要素市场交易", "农村综合产权交易", "农村集体产权", "用能指标总量交易", "集体产权"
 ]  # 项目类型：产权交易
 
@@ -89,8 +89,8 @@ FALSE_LIST = ["False", False, "FALSE"]  # 假集合
 
 DEFAULT_PUB_TIME = "1970-01-01"
 
-FILE_SERVER = 'http://file.zhaotx.cn/sapi/webfile/getDownloadState'
-FAIL_TASK_SERVER = 'http://file.zhaotx.cn/sapi/webfile/getDownloadState'
+FILE_SERVER = 'http://file.zhaotx.cn/sapi/webfile/addWebFileTask'
+FAIL_TASK_SERVER = 'http://file.zhaotx.cn/sapi/webfile/getFailTask'
 # clean fields **************************************************************
 NAME_NOTICES_NATURE_NORMAL = "正常公告"
 KEY_WORDS_DICT = {
