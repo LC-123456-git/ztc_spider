@@ -303,6 +303,24 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
                             'pub_time': pub_time,
                         }, priority=1000)
 
+    @staticmethod
+    def replace_a_without_href(content, attr_name='span'):
+        """
+        清洗脏数据a标签
+        """
+        error = ''
+        try:
+            doc = etree.HTML(content)
+            els = doc.xpath('//a[not(@href)]')
+            for el in els:
+                el_content = etree.tounicode(el)
+                n_el_content = el_content.replace('<a', '<span').replace('</a>', '</span>')
+                content = content.replace(el_content, n_el_content)
+        except Exception as e:
+            error = 'error:{0}'.format(e)
+
+        return error, content
+
     def parse_item(self, resp):
         try:
             content = resp.xpath('//div[@class="wzy_content"]/div').get()
@@ -327,6 +345,10 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
             _, content = utils.remove_specific_element(content, 'table', 'align', 'center', index=2)
 
             content = content.replace('<a/>', '')
+
+            # REPLACE ATTR A WITHOUT HREF TO SPAN
+            _, content = ZjCity3328ChangshanSpiderSpider.replace_a_without_href(content)
+
             # 投标文件
             _, files_path = utils.catch_files(content, self.base_url)
 
@@ -350,5 +372,5 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3328_changshan_spider -a sdt=2018-05-01 -a edt=2021-05-24".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3328_changshan_spider -a sdt=2018-01-01 -a edt=2018-12-24".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3328_changshan_spider".split(" "))
