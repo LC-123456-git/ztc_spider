@@ -87,9 +87,11 @@ class MySpider(CrawlSpider):
                         notice = const.TYPE_ZB_ABNORMAL
                     elif info_url in self.list_qita_num:
                         notice = const.TYPE_OTHERS_NOTICE
-
-                    yield scrapy.Request(url=info_url, callback=self.parse_data_urls,
-                                         meta={'category': category, 'notice': notice})
+                    else:
+                        notice = ''
+                    if notice:
+                        yield scrapy.Request(url=info_url, callback=self.parse_data_urls, priority=50,
+                                             meta={'category': category, 'notice': notice})
         except Exception as e:
             self.logger.error(f"发起数据请求失败parse_urls {e} {response.url=}")
 
@@ -116,12 +118,13 @@ class MySpider(CrawlSpider):
                                 page += 1
                             else:
                                 page = 1
-                            yield scrapy.Request(url=data_info_urls.format(page), callback=self.parse_data_info,
+                            yield scrapy.Request(url=data_info_urls.format(page), callback=self.parse_data_info, priority=100,
                                                  meta={"category": response.meta['category'], 'notice': response.meta['notice']})
                 else:
                     for num in range(1, int(pages) + 1):
-                        yield scrapy.Request(url=data_info_urls.format(num), callback=self.parse_data_info,
-                                                 meta={"category": response.meta['category'], 'notice': response.meta['notice']})
+                        yield scrapy.Request(url=data_info_urls.format(num), callback=self.parse_data_info, priority=100,
+                                             meta={"category": response.meta['category'],
+                                                       'notice': response.meta['notice']})
         except Exception as e:
             self.logger.error(f"初始总页数提取错误parse_data_urls {response.meta=} {e} {response.url=}")
 
@@ -142,7 +145,7 @@ class MySpider(CrawlSpider):
                     notice_type = const.TYPE_WIN_ADVANCE_NOTICE
                 else:
                     notice_type = response.meta['notice']
-                yield scrapy.Request(url=data_info_url, callback=self.parse_item,
+                yield scrapy.Request(url=data_info_url, callback=self.parse_item, priority=150,
                                      meta={"category": response.meta['category'], "title_name": title_name,
                                            "put_time": put_time, 'notice_type': notice_type})
         except Exception as e:
@@ -192,9 +195,6 @@ class MySpider(CrawlSpider):
                 content_lists = contents.replace(''.join(re.findall(patterns, contents)), '')
 
             files_path = {}
-            # if response.xpath('//div[@class="ewb-main"]/div[@id="mainContent"]/p/a') or response.xpath('//div[@class="ewb-main"]/p/a') or\
-            #     response.xpath('//div[@id="mainContent"]/p/span/a') or response.xpath('//div[@id="mainContent"]/div/span/span/a') or\
-            #     response.xpath('//div[@id="epoint-article-content jynr news_content"]/p/a'):
             if response.xpath('//div[@class="ewb-main"]//p/a') or response.xpath('//div[@id="mainContent"]//span/a') or\
                     response.xpath('//div[@id="epoint-article-content jynr news_content"]/p/a'):
                 key_name = ['png', 'jpg', 'jepg', 'doc', 'docx', 'pdf', 'xls']

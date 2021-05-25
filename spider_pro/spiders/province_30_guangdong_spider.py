@@ -25,7 +25,7 @@ class MySpider(CrawlSpider):
     allowed_domains = ['dsg.gdggzy.org.cn']
     area_province = "广东公共资源交易平台"
 
-    type_list = ['GovernmentProcurement', 'UrbanRural', 'Construction', 'LandMine', 'GovernmentProperty', 'BusAuctionujt', 'OceanIsland',
+    type_list = ['GovernmentProcurement', 'Construction', 'LandMine', 'GovernmentProperty', 'BusAuction', 'OceanIsland',
                  'MedicalDrug', 'FinancialAgent', 'SpecialIndustry', 'IntellectualProperty']
 
 
@@ -73,9 +73,10 @@ class MySpider(CrawlSpider):
                 for num in range(1, page + 1):
                     data_dict = response.meta['type_dict'] | {'currPage': '{}'.format(num)}
                     yield scrapy.FormRequest(url=self.query_url, formdata=data_dict, callback=self.parse_data_urls,
-                                             meta={'classifyShow': response.meta['classifyShow'], 'notice': response.meta['notice']})
-            # else:
-            #     print('没有了')
+                                             priority=50, dont_filter=True,
+                                             meta={'classifyShow': response.meta['classifyShow'],
+                                                   'notice': response.meta['notice']})
+
 
         except Exception as e:
             self.logger.error(f"初始总页数提取错误 {response.meta=} {e} {response.url=}")
@@ -87,9 +88,10 @@ class MySpider(CrawlSpider):
                 data_url = self.domain_url + li.xpath('./td[@class="txt-lf"]/a/@href').get()
                 put_time = li.xpath('./td[3]/i/text()').get() or ''
                 info_source = li.xpath('./td[1]/em/text()').get() or ''
-                yield scrapy.Request(url=data_url, callback=self.parse_item,
+                yield scrapy.Request(url=data_url, callback=self.parse_item, priority=100,
                                      meta={"put_time": put_time, "info_source": info_source,
-                                           'classifyShow': response.meta['classifyShow'], 'notice': response.meta['notice']})
+                                           'classifyShow': response.meta['classifyShow'],
+                                           'notice': response.meta['notice']})
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
