@@ -9,10 +9,14 @@ import json
 import scrapy
 import urllib
 from urllib import parse
+
+from lxml import etree
 from scrapy.spiders import Spider
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
-from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time
+from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, remove_specific_element
+
+
 # TODO 完成
 def get_time(str):
     name = ''.join(re.findall('\d{4}-\d{2}-\d{2}', str)).replace('-', '')
@@ -89,7 +93,7 @@ class MySpider(Spider):
                 yield scrapy.Request(url=base_url, callback=self.parse_categoy_data_urls,
                                      meta={'categoy': categoy})
         except Exception as e:
-            self.logger.error(f"parse_categoy_urls:获取的url错误 {response.meta=} {e} {response.url=}")
+            self.logger.error(f"parse_categoy_urls: 获取的url错误 {response.meta=} {e} {response.url=}")
 
     def parse_categoy_data_urls(self, response):
         try:
@@ -104,31 +108,51 @@ class MySpider(Spider):
             self.logger.error(f"parse_categoy_data_urls:发起数据请求失败 {e} {response.url=}")
 
     def parse_all_urls(self, response):
-        print('parse_all_urls')
         try:
             li_list = response.xpath('//div[@class="wb-border wb-menu-bd wb-subbg"]/ul/li')
             for li in li_list:
                 if 'http' in li.xpath('./a/@href').get():
-                    url_list = li.xpath('./a/@href').get()
+                    all_urls = li.xpath('./a/@href').get()
                 else:
-                    url_list = self.domain_url + li.xpath('./a/@href').get()
-                if re.findall('\d{8,9}', url_list) and '0140' in url_list:
-                    equal = re.findall('\d{8,9}', url_list)[0]
+                    all_urls = self.domain_url + li.xpath('./a/@href').get()
+
+                if all_urls in self.list_advance_category_num:          # 招标预告
+                    notice = const.TYPE_ZB_ADVANCE_NOTICE
+                elif all_urls in self.list_notice_category_num:         # 招标公告
+                    notice = const.TYPE_ZB_NOTICE
+                elif all_urls in self.list_alteration_category_num:     # 招标异常
+                    notice = const.TYPE_ZB_ABNORMAL
+                elif all_urls in self.list_win_notice_category_num:     # 中标公告
+                    notice = const.TYPE_WIN_NOTICE
+                elif all_urls in self.list_zb_abnormal:                 # 招标变更
+                    notice = const.TYPE_ZB_ALTERATION
+                elif all_urls in self.list_win_advance_notice_num:      # 中标预告
+                    notice = const.TYPE_WIN_ADVANCE_NOTICE
+                elif all_urls in self.list_others_notice_num:           # 其他公告
+                    notice = const.TYPE_OTHERS_NOTICE
+                else:
+                    notice = ''
+                if re.findall('\d{8,9}', all_urls) and '0140' in all_urls:
+                    equal = re.findall('\d{8,9}', all_urls)[0]
                     info_dict = json.loads(self.r_dict)
                     equal_dict = info_dict['condition'][0] | {'equal': equal}
                     pages_dict = {'condition': [equal_dict]}
                     type_dict = info_dict | pages_dict
-                    yield scrapy.Request(url=self.data_url, callback=self.parse_all_data, body=json.dumps(type_dict), method="POST",
-                                             meta={'categoy': response.meta.get('categoy'), 'equal': equal, 'all_urls': url_list})
+                    yield scrapy.Request(url=self.data_url, callback=self.parse_all_data, body=json.dumps(type_dict),
+                                         method="POST", dont_filter=True, priority=100,
+                                         meta={'categoy': response.meta.get('categoy'),
+                                               'equal': equal, 'notice': notice,
+                                               'all_urls': all_urls})
 
         except Exception as e:
             self.logger.error(f"parse_all_urls:发起数据请求失败 {e} {response.url=}")
 
     def parse_all_data(self, response):
-        print('parse_all_data')
         try:
+            pn = 0
             if self.enable_incr:
-                pn = 0
+                nums_count = 1
+
                 if response.json()['result']['records']:
                     s_num = response.json()['result']['records']
                     for num in range(len(s_num)):
@@ -136,26 +160,28 @@ class MySpider(Spider):
                         put_time = get_accurate_pub_time(put_time)
                         x, y, z = judge_dst_time_in_interval(put_time, self.sdt_time, self.edt_time)
                         if x:
+                            nums_count += 1
                             total = response.json()['result']['totalcount']  # 总条数
                             if total == None:
                                 return
                             self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                            pn_dict = {"pn": pn}
-                            info_dict = json.loads(self.r_dict)
-                            info_dicts = info_dict | pn_dict
-                            equal_dict = info_dicts['condition'][0] | {'equal': response.meta['equal']}
-                            pages_dict = {'condition': [equal_dict]}
-                            type_dict = info_dicts | pages_dict
-                            print(type_dict)
-                            if num >= len(response.json()['result']['records']):
-                                pn += 1
-                            yield scrapy.Request(url=self.data_url, callback=self.parse_data_info,
-                                                 body=json.dumps(type_dict), method="POST", dont_filter=True,
-                                                 meta={'categoy': response.meta.get('categoy'),
-                                                       'equal': response.meta['equal'],
-                                                       'all_urls': response.meta['all_urls']})
+                        if num >= nums_count:
+                            pn += 18
                         else:
-                            continue
+                            pn = 0
+                        pn_dict = {"pn": pn}
+                        info_dict = json.loads(self.r_dict)
+                        info_dicts = info_dict | pn_dict
+                        equal_dict = info_dicts['condition'][0] | {'equal': response.meta['equal']}
+                        pages_dict = {'condition': [equal_dict]}
+                        type_dicts = info_dicts | pages_dict
+
+                        yield scrapy.Request(url=self.data_url, callback=self.parse_data_info,
+                                             body=json.dumps(type_dicts), method="POST", priority=150,
+                                             meta={'categoy': response.meta.get('categoy'),
+                                                   'equal': response.meta['equal'],
+                                                   'notice': response.meta['notice'],
+                                                   'all_urls': response.meta['all_urls']})
 
             else:
                 total = response.json()['result']['totalcount']        # 总条数
@@ -176,16 +202,19 @@ class MySpider(Spider):
                     info_dicts = info_dict | pn_dict
                     equal_dict = info_dicts['condition'][0] | {'equal': response.meta['equal']}
                     pages_dict = {'condition': [equal_dict]}
-                    type_dict = info_dicts | pages_dict
+                    type_dicts = info_dicts | pages_dict
 
-                    yield scrapy.Request(url=self.data_url, callback=self.parse_data_info, body=json.dumps(type_dict), method="POST",
-                                         meta={'categoy': response.meta.get('categoy'), 'equal': response.meta['equal'], 'all_urls': response.meta['all_urls']})
+                    yield scrapy.Request(url=self.data_url, callback=self.parse_data_info,
+                                         body=json.dumps(type_dicts), method="POST", priority=150,
+                                         meta={'categoy': response.meta.get('categoy'),
+                                               'equal': response.meta['equal'],
+                                               'notice': response.meta['notice'],
+                                               'all_urls': response.meta['all_urls']})
 
         except Exception as e:
             self.logger.error(f"parse_all_data:发起数据请求失败 {e} {response.url=}")
 
     def parse_data_info(self, response):
-        print('parse_data_info')
         try:
             info_url = response.meta['all_urls']
             infoid_list = response.json()['result']['records']
@@ -197,37 +226,23 @@ class MySpider(Spider):
                 pub_time = get_accurate_pub_time(pub_time)
                 title_name = infoid_list[num]['title']
 
-                if info_url in self.list_advance_category_num:         # 招标预告
-                    notice_type = const.TYPE_ZB_ADVANCE_NOTICE
-                elif info_url in self.list_notice_category_num:        #招标公告
-                    notice_type = const.TYPE_ZB_NOTICE
-                elif info_url in self.list_alteration_category_num:     #招标异常
-                    notice_type = const.TYPE_ZB_ABNORMAL
-                elif info_url in self.list_win_notice_category_num:     #中标公告
-                    notice_type = const.TYPE_WIN_NOTICE
-                elif info_url in self.list_zb_abnormal:                 #招标变更
-                    notice_type = const.TYPE_ZB_ALTERATION
-                elif info_url in self.list_win_advance_notice_num:      #中标预告
-                    notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-                elif info_url in self.list_others_notice_num:           #其他公告
-                    notice_type = const.TYPE_OTHERS_NOTICE
-
-                if re.search(r'资格预审', title_name):                           #资格预审结果公告
+                if re.search(r'资格预审', title_name):                           # 资格预审结果公告
                     notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
-                elif re.search(r'终止|中止|异常|废标|流标', title_name):        #招标异常
+                elif re.search(r'终止|中止|异常|废标|流标', title_name):          # 招标异常
                     notice_type = const.TYPE_ZB_ABNORMAL
-                elif re.search(r'候选人', title_name):                              #中标预告
+                elif re.search(r'候选人', title_name):                           # 中标预告
                     notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-                elif re.search(r'变更|更正|澄清|补遗', title_name):              #招标变更
+                elif re.search(r'变更|更正|澄清|补遗', title_name):               # 招标变更
                     notice_type = const.TYPE_ZB_ALTERATION
-                elif re.search(r'中标|成交|结果', title_name):                     #中标公告
+                elif re.search(r'中标|成交|结果', title_name):                    # 中标公告
                     notice_type = const.TYPE_WIN_NOTICE
-
-                base_url = get_url(info_url) + '/' + categorynum + '/' + times + '/' + infoid + '.html'
-                print(base_url)
-                yield scrapy.Request(url=base_url, callback=self.parse_itme,
-                                     meta={'categoy': response.meta.get('categoy'), 'title_name': title_name,
-                                           'pub_time': pub_time, 'notice_type': notice_type})
+                else:
+                    notice_type = response.meta['notice']
+                if notice_type:
+                    base_url = get_url(info_url) + '/' + categorynum + '/' + times + '/' + infoid + '.html'
+                    yield scrapy.Request(url=base_url, callback=self.parse_itme, priority=200,
+                                         meta={'categoy': response.meta.get('categoy'), 'title_name': title_name,
+                                               'pub_time': pub_time, 'notice_type': notice_type})
 
         except Exception as e:
             self.logger.error(f"parse_data_info:发起数据请求失败 {e} {response.url=}")
@@ -240,7 +255,7 @@ class MySpider(Spider):
         :return: 回调函数
         """
         if response.status == 200:
-            files_path = {}
+            #
             origin = response.url
             info_source = self.area_province
             pub_time = response.meta["pub_time"]
@@ -248,63 +263,57 @@ class MySpider(Spider):
             title_name = response.meta['title_name']
             category = response.meta['categoy']
             notice_type = response.meta['notice_type']
-            if response.xpath('//div[@class="detail-block"]//a[@class="ewb-blue-a"]') or response.xpath('//div[@class="detail-block"]/div[@id="yewuxitong"]'):
-                content = response.xpath('//div[@class="detail-block"]').get()
-                pattern = re.compile(r'<h3.*?>(.*?)</h3>', re.S)
-                content_text = content.replace(re.findall(pattern, content)[0], '')
-                patterns = re.compile(r'<div class="info-source".*?>(.*?)</div>', re.S)
-                contents = content_text.replace(re.findall(patterns, content_text)[0], '')
 
-                if response.xpath('//div[@class="detail-block"]//a[@class="ewb-blue-a"]'):
-                    conet_list = response.xpath('//div[@class="detail-block"]//a[@class="ewb-blue-a"]')
-                    for cont in conet_list:
-                        value = cont.xpath('./@onclick').get()
-                        guid = ''.join(re.findall('downloadAttach\((.*)\)', value)).replace("'", '').split(',')
-                        values = self.base_url + guid[0] + '&FileCode' + guid[1] + '&ClientGuid' + guid[2]
-                        keys = cont.xpath('./text()').get()
-                        files_path[keys] = values
-                else:
-                    conet_list = response.xpath('//div[@class="detail-block"]/div[@id="yewuxitong"]')
-                    for cont in conet_list:
-                        values = cont.xpath('./a/@href').get()
-                        keys = cont.xpath('./a/text()').get()
-                        files_path[keys] = values
+            content = response.xpath('//div[@class="detail-block"]').get()
+            # 去除 title
+            _, content = remove_specific_element(content, 'h3', 'class', 'article-title')
+            _, content = remove_specific_element(content, 'div', 'class', 'gonggaotitle')
+            # 去除 info信息 来源等信息
+            _, content = remove_specific_element(content, 'div', 'class', 'info-source')
 
-                notice_item = NoticesItem()
-                notice_item["origin"] = origin
-                notice_item["title_name"] = title_name
-                notice_item["pub_time"] = pub_time
-                notice_item["info_source"] = info_source
-                notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
-                notice_item["files_path"] = "" if not files_path else files_path
-                notice_item["content"] = contents
-                notice_item["area_id"] = self.area_id
-                notice_item["notice_type"] = notice_type
-                notice_item["category"] = category
-                print(notice_item)
-                yield notice_item
+            _, content = remove_specific_element(content, 'div', 'class', 'hide')
+
+            patterns = re.compile(r'<a target="_blank" .*?>(.*?)</div>', re.S)
+            contents = content.replace(re.findall(patterns, content)[0], '')
+            files_path = {}
+            # files_text = etree.HTML(contents)
+            suffix_list = ['html', 'com', 'com/', 'cn', 'cn/']
+            if response.xpath('//a[@class="ewb-blue-a"]'):
+                for cont in response.xpath('//a[@class="ewb-blue-a"]'):
+                    if cont.xpath('./@onclick'):
+                        values = cont.xpath('./@onclick')[0]
+                        guid = ''.join(re.findall('downloadAttach\((.*)\)', values)).replace("'", '').split(',')
+                        value = self.base_url + guid[0] + '&FileCode' + guid[1] + '&ClientGuid' + guid[2]
+                        keys = cont.xpath('./text()')[0]
+                        files_path[keys] = value
+
+            elif response.xpath('//div[@id="yewuxitong"]//a/@href'):
+                for cont in response.xpath('//div[@id="yewuxitong"]//a'):
+                    if cont.xpath('./@href'):
+                        values = cont.xpath('./@href')[0]
+                        if ''.join(values).split('.')[-1] not in suffix_list:
+                            if cont.xpath('./text()'):
+                                keys = cont.xpath('./text()')[0]
+                                files_path[keys] = values
             else:
-                content = response.xpath('//div[@class="detail-block"]').get()
-                pattern = re.compile(r'<h3.*?>(.*?)</h3>', re.S)
-                content_text = content.replace(re.findall(pattern, content)[0], '')
+                files_path = ''
 
-                patterns = re.compile(r'<div class="info-source".*?>(.*?)</div>', re.S)
-                contents = content_text.replace(re.findall(patterns, content_text)[0], '')
-                notice_item = NoticesItem()
-                notice_item["origin"] = origin
-                notice_item["title_name"] = title_name
-                notice_item["pub_time"] = pub_time
-                notice_item["info_source"] = info_source
-                notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
-                notice_item["files_path"] = "" if not files_path else files_path
-                notice_item["content"] = contents
-                notice_item["area_id"] = self.area_id
-                notice_item["notice_type"] = notice_type
-                notice_item["category"] = category
-                print(notice_item)
-                yield notice_item
+            notice_item = NoticesItem()
+            notice_item["origin"] = origin
+            notice_item["title_name"] = title_name
+            notice_item["pub_time"] = pub_time
+            notice_item["info_source"] = info_source
+            notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
+            notice_item["files_path"] = "" if not files_path else files_path
+            notice_item["content"] = contents
+            notice_item["area_id"] = self.area_id
+            notice_item["notice_type"] = notice_type
+            notice_item["category"] = category
+            print(notice_item)
+            yield notice_item
 
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl province_39_chongqing_spider -a sdt=2021-02-01 -a edt=2021-03-01".split(" "))
+    cmdline.execute("scrapy crawl province_39_chongqing_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_39_chongqing_spider -a sdt=2021-05-01 -a edt=2021-06-01".split(" "))

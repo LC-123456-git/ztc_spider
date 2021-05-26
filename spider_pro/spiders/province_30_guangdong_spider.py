@@ -28,7 +28,6 @@ class MySpider(CrawlSpider):
     type_list = ['GovernmentProcurement', 'Construction', 'LandMine', 'GovernmentProperty', 'BusAuction', 'OceanIsland',
                  'MedicalDrug', 'FinancialAgent', 'SpecialIndustry', 'IntellectualProperty']
 
-
     type_name = ["政府采购", "工程建设", "土地矿业", "国有产权", "公车拍卖", "海域海岛",
                  "药品耗材", "国有资产处置", "特许经营", "城乡用地建设指标", "知识产权"]
     type_noctice_name = ['政府采购', '工程建设']
