@@ -11,7 +11,7 @@ import scrapy
 import random
 import urllib
 import datetime
-from urllib import parse
+from lxml import etree
 
 
 from spider_pro.utils import get_real_url
@@ -19,7 +19,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
-from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, get_iframe_pdf_div_code
+from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, remove_specific_element
 
 
 
@@ -65,7 +65,9 @@ class MySpider(CrawlSpider):
 
 
     def start_requests(self):
-            yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
+        # info_url = 'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001001/20210521/ff808081796a5c95017988afe62b1c40.html'
+        # yield scrapy.Request(url=info_url, callback=self.parse_item)
+        yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
 
     def parse_urls(self, response):
         try:
@@ -104,22 +106,24 @@ class MySpider(CrawlSpider):
                 self.logger.info(f"本次获取总条数为：{int(pages) * 10}")
                 if self.enable_incr:
                     page = 1
+                    nums = 1
                     data_li_list = response.xpath('//div[@id="categorypagingcontent"]/ul/li')
                     for li in range(len(data_li_list)):
                         put_time = data_li_list[li].xpath('./span/text()').get()
                         put_time = get_accurate_pub_time(put_time)
                         x, y, z = judge_dst_time_in_interval(put_time, self.sdt_time, self.edt_time)
                         if x:
+                            nums += 1
                             total = int(len(data_li_list))
                             if total == None:
                                 return
                             self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                            if li >= len(data_li_list):
-                                page += 1
-                            else:
-                                page = 1
-                            yield scrapy.Request(url=data_info_urls.format(page), callback=self.parse_data_info, priority=100,
-                                                 meta={"category": response.meta['category'], 'notice': response.meta['notice']})
+                        if li >= nums:
+                            page += 1
+                        else:
+                            page = 1
+                        yield scrapy.Request(url=data_info_urls.format(page), callback=self.parse_data_info, priority=100,
+                                             meta={"category": response.meta['category'], 'notice': response.meta['notice']})
                 else:
                     for num in range(1, int(pages) + 1):
                         yield scrapy.Request(url=data_info_urls.format(num), callback=self.parse_data_info, priority=100,
@@ -165,166 +169,171 @@ class MySpider(CrawlSpider):
             pub_time = response.meta['put_time']
             notice_type = response.meta['notice_type']
             pub_time = get_accurate_pub_time(pub_time)
+            content = response.xpath('//div[@class="ewb-main"]').get()
+            # 去除 title
+            _, content = remove_specific_element(content, 'h3', 'class', 'article-title')
+            # 去除 info信息 来源等信息
+            _, content = remove_specific_element(content, 'div', 'class', 'info-source')
+            # 去除 视力保护色
+            _, content = remove_specific_element(content, 'font', 'style', 'float: right;margin-right: 10%;margin-top: 10px;')
+            # 去除 登录系统
+            _, content = remove_specific_element(content, 'a', 'class', 'ewb-tab-btn3')
+            # 去除 提醒等字段
+            _, content = remove_specific_element(content, 'font', 'color', 'red')
 
-            if response.xpath('//div[@class="ewb-main"]/div[last()]/a'):
-                content = response.xpath('//div[@class="ewb-main"]').get()
-                pattern = re.compile(r'<h3 class="article-title".*?>(.*?)</h3>', re.S)
-                content_text = content.replace(''.join(re.findall(pattern, content)), '')
-
-
-                patterns = re.compile(r'<font style="float: right;margin-right: 10%;margin-top: 10px;"*?>.*?</font>', re.S)
-                contents = content_text.replace(''.join(re.findall(patterns, content_text)), '')
-
-                patterns = re.compile(r'<div class="info-source".*?>(.*?)</div>', re.S)
-                content_list = contents.replace(''.join(re.findall(patterns, contents)), '')
-
-                patterns = re.compile(r'<a class="ewb-tab-btn3".*?>(.*?)</a>', re.S)
-                content_list = content_list.replace(''.join(re.findall(patterns, content_list)), '')
-
-                patterns = re.compile(r'<div id="cont001001004".*?>(.*?)</div>', re.S)
-                content_lists = content_list.replace(''.join(re.findall(patterns, content_list)), '')
-            else:
-                content = response.xpath('//div[@class="ewb-main"]').get()
-                pattern = re.compile(r'<h3 class="article-title".*?>(.*?)</h3>', re.S)
-                content_text = content.replace(''.join(re.findall(pattern, content)), '')
-
-                patterns = re.compile(r'<font style="float: right;margin-right: 10%;margin-top: 10px;"*?>.*?</font>', re.S)
-                contents = content_text.replace(''.join(re.findall(patterns, content_text)), '')
-
-                patterns = re.compile(r'<div class="info-source".*?>(.*?)</div>', re.S)
-                content_lists = contents.replace(''.join(re.findall(patterns, contents)), '')
+            _, content = remove_specific_element(content, 'div', 'id', 'cont001001004')
 
             files_path = {}
-            if response.xpath('//div[@class="ewb-main"]//p/a') or response.xpath('//div[@id="mainContent"]//span/a') or\
-                    response.xpath('//div[@id="epoint-article-content jynr news_content"]/p/a'):
-                key_name = ['png', 'jpg', 'jepg', 'doc', 'docx', 'pdf', 'xls']
-                key_list = ['www.creditchina.gov.cn', 'hbtpwq@shaanxi.gov.cn', '100290295@qq.com']
-                if response.xpath('//div[@class="ewb-main"]/div[@id="mainContent"]/p/a') or response.xpath('//div[@id="epoint-article-content jynr news_content"]/p/a'):
-                    conet_list = response.xpath('//div[@class="ewb-main"]/div[@id="mainContent"]/p') or response.xpath('//div[@id="epoint-article-content jynr news_content"]/p')
-                    num = 1
-                    for con in conet_list:
-                        if con.xpath('./a/@href').get() and con.xpath('./a/text()').get():
-                            value = con.xpath('./a/@href').get()
-                            if 'http' in value:
-                                 value = value
+            suffix_list = ['html', 'com', 'com/', 'cn', 'cn/']
+            files_text = etree.HTML(content)
+            if files_text.xpath('//a/@href'):
+                files_list = files_text.xpath('//a')
+                for cont in files_list:
+                    if cont.xpath('./@href'):
+                        values = cont.xpath('./@href')[0]
+                        if ''.join(values).split('.')[-1] not in suffix_list:
+                            if 'http://www' not in values:
+                                value = self.domain_url + values
                             else:
-                                value = self.domain_url + value
-                            if con.xpath('./a/text()').get():
-                                keys = con.xpath('./a/text()').get()
-                                if keys not in key_list:
-                                    if value[value.rindex('.') + 1:] in key_name:
-                                        keys = value[value.rindex('/') + 1:] + '_' + str(num)
-                                        files_path[keys] = value
-                            num += 1
-                        else:
-                            pass
+                                value = values
+                            if cont.xpath('.//text()'):
+                                keys = ''.join(cont.xpath('.//text()')).strip()
+                                files_path[keys] = value
 
-                elif response.xpath('//div[@class="ewb-main"]/p/a'):
-                    dict = response.xpath('//div[@class="ewb-main"]/p')
-                    num = 1
-                    for itme in dict:
-                        if itme.xpath('./a/@href').get() and itme.xpath('./a/text()').get():
-                            value = itme.xpath('./a/@href').get()
-                            if 'http' in value:
-                                 value = value
-                            else:
-                                value = self.domain_url + value
-                            if itme.xpath('./a/text()').get():
-                                keys = itme.xpath('./a/text()').get()
-                                if keys not in key_list:
-                                    if keys not in re.findall(r'[0-9a-zA-Z_]{0,19}@[a-zA-Z0-9].*', keys)[0]:
-                                        files_path[keys] = value
-                                    elif value[value.rindex('.') + 1:] in key_name:
-                                        keys = value[value.rindex('/') + 1:] + '_' + str(num)
-                                        files_path[keys] = value
-                            num += 1
-                        else:
-                            pass
-
-                elif response.xpath('//div[@id="mainContent"]/p/span/a'):
-                    conet_list = response.xpath('//div[@id="mainContent"]/p/span/a')
-                    num = 1
-                    for con in conet_list:
-                        if con.xpath('./@href').get() and con.xpath('./span/span/text()').get():
-                            value = self.domain_url + con.xpath('./@href').get()
-                            if 'http' in value:
-                                 value = value
-                            else:
-                                value = self.domain_url + value
-                            if con.xpath('./span/span/text()').get():
-                                keys = con.xpath('./span/span/text()').get()
-                                if keys not in key_list:
-                                    if keys not in re.findall(r'[0-9a-zA-Z_]{0,19}@[a-zA-Z0-9].*', keys)[0]:
-                                        files_path[keys] = value
-                                    elif value[value.rindex('.') + 1:] in key_name:
-                                        keys = value[value.rindex('/') + 1:] + '_' + str(num)
-                                        files_path[keys] = value
-                            num += 1
-                        elif con.xpath('./@href').get() and con.xpath('./span/text()').get():
-                            value = self.domain_url + con.xpath('./@href').get()
-                            if 'http' in value:
-                                 value = value
-                            else:
-                                value = self.domain_url + value
-                            if con.xpath('./span/text()').get():
-                                keys = con.xpath('./span/text()').get()
-                                if keys not in key_list:
-                                    if keys not in re.findall(r'[0-9a-zA-Z_]{0,19}@[a-zA-Z0-9].*', keys)[0]:
-                                        files_path[keys] = value
-                                    elif value[value.rindex('.') + 1:] in key_name:
-                                        keys = value[value.rindex('/') + 1:] + '_' + str(num)
-                                        files_path[keys] = value
-                            num += 1
-                        elif con.xpath('./@href').get() and con.xpath('./span/font/span/text()').get():
-                            value = self.domain_url + con.xpath('./@href').get()
-                            if 'http' in value:
-                                 value = value
-                            else:
-                                value = self.domain_url + value
-                            if con.xpath('./span/font/span/text()').get():
-                                keys = con.xpath('./span/font/span/text()').get()
-                                if keys not in key_list:
-                                    if keys not in re.findall(r'[0-9a-zA-Z_]{0,19}@[a-zA-Z0-9].*', keys)[0]:
-                                        files_path[keys] = value
-                                    elif value[value.rindex('.') + 1:] in key_name:
-                                        keys = value[value.rindex('/') + 1:] + '_' + str(num)
-                                        files_path[keys] = value
-                            num += 1
-                        else:
-                            pass
-
-
-                elif response.xpath('//div[@id="mainContent"]/div/span/span/a'):
-                    conet_list = response.xpath('//div[@id="mainContent"]/div/span/span/a')
-                    num = 1
-                    for con in conet_list:
-                        if con.xpath('./@href').get() and con.xpath('./span/text()').get():
-                            value = con.xpath('./@href').get()
-                            if 'http' in value:
-                                 value = value
-                            else:
-                                value = self.domain_url + value
-                            if con.xpath('./span/text()').get():
-                                keys = con.xpath('./span/text()').get()
-                                if keys not in key_list:
-                                    if keys not in re.findall(r'[0-9a-zA-Z_]{0,19}@[a-zA-Z0-9].*', keys)[0]:
-                                        files_path[keys] = value
-                                    elif value[value.rindex('.') + 1:] in key_name:
-                                        keys = value[value.rindex('/') + 1:] + '_' + str(num)
-                                        files_path[keys] = value
-                            num += 1
-                        else:
-                            pass
-
+            # if response.xpath('//div[@class="ewb-main"]//p/a') or response.xpath('//div[@id="mainContent"]//span/a') or\
+            #         response.xpath('//div[@id="epoint-article-content jynr news_content"]/p/a'):
+            #     pass
+            # #     key_name = ['png', 'jpg', 'jepg', 'doc', 'docx', 'pdf', 'xls']
+            # #     key_list = ['www.creditchina.gov.cn', 'hbtpwq@shaanxi.gov.cn', '100290295@qq.com']
+            #     if response.xpath('//div[@class="ewb-main"]/div[@id="mainContent"]/p/a') or response.xpath('//div[@id="epoint-article-content jynr news_content"]/p/a'):
+            #         conet_list = response.xpath('//div[@class="ewb-main"]/div[@id="mainContent"]/p') or response.xpath('//div[@id="epoint-article-content jynr news_content"]/p')
+            #         pass
+            # #         num = 1
+            # #         for con in conet_list:
+            # #             if con.xpath('./a/@href').get() and con.xpath('./a/text()').get():
+            # #                 value = con.xpath('./a/@href').get()
+            # #                 if 'http' in value:
+            # #                      value = value
+            # #                 else:
+            # #                     value = self.domain_url + value
+            # #                 if con.xpath('./a/text()').get():
+            # #                     keys = con.xpath('./a/text()').get()
+            # #                     if keys not in key_list:
+            # #                         if value[value.rindex('.') + 1:] in key_name:
+            # #                             keys = value[value.rindex('/') + 1:] + '_' + str(num)
+            # #                             files_path[keys] = value
+            # #                 num += 1
+            # #             else:
+            # #                 pass
+            # #
+            # #     elif response.xpath('//div[@class="ewb-main"]/p/a'):
+            # #         dict = response.xpath('//div[@class="ewb-main"]/p')
+            # #         num = 1
+            # #         for itme in dict:
+            # #             if itme.xpath('./a/@href').get() and itme.xpath('./a/text()').get():
+            # #                 value = itme.xpath('./a/@href').get()
+            # #                 if 'http' in value:
+            # #                      value = value
+            # #                 else:
+            # #                     value = self.domain_url + value
+            # #                 if itme.xpath('./a/text()').get():
+            # #                     keys = itme.xpath('./a/text()').get()
+            # #                     if keys not in key_list:
+            # #                         if keys not in re.findall(r'[0-9a-zA-Z_]{0,19}@[a-zA-Z0-9].*', keys)[0]:
+            # #                             files_path[keys] = value
+            # #                         elif value[value.rindex('.') + 1:] in key_name:
+            # #                             keys = value[value.rindex('/') + 1:] + '_' + str(num)
+            # #                             files_path[keys] = value
+            # #                 num += 1
+            # #             else:
+            # #                 pass
+            #
+            #     elif response.xpath('//div[@id="mainContent"]/p/span/a'):
+            #         pass
+            # #         conet_list = response.xpath('//div[@id="mainContent"]/p/span/a')
+            # #         num = 1
+            # #         for con in conet_list:
+            # #             if con.xpath('./@href').get() and con.xpath('./span/span/text()').get():
+            # #                 value = self.domain_url + con.xpath('./@href').get()
+            # #                 if 'http' in value:
+            # #                      value = value
+            # #                 else:
+            # #                     value = self.domain_url + value
+            # #                 if con.xpath('./span/span/text()').get():
+            # #                     keys = con.xpath('./span/span/text()').get()
+            # #                     if keys not in key_list:
+            # #                         if keys not in re.findall(r'[0-9a-zA-Z_]{0,19}@[a-zA-Z0-9].*', keys)[0]:
+            # #                             files_path[keys] = value
+            # #                         elif value[value.rindex('.') + 1:] in key_name:
+            # #                             keys = value[value.rindex('/') + 1:] + '_' + str(num)
+            # #                             files_path[keys] = value
+            # #                 num += 1
+            # #             elif con.xpath('./@href').get() and con.xpath('./span/text()').get():
+            # #                 value = self.domain_url + con.xpath('./@href').get()
+            # #                 if 'http' in value:
+            # #                      value = value
+            # #                 else:
+            # #                     value = self.domain_url + value
+            # #                 if con.xpath('./span/text()').get():
+            # #                     keys = con.xpath('./span/text()').get()
+            # #                     if keys not in key_list:
+            # #                         if keys not in re.findall(r'[0-9a-zA-Z_]{0,19}@[a-zA-Z0-9].*', keys)[0]:
+            # #                             files_path[keys] = value
+            # #                         elif value[value.rindex('.') + 1:] in key_name:
+            # #                             keys = value[value.rindex('/') + 1:] + '_' + str(num)
+            # #                             files_path[keys] = value
+            # #                 num += 1
+            # #             elif con.xpath('./@href').get() and con.xpath('./span/font/span/text()').get():
+            # #                 value = self.domain_url + con.xpath('./@href').get()
+            # #                 if 'http' in value:
+            # #                      value = value
+            # #                 else:
+            # #                     value = self.domain_url + value
+            # #                 if con.xpath('./span/font/span/text()').get():
+            # #                     keys = con.xpath('./span/font/span/text()').get()
+            # #                     if keys not in key_list:
+            # #                         if keys not in re.findall(r'[0-9a-zA-Z_]{0,19}@[a-zA-Z0-9].*', keys)[0]:
+            # #                             files_path[keys] = value
+            # #                         elif value[value.rindex('.') + 1:] in key_name:
+            # #                             keys = value[value.rindex('/') + 1:] + '_' + str(num)
+            # #                             files_path[keys] = value
+            # #                 num += 1
+            # #             else:
+            # #                 pass
+            # #
+            #
+            #     elif response.xpath('//div[@id="mainContent"]/div/span/span/a'):
+            #         pass
+            #         conet_list = response.xpath('//div[@id="mainContent"]/div/span/span/a')
+            #         num = 1
+            #         for con in conet_list:
+            #             if con.xpath('./@href').get() and con.xpath('./span/text()').get():
+            #                 value = con.xpath('./@href').get()
+            #                 if 'http' in value:
+            #                      value = value
+            #                 else:
+            #                     value = self.domain_url + value
+            #                 if con.xpath('./span/text()').get():
+            #                     keys = con.xpath('./span/text()').get()
+            #                     if keys not in key_list:
+            #                         if keys not in re.findall(r'[0-9a-zA-Z_]{0,19}@[a-zA-Z0-9].*', keys)[0]:
+            #                             files_path[keys] = value
+            #                         elif value[value.rindex('.') + 1:] in key_name:
+            #                             keys = value[value.rindex('/') + 1:] + '_' + str(num)
+            #                             files_path[keys] = value
+            #                 num += 1
+            #             else:
+            #                 pass
+            #
             notice_item = NoticesItem()
             notice_item["origin"] = origin
             notice_item["title_name"] = title_name
             notice_item["pub_time"] = pub_time
             notice_item["info_source"] = info_source
             notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
-            notice_item["files_path"] = "NULL" if not files_path else files_path
+            notice_item["files_path"] = "" if not files_path else files_path
             notice_item["notice_type"] = notice_type
-            notice_item["content"] = content_lists
+            notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = category
             print(notice_item)
