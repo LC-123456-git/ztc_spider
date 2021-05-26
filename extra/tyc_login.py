@@ -2,7 +2,7 @@
 # @Author : miaokela
 # @File : TYC_login.py 
 # @Description: 天眼查登录
-
+import os
 import random
 import time
 from io import BytesIO
@@ -15,7 +15,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 PHONE = '18868271201'
 PASSWORD = 'laaimeng2011'
-BORDER = 5
+BORDER = 2
 INIT_LEFT = 60
 
 
@@ -28,6 +28,8 @@ class CrackGeetest():
         self.browser.maximize_window()
         self.account = PHONE
         self.password = PASSWORD
+        self.path = os.path.dirname(os.path.abspath(__file__))
+        self.tyc_pic = os.path.join(os.path.join(self.path, 'images'), 'Tyc.png')
 
     def __del__(self):
         self.browser.close()
@@ -164,7 +166,7 @@ class CrackGeetest():
             if current < mid:
                 a = 2
             else:
-                a = -2
+                a = -3
             # 初速度v0
             v0 = v
             # 当前速度v = v0 + at
@@ -210,7 +212,7 @@ class CrackGeetest():
 
     def get_images(self, img, name):
         # 截图整个网页
-        self.browser.save_screenshot(r'./Images/Tyc.png')
+        self.browser.save_screenshot(self.tyc_pic)
         # 验证码路径
         location = img.location
         # 验证码尺寸
@@ -220,9 +222,9 @@ class CrackGeetest():
         # 加入代码self.driver.maximize_window()使浏览器全屏后就不需要修改位置参数了,mac上不知道什么原因需要修改位置
         top, bottom, left, right = location['y'], location['y'] + size['height'] - 20, location['x'], location['x'] + \
                                    size['width']
-        picture = Image.open(r'./Images/Tyc.png')
+        picture = Image.open(self.tyc_pic)
         picture = picture.crop((left, top, right, bottom))
-        picture.save(r'./Images/%s' % name)
+        picture.save(os.path.join(os.path.join(self.path, 'images'), name))
         time.sleep(0.5)
 
     def get_image_location(self):
@@ -242,8 +244,8 @@ class CrackGeetest():
 
     def slice(self):
         try:
-            image2 = Image.open(r'./Images/captcha2.png')
-            image1 = Image.open(r'./Images/captcha1.png')
+            image2 = Image.open(os.path.join(os.path.join(self.path, 'images'), 'captcha2.png'))
+            image1 = Image.open(os.path.join(os.path.join(self.path, 'images'), 'captcha1.png'))
             # 获取缺口位置
             gap = self.get_gap(image1, image2)
             print('缺口位置', gap)
