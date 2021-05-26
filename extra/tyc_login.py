@@ -15,17 +15,13 @@ from selenium.webdriver.support import expected_conditions as EC
 
 PHONE = '18868271201'
 PASSWORD = 'laaimeng2011'
-BORDER = 2
-INIT_LEFT = 60
-
+BORDER = 6
 
 class CrackGeetest():
     def __init__(self):
         self.url = 'https://www.tianyancha.com/'
-        self.browser = webdriver.Chrome()
-        self.wait = WebDriverWait(self.browser, 20)
-        self.browser.get(self.url)
-        self.browser.maximize_window()
+        self.browser = None
+        self.wait = None
         self.account = PHONE
         self.password = PASSWORD
         self.path = os.path.dirname(os.path.abspath(__file__))
@@ -33,14 +29,6 @@ class CrackGeetest():
 
     def __del__(self):
         self.browser.close()
-
-    def get_geetest_button(self):
-        """
-        获取初始验证按钮
-        :return:
-        """
-        button = self.wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'gt_slider_knob gt_show')))
-        return button
 
     def get_position(self):
         """
@@ -64,32 +52,16 @@ class CrackGeetest():
         screenshot = Image.open(BytesIO(screenshot))
         return screenshot
 
-    def get_slider(self):
-        """
-        获取滑块
-        :return: 滑块对象
-        """
-        slider = self.wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'gt_slider_knob gt_show')))
-        return slider
-
-    def get_geetest_image(self, name='captcha.png'):
-        """
-        获取验证码图片
-        :return: 图片对象
-        """
-        top, bottom, left, right = self.get_position()
-        print('验证码位置', top, bottom, left, right)
-        screenshot = self.get_screenshot()
-        captcha = screenshot.crop((left, top, right, bottom))
-        captcha.save(name)
-        return captcha
-
     def open(self):
         """
         打开网页输入用户名密码
         :return: None
         """
         try:
+            self.browser = webdriver.Chrome()
+            self.wait = WebDriverWait(self.browser, 20)
+            self.browser.get(self.url)
+            self.browser.maximize_window()
             t = random.uniform(0.5, 1)
             time.sleep(t)
             login_button = self.browser.find_element_by_xpath('//a[@onclick="header.loginLink(event)"]')
@@ -118,12 +90,12 @@ class CrackGeetest():
         :param image2: 带缺口图片
         :return:
         """
-        left = 60
+        left = 53
         for i in range(left, image1.size[0]):
             for j in range(image1.size[1]):
                 if not self.is_pixel_equal(image1, image2, i, j):
                     return i
-        return left + 60
+        return left + 47
 
     def is_pixel_equal(self, image1, image2, x, y):
         """
@@ -194,16 +166,6 @@ class CrackGeetest():
         # 释放滑块
         ActionChains(self.browser).release().perform()
 
-    def login(self):
-        """
-        登录
-        :return: None
-        """
-        submit = self.wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'login-btn')))
-        submit.click()
-        time.sleep(10)
-        print('登录成功')
-
     def show_element(self, element):  # 让验证码图片迅速还原成完整图片
         self.browser.execute_script("arguments[0].style=arguments[1]", element, "display: block;")
 
@@ -243,6 +205,8 @@ class CrackGeetest():
         self.get_images(bg, 'captcha2.png')
 
     def slice(self):
+        success = True
+
         try:
             image2 = Image.open(os.path.join(os.path.join(self.path, 'images'), 'captcha2.png'))
             image1 = Image.open(os.path.join(os.path.join(self.path, 'images'), 'captcha1.png'))
@@ -258,7 +222,7 @@ class CrackGeetest():
             self.move_to_gap(track)
             time.sleep(0.5)
             while True:
-                for i in range(8, 20):
+                for i in [x+2 for x in range(8, 9)]:  # 再次滑动2次,距离缩短
                     try:
                         mspan = self.browser.find_element_by_xpath('//div[@class="gt_info_text"]/span[2]').text
                         print(mspan)
@@ -284,19 +248,28 @@ class CrackGeetest():
                             pass
                         else:
                             print(e)
+                success = False
                 break
         except Exception as e:
+            success = False
             if '//span[@class="gt_info_content"]' in str(e):
                 pass
             else:
                 print(e)
+        return success
+
+    @property
+    def cookies(self):
+        return self.browser.get_cookies()
 
     def crack(self):
         self.open()
         self.get_image_location()
-        self.slice()
-        time.sleep(5)
-
+        success = self.slice()
+        if not success:  # 未完成 重新打开
+            self.browser.close()
+            self.crack()
+        print('本次获得的登录COOKIE: {0}'.format(self.cookies))
 
 if __name__ == '__main__':
     crack = CrackGeetest()
