@@ -30,7 +30,7 @@ class MySpider(CrawlSpider):
     domain_url = "http://www.sxggzyjy.cn"
     query_url = "http://www.sxggzyjy.cn/jydt/001001/001001001/subPage_jyxx.html"
     allowed_domains = ['sxggzyjy.cn']
-    area_province = '陕西'
+    area_province = '陕西公共资源交易平台'
 
     # 招标公告
     list_notice_category_num = ['http://www.sxggzyjy.cn/jydt/001001/001001001/001001001001/subPage_jyxx.html', 'http://www.sxggzyjy.cn/jydt/001001/001001002/001001002001/subPage_jyxx.html',

@@ -172,10 +172,10 @@ class MySpider(CrawlSpider):
             pub_time = response.meta['pub_time']
             pub_time = get_accurate_pub_time(pub_time)
             origin = response.url
+            files_path = {}
             # 判断content 里面是否有正文
             if response.xpath('//div[@id="zoom"]'):
                 content = response.xpath('//div[@id="zoom"]').get()
-                files_path = {}
                 respon = etree.HTML(content)
                 if respon.xpath("//p//a/@href"):
                     str_content = respon.xpath("//p//a")

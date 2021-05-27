@@ -14,7 +14,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
-from spider_pro.utils import get_accurate_pub_time, get_back_date
+from spider_pro.utils import get_accurate_pub_time, get_back_date, remove_specific_element
 
 
 class MySpider(CrawlSpider):
@@ -121,19 +121,16 @@ class MySpider(CrawlSpider):
                 pub_time = "null"
             pub_time = get_accurate_pub_time(pub_time)
             content = response.xpath("//div[@class='BoxB marb20']").get()
+            # 去除 title
+            _, content = remove_specific_element(content, 'div', 'class', 'title_origin marb10')
 
-            pattern = re.compile(r'<div class="title_origin marb10".*?>(.*?)</div>', re.S)
-            contents = content.replace(''.join(re.findall(pattern, content)), '')
+            _, content = remove_specific_element(content, 'th', 'colspan', '4')
 
-            pattern = re.compile(r'<th colspan="4".*?>(.*?)</strong>', re.S)
-            contents = contents.replace(''.join(re.findall(pattern, contents)), '')
-
-            pattern = re.sub(r'<th width="20%">\w+</th>', '', contents)
+            pattern = re.sub(r'<th width="20%">\w+</th>', '', content)
             pattern = re.sub(r'<th width="40%">\w+</th>', '', pattern)
             contents = re.sub(r'<th colspan="4"><strong>附件材料</strong></th>', '', pattern)
 
-            # title_names = ''.join(re.findall('项目名称：(.*?)</.*>', contents)).strip() or re.findall('项目名称：.*>$(.*?)</.*>', contents) or \
-            #               re.findall('项目名称：.*>$(.*?)<.*>', contents) or re.findall('项目名称：.*">$(.*?)</.*>', contents)
+
 
             files_path = {}
             if response.xpath('//div[@class="BoxB marb20"]//div//a'):
@@ -155,7 +152,7 @@ class MySpider(CrawlSpider):
             notice_item["content"] = contents
             notice_item["area_id"] = self.area_id
             notice_item["category"] = classifyShow
-            # print(notice_item)
+
             yield notice_item
 
 

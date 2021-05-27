@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Author: lc
 # @Date: 2021-03-18
-# @Describe: 重庆公共资源交易网
+# @Describe: 重庆市公共资源交易服务平台
 import re
 import math
 import json
@@ -78,6 +78,8 @@ class MySpider(Spider):
 
 
     def start_requests(self):
+        # info_url = 'https://www.cqggzy.com/xxhz/014001/014001001/014001001002/20210517/ff879236-09a7-491e-b786-0532837d3737.html'
+        # yield scrapy.Request(url=info_url, callback=self.parse_itme)
         yield scrapy.Request(url=self.count_url, callback=self.parse_categoy_urls)
 
     def parse_categoy_urls(self, response):
@@ -152,7 +154,6 @@ class MySpider(Spider):
             pn = 0
             if self.enable_incr:
                 nums_count = 1
-
                 if response.json()['result']['records']:
                     s_num = response.json()['result']['records']
                     for num in range(len(s_num)):
@@ -255,7 +256,7 @@ class MySpider(Spider):
         :return: 回调函数
         """
         if response.status == 200:
-            #
+
             origin = response.url
             info_source = self.area_province
             pub_time = response.meta["pub_time"]
@@ -274,21 +275,23 @@ class MySpider(Spider):
             _, content = remove_specific_element(content, 'div', 'class', 'hide')
 
             patterns = re.compile(r'<a target="_blank" .*?>(.*?)</div>', re.S)
-            contents = content.replace(re.findall(patterns, content)[0], '')
+            contents = content.replace(''.join(re.findall(patterns, content)), '')
+
             files_path = {}
-            # files_text = etree.HTML(contents)
+            files_text = etree.HTML(contents)
             suffix_list = ['html', 'com', 'com/', 'cn', 'cn/']
-            if response.xpath('//a[@class="ewb-blue-a"]'):
-                for cont in response.xpath('//a[@class="ewb-blue-a"]'):
+            if files_text.xpath('//a[@class="ewb-blue-a"]'):
+                for cont in files_text.xpath('//a[@class="ewb-blue-a"]'):
                     if cont.xpath('./@onclick'):
                         values = cont.xpath('./@onclick')[0]
                         guid = ''.join(re.findall('downloadAttach\((.*)\)', values)).replace("'", '').split(',')
                         value = self.base_url + guid[0] + '&FileCode' + guid[1] + '&ClientGuid' + guid[2]
                         keys = cont.xpath('./text()')[0]
                         files_path[keys] = value
+                        contents = re.sub('<a class="ewb-blue-a" onclick=.*?>', '<a class="ewb-blue-a" href="{}">'.format(value), contents)
 
-            elif response.xpath('//div[@id="yewuxitong"]//a/@href'):
-                for cont in response.xpath('//div[@id="yewuxitong"]//a'):
+            elif files_text.xpath('//div[@id="yewuxitong"]//a/@href'):
+                for cont in files_text.xpath('//div[@id="yewuxitong"]//a'):
                     if cont.xpath('./@href'):
                         values = cont.xpath('./@href')[0]
                         if ''.join(values).split('.')[-1] not in suffix_list:
@@ -309,7 +312,7 @@ class MySpider(Spider):
             notice_item["area_id"] = self.area_id
             notice_item["notice_type"] = notice_type
             notice_item["category"] = category
-            print(notice_item)
+
             yield notice_item
 
 

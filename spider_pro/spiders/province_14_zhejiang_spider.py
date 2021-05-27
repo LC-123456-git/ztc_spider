@@ -80,8 +80,6 @@ class MySpider(CrawlSpider):
 
 
     def start_requests(self):
-        # url = 'http://zjpubservice.zjzwfw.gov.cn/jyxxgk/002001/002001001/20210305/15a8d897-e76e-4619-bfd5-4d775870a9a7.html'
-        # yield scrapy.Request(url=url, callback=self.parse_item)
         yield scrapy.Request(url=self.base_url, callback=self.parse_urls)
 
     def parse_urls(self, response):
@@ -99,6 +97,8 @@ class MySpider(CrawlSpider):
                     category = '国有产权'
                 elif self.medical_type_num in code:
                     category = '其他交易'
+                else:
+                    category = ''
                 if category_code in self.list_notice_category_code:
                     notice = const.TYPE_ZB_NOTICE
                 elif category_code in self.list_zb_abnormal_code:
@@ -111,11 +111,15 @@ class MySpider(CrawlSpider):
                     notice = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
                 elif category_code in self.list_qita_code:
                     notice = const.TYPE_OTHERS_NOTICE
-                equal_dict = self.dict_data['condition'][0] | {"equal": category_code}
-                pages_dict = {'condition': [equal_dict]}
-                type_dict = self.dict_data | pages_dict
-                yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict), dont_filter=True, callback=self.parse_data_urls,
-                                     meta={'category': category, 'notice': notice})
+                else:
+                    notice = ''
+                if notice:
+                    equal_dict = self.dict_data['condition'][0] | {"equal": category_code}
+                    pages_dict = {'condition': [equal_dict]}
+                    type_dict = self.dict_data | pages_dict
+                    yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict), dont_filter=True,
+                                         callback=self.parse_data_urls,
+                                         meta={'category': category, 'notice': notice})
         except Exception as e:
             self.logger.error(f"parse_urls:发起数据请求失败 {e} {response.url=}")
 
@@ -189,11 +193,12 @@ class MySpider(CrawlSpider):
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = category
-            # print(notice_item)
+
             yield notice_item
 
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl province_14_zhejiang_spider -a sdt=2021-05-20 -a edt=2021-05-21".split(" "))
+    cmdline.execute("scrapy crawl province_14_zhejiang_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_14_zhejiang_spider -a sdt=2021-05-20 -a edt=2021-05-21".split(" "))
 
