@@ -37,7 +37,7 @@ class MySpider(CrawlSpider):
             "fields": "title", "cnum": "001", "sort": "{\"webdate\":\"0\"}", "ssort": "title", "cl": 200, "terminal": "",
             "condition": [{"fieldName": "categorynum", "isLike": 'true', "likeType": 2},
                           {"fieldName": "infoc", "isLike": 'true', "likeType": 2, "equal": "33"}],
-            "time": [{"fieldName": "webdate", "startTime": "2021-02-01 00:00:00", "endTime": "2021-03-05 23:59:59"}], "highlights": "",
+            "time": [{"fieldName": "webdate", "startTime": "2021-05-19 00:00:00", "endTime": "2021-05-20 23:59:59"}], "highlights": "",
             "statistics": 'null', "unionCondition": 'null', "accuracy": "", "noParticiple": "0", "searchRange": 'null', "isBusiness": "1"}
 
     # 招标预告

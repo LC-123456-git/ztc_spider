@@ -45,7 +45,8 @@ class MySpider(CrawlSpider):
     list_others_notice_num = []
 
     # category_url 链接
-    category_url_list = ['http://ggzy.nanxun.gov.cn/gcxmjy/fbgg/jsl/index.html', 'http://ggzy.nanxun.gov.cn/gcxmjy/fbgg/jtl/index.html',
+    category_url_list = [
+                         'http://ggzy.nanxun.gov.cn/gcxmjy/fbgg/jsl/index.html', 'http://ggzy.nanxun.gov.cn/gcxmjy/fbgg/jtl/index.html',
                          'http://ggzy.nanxun.gov.cn/gcxmjy/fbgg/ssl/index.html', 'http://ggzy.nanxun.gov.cn/gcxmjy/zbgg/jsl/index.html',
                          'http://ggzy.nanxun.gov.cn/gcxmjy/zbgg/jtl/index.html', 'http://ggzy.nanxun.gov.cn/gcxmjy/zbgg/ssl/index.html',
                          'http://ggzy.nanxun.gov.cn/ysscjy/zbgg/index.html', 'http://ggzy.nanxun.gov.cn/ysscjy/zbgs/index.html',
@@ -94,9 +95,9 @@ class MySpider(CrawlSpider):
             else:
                 notice = ''
             if notice:
-                yield scrapy.Request(url=url, callback=self.parse_urls,
-                                 meta={'classifyShow': classifyShow,
-                                       'notice': notice})
+                yield scrapy.Request(url=url, callback=self.parse_urls, priority=50,
+                                     meta={'classifyShow': classifyShow,
+                                           'notice': notice})
 
     def parse_urls(self, response):
         try:
@@ -121,7 +122,7 @@ class MySpider(CrawlSpider):
                             page += 1
                         else:
                             page = 1
-                        yield scrapy.Request(url=info_url.format(page), callback=self.parse_info,
+                        yield scrapy.Request(url=info_url.format(page), callback=self.parse_info, priority=100,
                                              meta={'classifyShow': response.meta['classifyShow'],
                                                    'notice': response.meta['notice']})
 
@@ -156,7 +157,7 @@ class MySpider(CrawlSpider):
                     notice_type = const.TYPE_WIN_NOTICE
                 else:
                     notice_type = response.meta['notice']
-                yield scrapy.Request(url=_url, callback=self.parse_item, priority=100,
+                yield scrapy.Request(url=_url, callback=self.parse_item, priority=150,
                                      meta={'t_name': t_name, 'notice_type': notice_type,
                                            'classifyShow': response.meta['classifyShow'],
                                            'pub_time': pub_time})

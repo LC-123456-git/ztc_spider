@@ -29,36 +29,28 @@ class MySpider(CrawlSpider):
                  'MedicalDrug', 'FinancialAgent', 'SpecialIndustry', 'IntellectualProperty']
 
     type_name = ["政府采购", "工程建设", "土地矿业", "国有产权", "公车拍卖", "海域海岛",
-                 "药品耗材", "国有资产处置", "特许经营", "城乡用地建设指标", "知识产权"]
-    type_noctice_name = ['政府采购', '工程建设']
-    list_info_name_num = ['GPAnnouncement', 'GPResultAnnouncement']
-    # 招标公告
-    list_notice_category_num = "GPAnnouncement"
-    # 中标公告
-    list_win_notice_category_num = "CBResultAnnouncement"
+                 "药品耗材", "国有资产处置", "特许经营", "知识产权"]
+    type_noctice_name = ['GP', 'CB', 'LM', 'SP', 'VA', 'OI', 'MP', 'FA', 'SI', 'IP']
+    list_info_name_num = ['Announcement', 'ResultAnnouncement']
 
     def __init__(self, *args, **kwargs):
         super(MySpider, self).__init__()
         self.r_dict = {"pageSize": '50', "currPage": '1', 'releaseTime': '2021-02-25 00:00:00'}   # 增量需要在这里更改时间即可
-        # self.time_dict = {"releaseTime": get_back_date(kwargs.get("sdt")) + " 00:00:00" if not kwargs.get("sdt") else ""}
 
     def start_requests(self):
         try:
             for list in range(len(self.type_list)):
-                type_dict = self.r_dict | {'businessType': self.type_list[list]}
+                type_dicts = self.r_dict | {'businessType': self.type_list[list]}
                 classifyShow = self.type_name[list]
-                if classifyShow in self.type_noctice_name:
-                    for info_name in self.list_info_name_num:
-                        if info_name in self.list_notice_category_num:
-                            notice = const.TYPE_ZB_NOTICE
-                        else:
-                            notice = const.TYPE_WIN_NOTICE
-                        type_dict = self.r_dict | {'businessType': self.type_list[list]} | {'informationPublicType': info_name}
-                        yield scrapy.FormRequest(url=self.query_url, formdata=type_dict, callback=self.parse_urls,
-                                                 meta={'type_dict': type_dict, 'classifyShow': classifyShow, 'notice': notice})
-                else:
-                    yield scrapy.FormRequest(url=self.query_url, formdata=type_dict, callback=self.parse_urls,
-                                     meta={'type_dict': type_dict, 'classifyShow': classifyShow})
+                for info_name in self.list_info_name_num:
+                    info_type_name = self.type_noctice_name[list] + info_name
+                    if 'ResultAnnouncement' not in info_type_name:
+                        notice = const.TYPE_ZB_NOTICE                                      # 招标公告
+                    else:
+                        notice = const.TYPE_WIN_NOTICE                                     # 中标公告
+                    type_dict = type_dicts | {'informationPublicType': info_type_name}
+                    yield scrapy.FormRequest(url=self.query_url, formdata=type_dict, callback=self.parse_urls, dont_filter=True,
+                                             meta={'type_dict': type_dict, 'classifyShow': classifyShow, 'notice': notice})
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e}")
 
