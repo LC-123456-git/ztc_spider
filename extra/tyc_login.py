@@ -15,7 +15,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 PHONE = '18868271201'
 PASSWORD = 'laaimeng2011'
-BORDER = 0
+BORDER = 7
 
 class CrackGeetest():
     def __init__(self):
@@ -30,7 +30,8 @@ class CrackGeetest():
         self.captcha2 = os.path.join(os.path.join(self.path, 'images'), 'captcha2.png')
 
     def __del__(self):
-        self.browser.close()
+        # self.browser.close()
+        pass
 
     def get_screenshot(self):
         """
@@ -47,8 +48,19 @@ class CrackGeetest():
         :return: None
         """
         try:
+            options = webdriver.ChromeOptions()
+            options.add_experimental_option('excludeSwitches', ['enable-automation'])
+            options.add_argument("--disable-blink-features=AutomationControlled")
             self.browser = webdriver.Chrome()
             self.wait = WebDriverWait(self.browser, 20)
+            self.browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+                "source": """
+                            Object.defineProperty(navigator, 'webdriver', {
+                            get: () => undefined
+                            })
+                        """
+            })
+
             self.browser.get(self.url)
             self.browser.maximize_window()
             t = random.uniform(0.5, 1)
@@ -104,10 +116,10 @@ class CrackGeetest():
         pixel2 = image2.load()[x, y]
         threshold = 60
 
-        if abs(pixel1[0] - pixel2[0]) != 0 or abs(pixel1[1] - pixel2[1]) != 0 or abs(pixel1[2] - pixel2[2]) != 0:
-            print('hello')
+        # if abs(pixel1[0] - pixel2[0]) != 0 or abs(pixel1[1] - pixel2[1]) != 0 or abs(pixel1[2] - pixel2[2]) != 0:
+        #     print(pixel1, pixel2)
 
-        if any([abs(pixel1[0] - pixel2[0]) > threshold, abs(pixel1[1] - pixel2[1]) > threshold, abs(pixel1[2] - pixel2[2]) > threshold]):
+        if all([abs(pixel1[0] - pixel2[0]) > threshold, abs(pixel1[1] - pixel2[1]) > threshold, abs(pixel1[2] - pixel2[2]) > threshold]):
             return False
         else:
             return True
@@ -123,16 +135,18 @@ class CrackGeetest():
         # 当前位移
         current = 0
         # 减速阈值
-        mid = distance * 4 / 5
+        mid = distance * 3 / 5
         # 计算间隔
         t = 0.2
         # 初速度
-        v = 0
+        v = 1
 
         while current < distance:
             if current < mid:
-                a = 2
+                # 加速度为正2
+                a = 3
             else:
+                # 加速度为负3
                 a = -2
             # 初速度v0
             v0 = v
@@ -144,7 +158,9 @@ class CrackGeetest():
             current += move
             # 加入轨迹
             track.append(round(move))
-        track += [2, -2]
+
+        track += [1, -1]  # 滑过去再滑过来，不然有可能被吃
+        print('挪动距离边变动：{0}'.format(track))
         return track
 
     def move_to_gap(self, trace):
@@ -176,7 +192,7 @@ class CrackGeetest():
         size = img.size
 
         top = location['y']
-        bottom = location['y'] + size['height']
+        bottom = location['y'] + size['height'] -30
         left = location['x']
         right = location['x'] + size['width']
 
@@ -211,7 +227,7 @@ class CrackGeetest():
             self.move_to_gap(track)
             time.sleep(0.5)
             while True:
-                for i in [x+2 for x in range(8, 9)]:  # 再次滑动2次,距离缩短
+                for i in [x+2 for x in range(10, 14)]: 
                     try:
                         mspan = self.browser.find_element_by_xpath('//div[@class="gt_info_text"]/span[2]').text
                         print(mspan)
@@ -258,6 +274,7 @@ class CrackGeetest():
         if not success:  # 未完成 重新打开
             self.browser.close()
             self.crack()
+        time.sleep(10)
         print('本次获得的登录COOKIE: {0}'.format(self.cookies))
 
 if __name__ == '__main__':
