@@ -15,7 +15,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 PHONE = '18868271201'
 PASSWORD = 'laaimeng2011'
-BORDER = 6
+BORDER = 0
 
 class CrackGeetest():
     def __init__(self):
@@ -26,22 +26,11 @@ class CrackGeetest():
         self.password = PASSWORD
         self.path = os.path.dirname(os.path.abspath(__file__))
         self.tyc_pic = os.path.join(os.path.join(self.path, 'images'), 'Tyc.png')
+        self.captcha1 = os.path.join(os.path.join(self.path, 'images'), 'captcha1.png')
+        self.captcha2 = os.path.join(os.path.join(self.path, 'images'), 'captcha2.png')
 
     def __del__(self):
         self.browser.close()
-
-    def get_position(self):
-        """
-        获取验证码位置
-        :return: 验证码位置元组
-        """
-        img = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'geetest_canvas_img')))
-        time.sleep(2)
-        location = img.location
-        size = img.size
-        top, bottom, left, right = location['y'], location['y'] + size['height'], location['x'], location['x'] + size[
-            'width']
-        return (top, bottom, left, right)
 
     def get_screenshot(self):
         """
@@ -90,12 +79,16 @@ class CrackGeetest():
         :param image2: 带缺口图片
         :return:
         """
-        left = 53
+        left = 60
+        out_break = False
         for i in range(left, image1.size[0]):
             for j in range(image1.size[1]):
                 if not self.is_pixel_equal(image1, image2, i, j):
-                    return i
-        return left + 47
+                    left = i
+                    out_break = True
+                    break
+            if out_break: break
+        return left
 
     def is_pixel_equal(self, image1, image2, x, y):
         """
@@ -111,8 +104,10 @@ class CrackGeetest():
         pixel2 = image2.load()[x, y]
         threshold = 60
 
-        if abs(pixel1[0] - pixel2[0]) > threshold and abs(pixel1[1] - pixel2[1]) > threshold and abs(
-                pixel1[2] - pixel2[2]) > threshold:
+        if abs(pixel1[0] - pixel2[0]) != 0 or abs(pixel1[1] - pixel2[1]) != 0 or abs(pixel1[2] - pixel2[2]) != 0:
+            print('hello')
+
+        if any([abs(pixel1[0] - pixel2[0]) > threshold, abs(pixel1[1] - pixel2[1]) > threshold, abs(pixel1[2] - pixel2[2]) > threshold]):
             return False
         else:
             return True
@@ -138,7 +133,7 @@ class CrackGeetest():
             if current < mid:
                 a = 2
             else:
-                a = -3
+                a = -2
             # 初速度v0
             v0 = v
             # 当前速度v = v0 + at
@@ -180,23 +175,22 @@ class CrackGeetest():
         # 验证码尺寸
         size = img.size
 
-        # top, bottom, left, right = location['y']+3, location['y'] + size['height'], location['x']-325, location['x'] + size['width']-328
-        # 加入代码self.driver.maximize_window()使浏览器全屏后就不需要修改位置参数了,mac上不知道什么原因需要修改位置
-        top, bottom, left, right = location['y'], location['y'] + size['height'] - 20, location['x'], location['x'] + \
-                                   size['width']
+        top = location['y']
+        bottom = location['y'] + size['height']
+        left = location['x']
+        right = location['x'] + size['width']
+
         picture = Image.open(self.tyc_pic)
         picture = picture.crop((left, top, right, bottom))
         picture.save(os.path.join(os.path.join(self.path, 'images'), name))
         time.sleep(0.5)
 
     def get_image_location(self):
-        # 获取验证码图片路径--->调用get_images截取图片
         fullbg = self.browser.find_element_by_xpath('//a[@class="gt_fullbg gt_show"]')
         self.hide_element(fullbg)
         self.show_element(fullbg)
         # 获取完整图片
         self.get_images(fullbg, 'captcha1.png')
-        # 点击一下滑动按钮触发出来带缺口的图片
         self.browser.find_element_by_xpath('//div[@class="gt_slider_knob gt_show"]').click()
         time.sleep(2)
         # 获取带缺口的图片
@@ -208,17 +202,12 @@ class CrackGeetest():
         success = True
 
         try:
-            image2 = Image.open(os.path.join(os.path.join(self.path, 'images'), 'captcha2.png'))
-            image1 = Image.open(os.path.join(os.path.join(self.path, 'images'), 'captcha1.png'))
-            # 获取缺口位置
+            image2 = Image.open(self.captcha1)
+            image1 = Image.open(self.captcha2)
             gap = self.get_gap(image1, image2)
             print('缺口位置', gap)
-            # 减去缺口位移
             gap -= BORDER
-            # 获取移动轨迹
             track = self.get_track(gap)
-            # print('滑动轨迹', track)
-            # 拖动滑块
             self.move_to_gap(track)
             time.sleep(0.5)
             while True:
@@ -231,17 +220,17 @@ class CrackGeetest():
                             distance = self.get_gap(image1, image2)
                             print('计算偏移量为：%s Px' % distance)
                             trace = self.get_track(int(distance) - int(i))
-                            print('减值%s' % i)
-                            print(trace)
                             # 移动滑块
                             self.move_to_gap(trace)
                             time.sleep(0.5)
                         else:  # 请关闭验证重试
                             if '怪物' in mspan:
+                                print('重新访问...')
                                 time.sleep(5)
                                 self.get_image_location()
                                 self.slice()
                             else:
+                                success = False
                                 break
                     except Exception as e:
                         if '//div[@class="gt_info_text"]/span[2]' in str(e):

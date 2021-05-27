@@ -7,6 +7,7 @@ Description: 每日采集数量、推送数量统计/指定时间段的采集数
 import pymysql
 import re
 import gevent
+import os
 
 from datetime import datetime, timedelta
 from openpyxl import Workbook, styles
@@ -173,6 +174,10 @@ class ReportOutput(DBQuery):
         self.push_sum = 0
         self.pub_sum = 0
 
+        self.cwd = os.getcwd()
+        self.file_path = os.path.join(os.path.join(self.cwd, 'files'),'统计{0:%Y-%m-%d}.xls'.format(datetime.now()))
+        print(self.file_path)
+
     def get_statistic_data(self, date, table_with_area, serial_number):
         table_name = table_with_area['table_name']
         area_id = table_with_area['area_id']
@@ -204,9 +209,9 @@ class ReportOutput(DBQuery):
             'area_id': area_id,
             'cdt': date,
         })
-        print(download_sql + '\n')
-        print(pub_sql + '\n')
-        print(push_sql + '\n')
+        # print(download_sql + '\n')
+        # print(pub_sql + '\n')
+        # print(push_sql + '\n')
         download_data = self.fetch_all(download_sql)  # [(area_id, n),]
         pub_data = self.fetch_all(pub_sql)
         push_data = self.fetch_all(push_sql)
@@ -295,7 +300,7 @@ class ReportOutput(DBQuery):
             for n, v in enumerate(['合计', '', '', self.pub_sum, self.download_sum, self.push_sum, '']):
                 self.ws.cell(row=self.end + 1, column=n + 1, value=v)
             self.ws['A{0}'.format(self.end + 1)].border = self.border
-            self.w.save('统计{0:%Y-%m-%d}.xls'.format(datetime.now()))
+            self.w.save(self.file_path)
 
     def to_excel(self, tts, data_list):
         """
@@ -334,7 +339,7 @@ class ReportOutput(DBQuery):
         for row in self.ws['A']:
             row.border = self.border
 
-        self.w.save('./files/统计{0:%Y-%m-%d}.xls'.format(datetime.now()))
+        self.w.save(self.file_path)
         self.start = self.end + 1
 
 
@@ -348,5 +353,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-05-21', edt='2021-05-24')
+    rpt.output(sdt='2021-05-26', edt='2021-05-27')
     print((datetime.now() - start_time).total_seconds())

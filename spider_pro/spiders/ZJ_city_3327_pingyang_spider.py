@@ -37,14 +37,8 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
         '建设项目': {  # add
             'url': 'http://www.zjpy.gov.cn/col/col1251142/index.html',
         },
-        '中标结果': {  # add
+        '工程': {  # add
             'url': 'http://www.zjpy.gov.cn/col/col1229003086/index.html',
-        },
-        '审批信息': {  # add
-            'url': 'http://www.zjpy.gov.cn/col/col1228970283/index.html',
-        },
-        '失信记录': {  # add
-            'url': 'http://www.zjpy.gov.cn/col/col1228970288/index.html',
         },
     }
     form_data = {
