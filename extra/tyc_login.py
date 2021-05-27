@@ -15,7 +15,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 PHONE = '18868271201'
 PASSWORD = 'laaimeng2011'
-BORDER = 7
+BORDER = 5
 
 class CrackGeetest():
     def __init__(self):
@@ -51,7 +51,7 @@ class CrackGeetest():
             options = webdriver.ChromeOptions()
             options.add_experimental_option('excludeSwitches', ['enable-automation'])
             options.add_argument("--disable-blink-features=AutomationControlled")
-            self.browser = webdriver.Chrome()
+            self.browser = webdriver.Chrome(options=options)
             self.wait = WebDriverWait(self.browser, 20)
             self.browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
                 "source": """
@@ -135,7 +135,7 @@ class CrackGeetest():
         # 当前位移
         current = 0
         # 减速阈值
-        mid = distance * 3 / 5
+        mid = distance * 2 / 5
         # 计算间隔
         t = 0.2
         # 初速度
@@ -143,23 +143,16 @@ class CrackGeetest():
 
         while current < distance:
             if current < mid:
-                # 加速度为正2
-                a = 3
+                a = 5
             else:
-                # 加速度为负3
                 a = -2
-            # 初速度v0
             v0 = v
-            # 当前速度v = v0 + at
             v = v0 + a * t
-            # 移动距离x = v0t + 1/2 * a * t^2
             move = v0 * t + 1 / 2 * a * t * t
-            # 当前位移
             current += move
-            # 加入轨迹
             track.append(round(move))
 
-        track += [1, -1]  # 滑过去再滑过来，不然有可能被吃
+        track += [1, -2]  # 滑过去再滑过来，不然有可能被吃
         print('挪动距离边变动：{0}'.format(track))
         return track
 
@@ -227,7 +220,7 @@ class CrackGeetest():
             self.move_to_gap(track)
             time.sleep(0.5)
             while True:
-                for i in [x+2 for x in range(10, 14)]: 
+                for i in [x+4 for x in range(14, 18)]: 
                     try:
                         mspan = self.browser.find_element_by_xpath('//div[@class="gt_info_text"]/span[2]').text
                         print(mspan)
