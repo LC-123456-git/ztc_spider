@@ -65,8 +65,6 @@ class MySpider(CrawlSpider):
 
 
     def start_requests(self):
-        # info_url = 'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001001/20210521/ff808081796a5c95017988afe62b1c40.html'
-        # yield scrapy.Request(url=info_url, callback=self.parse_item)
         yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
 
     def parse_urls(self, response):
@@ -211,7 +209,7 @@ class MySpider(CrawlSpider):
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = category
-            
+
             yield notice_item
 
 
