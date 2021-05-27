@@ -15,13 +15,12 @@ from selenium.webdriver.support import expected_conditions as EC
 
 PHONE = '18868271201'
 PASSWORD = 'laaimeng2011'
-BORDER = 5
+BORDER = 7
 
 class CrackGeetest():
     def __init__(self):
         self.url = 'https://www.tianyancha.com/'
         self.browser = None
-        self.wait = None
         self.account = PHONE
         self.password = PASSWORD
         self.path = os.path.dirname(os.path.abspath(__file__))
@@ -52,7 +51,6 @@ class CrackGeetest():
             options.add_experimental_option('excludeSwitches', ['enable-automation'])
             options.add_argument("--disable-blink-features=AutomationControlled")
             self.browser = webdriver.Chrome(options=options)
-            self.wait = WebDriverWait(self.browser, 20)
             self.browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
                 "source": """
                             Object.defineProperty(navigator, 'webdriver', {
@@ -152,7 +150,7 @@ class CrackGeetest():
             current += move
             track.append(round(move))
 
-        track += [1, -2]  # 滑过去再滑过来，不然有可能被吃
+        track += [1, -1]  # 滑过去再滑过来，不然有可能被吃
         print('挪动距离边变动：{0}'.format(track))
         return track
 
@@ -218,9 +216,18 @@ class CrackGeetest():
             gap -= BORDER
             track = self.get_track(gap)
             self.move_to_gap(track)
+
+
+            # 判断是否成功 gt_ajax_tip gt_success
+            try:
+                if self.browser.find_element_by_xpath('//div[@class="gt_ajax_tip gt_success"]'):
+                    print('success')
+            except:
+                print('failed.')
+
             time.sleep(0.5)
             while True:
-                for i in [x+4 for x in range(14, 18)]: 
+                for i in [x+4 for x in range(10, 14)]: 
                     try:
                         mspan = self.browser.find_element_by_xpath('//div[@class="gt_info_text"]/span[2]').text
                         print(mspan)
@@ -232,20 +239,17 @@ class CrackGeetest():
                             # 移动滑块
                             self.move_to_gap(trace)
                             time.sleep(0.5)
-                        else:  # 请关闭验证重试
-                            if '怪物' in mspan:
-                                print('重新访问...')
-                                time.sleep(5)
-                                self.get_image_location()
-                                self.slice()
-                            else:
-                                success = False
-                                break
-                    except Exception as e:
-                        if '//div[@class="gt_info_text"]/span[2]' in str(e):
-                            pass
+                        elif '怪物' in mspan:
+                            print('重新访问...')
+                            time.sleep(2)
+                            self.get_image_location()
+                            self.slice()
                         else:
-                            print(e)
+                            self.browser.close()
+                            success = False
+                            break
+                    except Exception as e:
+                        print(e)
                 success = False
                 break
         except Exception as e:
@@ -264,11 +268,12 @@ class CrackGeetest():
         self.open()
         self.get_image_location()
         success = self.slice()
-        if not success:  # 未完成 重新打开
-            self.browser.close()
-            self.crack()
+        print(success)
+        # if not success:  # 未完成 重新打开
+        #     self.browser.close()
+        #     self.crack()
         time.sleep(10)
-        print('本次获得的登录COOKIE: {0}'.format(self.cookies))
+        # print('本次获得的登录COOKIE: {0}'.format(self.cookies))
 
 if __name__ == '__main__':
     crack = CrackGeetest()
