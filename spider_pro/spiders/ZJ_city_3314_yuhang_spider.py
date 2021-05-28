@@ -202,13 +202,14 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
                                 self.start_time, '%Y-%m-%d')
                             end_time = datetime.strptime(
                                 self.end_time, '%Y-%m-%d')
-                            # end_time < first_pub_time continue
-                            # start_time > final_pub_time break
-                            # else crawl and continue
-                            # 0 break 2 continue 1 crawl and continue
-                            if start_time > final_pub_time:
+                            # 比最大时间大 continue
+                            # 比最小时间小 break
+                            # 1 首条在区间内 可抓、可以翻页
+                            # 0 首条不在区间内 停止翻页
+                            # 2 末条大于最大时间 continue
+                            if first_pub_time < start_time:
                                 status = 0
-                            elif end_time < first_pub_time:
+                            elif final_pub_time > end_time:
                                 status = 2
                             else:
                                 status = 1
