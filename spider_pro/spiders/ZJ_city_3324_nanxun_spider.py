@@ -187,13 +187,15 @@ class MySpider(CrawlSpider):
                             # 判断href 是不是email
                                 if con.xpath('./@href')[0] not in re.findall('.*[a-zA-Z0-9]{0,19}@[a-zA-Z0-9].*', con.xpath('./@href')[0]):
                                     value = 'http' + con.xpath('./@href')[0]
-                                    keys = ''.join(con.xpath('.//text()')[0]).strip()
-                                    files_path[keys] = value
+                                    if con.xpath('.//text()'):
+                                        keys = ''.join(con.xpath('.//text()')[0]).strip()
+                                        files_path[keys] = value
                             else:
                                 if con.xpath('./@href')[0] not in re.findall('.*[a-zA-Z0-9]{0,19}@[a-zA-Z0-9].*', con.xpath('./@href')[0]):
                                     value = con.xpath('./@href')[0]
-                                    keys = ''.join(con.xpath('.//text()')[0]).strip()
-                                    files_path[keys] = value
+                                    if con.xpath('.//text()'):
+                                        keys = ''.join(con.xpath('.//text()')[0]).strip()
+                                        files_path[keys] = value
 
                 notice_item = NoticesItem()
                 notice_item["origin"] = origin
