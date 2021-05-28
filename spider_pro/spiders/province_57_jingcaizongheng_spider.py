@@ -107,19 +107,21 @@ class MySpider(CrawlSpider):
                 pn = 1
                 num = 1
                 with self.engine.connect() as conn:
-                    li_list = response.xpath('//form[@name="form1"]/div[@ewb-list]')
+                    li_list = response.xpath('//form[@id="form1"]/div[@class="ewb-list"]')
                     for li in range(len(li_list)):
                         title_name = li_list[li].xpath('./div[1]/a[1]/@title').get()
-                        result = conn.execute(f"select * from {title_name} where pub_time >= '{self.sdt_time}' and pub_time < '{self.edt_time}'").fetchall()
-                        if result:
+                        result = conn.execute(f"select * from notices_57 where title_name='{title_name}' and pub_time >= '{self.sdt_time}' and pub_time < '{self.edt_time}'").fetchall()
+                        # result = conn.execute(f"select * from notices_57 where title_name='{title_name}' and pub_time >= '{self.sdt_time}' and pub_time < '{self.edt_time}'").fetchall()
+                        if not result:
                             num += 1
                         info_url = response.url + '&Paging={}'
-                        if len(li_list) >= num:
+                        if num >= len(li_list):
                             pn += 1
                         else:
                             pn = 1
-                        yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info,
-                                             meta={'classifyShow': response.meta['classifyShow']})
+                        yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info, priority=100,
+                                             meta={'classifyShow': response.meta['classifyShow'],
+                                                   'type_name': response.meta['type_name']})
 
             else:
                 if response.xpath('//div[@class="pagemargin"]/div/table/tr/td[@class="huifont"]/text()').get():
@@ -129,8 +131,9 @@ class MySpider(CrawlSpider):
 
                     for num in range(1, int(page)+1):
                         url = response.url + '&Paging={}'.format(num)
-                        yield scrapy.Request(url=url, callback=self.parse_info, priority=10,
-                                             meta={'classifyShow': response.meta['classifyShow']})
+                        yield scrapy.Request(url=url, callback=self.parse_info, priority=100,
+                                             meta={'classifyShow': response.meta['classifyShow'],
+                                                   'type_name': response.meta['type_name']})
 
         except Exception as e:
             self.logger.error(f"parse_urls:初始总页数提取错误 {response.meta=} {e} {response.url=}")
@@ -138,7 +141,7 @@ class MySpider(CrawlSpider):
 
     def parse_info(self, response):
         try:
-            li_list = response.xpath('//form[@name="form1"]/div[@ewb-list]')
+            li_list = response.xpath('//form[@id="form1"]/div[@class="ewb-list"]')
             for li in li_list:
                 info_url = self.domain_url + li.xpath('./div[1]/a[1]/@href').get()
                 info_title = li.xpath('./div[1]/a[1]/@title').get()
@@ -166,7 +169,7 @@ class MySpider(CrawlSpider):
                 else:
                     notice_type = notice
 
-                yield scrapy.Request(url=info_url, callback=self.parse_item, priority=15,
+                yield scrapy.Request(url=info_url, callback=self.parse_item, priority=150,
                                      meta={'classifyShow': response.meta['classifyShow'],
                                      'info_title': info_title, 'notice_type': notice_type})
         except Exception as e:
@@ -203,7 +206,6 @@ class MySpider(CrawlSpider):
                 notice_item["content"] = content
                 notice_item["area_id"] = self.area_id
                 notice_item["category"] = classifyShow
-
                 yield notice_item
 
 
