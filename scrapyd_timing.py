@@ -234,12 +234,7 @@ if __name__ == "__main__":
 
                     arg_choices = {
                         'day': 1
-                    }
-
-                if item in ["ZJ_city_3322_anji_spider", "ZJ_city_3326_longyou_spider"]:
-                    info = {
-                        'ENABLE_PROXY_USE': 'False',
-                    }                
+                    }              
                 # if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
                 #     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
                 # if item == "province_57_jingcaizongheng_spider":
