@@ -3,7 +3,7 @@
 # @File : __init__.py.py 
 # @Description: 导入配置文件
 import configparser
-
+import os
 
 cf = configparser.ConfigParser()
-cf.read('./config/sql.ini')
+cf.read(os.path.join(os.path.join(os.path.dirname(__file__), 'config'), 'sql.ini'))

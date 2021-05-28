@@ -34,42 +34,42 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
     }
     url_map = {
         '招标预告': [
-            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001007/moreinfo.html'},
+            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001007/'},
         ],
         '招标公告': [
-            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001001/moreinfo.html'},
-            {'category': '微型工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003011/003011001/moreinfo.html'},
-            {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005001/moreinfo.html'},
-            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007001/moreinfo.html'},
-            {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008001/moreinfo.html'},
-            {'category': '其他项目', 'url': 'http://ggzy.anji.gov.cn/jyxx/003012/003012001/moreinfo.html'},
+            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001001/'},
+            {'category': '微型工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003011/003011001/'},
+            {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005001/'},
+            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007001/'},
+            {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008001/'},
+            {'category': '其他项目', 'url': 'http://ggzy.anji.gov.cn/jyxx/003012/003012001/'},
         ],
         '招标变更': [
-            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001002/moreinfo.html'},
-            {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005003/moreinfo.html'},
-            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007002/moreinfo.html'},
-            {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008003/moreinfo.html'},
-            {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005002/moreinfo.html'},
-            {'category': '微型工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003011/003011002/moreinfo.html'},
-            {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008002/moreinfo.html'},
+            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001002/'},
+            {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005003/'},
+            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007002/'},
+            {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008003/'},
+            {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005002/'},
+            {'category': '微型工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003011/003011002/'},
+            {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008002/'},
         ],
         '招标异常': [],
         '中标预告': [
-            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001005/moreinfo.html'},
-            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007004/moreinfo.html'},
-            {'category': '微型工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003011/003011003/moreinfo.html'},
+            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001005/'},
+            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007004/'},
+            {'category': '微型工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003011/003011003/'},
         ],
         '中标公告': [
-            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001006/moreinfo.html'},
-            {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005004/moreinfo.html'},
-            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007005/moreinfo.html'},
-            {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008004/moreinfo.html'},
-            {'category': '其他项目', 'url': 'http://ggzy.anji.gov.cn/jyxx/003012/003012002/moreinfo.html'},
+            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001006/'},
+            {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005004/'},
+            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007005/'},
+            {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008004/'},
+            {'category': '其他项目', 'url': 'http://ggzy.anji.gov.cn/jyxx/003012/003012002/'},
         ],
         '其他公告': [
-            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001008/moreinfo.html'},
-            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001004/moreinfo.html'},
-            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007003/moreinfo.html'},
+            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001008/'},
+            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001004/'},
+            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007003/'},
         ]
     }
     max_page_com = re.compile('\<script\>.*?\$\("#page"\).pagination.*?pageSize:\s*(.*?),.*?total:\s*(.*?),')
@@ -160,7 +160,6 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
                         first_el = els[0]
                         final_el = els[-1]
 
-                        el = els[-1]
                         # 解析出时间
                         t_com = re.compile('(\d+%s\d+%s\d+)' %
                                            (time_sep, time_sep))
@@ -179,14 +178,13 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
                                 self.start_time, '%Y-%m-%d')
                             end_time = datetime.strptime(
                                 self.end_time, '%Y-%m-%d')
-                            # 比最大时间大 continue
-                            # 比最小时间小 break
-                            # 1 首条在区间内 可抓、可以翻页
-                            # 0 首条不在区间内 停止翻页
-                            # 2 末条大于最大时间 continue
-                            if first_pub_time < start_time:
+                            # end_time < first_pub_time continue
+                            # start_time > final_pub_time break
+                            # else crawl and continue
+                            # 0 break 2 continue 1 crawl and continue
+                            if start_time > final_pub_time:
                                 status = 0
-                            elif final_pub_time > end_time:
+                            elif end_time < first_pub_time:
                                 status = 2
                             else:
                                 status = 1
@@ -199,7 +197,8 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
     def start_requests(self):
         for notice_type, category_urls in self.url_map.items():
             for cu in category_urls:
-                yield scrapy.Request(url=cu['url'], callback=self.parse_urls, meta={
+                c_url = ''.join([cu['url'], 'moreinfo.html'])
+                yield scrapy.Request(url=c_url, callback=self.parse_urls, meta={
                     'notice_type': notice_type,
                     'category': cu['category'],
                 }, cb_kwargs={
@@ -214,35 +213,35 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
         if match_pages:
             match_page = match_pages[0]
 
-            try:
-                page_size, total = match_page
-                page_size = int(page_size)
-                total = int(total)
+            page_size, total = match_page
+            page_size = int(page_size)
+            total = int(total)
 
-                max_page = ceil(total / page_size)  # 最大页数
+            max_page = ceil(total / page_size)  # 最大页数
 
-                for i in range(1, max_page + 1):
-                    # 最末一条符合时间区间则翻页
-                    # 解析详情页时再次根据区间判断去采集
-                    judge_status = self.judge_in_interval(
-                        url, method='GET', ancestor_el='ul', ancestor_attr='class', ancestor_val='ewb-notice-items',
-                        child_el='span'
-                    )
-                    if judge_status == 0:
-                        break
-                    elif judge_status == 2:
-                        continue
+            c_url = ''.join([url, 'moreinfo.html'])
+            for i in range(1, max_page + 1):
+                # 最末一条符合时间区间则翻页
+                # 解析详情页时再次根据区间判断去采集
+                judge_status = self.judge_in_interval(
+                    c_url, method='GET', ancestor_el='ul', ancestor_attr='class', ancestor_val='ewb-notice-items',
+                    child_el='span'
+                )
+                if judge_status == 0:
+                    break
+                elif judge_status == 2:
+                    continue
+                else:
+                    if i > 1:
+                        c_url = ''.join([url, '{0}.html'.format(i)])
                     else:
-                        c_url = url.replace('moreinfo', str(i)) if i != 1 else url
-                        yield scrapy.Request(url=c_url,
-                                             callback=self.parse_data_urls,
-                                             meta={
-                                                 'notice_type': resp.meta.get('notice_type', ''),
-                                                 'category': resp.meta.get('category', '')
-                                             }, priority=(max_page - i) * 10)
-            except Exception as e:
-                print('error:{e}'.format(e=e))
-                self.log('error:{e}'.format(e=e))
+                        c_url = ''.join([url, 'moreinfo.html'])
+                    yield scrapy.Request(url=c_url,
+                                            callback=self.parse_data_urls,
+                                            meta={
+                                                'notice_type': resp.meta.get('notice_type', ''),
+                                                'category': resp.meta.get('category', '')
+                                            }, priority=(max_page - i) * 10, dont_filter=True)
         else:
             # fetch first page
             yield scrapy.Request(url=url, callback=self.parse_data_urls, meta={

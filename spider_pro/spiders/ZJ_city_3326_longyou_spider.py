@@ -13,7 +13,7 @@ from spider_pro import items, constans, utils
 class ZjCity3326LongyouSpiderSpider(scrapy.Spider):
     name = 'ZJ_city_3326_longyou_spider'
     allowed_domains = ['ztb.longyou.gov.cn']
-    start_urls = ['http://http://ztb.longyou.gov.cn/']
+    start_urls = ['http://ztb.longyou.gov.cn/']
     query_url = 'http://ztb.longyou.gov.cn'
     basic_area = '浙江省-衢州市-龙游县-龙游县公共资源交易平台'
     area_id = 3326

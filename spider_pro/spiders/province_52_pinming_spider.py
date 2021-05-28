@@ -84,7 +84,7 @@ class Province52PinmingSpiderSpider(scrapy.Spider):
         return matched, notice_type
 
     def judge_in_interval(self, url, method='GET', ancestor_el='table', ancestor_attr='id', ancestor_val='',
-                          child_el='tr', time_sep='-', **kwargs):
+                          child_el='tr', time_sep='-', doc_type='html', **kwargs):
         """
         判断最末一条数据是否在区间内
         Args:
@@ -95,11 +95,14 @@ class Province52PinmingSpiderSpider(scrapy.Spider):
             ancestor_val: 属性值
             child_el: 子孙元素
             time_sep: 时间中间分隔符 默认：-
-            **kwargs: POST请求体
+            doc_type: 文档类型
+            **kwargs:
+                @data: POST请求体
+                @enhance_els: 扩展xpath匹配子节点细节['table', 'tbody'] 连续节点
         Returns:
             status: 结果状态
-                1 末条在区间内 可以翻页
-                0 末条不在区间内 停止翻页
+                1 首条在区间内 可抓、可以翻页
+                0 首条不在区间内 停止翻页
                 2 末条大于最大时间 continue
         """
         status = 0
@@ -109,31 +112,66 @@ class Province52PinmingSpiderSpider(scrapy.Spider):
                 if method == 'GET':
                     text = requests.get(url=url, headers=self.headers).text
                 if method == 'POST':
-                    text = requests.post(url=url, data=kwargs.get('data'), headers=self.headers).text
+                    text = requests.post(url=url, data=kwargs.get(
+                        'data'), headers=self.headers).text
                 if text:
-                    doc = etree.HTML(text)
-                    _path = '//{ancestor_el}[@{ancestor_attr}="{ancestor_val}"]//{child_el}[last()]/text()'.format(**{
-                        'ancestor_el': ancestor_el,
-                        'ancestor_attr': ancestor_attr,
-                        'ancestor_val': ancestor_val,
-                        'child_el': child_el,
-                    })
-                    els = doc.xpath(_path)
+                    els = []
+                    if doc_type == 'html':
+                        doc = etree.HTML(text)
+
+                        # enhance_els
+                        enhance_els = kwargs.get('enhance_els', [])
+
+                        enhance_condition = ''
+                        if enhance_els:
+                            for enhance_el in enhance_els:
+                                enhance_condition += '/{0}'.format(enhance_el)
+
+                        _path = '//{ancestor_el}[@{ancestor_attr}="{ancestor_val}"]{enhance_condition}//{child_el}[last()]/text()[not(normalize-space()="")]'.format(
+                            **{
+                                'ancestor_el': ancestor_el,
+                                'ancestor_attr': ancestor_attr,
+                                'ancestor_val': ancestor_val,
+                                'child_el': child_el,
+                                'enhance_condition': enhance_condition
+                            })
+                        els = doc.xpath(_path)
+                    if doc_type == 'xml':
+                        doc = etree.XML(text)
+                        _path = '//{child_el}/text()'.format(**{
+                            'child_el': child_el,
+                        })
+                        els = doc.xpath(_path)
                     if els:
-                        el = els[-1]
+                        first_el = els[0]
+                        final_el = els[-1]
+
                         # 解析出时间
-                        t_com = re.compile('(\d+%s\d+%s\d+)' % (time_sep, time_sep))
-                        pub_time = t_com.findall(el)
-                        if pub_time:
-                            pub_time = datetime.strptime(pub_time[0], '%Y{0}%m{1}%d'.format(time_sep, time_sep))
-                            start_time = datetime.strptime(self.start_time, '%Y-%m-%d')
-                            end_time = datetime.strptime(self.end_time, '%Y-%m-%d')
-                            # 比最大时间大 continue
-                            # 比最小时间小 break
-                            if pub_time > end_time:  # 翻页不抓
-                                status = 2
-                            elif pub_time < start_time:  # 停止翻页
+                        t_com = re.compile('(\d+%s\d+%s\d+)' %
+                                           (time_sep, time_sep))
+
+                        first_pub_time = t_com.findall(first_el)
+                        final_pub_time = t_com.findall(final_el)
+
+                        if all([first_pub_time, final_pub_time]):
+                            first_pub_time = datetime.strptime(
+                                first_pub_time[0], '%Y{0}%m{1}%d'.format(time_sep, time_sep)
+                            )
+                            final_pub_time = datetime.strptime(
+                                final_pub_time[0], '%Y{0}%m{1}%d'.format(time_sep, time_sep)
+                            )
+                            start_time = datetime.strptime(
+                                self.start_time, '%Y-%m-%d')
+                            end_time = datetime.strptime(
+                                self.end_time, '%Y-%m-%d')
+                            # end_time < first_pub_time continue
+                            # start_time > final_pub_time break
+                            # else crawl and continue
+                            # 0 break 2 continue 1 crawl and continue
+                            if start_time > final_pub_time:
                                 status = 0
+                            elif end_time < first_pub_time:
+                                status = 2
                             else:
                                 status = 1
             except Exception as e:
