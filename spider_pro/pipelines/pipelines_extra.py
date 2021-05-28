@@ -176,6 +176,7 @@ class ExtraPipeline(object):
                     '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.now()),
                 ])
                 cursor.execute(sql, default_items)
+            self.logger.info('INSERT SUCCESS ({0}) SQL: {1}'.format(item['company_name'], sql))
 
     def handle_error(self, error, item, spider):
         self.logger.info('DB INSERT ERROR: {0}'.format(error))

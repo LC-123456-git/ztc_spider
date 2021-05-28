@@ -15,7 +15,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 PHONE = '18868271201'
 PASSWORD = 'laaimeng2011'
-BORDER = 7
+BORDER = 8
 
 class CrackGeetest():
     def __init__(self):
@@ -48,19 +48,21 @@ class CrackGeetest():
         """
         try:
             options = webdriver.ChromeOptions()
+            options.add_argument('--disable-infobars')
+            # options.add_argument('--headless')
+            options.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"')
+            options.add_argument('--dns-prefetch-disable')
+            options.add_argument('--disable-gpu')  # 谷歌文档提到需要加上这个属性来规避bug
+            options.add_argument('disable-infobars') 
             options.add_experimental_option('excludeSwitches', ['enable-automation'])
             options.add_argument("--disable-blink-features=AutomationControlled")
-            self.browser = webdriver.Chrome(options=options)
-            self.browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-                "source": """
-                            Object.defineProperty(navigator, 'webdriver', {
-                            get: () => undefined
-                            })
-                        """
-            })
 
+            self.browser = webdriver.Chrome(options=options)
             self.browser.get(self.url)
             self.browser.maximize_window()
+            self.browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+                "source": "Object.defineProperties(navigator,{ webdriver:{ get: () => false } })"
+            })
             t = random.uniform(0.5, 1)
             time.sleep(t)
             login_button = self.browser.find_element_by_xpath('//a[@onclick="header.loginLink(event)"]')
@@ -78,7 +80,6 @@ class CrackGeetest():
             )
             click_button.click()
             time.sleep(2)
-
         except Exception as e:
             print(e)
 
@@ -150,7 +151,7 @@ class CrackGeetest():
             current += move
             track.append(round(move))
 
-        track += [1, -1]  # 滑过去再滑过来，不然有可能被吃
+        # track += [0.33, -1]  # 滑过去再滑过来，不然有可能被吃
         print('挪动距离边变动：{0}'.format(track))
         return track
 
@@ -217,13 +218,8 @@ class CrackGeetest():
             track = self.get_track(gap)
             self.move_to_gap(track)
 
-
+            # time.sleep(10)
             # 判断是否成功 gt_ajax_tip gt_success
-            try:
-                if self.browser.find_element_by_xpath('//div[@class="gt_ajax_tip gt_success"]'):
-                    print('success')
-            except:
-                print('failed.')
 
             time.sleep(0.5)
             while True:
@@ -241,11 +237,10 @@ class CrackGeetest():
                             time.sleep(0.5)
                         elif '怪物' in mspan:
                             print('重新访问...')
-                            time.sleep(2)
+                            time.sleep(5)
                             self.get_image_location()
                             self.slice()
                         else:
-                            self.browser.close()
                             success = False
                             break
                     except Exception as e:
@@ -268,6 +263,7 @@ class CrackGeetest():
         self.open()
         self.get_image_location()
         success = self.slice()
+        print(self.browser.get_cookies())
         print(success)
         # if not success:  # 未完成 重新打开
         #     self.browser.close()

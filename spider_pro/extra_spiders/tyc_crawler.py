@@ -24,8 +24,9 @@ class TycCrawlerSpider(scrapy.Spider):
             'spider_pro.pipelines.pipelines_extra.ExtraPipeline': 200,
         },
         'DOWNLOADER_MIDDLEWARES': {
-            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 200,
+            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+            'spider_pro.middlewares.TYCCookieMiddleware.TYCCookieMiddleware': 300,
         }
     }
     settings = get_project_settings()
@@ -214,7 +215,7 @@ class TycCrawlerSpider(scrapy.Spider):
                         'category': resp.meta.get('QYFL', ''),
                         'industry_category': resp.meta.get('HYDL', ''),
                     })
-                    print(qcc_data.get('QYMC', ''))
+                    # print(qcc_data.get('QYMC', ''))
                     return notice_item
                 else:
                     self.log('{0}公司 没匹配着关键字'.format(company))
