@@ -212,58 +212,56 @@ class CrackGeetest():
         try:
             image2 = Image.open(self.captcha1)
             image1 = Image.open(self.captcha2)
-            gap = self.get_gap(image1, image2)
-            print('缺口位置', gap)
-            gap -= BORDER
-            track = self.get_track(gap)
+            distance = self.get_gap(image1, image2)
+            print('DISTANCE: ', distance)
+            distance -= BORDER
+            track = self.get_track(distance)
             self.move_to_gap(track)
 
-            # time.sleep(10)
-            # 判断是否成功 gt_ajax_tip gt_success
-
             time.sleep(0.5)
+            pause_tag = False
             while True:
                 for i in [x+4 for x in range(10, 14)]: 
-                    try:
-                        mspan = self.browser.find_element_by_xpath('//div[@class="gt_info_text"]/span[2]').text
-                        print(mspan)
-                        if '拖动滑块' in mspan:
-                            time.sleep(1)
-                            distance = self.get_gap(image1, image2)
-                            print('计算偏移量为：%s Px' % distance)
-                            trace = self.get_track(int(distance) - int(i))
-                            # 移动滑块
-                            self.move_to_gap(trace)
-                            time.sleep(0.5)
-                        elif '怪物' in mspan:
-                            print('重新访问...')
-                            time.sleep(5)
-                            self.get_image_location()
-                            self.slice()
-                        else:
-                            success = False
+                    mspan = self.browser.find_element_by_xpath('//div[@class="gt_info_text"]/span[2]').text
+                    print(mspan)
+                    if '拖动滑块' in mspan:
+                        time.sleep(1)
+                        distance = self.get_gap(image1, image2)
+                        print('DISTANCE: ' % distance)
+                        trace = self.get_track(int(distance) - int(i))
+                        # 移动滑块
+                        self.move_to_gap(trace)
+                        time.sleep(2)
+
+                        # 获取登录后个人信息来判断是否登录
+                        if self.browser.find_element_by_xpath('//div[@id="_modal_container"]'):
+                            print('获取的COOKIES: {}'.format(self.cookies))
+                            pause_tag = True
                             break
-                    except Exception as e:
-                        print(e)
-                success = False
-                break
+                    else:
+                        self.recrack()
+                if pause_tag: 
+                    success = True
+                    break
         except Exception as e:
+            print(e)
             success = False
-            if '//span[@class="gt_info_content"]' in str(e):
-                pass
-            else:
-                print(e)
+            self.recrack()
         return success
 
     @property
     def cookies(self):
         return self.browser.get_cookies()
 
+    def recrack(self):
+        self.browser.close()
+        self.crack()
+
     def crack(self):
         self.open()
         self.get_image_location()
         success = self.slice()
-        print(self.browser.get_cookies())
+        print(self.cookies)
         print(success)
         # if not success:  # 未完成 重新打开
         #     self.browser.close()
