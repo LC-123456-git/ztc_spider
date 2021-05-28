@@ -78,8 +78,6 @@ class MySpider(Spider):
 
 
     def start_requests(self):
-        # info_url = 'https://www.cqggzy.com/xxhz/014001/014001001/014001001002/20210517/ff879236-09a7-491e-b786-0532837d3737.html'
-        # yield scrapy.Request(url=info_url, callback=self.parse_itme)
         yield scrapy.Request(url=self.count_url, callback=self.parse_categoy_urls)
 
     def parse_categoy_urls(self, response):

@@ -324,14 +324,6 @@ class ScrapyDataPost(object):
                                     if r_dict.get("code") in [200, "200"]:
                                         r = True
                                         itme_num += 1
-                                    elif r_dict.get("code") in [411, "411"]:
-                                        r = False  # 重复数据，is_upload为2
-                                        update_sql = f"update {table_name} set is_upload = 2 where id = {item_id}"  # 推送
-                                        result = conn.execute(update_sql)
-                                        if result.rowcount != 2:
-                                            print("update", item_id, False)
-                                        else:
-                                             print("update", item_id, True)
                                     else:
                                         print(r_dict.get("code"))
                                         r = False
@@ -532,7 +524,7 @@ if __name__ == "__main__":
     #     sys.exit(0)
 
     # 正式推数据 解开注释需要当心！！！
-    print('{0:%Y-%m-%d %H:%M:%S} post_star...'.format(datetime.datetime.now()))
+
     cp = ScrapyDataPost(
         table_name="notices_00",
         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4',
@@ -546,51 +538,56 @@ if __name__ == "__main__":
 
     # 正式批量推数据 解开注释需要当心！！！
     cp.run_post_today_all_spider_data(tables_list=[
-        # "notices_00",
-        # "notices_02",
-        # "notices_03",
-        # "notices_04",
-        # "notices_05",
-        # "notices_08",
-        # "notices_10",
-        # "notices_11",
-        # "notices_13",
-        # "notices_14",
-        # "notices_15",
-        # "notices_16",
-        # "notices_18",
-        # "notices_19",
-        # "notices_21",
-        # "notices_23",
-        # "notices_26",
-        # #"notices_30",
-        # #"notices_40",
-        # # "notices_44",
-        # "notices_49",
-        # "notices_50",
-        # "notices_52",
+        "notices_00",
+        "notices_02",
+        "notices_03",
+        "notices_04",
+        "notices_05",
+        "notices_08",
+        "notices_10",
+        "notices_11",
+        "notices_13",
+        "notices_14",
+        "notices_15",
+        "notices_16",
+        "notices_18",
+        "notices_19",
+        "notices_21",
+        "notices_23",
+        "notices_26",
+        "notices_28",
+        "notices_30",
+        #"notices_40",
+        "notices_44",
+        "notices_45",
+        "notices_49",
+        "notices_50",
+        "notices_52",
         "notices_53",
-        # "notices_54",
-        # "notices_55",
-        # # "notices_57",
-        # "notices_71",
-        # "notices_3303",
-        # "notices_3305",
-        # "notices_3306",
-        # "notices_3307",
-        # "notices_3309",
-        # "notices_3312",
-        # "notices_3313",
-        # "notices_3314",
-        # "notices_3315",
-        # "notices_3318",
-        # "notices_3319",
-        # "notices_3320",
-        # "notices_3322",
-        # "notices_3323",
-        # "notices_3326",
-        # "notices_3327",
-        # "notices_3328",
+        "notices_54",
+        "notices_55",
+        "notices_56",
+        "notices_57",
+        "notices_62",
+        "notices_71",
+        "notices_3303",
+        "notices_3305",
+        "notices_3306",
+        "notices_3307",
+        "notices_3309",
+        "notices_3312",
+        "notices_3313",
+        "notices_3314",
+        "notices_3315",
+        "notices_3318",
+        "notices_3319",
+        "notices_3320",
+        "notices_3322",
+        "notices_3323",
+        "notices_3324",
+        "notices_3326",
+        "notices_3327",
+        "notices_3328",
     ])
     print('{0:%Y-%m-%d %H:%M:%S} post...'.format(datetime.datetime.now()))
     # 正式批量推今天之前的数据 解开注释需要当心！！！

@@ -225,12 +225,13 @@ class MySpider(CrawlSpider):
                 if file_content.xpath('//tr[@class="GridView6RowStyle"]/td/a/@href'):
                     con_list = file_content.xpath('//tr[@class="GridView6RowStyle"]')
                     for con in con_list:
-                        if con.xpath('./td[last()]/a/@href')[0] not in 'http':
-                            value = 'http://ggzyjy.linhai.gov.cn/dhqlc/Framework/Main/' + con.xpath('./td[last()]/a/@href')[0]
-                        else:
-                            value = con.xpath('./td[last()]/a/@href')[0]
-                        key = con.xpath('./td[1]/text()')[0]
-                        files_path[key] = value
+                        if con.xpath('./td[last()]/a/@href'):
+                            if 'http' not in con.xpath('./td[last()]/a/@href')[0]:
+                                value = 'http://ggzyjy.linhai.gov.cn/dhqlc/Framework/Main/' + con.xpath('./td[last()]/a/@href')[0]
+                            else:
+                                value = con.xpath('./td[last()]/a/@href')[0]
+                            key = con.xpath('./td[1]/text()')[0]
+                            files_path[key] = value
                 if content:
                     notice_item = NoticesItem()
                     notice_item["origin"] = origin

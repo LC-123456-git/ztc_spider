@@ -147,18 +147,18 @@ class MySpider(CrawlSpider):
             if response.xpath('//div[@class="Main-p"]/ul/li/p/a'):
                 conet_list = response.xpath('//div[@class="Main-p"]/ul/li/p/a')
                 for con in conet_list:
-                    if 'http' in con.xpath('./@href').get():
-                        value = con.xpath('./@href').get()
-                    else:
-                        value = self.domain_url + con.xpath('./@href').get()
+                    if con.xpath('./@href'):
+                        if 'http' in con.xpath('./@href').get():
+                            value = con.xpath('./@href').get()
+                        else:
+                            value = self.domain_url + con.xpath('./@href').get()
 
-                    if con.xpath('./text()').get():
-                        keys = con.xpath('./text()').get()
-                    else:
-                        keys = 'img/pdf/doc/xls'
+                        if con.xpath('./text()').get():
+                            keys = con.xpath('./text()').get()
+                        else:
+                            keys = 'img/pdf/doc/xls'
 
-                    files_path[keys] = value
-            # print(files_path, contents, "\n", pub_time, title_name, category, info_source)
+                        files_path[keys] = value
             notice_item = NoticesItem()
             notice_item["origin"] = origin
             notice_item["title_name"] = title_name
@@ -170,7 +170,6 @@ class MySpider(CrawlSpider):
             notice_item["content"] = contents
             notice_item["area_id"] = self.area_id
             notice_item["category"] = category
-            # print(notice_item)
             yield notice_item
 
 

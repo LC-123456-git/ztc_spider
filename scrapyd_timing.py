@@ -150,16 +150,20 @@ if __name__ == "__main__":
         "province_21_shandong_spider",  # error
         "province_23_henan_spider",  # error_11
         "province_26_hubei_spider",  # ok
+        "province_28_hunan_spider",  # ok
         "province_30_guangdong_spider",  # error_01
         # "province_40_sichuan_spider",  # error
         "province_44_xizang_spider",  # error_01
+        "province_45_shanxi_spider",  # error_01
         # "province_49_ningxia_spider",  # error_03
         "province_50_xinjiang_spider",  # ok + 附件没采
         "province_52_pinming_spider",  # ok
         "province_53_bilian_spider",  # ok
         "province_54_Egongxiang_spider",  # ok + error_09
         "province_55_tiangong_spider",  # ok
+        "province_56_hebeijiantou_spider",  # ok
         "province_57_jingcaizongheng_spider",  # error_01
+        "province_62_xindian_spider", 
         "province_71_zhaocaijingbao_spider",  # error_04
         "ZJ_enterprise_3303_zhenengjituan_spider",  # ok
         "ZJ_enterprise_3304_shuiliting_spider",  # ok
@@ -177,9 +181,11 @@ if __name__ == "__main__":
         "ZJ_city_3321_linhai_spider",
         "ZJ_city_3322_anji_spider",
         "ZJ_city_3323_xiaoshan_spider",
+        "ZJ_city_3324_nanxun_spider",
         "ZJ_city_3326_longyou_spider",
         "ZJ_city_3327_pingyang_spider",
         "ZJ_city_3328_changshan_spider",
+
     ]
 
     # 优先判断运行状态
@@ -229,6 +235,11 @@ if __name__ == "__main__":
                     arg_choices = {
                         'day': 1
                     }
+
+                if item in ["ZJ_city_3322_anji_spider", "ZJ_city_3326_longyou_spider"]:
+                    info = {
+                        'ENABLE_PROXY_USE': 'False',
+                    }                
                 # if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
                 #     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
                 # if item == "province_57_jingcaizongheng_spider":

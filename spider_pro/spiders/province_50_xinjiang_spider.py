@@ -187,7 +187,7 @@ class MySpider(CrawlSpider):
                 content_text = response.xpath('//div[@class="ewb-info"]/div')
                 for con in content_text.xpath('./text()').extract():
                     if con in '附件： ':
-                        if 'http' in content_text.xpath("./a/@href").get():
+                        if 'http' in content_text.xpath("./a/@href"):
                             value = content_text.xpath("./a/@href").get()
                         else:
                             value = self.base_url + content_text.xpath("./a/@href").get()

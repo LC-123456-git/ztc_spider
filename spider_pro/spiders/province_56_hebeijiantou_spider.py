@@ -175,9 +175,10 @@ class MySpider(CrawlSpider):
                 if response.xpath('//div[@class="ewb-right-txt"]/span[@class="infodetail"]/a/@href'):
                     con_list = response.xpath('//div[@class="ewb-right-txt"]/span[@class="infodetail"]/a')
                     for con in con_list:
-                        value = con.xpath('./@href').get()
-                        key = con.xpath('./text()').get()
-                        files_path[key] = value
+                        if con.xpath('./@href'):
+                            value = con.xpath('./@href').get()
+                            key = con.xpath('./text()').get()
+                            files_path[key] = value
                 if content:
                     notice_item = NoticesItem()
                     notice_item["origin"] = origin

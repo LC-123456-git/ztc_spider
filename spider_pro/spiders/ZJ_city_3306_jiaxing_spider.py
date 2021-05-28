@@ -166,28 +166,29 @@ class MySpider(CrawlSpider):
                 conet_list = response.xpath("//div[@class='con']//a")
                 num = 1
                 for con in conet_list:
-                    if 'http' in con.xpath('./@href').get():
-                        value = con.xpath('./@href').get()
-                    else:
-                        value = self.domain_url + con.xpath('./@href').get()
-                    value_list = ['http://www.zjzfcg.gov.cn/', 'http://cgzx.zjxu.edu.cn/', 'http://www.jxzbtb.gov.cn/jxggzyjyzx/',
-                                'http://jx.jxzbtb.cn/jxcms/jxztb/content/2018-10/11/#', 'http://land.zjgtjy.cn/GTJY_ZJ/',
-                                'http://www.zjzfcg.gov.cn/new/', 'http://www.zrar.com/']
-                    if value in value_list:
-                        pass
-                    else:
-                        key_list = ['[收藏]', '[评论]', '[打印]', '[关闭]', 'allan_xiao@163.com']
-                        keys = con.xpath('./text()').get()
-                        if keys not in key_list:
-                            key_name = ['png', 'jpg', 'jepg', 'doc', 'docx', 'pdf', 'xls']
-                            if not keys:
-                                if re.findall('\w+\.(\w+)', value[value.rindex('/')+1:]) in key_name:
-                                    keys = re.findall('\w+\.(\w+)', value[value.rindex('/')+1:])[0] + '_' + str(num)
-                                    files_path[keys] = value
-                                else:
-                                    files_path = ''
-                            files_path[keys] = value
-                    num += 1
+                    if con.xpath('./@href'):
+                        if 'http' in con.xpath('./@href').get():
+                            value = con.xpath('./@href').get()
+                        else:
+                            value = self.domain_url + con.xpath('./@href').get()
+                        value_list = ['http://www.zjzfcg.gov.cn/', 'http://cgzx.zjxu.edu.cn/', 'http://www.jxzbtb.gov.cn/jxggzyjyzx/',
+                                    'http://jx.jxzbtb.cn/jxcms/jxztb/content/2018-10/11/#', 'http://land.zjgtjy.cn/GTJY_ZJ/',
+                                    'http://www.zjzfcg.gov.cn/new/', 'http://www.zrar.com/']
+                        if value in value_list:
+                            pass
+                        else:
+                            key_list = ['[收藏]', '[评论]', '[打印]', '[关闭]', 'allan_xiao@163.com']
+                            keys = con.xpath('./text()').get()
+                            if keys not in key_list:
+                                key_name = ['png', 'jpg', 'jepg', 'doc', 'docx', 'pdf', 'xls']
+                                if not keys:
+                                    if re.findall('\w+\.(\w+)', value[value.rindex('/')+1:]) in key_name:
+                                        keys = re.findall('\w+\.(\w+)', value[value.rindex('/')+1:])[0] + '_' + str(num)
+                                        files_path[keys] = value
+                                    else:
+                                        files_path = ''
+                                files_path[keys] = value
+                        num += 1
 
             else:
                 files_path = ''

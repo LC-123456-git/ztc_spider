@@ -191,33 +191,35 @@ class MySpider(CrawlSpider):
             if response.xpath("//td[@class='bt_content']/div/ul/li/p/a"):
                 dict = response.xpath("//td[@class='bt_content']/div/ul/li")
                 for itme in dict:
-                    if 'http' in itme.xpath('./p/a/@href').get():
-                        value = itme.xpath('./p/a/@href').get()
-                    else:
-                        value = self.base_url + itme.xpath('./p/a/@href').get()
-                    keys = itme.xpath('./p/a/text()').get()
-                    files_path[keys] = value
+                    if itme.xpath('./p/a/@href'):
+                        if 'http' in itme.xpath('./p/a/@href').get():
+                            value = itme.xpath('./p/a/@href').get()
+                        else:
+                            value = self.base_url + itme.xpath('./p/a/@href').get()
+                        keys = itme.xpath('./p/a/text()').get()
+                        files_path[keys] = value
             if response.xpath('//td[@valign="top"]/table[@id="dlstAttachFile"]//a') or response.xpath('//table[@id="zfcg_caigouyaosugongshi_detail_dlstattachfile"]//a') or\
                     response.xpath('//div[@id="zoom"]//a'):
                 dict = response.xpath('//td[@valign="top"]/table[@id="dlstAttachFile"]//a') or response.xpath('//table[@id="zfcg_caigouyaosugongshi_detail_dlstattachfile"]//a') or response.xpath('//div[@id="zoom"]//a')
                 num = 1
                 for itme in dict:
-                    if 'http' in itme.xpath("./@href").get():
-                        value = itme.xpath("./@href").get()
-                    else:
-                        value = self.base_url + itme.xpath("./@href").get()
-                    key_name = ['png', 'jpg', 'jepg', 'doc', 'docx', 'pdf', 'xls']
-                    key_list = ['www.sxztb.gov.cn', 'yyz18577@163.com', 'www.zjzfcg.gov.cn', 'http://www.sxztb.gov.cn']
-                    if itme.xpath("./font/text()").get() or itme.xpath("./span/text()").get() or itme.xpath('./text()').get():
-                        keys = itme.xpath("./font/text()").get() or itme.xpath("./span/text()").get() or itme.xpath('./text()').get()
-                        if keys not in key_list:
+                    if itme.xpath("./@href"):
+                        if 'http' in itme.xpath("./@href").get():
+                            value = itme.xpath("./@href").get()
+                        else:
+                            value = self.base_url + itme.xpath("./@href").get()
+                        key_name = ['png', 'jpg', 'jepg', 'doc', 'docx', 'pdf', 'xls']
+                        key_list = ['www.sxztb.gov.cn', 'yyz18577@163.com', 'www.zjzfcg.gov.cn', 'http://www.sxztb.gov.cn']
+                        if itme.xpath("./font/text()").get() or itme.xpath("./span/text()").get() or itme.xpath('./text()').get():
+                            keys = itme.xpath("./font/text()").get() or itme.xpath("./span/text()").get() or itme.xpath('./text()').get()
+                            if keys not in key_list:
+                                files_path[keys] = value
+                        elif value[value.rindex('.') + 1:] in key_name:
+                            keys = value[value.rindex('/') + 1:] + '_' + str(num)
                             files_path[keys] = value
-                    elif value[value.rindex('.') + 1:] in key_name:
-                        keys = value[value.rindex('/') + 1:] + '_' + str(num)
-                        files_path[keys] = value
-                    else:
-                        pass
-                    num += 1
+                        else:
+                            pass
+                        num += 1
 
             notice_item = NoticesItem()
             notice_item["origin"] = origin

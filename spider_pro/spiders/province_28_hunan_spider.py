@@ -50,8 +50,6 @@ class MySpider(Spider):
 
 
     def start_requests(self):
-        # all_url = 'https://ggzy.hunan.gov.cn/jydt/002002/002002001/002002001001/20210419/7ddc5612-a316-4aa1-84de-516661dcb42c.html'
-        # yield scrapy.Request(url=all_url, callback=self.parse_itme)
         yield scrapy.Request(url=self.domain_url, callback=self.parse_categoy_urls)
 
     def parse_categoy_urls(self, response):
@@ -243,7 +241,6 @@ class MySpider(Spider):
             notice_item["area_id"] = self.area_id
             notice_item["notice_type"] = notice_type
             notice_item["category"] = category
-            # print(notice_item)
             yield notice_item
 
 

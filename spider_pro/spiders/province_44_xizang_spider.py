@@ -70,9 +70,6 @@ class MySpider(CrawlSpider):
         res = requests.get(url=url).headers.get('content-type')
         return res
     def start_requests(self):
-        # ll_url = 'http://www.xzggzy.gov.cn:9090/zbzsgg/1307184.jhtml'
-        # ll_url = 'http://www.xzggzy.gov.cn:9090/cjgs/1285440.jhtml'
-        # yield scrapy.Request(url=ll_url, callback=self.parse_item)
         yield scrapy.Request(url=self.query_url, callback=self.parse_data)
 
     def parse_data(self, response):
@@ -198,7 +195,7 @@ class MySpider(CrawlSpider):
                 str_content = response.xpath("//div[@class='div-content']//a")
                 for con in str_content:
                     if con.xpath('./@href').get() and con.xpath('./@href').get() not in value_list:
-                        if 'http' in con.xpath('./@href').get():
+                        if 'http' in con.xpath('./@href'):
                             value = con.xpath('./@href').get()
                             if con.xpath('.//text()').get() not in keys_list:
                                 keys = con.xpath('.//text()').get()

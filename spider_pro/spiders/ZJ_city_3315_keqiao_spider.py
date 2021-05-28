@@ -207,7 +207,7 @@ class MySpider(CrawlSpider):
                 str_content = response.xpath("//div[@class='content']//a")
                 for con in str_content:
                     # 判断href 是否带 http头
-                    if con.xpath('./@href').get():
+                    if con.xpath('./@href'):
                         if 'http' not in con.xpath('./@href').get():
                         # 判断href 是不是email
                             if con.xpath('./@href').get() not in re.findall('.*[a-zA-Z0-9]{0,19}@[a-zA-Z0-9].*', con.xpath('./@href').get()):

@@ -218,35 +218,37 @@ class MySpider(CrawlSpider):
             if response.xpath('//td[@height="859"]//td[@id="TDContent"]/div/img'):
                 conet_list = response.xpath('//td[@height="859"]//td[@id="TDContent"]/div/img')
                 for con in conet_list:
-                    if 'http' in con.xpath('./@src').get():
-                        value = con.xpath('./@src').get()
-                        if 'http://ggzy.huzhou.gov.cn:8090' in value:
-                            continue
-                    else:
-                        value = self.domain_url + con.xpath('./@src').get()
+                    if con.xpath('./@src'):
+                        if 'http' in con.xpath('./@src').get():
+                            value = con.xpath('./@src').get()
+                            if 'http://ggzy.huzhou.gov.cn:8090' in value:
+                                continue
+                        else:
+                            value = self.domain_url + con.xpath('./@src').get()
 
 
-                    if con.xpath('./@alt').get():
-                        keys = con.xpath('./@alt').get()
-                    else:
-                        keys = 'img/pdf/doc/xls'
+                        if con.xpath('./@alt').get():
+                            keys = con.xpath('./@alt').get()
+                        else:
+                            keys = 'img/pdf/doc/xls'
 
-                    files_path[keys] = value
+                        files_path[keys] = value
 
             if response.xpath('//td[@height="859"]//table[@id="filedown"]/tr/td/a'):
                 conet_list = response.xpath('//td[@height="859"]//table[@id="filedown"]/tr')
                 num = 1
                 for con in conet_list:
-                    if 'http' in con.xpath('./td/a/@href').get():
-                        value = con.xpath('./td/a/@href').get()
-                    else:
-                        value = self.domain_url + con.xpath('./td/a/@href').get()
-                    if con.xpath('./td/a/font/text()').get():
-                        keys = con.xpath('./td/a/font/text()').get()
-                    else:
-                        keys = re.findall('\w+\.(\w+)', value[value.rindex('/') + 1:])[0] + '_' + str(num)
-                    num += 1
-                    files_path[keys] = value
+                    if con.xpath('./td/a/@href'):
+                        if 'http' in con.xpath('./td/a/@href').get():
+                            value = con.xpath('./td/a/@href').get()
+                        else:
+                            value = self.domain_url + con.xpath('./td/a/@href').get()
+                        if con.xpath('./td/a/font/text()').get():
+                            keys = con.xpath('./td/a/font/text()').get()
+                        else:
+                            keys = re.findall('\w+\.(\w+)', value[value.rindex('/') + 1:])[0] + '_' + str(num)
+                        num += 1
+                        files_path[keys] = value
 
             notice_item = NoticesItem()
             notice_item["origin"] = origin

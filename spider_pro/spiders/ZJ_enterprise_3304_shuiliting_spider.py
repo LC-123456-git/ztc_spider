@@ -125,7 +125,7 @@ class MySpider(CrawlSpider):
                 conet_list = response.xpath("//div[@class='wz_con_content']/p//a")
                 num = 1
                 for con in conet_list:
-                    if 'http' in con.xpath('./@href').get():
+                    if 'http' in con.xpath('./@href'):
                         value = con.xpath('./@href').get()
                     else:
                         value = self.domain_url + con.xpath('./@href').get()

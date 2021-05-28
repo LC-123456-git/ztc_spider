@@ -213,7 +213,7 @@ class MySpider(CrawlSpider):
             if response.xpath('//div[@id="filediv1"]'):
                 str_content = response.xpath("//div[@id='filediv1']//a")
                 for con in str_content:
-                    if 'http' not in con.xpath('./@href').get():
+                    if 'http' not in con.xpath('./@href'):
                         if con.xpath('./@href').get():
                             value = self.domain_url + con.xpath('./@href').get()
                             keys = con.xpath('.//text()').get()
