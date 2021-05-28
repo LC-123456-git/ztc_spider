@@ -304,12 +304,15 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
             title_name = resp.xpath('//div[@class="wenzhnag"]//tr[1]/td[@align="center"]/text()').get()
             category_type = resp.meta.get('category_type')
 
-            # 关键词匹配 修改notice_type
-            matched, match_notice_type = self.match_title(title_name)
-            if matched:
-                notice_type_ori = match_notice_type
+            if category_type == '工程':
+                notice_type_ori = '中标公告'
             else:
-                notice_type_ori = '招标公告'
+                # 关键词匹配 修改notice_type
+                matched, match_notice_type = self.match_title(title_name)
+                if matched:
+                    notice_type_ori = match_notice_type
+                else:
+                    notice_type_ori = '招标公告'
             notice_types = list(
                 filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
             )

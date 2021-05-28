@@ -140,6 +140,8 @@ class ReportOutput(DBQuery):
         '3322': '安吉公共资源交易中心',
         '3323': '萧山政府门户网站',
         '3326': '龙游政府门户网站',
+        '3327': '平阳公共资源交易平台',
+        '3328': '常山公共资源交易平台',
 
     }
     border_type = Side(border_style="medium", color='FF000000')

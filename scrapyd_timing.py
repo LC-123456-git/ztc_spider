@@ -178,6 +178,8 @@ if __name__ == "__main__":
         "ZJ_city_3322_anji_spider",
         "ZJ_city_3323_xiaoshan_spider",
         "ZJ_city_3326_longyou_spider",
+        "ZJ_city_3327_pingyang_spider",
+        "ZJ_city_3328_changshan_spider",
     ]
 
     # 优先判断运行状态
