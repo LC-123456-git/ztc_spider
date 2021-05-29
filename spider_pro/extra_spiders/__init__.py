@@ -5,5 +5,5 @@
 import configparser
 import os
 
-cf = configparser.ConfigParser()
+cf = configparser.RawConfigParser()
 cf.read(os.path.join(os.path.join(os.path.dirname(__file__), 'config'), 'sql.ini'))

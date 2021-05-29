@@ -1,6 +1,16 @@
 # -*- coding: utf-8 -*-
+"""
+@file          :qcc_crawler.py
+@description   :企查查
+@date          :2021/05/29 08:41:16
+@author        :miaokela
+@version       :1.0
+"""
 import scrapy
 import re
+import random
+import requests
+import json
 from lxml import etree
 
 from spider_pro import items
@@ -19,6 +29,8 @@ class QccCrawlerSpider(scrapy.Spider):
         'DOWNLOADER_MIDDLEWARES': {
             'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
             'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+            'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
+            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
         }
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
@@ -31,6 +43,12 @@ class QccCrawlerSpider(scrapy.Spider):
                     '所属地区,(?P<所属地区>.*?),登记机关,(?P<登记机关>.*?),人员规模,(?P<人员规模>.*?),参保人数,(?P<参保人数>.*?),' + \
                     '曾用名,(?P<曾用名>.*?),英文名,(?P<英文名>.*?),进出口企业代码,(?P<进出口企业代码>.*?),' \
                     '注册地址,(?P<注册地址>.*?),经营范围,(?P<经营范围>.*)'
+
+    @staticmethod
+    def get_headers(resp):
+        default_headers = resp.request.headers
+        headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
+        return headers
 
     def start_requests(self):
         yield scrapy.Request(url=self.query_url, callback=self.parse_category)
@@ -107,7 +125,7 @@ class QccCrawlerSpider(scrapy.Spider):
                     'subIndustryCode': industry_category,
                     'page': page,
                 })
-                yield scrapy.Request(url=list_url, callback=self.parse_detail,  meta={
+                yield scrapy.Request(url=list_url, callback=self.parse_detail, meta={
                     'category': resp.meta.get('category', ''),
                     'industry_category': resp.meta.get('industry_category', ''),
 
@@ -123,15 +141,15 @@ class QccCrawlerSpider(scrapy.Spider):
         for detail_url in detail_urls:
             c_url = '/'.join([self.basic_url, detail_url])
 
-            yield scrapy.Request(url=c_url, callback=self.parse_items,  meta={
-                    'category': resp.meta.get('category', ''),
-                    'industry_category': resp.meta.get('industry_category', ''),
+            yield scrapy.Request(url=c_url, callback=self.parse_item, meta={
+                'category': resp.meta.get('category', ''),
+                'industry_category': resp.meta.get('industry_category', ''),
 
-                    'category_name': resp.meta.get('category_name', ''),
-                    'industry_category_name': resp.meta.get('industry_category_name', ''),
-                }, priority=40)
+                'category_name': resp.meta.get('category_name', ''),
+                'industry_category_name': resp.meta.get('industry_category_name', ''),
+            }, priority=40)
 
-    def parse_items(self, resp):
+    def parse_item(self, resp):
         c_doc = etree.HTML(resp.text)
 
         c_els = c_doc.xpath('//section[@id="Cominfo"]//table//td')
@@ -147,6 +165,54 @@ class QccCrawlerSpider(scrapy.Spider):
 
         ret = [m.groupdict() for m in re.finditer(com, data)]
         if ret:
+            company_info = ret[0]
+
+            # 获取发票信息
+            # https://www.qcc.com/tax_view?keyno=225093b0546c258a4128f2c2f30bb6d0&ajaxflag=1
+            invoice_info_els = resp.xpath('//*[@id="company-top"]/div[3]/div[2]/a[3]/@onclick')
+            url = ''
+            if invoice_info_els:
+                invoice_info_el = invoice_info_els[0]
+                # saveInvoiceModal('5afa2b9934cbaf75d11268151c696d0f','河池市宜州区创丰水稻种植专业合作社');zhugeTrack('企业主页头部按钮点击',{'按钮名称':'发票抬头'});
+                com = re.compile(r'saveInvoiceModal\(\'(.*?)\',')
+                key_no = com.findall(invoice_info_el)
+                if key_no:
+                    url = 'https://www.qcc.com/tax_view?keyno={keyno}&ajaxflag=1'.format(keyno=key_no[0])
+
+            credit_code = ''
+            address = ''
+            phone_number = ''
+            bank = ''
+            bank_account = ''
+            if url:
+                headers = QccCrawlerSpider.get_headers(resp)
+                text = requests.get(url=url, headers=headers).text
+                """
+                {
+                    data: {
+                      "Name": "江门市姆斯皮园林绿化有限公司",
+                      "CreditCode": "91440703MA51T6BYXY",
+                      "Address": "江门市蓬江区江门万达广场16幢1506室之三",
+                      "PhoneNumber": null,
+                      "Bank": null,
+                      "Bankaccount": null
+                    },
+                    success: true
+                }
+                """
+                try:
+                    invoice_info = json.loads(text)
+                    success = invoice_info.get('success', False)
+                    if success:
+                        data = invoice_info.get('data', {})
+                        credit_code = data.get('CreditCode', '')
+                        address = data.get('Address', '')
+                        phone_number = data.get('PhoneNumber', '')
+                        bank = data.get('Bank', '')
+                        bank_account = data.get('Bankaccount', '')
+                except Exception as e:
+                    self.log('ERROR:{0}'.format(e))
+            print(credit_code, address, phone_number, bank, bank_account)
             """
             [{'统一社会信用代码': '-', '企业名称': '延吉市金鑫冷冻肉食食品经营部', '法定代表人': '许晓萍关联1家企业>', 
             '登记状态': '注销', '成立日期': '1988-08-30', '注册资本': '1万元人民币', '实缴资本': '-', '核准日期': '2449-10-26', 
@@ -155,8 +221,6 @@ class QccCrawlerSpider(scrapy.Spider):
             '人员规模': '-', '参保人数': '-', '曾用名': '-', '英文名': '-', '进出口企业代码': '-', '注册地址': '-', 
             '经营范围': '(依法须经批准的项目,经相关部门批准后方可开展经营活动)'}]
             """
-            company_info = ret[0]
-
             notice_item = items.QCCItem()
             notice_item.update(**{
                 'company_name': company_info.get('企业名称', ''),

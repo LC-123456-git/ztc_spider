@@ -17,6 +17,7 @@ PHONE = '18868271201'
 PASSWORD = 'laaimeng2011'
 BORDER = 8
 
+
 class CrackGeetest():
     def __init__(self):
         self.url = 'https://www.tianyancha.com/'
@@ -50,10 +51,11 @@ class CrackGeetest():
             options = webdriver.ChromeOptions()
             options.add_argument('--disable-infobars')
             # options.add_argument('--headless')
-            options.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"')
+            options.add_argument(
+                '--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"')
             options.add_argument('--dns-prefetch-disable')
             options.add_argument('--disable-gpu')  # 谷歌文档提到需要加上这个属性来规避bug
-            options.add_argument('disable-infobars') 
+            options.add_argument('disable-infobars')
             options.add_experimental_option('excludeSwitches', ['enable-automation'])
             options.add_argument("--disable-blink-features=AutomationControlled")
 
@@ -118,7 +120,8 @@ class CrackGeetest():
         # if abs(pixel1[0] - pixel2[0]) != 0 or abs(pixel1[1] - pixel2[1]) != 0 or abs(pixel1[2] - pixel2[2]) != 0:
         #     print(pixel1, pixel2)
 
-        if all([abs(pixel1[0] - pixel2[0]) > threshold, abs(pixel1[1] - pixel2[1]) > threshold, abs(pixel1[2] - pixel2[2]) > threshold]):
+        if all([abs(pixel1[0] - pixel2[0]) > threshold, abs(pixel1[1] - pixel2[1]) > threshold,
+                abs(pixel1[2] - pixel2[2]) > threshold]):
             return False
         else:
             return True
@@ -150,8 +153,7 @@ class CrackGeetest():
             move = v0 * t + 1 / 2 * a * t * t
             current += move
             track.append(round(move))
-
-        # track += [0.33, -1]  # 滑过去再滑过来，不然有可能被吃
+        track.extend([1.2, 2.3, -2.5, -1.1]) # 滑过去再滑过来，不然有可能被吃
         print('挪动距离边变动：{0}'.format(track))
         return track
 
@@ -184,7 +186,7 @@ class CrackGeetest():
         size = img.size
 
         top = location['y']
-        bottom = location['y'] + size['height'] -30
+        bottom = location['y'] + size['height'] - 30
         left = location['x']
         right = location['x'] + size['width']
 
@@ -221,7 +223,7 @@ class CrackGeetest():
             time.sleep(0.5)
             pause_tag = False
             while True:
-                for i in [x+4 for x in range(10, 14)]: 
+                for i in [x + 4 for x in range(10, 14)]:
                     mspan = self.browser.find_element_by_xpath('//div[@class="gt_info_text"]/span[2]').text
                     print(mspan)
                     if '拖动滑块' in mspan:
@@ -240,7 +242,7 @@ class CrackGeetest():
                             break
                     else:
                         self.recrack()
-                if pause_tag: 
+                if pause_tag:
                     success = True
                     break
         except Exception as e:
@@ -268,6 +270,7 @@ class CrackGeetest():
         #     self.crack()
         time.sleep(10)
         # print('本次获得的登录COOKIE: {0}'.format(self.cookies))
+
 
 if __name__ == '__main__':
     crack = CrackGeetest()

@@ -10,6 +10,7 @@ from datetime import datetime
 import re
 
 from spider_pro import items
+from spider_pro.extra_spiders import cf
 
 
 class ExtraPipeline(object):
@@ -24,8 +25,8 @@ class ExtraPipeline(object):
     def __init__(self, name, logger, **kwargs):
         self.name = name
         self.logger = logger
-        self.db_name = kwargs.get('MYSQL_TEST_DB_NAME', '') if kwargs.get("DEBUG_MODE") else kwargs.get('MYSQL_DB_NAME',
-                                                                                                        '')
+        self.db_name = kwargs.get('MYSQL_TEST_DB_NAME', '') \
+            if kwargs.get("DEBUG_MODE") else kwargs.get('MYSQL_DB_NAME', '')
 
         if kwargs.get("TEST_ENGINE_CONFIG") and kwargs.get("ENGINE_CONFIG"):
             self.engine = create_engine(
@@ -48,20 +49,12 @@ class ExtraPipeline(object):
             'cursorclass': cursors.DictCursor
         }
         self.db_pool = adbapi.ConnectionPool('pymysql', **self.db_params)
-        # insert
-        self.insert_sql = """INSERT INTO {db_name}.{table_name} 
-        (QYMC,SSDQ,FDDBR,CLRQ,DJZT,ZCZB,SJZB,TYSHXYDM,GSZCH,ZZJGDM,NSRSBH,NSRZZ,QYLX,HY,YYQXS,YYQXM,RYGM,CBRY,YWM,CYM,DJJG,HZRQ,ZCDZ,JYFW,JCKQYDM,QYFL,HYDL,create_time,update_time) 
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        """.format(db_name=self.db_name, table_name=self.table_name)
-        # update
-        self.update_sql = """UPDATE {db_name}.{table_name} SET
-        QYMC=%s,SSDQ=%s,FDDBR=%s,CLRQ=%s,DJZT=%s,ZCZB=%s,SJZB=%s,TYSHXYDM=%s,GSZCH=%s,ZZJGDM=%s,NSRSBH=%s,NSRZZ=%s,QYLX=%s,
-        HY=%s,YYQXS=%s,YYQXM=%s,RYGM=%s,CBRY=%s,YWM=%s,CYM=%s,DJJG=%s,HZRQ=%s,ZCDZ=%s,JYFW=%s,JCKQYDM=%s,QYFL=%s,HYDL=%s,
-        update_time=%s
-        WHERE QYMC=""".format(db_name=self.db_name, table_name=self.table_name)
-        # fetch
-        self.fetch_sql = """SELECT COUNT(QYMC) c FROM {db_name}.{table_name} WHERE QYMC='%s'
-        """.format(db_name=self.db_name, table_name=self.table_name)
+        # INSERT
+        self.insert_sql = cf.get('QCC', 'COMPANY_INFO_INSERT').format(db_name=self.db_name, table_name=self.table_name)
+        # UPDATE
+        self.update_sql = cf.get('QCC', 'COMPANY_INFO_UPDATE').format(db_name=self.db_name, table_name=self.table_name)
+        # FETCH
+        self.fetch_sql = cf.get('QCC', 'COMPANY_FETCH_BY_NAME').format(db_name=self.db_name, table_name=self.table_name)
 
     def create_table(self):
         """
@@ -125,7 +118,7 @@ class ExtraPipeline(object):
 
             com = re.compile('(.*?)关联\d+')
 
-            legal_representatives= com.findall(item['legal_representative'])
+            legal_representatives = com.findall(item['legal_representative'])
             if legal_representatives:
                 legal_representative = legal_representatives[0]
             else:
@@ -136,33 +129,33 @@ class ExtraPipeline(object):
                 taxpayer_qualification = '一般纳税人'
 
             default_items = [
-                    item['company_name'],
-                    item['location'],
-                    legal_representative,
-                    item['date_of_establishment'],
-                    item['operating_status'],
-                    item['registered_capital'],
-                    item['paid_in_capital'],
-                    item['unified_social_credit_code'],
-                    item['business_registration_number'],
-                    item['organization_code'],
-                    item['taxpayer_identification_number'],
-                    taxpayer_qualification,
-                    item['type_of_enterprise'],
-                    item['industry'],
-                    item['operating_period_std'],
-                    item['operating_period_edt'],
-                    item['staff_size'],
-                    item['number_of_participants'],
-                    item['english_name'],
-                    item['former_name'],
-                    item['registration_authority'],
-                    item['approved_date'],
-                    item['registered_address'],
-                    item['business_scope'],
-                    item['import_and_export_enterprise_code'],
-                    item['category'],
-                    item['industry_category'],
+                item['company_name'],
+                item['location'],
+                legal_representative,
+                item['date_of_establishment'],
+                item['operating_status'],
+                item['registered_capital'],
+                item['paid_in_capital'],
+                item['unified_social_credit_code'],
+                item['business_registration_number'],
+                item['organization_code'],
+                item['taxpayer_identification_number'],
+                taxpayer_qualification,
+                item['type_of_enterprise'],
+                item['industry'],
+                item['operating_period_std'],
+                item['operating_period_edt'],
+                item['staff_size'],
+                item['number_of_participants'],
+                item['english_name'],
+                item['former_name'],
+                item['registration_authority'],
+                item['approved_date'],
+                item['registered_address'],
+                item['business_scope'],
+                item['import_and_export_enterprise_code'],
+                item['category'],
+                item['industry_category'],
             ]
 
             if ret.get('c'):
