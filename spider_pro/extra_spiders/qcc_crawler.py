@@ -172,15 +172,12 @@ class QccCrawlerSpider(scrapy.Spider):
 
             # 获取发票信息
             # https://www.qcc.com/tax_view?keyno=225093b0546c258a4128f2c2f30bb6d0&ajaxflag=1
-            invoice_info_els = resp.xpath('//*[@id="company-top"]/div[3]/div[2]/a[3]/@onclick')
-            url = ''
-            if invoice_info_els:
-                invoice_info_el = invoice_info_els[0]
-                # saveInvoiceModal('5afa2b9934cbaf75d11268151c696d0f','河池市宜州区创丰水稻种植专业合作社');zhugeTrack('企业主页头部按钮点击',{'按钮名称':'发票抬头'});
-                com = re.compile(r'saveInvoiceModal\(\'(.*?)\',')
-                key_no = com.findall(invoice_info_el)
-                if key_no:
-                    url = 'https://www.qcc.com/tax_view?keyno={keyno}&ajaxflag=1'.format(keyno=key_no[0])
+            referer_url = resp.url
+            # https://www.qcc.com/firm/ed9e3157b77b7f5a1a846132da93b626.html
+            com = re.compile(r'firm/(.*?)\.html')
+            key_no = com.findall(referer_url)
+
+            url = 'https://www.qcc.com/tax_view?keyno={keyno}&ajaxflag=1'.format(keyno=key_no[0]) if key_no else ''
 
             credit_code = ''
             address = ''
