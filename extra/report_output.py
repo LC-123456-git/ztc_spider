@@ -181,7 +181,6 @@ class ReportOutput(DBQuery):
 
         self.cwd = os.getcwd()
         self.file_path = os.path.join(os.path.join(self.cwd, 'files'),'统计{0:%Y-%m-%d}.xls'.format(datetime.now()))
-        print(self.file_path)
 
     def get_statistic_data(self, date, table_with_area, serial_number):
         table_name = table_with_area['table_name']
@@ -358,5 +357,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-05-28', edt='2021-05-29')
+    rpt.output(sdt='2021-05-29', edt='2021-05-30')
     print((datetime.now() - start_time).total_seconds())

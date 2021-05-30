@@ -15,7 +15,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 PHONE = '18868271201'
 PASSWORD = 'laaimeng2011'
-BORDER = 8
+BORDER = 6
 
 
 class CrackGeetest():
@@ -117,9 +117,6 @@ class CrackGeetest():
         pixel2 = image2.load()[x, y]
         threshold = 60
 
-        # if abs(pixel1[0] - pixel2[0]) != 0 or abs(pixel1[1] - pixel2[1]) != 0 or abs(pixel1[2] - pixel2[2]) != 0:
-        #     print(pixel1, pixel2)
-
         if all([abs(pixel1[0] - pixel2[0]) > threshold, abs(pixel1[1] - pixel2[1]) > threshold,
                 abs(pixel1[2] - pixel2[2]) > threshold]):
             return False
@@ -137,23 +134,23 @@ class CrackGeetest():
         # 当前位移
         current = 0
         # 减速阈值
-        mid = distance * 2 / 5
+        mid = distance * 1 / 6
         # 计算间隔
-        t = 0.2
+        t = 0.3
         # 初速度
         v = 1
 
         while current < distance:
             if current < mid:
-                a = 5
+                a = 12.1212
             else:
-                a = -2
+                a = -2.0202
             v0 = v
             v = v0 + a * t
             move = v0 * t + 1 / 2 * a * t * t
             current += move
             track.append(round(move))
-        track.extend([1.2, 2.3, -2.5, -1.1]) # 滑过去再滑过来，不然有可能被吃
+        track.extend([1.2, 2.3, -2.5, -1]) # 滑过去再滑过来，不然有可能被吃
         print('挪动距离边变动：{0}'.format(track))
         return track
 
@@ -229,14 +226,14 @@ class CrackGeetest():
                     if '拖动滑块' in mspan:
                         time.sleep(1)
                         distance = self.get_gap(image1, image2)
-                        print('DISTANCE: ' % distance)
+                        print('DISTANCE: ', distance)
                         trace = self.get_track(int(distance) - int(i))
                         # 移动滑块
                         self.move_to_gap(trace)
                         time.sleep(2)
 
                         # 获取登录后个人信息来判断是否登录
-                        if self.browser.find_element_by_xpath('//div[@id="_modal_container"]'):
+                        if not self.browser.find_element_by_xpath('//div[@id="_modal_container"]'):
                             print('获取的COOKIES: {}'.format(self.cookies))
                             pause_tag = True
                             break
