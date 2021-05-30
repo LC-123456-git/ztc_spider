@@ -152,6 +152,57 @@ class QccCrawlerSpider(scrapy.Spider):
                 'industry_category_name': resp.meta.get('industry_category_name', ''),
             }, priority=100000)
 
+    @classmethod
+    def get_invoice_info(cls, resp):
+        """
+        获取发票信息
+            https://www.qcc.com/firm/ed9e3157b77b7f5a1a846132da93b626.html 提取出 keyno 拼接链接
+            https://www.qcc.com/tax_view?keyno=225093b0546c258a4128f2c2f30bb6d0&ajaxflag=1
+        :param resp:
+        :return:
+        """
+        error = ''
+        referer_url = resp.url
+        com = re.compile(r'firm/(.*?)\.html')
+        key_no = com.findall(referer_url)
+
+        url = 'https://www.qcc.com/tax_view?keyno={keyno}&ajaxflag=1'.format(keyno=key_no[0]) if key_no else ''
+
+        invoice_info_dict = {}
+        if url:
+            headers = cls.get_headers(resp)
+            text = requests.get(url=url, headers=headers).text
+            """
+            {
+                data: {
+                  "Name": "江门市姆斯皮园林绿化有限公司",
+                  "CreditCode": "91440703MA51T6BYXY",
+                  "Address": "江门市蓬江区江门万达广场16幢1506室之三",
+                  "PhoneNumber": null,
+                  "Bank": null,
+                  "Bankaccount": null
+                },
+                success: true
+            }
+            """
+            try:
+                invoice_info = json.loads(text)
+                success = invoice_info.get('success', False)
+                if success:
+                    data = invoice_info.get('data', {})
+                    invoice_info_dict.update(**{
+                        'credit_code': data.get('CreditCode', ''),
+                        'address': data.get('Address', ''),
+                        'phone_number': data.get('PhoneNumber', ''),
+                        'bank': data.get('Bank', ''),
+                        'bank_account': data.get('Bankaccount', ''),
+                    })
+            except Exception as e:
+                error = 'ERROR:{0}'.format(e)
+        else:
+            error = 'ERROR: 缺少key_no.'
+        return error, {k: v if v else '' for k, v in invoice_info_dict.items()}
+
     def parse_item(self, resp):
         c_doc = etree.HTML(resp.text)
 
@@ -170,59 +221,7 @@ class QccCrawlerSpider(scrapy.Spider):
         if ret:
             company_info = ret[0]
 
-            # 获取发票信息
-            # https://www.qcc.com/tax_view?keyno=225093b0546c258a4128f2c2f30bb6d0&ajaxflag=1
-            referer_url = resp.url
-            # https://www.qcc.com/firm/ed9e3157b77b7f5a1a846132da93b626.html
-            com = re.compile(r'firm/(.*?)\.html')
-            key_no = com.findall(referer_url)
-
-            url = 'https://www.qcc.com/tax_view?keyno={keyno}&ajaxflag=1'.format(keyno=key_no[0]) if key_no else ''
-
-            credit_code = ''
-            address = ''
-            phone_number = ''
-            bank = ''
-            bank_account = ''
-            if url:
-                headers = QccCrawlerSpider.get_headers(resp)
-                text = requests.get(url=url, headers=headers).text
-                """
-                {
-                    data: {
-                      "Name": "江门市姆斯皮园林绿化有限公司",
-                      "CreditCode": "91440703MA51T6BYXY",
-                      "Address": "江门市蓬江区江门万达广场16幢1506室之三",
-                      "PhoneNumber": null,
-                      "Bank": null,
-                      "Bankaccount": null
-                    },
-                    success: true
-                }
-                """
-                try:
-                    invoice_info = json.loads(text)
-                    success = invoice_info.get('success', False)
-                    if success:
-                        data = invoice_info.get('data', {})
-                        credit_code = data.get('CreditCode', '')
-                        address = data.get('Address', '')
-                        phone_number = data.get('PhoneNumber', '')
-                        bank = data.get('Bank', '')
-                        bank_account = data.get('Bankaccount', '')
-                except Exception as e:
-                    self.log('ERROR:{0}'.format(e))
-            print(credit_code, address, phone_number, bank, bank_account)
-            """
-            [{'统一社会信用代码': '-', '企业名称': '延吉市金鑫冷冻肉食食品经营部', '法定代表人': '许晓萍关联1家企业>', 
-            '登记状态': '注销', '成立日期': '1988-08-30', '注册资本': '1万元人民币', '实缴资本': '-', '核准日期': '2449-10-26', 
-            '组织机构代码': '-', '工商注册号': '244491026-2', '纳税人识别号': '-', '企业类型': '集体所有制', '营业期限始': '', 
-            '营业期限末': '至无固定期限', '纳税人资质': '-', '行业': '农业', '所属地区': '吉林省', '登记机关': '延吉市工商行政管理局', 
-            '人员规模': '-', '参保人数': '-', '曾用名': '-', '英文名': '-', '进出口企业代码': '-', '注册地址': '-', 
-            '经营范围': '(依法须经批准的项目,经相关部门批准后方可开展经营活动)'}]
-            """
-            notice_item = items.QCCItem()
-            notice_item.update(**{
+            company_info_items = {
                 'company_name': company_info.get('企业名称', ''),
                 'location': company_info.get('所属地区', ''),
                 'legal_representative': company_info.get('法定代表人', ''),
@@ -250,7 +249,24 @@ class QccCrawlerSpider(scrapy.Spider):
                 'import_and_export_enterprise_code': company_info.get('进出口企业代码', ''),
                 'category': resp.meta.get('category_name', ''),
                 'industry_category': resp.meta.get('industry_category_name', ''),
-            })
+            }
+
+            err, invoice_info = QccCrawlerSpider.get_invoice_info(resp)
+
+            if err:
+                self.log(err)
+            else:
+                company_info_items.update(**invoice_info)
+            """
+            [{'统一社会信用代码': '-', '企业名称': '延吉市金鑫冷冻肉食食品经营部', '法定代表人': '许晓萍关联1家企业>', 
+            '登记状态': '注销', '成立日期': '1988-08-30', '注册资本': '1万元人民币', '实缴资本': '-', '核准日期': '2449-10-26', 
+            '组织机构代码': '-', '工商注册号': '244491026-2', '纳税人识别号': '-', '企业类型': '集体所有制', '营业期限始': '', 
+            '营业期限末': '至无固定期限', '纳税人资质': '-', '行业': '农业', '所属地区': '吉林省', '登记机关': '延吉市工商行政管理局', 
+            '人员规模': '-', '参保人数': '-', '曾用名': '-', '英文名': '-', '进出口企业代码': '-', '注册地址': '-', 
+            '经营范围': '(依法须经批准的项目,经相关部门批准后方可开展经营活动)'}]
+            """
+            notice_item = items.QCCItem()
+            notice_item.update(**company_info_items)
             print(company_info.get('企业名称', ''))
             return notice_item
         else:
