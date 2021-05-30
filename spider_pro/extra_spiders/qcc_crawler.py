@@ -31,7 +31,10 @@ class QccCrawlerSpider(scrapy.Spider):
             'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
             'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
             'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
-        }
+        },
+        'DOWNLOAD_DELAY': 2,
+        'CONCURRENT_REQUESTS': 4,
+        'CONCURRENT_REQUESTS_PER_IP': 4,
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
     basic_url = 'http://www.qcc.com'
@@ -62,7 +65,7 @@ class QccCrawlerSpider(scrapy.Spider):
         com = re.compile('industry_(.*)')
 
         # for category_el in category_els[0:1]:
-        for category_el in category_els:
+        for n, category_el in enumerate(category_els):
             href = category_el.xpath('./@href').get()
             category_name = category_el.xpath('./text()').get()
 
@@ -75,7 +78,7 @@ class QccCrawlerSpider(scrapy.Spider):
                 yield scrapy.Request(url=category_url, callback=self.parse_industry_categories, meta={
                     'category': category,
                     'category_name': category_name,
-                }, priority=10)
+                }, priority=1 * len(category_els) - n)
 
     def parse_industry_categories(self, resp):
         """
@@ -86,7 +89,7 @@ class QccCrawlerSpider(scrapy.Spider):
         com = re.compile('(\d+)')
 
         # for industry_category_el in industry_category_els[0:1]:
-        for industry_category_el in industry_category_els:
+        for n, industry_category_el in enumerate(industry_category_els):
             href = industry_category_el.xpath('./@href').get()
             industry_category_name = industry_category_el.xpath('./text()').get()
 
@@ -104,7 +107,7 @@ class QccCrawlerSpider(scrapy.Spider):
 
                     'category_name': resp.meta.get('category_name', ''),
                     'industry_category_name': industry_category_name,
-                }, priority=20)
+                }, priority=1000 * len(industry_category_els) - n)
 
     def parse_list(self, resp):
         """
@@ -118,8 +121,8 @@ class QccCrawlerSpider(scrapy.Spider):
         except (ValueError, IndexError, TypeError) as e:
             self.log('error:{e}'.format(e=e))
         else:
-            # for page in range(1, 2):
-            for page in range(1, max_page + 1):
+            for page in range(1, 2):
+            # for page in range(1, max_page + 1):
                 list_url = self.query_url.format(**{
                     'industryCode': category,
                     'subIndustryCode': industry_category,
@@ -131,7 +134,7 @@ class QccCrawlerSpider(scrapy.Spider):
 
                     'category_name': resp.meta.get('category_name', ''),
                     'industry_category_name': resp.meta.get('industry_category_name', ''),
-                }, priority=30)
+                }, priority=10000 * max_page - page)
 
     def parse_detail(self, resp):
         """
@@ -139,7 +142,7 @@ class QccCrawlerSpider(scrapy.Spider):
         """
         detail_urls = resp.xpath('//section[@id="searchlist"]/table//tr/td[2]/a/@href').extract()
         for detail_url in detail_urls:
-            c_url = '/'.join([self.basic_url, detail_url])
+            c_url = ''.join([self.basic_url, detail_url])
 
             yield scrapy.Request(url=c_url, callback=self.parse_item, meta={
                 'category': resp.meta.get('category', ''),
@@ -147,7 +150,7 @@ class QccCrawlerSpider(scrapy.Spider):
 
                 'category_name': resp.meta.get('category_name', ''),
                 'industry_category_name': resp.meta.get('industry_category_name', ''),
-            }, priority=40)
+            }, priority=100000)
 
     def parse_item(self, resp):
         c_doc = etree.HTML(resp.text)
