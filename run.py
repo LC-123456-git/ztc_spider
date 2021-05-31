@@ -14,6 +14,9 @@ if __name__ == '__main__':
     # cmdline.execute("scrapy crawl ZJ_city_3323_xiaoshan_spider -a sdt=2020-08-01 -a edt=2021-04-30".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3328_changshan_spider -a sdt=2018-05-01 -a edt=2018-12-30".split(" "))
     # cmdline.execute("scrapy crawl tyc_crawler".split(" "))
-    cmdline.execute("scrapy crawl qcc_crawler".split(" "))
+    # cmdline.execute("scrapy crawl qcc_crawler".split(" "))
+    cmdline.execute("scrapy crawl province_67_yangguangyizhao_spider -a sdt=2021-01-01 -a edt=2021-05-31".split(" "))
+    # cmdline.execute("scrapy crawl province_67_yangguangyizhao_spider".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider -a sdt=2021-05-27 -a edt=2021-05-28".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3302_zjcaigou_spider".split(" "))
     

@@ -35,41 +35,41 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
     url_map = {
         '房建市政': [
             {'notice_type': '招标公告', 'url': 'http://www.sunbidding.com/jzbgg/index.jhtml'},
-            {'notice_type': '澄清公告', 'url': 'http://www.sunbidding.com/jscqgg/index.jhtml'},
-            {'notice_type': '变更公告', 'url': 'http://www.sunbidding.com/jbggg/index.jhtml'},
-            {'notice_type': '评标公告', 'url': 'http://www.sunbidding.com/jypbgs/index.jhtml'},
-            {'notice_type': '结果公告', 'url': 'http://www.sunbidding.com/jszbgg/index.jhtml'},
+            {'notice_type': '招标变更', 'url': 'http://www.sunbidding.com/jscqgg/index.jhtml'},
+            {'notice_type': '招标变更', 'url': 'http://www.sunbidding.com/jbggg/index.jhtml'},
+            {'notice_type': '中标预告', 'url': 'http://www.sunbidding.com/jypbgs/index.jhtml'},
+            {'notice_type': '中标公告', 'url': 'http://www.sunbidding.com/jszbgg/index.jhtml'},
         ],
         '政府采购': [
-            {'notice_type': '采购公告', 'url': 'http://www.sunbidding.com/zcggg/index.jhtml'},
-            {'notice_type': '澄清公告', 'url': 'http://www.sunbidding.com/zfcqgg/index.jhtml'},
-            {'notice_type': '变更公告', 'url': 'http://www.sunbidding.com/zbggg/index.jhtml'},
-            {'notice_type': '评审公示', 'url': 'http://www.sunbidding.com/zpsgs/index.jhtml'},
-            {'notice_type': '结果公告', 'url': 'http://www.sunbidding.com/zfzbgg/index.jhtml'},
+            {'notice_type': '招标公告', 'url': 'http://www.sunbidding.com/zcggg/index.jhtml'},
+            {'notice_type': '招标变更', 'url': 'http://www.sunbidding.com/zfcqgg/index.jhtml'},
+            {'notice_type': '招标变更', 'url': 'http://www.sunbidding.com/zbggg/index.jhtml'},
+            {'notice_type': '其他公告', 'url': 'http://www.sunbidding.com/zpsgs/index.jhtml'},
+            {'notice_type': '中标公告', 'url': 'http://www.sunbidding.com/zfzbgg/index.jhtml'},
         ],
         '企业采购': [
-            {'notice_type': '采购公告', 'url': 'http://www.sunbidding.com/jqcgg/index.jhtml'},
-            {'notice_type': '澄清公告', 'url': 'http://www.sunbidding.com/jqccq/index.jhtml'},
-            {'notice_type': '变更公告', 'url': 'http://www.sunbidding.com/jqcbg/index.jhtml'},
-            {'notice_type': '评审公示', 'url': 'http://www.sunbidding.com/jqcps/index.jhtml'},
+            {'notice_type': '招标公告', 'url': 'http://www.sunbidding.com/jqcgg/index.jhtml'},
+            {'notice_type': '招标变更', 'url': 'http://www.sunbidding.com/jqccq/index.jhtml'},
+            {'notice_type': '招标变更', 'url': 'http://www.sunbidding.com/jqcbg/index.jhtml'},
+            {'notice_type': '其他公告', 'url': 'http://www.sunbidding.com/jqcps/index.jhtml'},
             {'notice_type': '中标公告', 'url': 'http://www.sunbidding.com/jqczb/index.jhtml'},
         ],
         '医疗卫生': [
-            {'notice_type': '采购公告', 'url': 'http://www.sunbidding.com/yycggg/index.jhtml'},
-            {'notice_type': '变更公告', 'url': 'http://www.sunbidding.com/yybggg/index.jhtml'},
-            {'notice_type': '评审公示', 'url': 'http://www.sunbidding.com/yypsgs/index.jhtml'},
+            {'notice_type': '招标公告', 'url': 'http://www.sunbidding.com/yycggg/index.jhtml'},
+            {'notice_type': '招标变更', 'url': 'http://www.sunbidding.com/yybggg/index.jhtml'},
+            {'notice_type': '其他公告', 'url': 'http://www.sunbidding.com/yypsgs/index.jhtml'},
             {'notice_type': '中标公告', 'url': 'http://www.sunbidding.com/yyzbgg/index.jhtml'},
         ],
         '交通': [
             {'notice_type': '招标公告', 'url': 'http://www.sunbidding.com/jjtzb/index.jhtml'},
-            {'notice_type': '变更公告', 'url': 'http://www.sunbidding.com/jjtbg/index.jhtml'},
-            {'notice_type': '评标公告', 'url': 'http://www.sunbidding.com/jjtpb/index.jhtml'},
+            {'notice_type': '招标变更', 'url': 'http://www.sunbidding.com/jjtbg/index.jhtml'},
+            {'notice_type': '中标预告', 'url': 'http://www.sunbidding.com/jjtpb/index.jhtml'},
             {'notice_type': '中标公告', 'url': 'http://www.sunbidding.com/jjtjg/index.jhtml'},
         ],
         '水利': [
             {'notice_type': '招标公告', 'url': 'http://www.sunbidding.com/jslzb/index.jhtml'},
-            {'notice_type': '变更公告', 'url': 'http://www.sunbidding.com/jslbg/index.jhtml'},
-            {'notice_type': '评标公告', 'url': 'http://www.sunbidding.com/jslpb/index.jhtml'},
+            {'notice_type': '招标变更', 'url': 'http://www.sunbidding.com/jslbg/index.jhtml'},
+            {'notice_type': '中标预告', 'url': 'http://www.sunbidding.com/jslpb/index.jhtml'},
             {'notice_type': '中标公告', 'url': 'http://www.sunbidding.com/jsljg/index.jhtml'},
         ]
     }
@@ -261,8 +261,9 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
             href = el.xpath("./@href").get()
             if href:
                 pub_time = el.xpath("./em/text()").get()
+                url = ''.join([self.query_url, href])
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
-                    yield scrapy.Request(url=''.join([self.query_url, href]), callback=self.parse_detail, meta={
+                    yield scrapy.Request(url=url, callback=self.parse_detail, meta={
                         'notice_type': resp.meta.get('notice_type'),
                         'category': resp.meta.get('category'),
                         'pub_time': pub_time,
@@ -308,7 +309,6 @@ if __name__ == "__main__":
     from scrapy import cmdline
 
     cmdline.execute(
-        "scrapy crawl province_67_yangguangyizhao_spider -a sdt=2021-01-01 -a edt=2021-05-17".split(
-            " ")
+        "scrapy crawl province_67_yangguangyizhao_spider -a sdt=2021-01-01 -a edt=2021-05-17".split(" ")
     )
     # cmdline.execute("scrapy crawl province_67_yangguangyizhao_spider".split(" "))

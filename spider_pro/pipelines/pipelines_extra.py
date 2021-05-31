@@ -122,44 +122,50 @@ class ExtraPipeline(object):
             if legal_representatives:
                 legal_representative = legal_representatives[0]
             else:
-                legal_representative = item['legal_representative']
+                legal_representative = item.get('legal_representative', '')
 
-            taxpayer_qualification = item['taxpayer_qualification']
+            taxpayer_qualification = item.get('taxpayer_qualification', '')
             if taxpayer_qualification in ['-', '增值税一般纳税人']:
                 taxpayer_qualification = '一般纳税人'
 
             default_items = [
-                item['company_name'],
-                item['location'],
+                item.get('company_name', ''),
+                item.get('location'),
                 legal_representative,
-                item['date_of_establishment'],
-                item['operating_status'],
-                item['registered_capital'],
-                item['paid_in_capital'],
-                item['unified_social_credit_code'],
-                item['business_registration_number'],
-                item['organization_code'],
-                item['taxpayer_identification_number'],
+                item.get('date_of_establishment', ''),
+                item.get('operating_status', ''),
+                item.get('registered_capital', ''),
+                item.get('paid_in_capital', ''),
+                item.get('unified_social_credit_code', ''),
+                item.get('business_registration_number', ''),
+                item.get('organization_code', ''),
+                item.get('taxpayer_identification_number', ''),
                 taxpayer_qualification,
-                item['type_of_enterprise'],
-                item['industry'],
-                item['operating_period_std'],
-                item['operating_period_edt'],
-                item['staff_size'],
-                item['number_of_participants'],
-                item['english_name'],
-                item['former_name'],
-                item['registration_authority'],
-                item['approved_date'],
-                item['registered_address'],
-                item['business_scope'],
-                item['import_and_export_enterprise_code'],
-                item['category'],
-                item['industry_category'],
+                item.get('type_of_enterprise', ''),
+                item.get('industry', ''),
+                item.get('operating_period_std', ''),
+                item.get('operating_period_edt', ''),
+                item.get('staff_size', ''),
+                item.get('number_of_participants', ''),
+                item.get('english_name', ''),
+                item.get('former_name', ''),
+                item.get('registration_authority', ''),
+                item.get('approved_date', ''),
+                item.get('registered_address', ''),
+                item.get('business_scope', ''),
+                item.get('import_and_export_enterprise_code', ''),
+                item.get('category', ''),
+                item.get('industry_category', ''),
+
+                item.get('credit_code', ''),
+                item.get('address', ''),
+                item.get('phone_number', ''),
+                item.get('bank', ''),
+                item.get('bank_account', ''),
             ]
 
             if ret.get('c'):
-                sql = "{0}'{1}'".format(self.update_sql, item['company_name'])
+                sql = "{0}'{1}'".format(self.update_sql, item.get('company_name', ''))
                 default_items.extend(['{0:%Y-%m-%d %H:%M:%S}'.format(datetime.now())])
                 cursor.execute(sql, default_items)
             else:
@@ -169,7 +175,7 @@ class ExtraPipeline(object):
                     '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.now()),
                 ])
                 cursor.execute(sql, default_items)
-            self.logger.info('INSERT SUCCESS ({0}) SQL: {1}'.format(item['company_name'], sql))
+            self.logger.info('INSERT SUCCESS ({0}) SQL: {1}'.format(item.get('company_name', ''), sql))
 
     def handle_error(self, error, item, spider):
         self.logger.info('DB INSERT ERROR: {0}'.format(error))

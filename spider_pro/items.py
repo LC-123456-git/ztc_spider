@@ -49,6 +49,12 @@ class QCCItem(scrapy.Item):
     create_time = scrapy.Field({"idx": 28, "comment": "创建时间"})
     update_time = scrapy.Field({"idx": 29, "comment": "更新时间"})
 
+    credit_code = scrapy.Field({"idx": 30, "comment": "企业税号"})
+    address = scrapy.Field({"idx": 31, "comment": "企业地址"})
+    phone_number = scrapy.Field({"idx": 32, "comment": "电话号码"})
+    bank = scrapy.Field({"idx": 33, "comment": "开户银行"})
+    bank_account = scrapy.Field({"idx": 34, "comment": "银行账户"})
+
 
 class NoticesItem(scrapy.Item):
     table_name = "notices"
