@@ -10,7 +10,7 @@ from datetime import datetime
 import re
 
 from spider_pro import items
-from spider_pro.extra_spiders import cf
+from spider_pro.extra_spiders.config import sql
 
 
 class ExtraPipeline(object):
@@ -50,11 +50,11 @@ class ExtraPipeline(object):
         }
         self.db_pool = adbapi.ConnectionPool('pymysql', **self.db_params)
         # INSERT
-        self.insert_sql = cf.get('QCC', 'COMPANY_INFO_INSERT').format(db_name=self.db_name, table_name=self.table_name)
+        self.insert_sql = sql.COMPANY_INFO_INSERT.format(db_name=self.db_name, table_name=self.table_name)
         # UPDATE
-        self.update_sql = cf.get('QCC', 'COMPANY_INFO_UPDATE').format(db_name=self.db_name, table_name=self.table_name)
+        self.update_sql = sql.COMPANY_INFO_UPDATE.format(db_name=self.db_name, table_name=self.table_name)
         # FETCH
-        self.fetch_sql = cf.get('QCC', 'COMPANY_FETCH_BY_NAME').format(db_name=self.db_name, table_name=self.table_name)
+        self.fetch_sql = sql.COMPANY_FETCH_BY_NAME.format(db_name=self.db_name, table_name=self.table_name)
 
     def create_table(self):
         """

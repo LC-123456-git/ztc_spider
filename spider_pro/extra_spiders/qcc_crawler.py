@@ -29,12 +29,13 @@ class QccCrawlerSpider(scrapy.Spider):
         'DOWNLOADER_MIDDLEWARES': {
             'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
             'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
-            'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
+            # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
             'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
         },
         'DOWNLOAD_DELAY': 2,
         'CONCURRENT_REQUESTS': 4,
         'CONCURRENT_REQUESTS_PER_IP': 4,
+        "ENABLE_PROXY_USE" : False
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
     basic_url = 'http://www.qcc.com'
@@ -121,8 +122,8 @@ class QccCrawlerSpider(scrapy.Spider):
         except (ValueError, IndexError, TypeError) as e:
             self.log('error:{e}'.format(e=e))
         else:
-            for page in range(1, 2):
-            # for page in range(1, max_page + 1):
+            # for page in range(1, 2):
+            for page in range(1, max_page + 1):
                 list_url = self.query_url.format(**{
                     'industryCode': category,
                     'subIndustryCode': industry_category,

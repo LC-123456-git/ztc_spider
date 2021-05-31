@@ -7,7 +7,7 @@ from lxml import etree
 import scrapy
 from scrapy.utils.project import get_project_settings
 
-from spider_pro.extra_spiders import cf
+from spider_pro.extra_spiders.config import sql
 from spider_pro import items
 from spider_pro.extra_spiders.public import db
 
@@ -113,7 +113,7 @@ class TycCrawlerSpider(scrapy.Spider):
         轮询QCC所有企业名称
         Returns:
         """
-        qcc_sql = cf.get('QCC', 'COMPANY_NAMES').format(db_name=self.db_name, table_name='QCC_qcc_crawler')
+        qcc_sql = sql.COMPANY_NAMES.format(db_name=self.db_name, table_name='QCC_qcc_crawler')
         companies = self.dbq.fetch_all(qcc_sql)
 
         for n, company in enumerate(companies):
