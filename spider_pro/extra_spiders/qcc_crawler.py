@@ -249,6 +249,7 @@ class QccCrawlerSpider(scrapy.Spider):
                 'import_and_export_enterprise_code': company_info.get('进出口企业代码', ''),
                 'category': resp.meta.get('category_name', ''),
                 'industry_category': resp.meta.get('industry_category_name', ''),
+                'origin': resp.request.url,
             }
 
             err, invoice_info = QccCrawlerSpider.get_invoice_info(resp)

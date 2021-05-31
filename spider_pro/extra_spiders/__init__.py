@@ -6,4 +6,6 @@ import configparser
 import os
 
 cf = configparser.RawConfigParser()
-cf.read(os.path.join(os.path.join(os.path.dirname(__file__), 'config'), 'sql.ini'))
+ini_file = os.path.join(os.path.join(os.path.dirname(__file__), 'config'), 'sql.ini')
+print(ini_file)
+cf.read(ini_file, encoding='utf-8')

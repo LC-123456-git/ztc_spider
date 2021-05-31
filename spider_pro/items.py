@@ -55,6 +55,8 @@ class QCCItem(scrapy.Item):
     bank = scrapy.Field({"idx": 33, "comment": "开户银行"})
     bank_account = scrapy.Field({"idx": 34, "comment": "银行账户"})
 
+    origin = scrapy.Field({"idx": 35, "comment": "页面地址"})
+
 
 class NoticesItem(scrapy.Item):
     table_name = "notices"

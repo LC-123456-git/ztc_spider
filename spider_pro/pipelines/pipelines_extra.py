@@ -92,8 +92,14 @@ class ExtraPipeline(object):
             Column('JCKQYDM', mysql.VARCHAR(512), nullable=True, comment="进出口企业代码"),
             Column('QYFL', mysql.VARCHAR(256), nullable=True, comment="行业分类"),
             Column('HYDL', mysql.VARCHAR(256), nullable=True, comment="行业大类"),
+            Column('QYSH', mysql.VARCHAR(512), nullable=True, comment="企业税号"),
+            Column('QYDZ', mysql.VARCHAR(512), nullable=True, comment="企业地址"),
+            Column('DHHM', mysql.VARCHAR(512), nullable=True, comment="电话号码"),
+            Column('KHYH', mysql.VARCHAR(512), nullable=True, comment="开户银行"),
+            Column('YHZH', mysql.VARCHAR(512), nullable=True, comment="银行账户"),
             Column('create_time', mysql.DATETIME, nullable=True, comment="创建时间"),
             Column('update_time', mysql.DATETIME, nullable=True, comment="更新时间"),
+            Column('origin', mysql.VARCHAR(512), nullable=True, comment="网站地址"),
         )
         Index("update_time", my_table.c.update_time)
         metadata.create_all()
@@ -162,6 +168,8 @@ class ExtraPipeline(object):
                 item.get('phone_number', ''),
                 item.get('bank', ''),
                 item.get('bank_account', ''),
+
+                item.get('origin', ''),
             ]
 
             if ret.get('c'):
