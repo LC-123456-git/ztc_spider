@@ -125,10 +125,10 @@
 ***
 ###地方
 - [] 3301 杭州公共资源交易网  https://www.hzctc.cn/
-- [] 3302 宁波公共资源交易网  http://bidding.ningbo.gov.cn/
+- [] 3302 浙江政府采购网  https://zfcg.czt.zj.gov.cn/
 - [] 3303 浙江省能源集团电子招投标平台  https://www.zeec.cn/
 - [] 3304 浙江省水利厅  http://slt.zj.gov.cn/
-- [] 3305 浙江政府采购网  https://zfcg.czt.zj.gov.cn/
+- [] 3305 宁波公共资源交易网  http://bidding.ningbo.gov.cn/
 - [] 3306 嘉兴公共资源交易网  http://jxszwsjb.jiaxing.gov.cn/
 - [] 3307 湖州公共资源交易网  http://ggzy.huzhou.gov.cn/
 - [] 3308 衢州公共资源交易中心  http://ggzy.qz.gov.cn/
