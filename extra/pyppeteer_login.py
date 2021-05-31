@@ -5,38 +5,31 @@
 import asyncio
 import random
 import tkinter
+import os
 from PIL import Image
 from pyppeteer import launch
 
 BORDER = 0
+FILE_PATH = os.path.join(os.path.dirname(__file__), 'files')
+
+CHAPTCHA_PIC_1 = os.path.join(FILE_PATH, 'captcha1.png')
+CHAPTCHA_PIC_2 = os.path.join(FILE_PATH, 'captcha2.png')
+TYC_PIC = os.path.join(FILE_PATH, 'tyc.png')
 
 
 async def main():
     browser = await launch({
-        # 控制是否为无头模式
         "headless": False,
-        # chrome启动命令行参数
         "args": [
-            # 浏览器代理 配合某些中间人代理使用
             # "--proxy-server=http://127.0.0.1:8008",
-            # 最大化窗口
-            "--start-maximized",
-            # 取消沙盒模式 沙盒模式下权限太小
-            "--no-sandbox",
-            # 不显示信息栏  比如 chrome正在受到自动测试软件的控制 ...
-            "--disable-infobars",
-            # log等级设置 在某些不是那么完整的系统里 如果使用默认的日志等级 可能会出现一大堆的warning信息
+            "--start-maximized",  # 最大化窗口
+            "--no-sandbox",  # 取消沙盒模式 沙盒模式下权限太小
+            "--disable-infobars",   # 不显示信息栏
             "--log-level=3",
-            # 设置UA
             "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",
         ],
         "dumpio": True,
-        # 当界面开多了时会卡住，设置这个参数就不会了
-        # 用户数据保存目录 这个最好也自己指定一个目录
-        # 如果不指定的话，chrome会自动新建一个临时目录使用，在浏览器退出的时候会自动删除临时目录
-        # 在删除的时候可能会删除失败（不知道为什么会出现权限问题，我用的windows） 导致浏览器退出失败
-        # 然后chrome进程就会一直没有退出 CPU就会狂飙到99%
-        "userDataDir": "",
+        "userDataDir": "",  # 当界面开多了时会卡住，设置这个参数就不会了
     })
     page = await browser.newPage()
     await page.evaluate(
@@ -90,7 +83,7 @@ async def main():
     full_pic = await page.waitForXPath('//a[@class="gt_fullbg gt_show"]')
     full_pic_box = await full_pic.boundingBox()
     await full_pic.screenshot({
-        'path': 'captcha1.png',
+        'path': CHAPTCHA_PIC_1,
         'clip': {
             'x': full_pic_box['x'],
             'y': full_pic_box['y'],
@@ -107,7 +100,7 @@ async def main():
     missing_block_pic_box = await missing_block_pic.boundingBox()
 
     await missing_block_pic.screenshot({
-        'path': 'captcha2.png',
+        'path': CHAPTCHA_PIC_2,
         'clip': {
             'x': missing_block_pic_box['x'],
             'y': missing_block_pic_box['y'],
@@ -118,8 +111,8 @@ async def main():
 
     await asyncio.sleep(2)
     # GET DISTANCE
-    image1 = Image.open('./captcha1.png')
-    image2 = Image.open('./captcha2.png')
+    image1 = Image.open(CHAPTCHA_PIC_1)
+    image2 = Image.open(CHAPTCHA_PIC_2)
 
     distance = get_gap(image2, image1)
     # distance += 15
@@ -145,7 +138,9 @@ async def main():
 
     await page.mouse.up()
     await asyncio.sleep(2)
-    await page.screenshot({'path': 'tyc.png'})
+    await page.screenshot({
+        'path': TYC_PIC,
+    })
 
     await browser.close()
 

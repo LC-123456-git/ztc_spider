@@ -357,5 +357,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-05-29', edt='2021-05-30')
+    rpt.output(sdt='2021-05-29', edt='2021-05-31')
     print((datetime.now() - start_time).total_seconds())
