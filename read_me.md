@@ -120,6 +120,7 @@
 - [] 112 辽宁政府采购网 http://www.ccgp-liaoning.gov.cn
 - [] 113 辽宁建设工程信息网 http://www.hncsmtr.com/zbtb/index.html
 - [] 114 光咨电子招投标交易平台 https://www.gzebid.cn/
+- [] 115 全国招标信息网 https://www.bidnews.cn/zjzd/
 
 ***
 ###地方
