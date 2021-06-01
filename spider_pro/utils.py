@@ -244,6 +244,14 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
                         code = province_code + "-" + city_code + "-" + county_code
                         return {"area": area, "code": str(code)}
                 return {"area": area, "code": str(code)}
+            else:
+                for county in city["child"]:
+                    county_name = county["name"]
+                    county_code = county["code"]
+                    if re.search(county_name, data):
+                        area = str(province_name) + str(city_name) + str(county_name)
+                        code = province_code + "-" + city_code + "-" + county_code
+                        return {"area": area, "code": str(code)}
         return {"area": province_name, "code": str(province_code)}
 
     area_id = str(area_id)
@@ -269,7 +277,7 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id == "4" or area_id == "04":
+    elif area_id == "4" or area_id == "04" or area_id == "76" or area_id == "71":
         area_dict = const.he_bei
         province_name = area_dict["name"]
         province_code = area_dict["code"]
@@ -311,7 +319,7 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id == "15" or area_id == "14":
+    elif area_id == "15" or area_id == "14" or area_id == "3302":
         area_dict = const.zhe_jiang
         province_name = area_dict["name"]
         province_code = area_dict["code"]
