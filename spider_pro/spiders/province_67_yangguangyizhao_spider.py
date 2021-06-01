@@ -26,7 +26,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
     keywords_map = {
         '征求意见': '招标预告',
         '单一来源|询价': '招标公告',
-        '资格预审公告': '资格审查',
+        '资格审查': '资格预审结果公告',
         '澄清|变成|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '评标公示|候选人': '中标预告',
@@ -150,7 +150,6 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
                         first_el = els[0]
                         final_el = els[-1]
 
-                        el = els[-1]
                         # 解析出时间
                         t_com = re.compile('(\d+%s\d+%s\d+)' %
                                            (time_sep, time_sep))
@@ -249,7 +248,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
                     else:
                         yield scrapy.Request(url=c_url, callback=self.parse_list, meta={
                             'notice_type': resp.meta.get('notice_type', ''),
-                            'category': resp.meta.get('category', '')
+                            'category_type': resp.meta.get('category_type', '')
                         }, priority=max_page - page)
     
     def parse_list(self, resp):
@@ -265,7 +264,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                     yield scrapy.Request(url=url, callback=self.parse_detail, meta={
                         'notice_type': resp.meta.get('notice_type'),
-                        'category': resp.meta.get('category'),
+                        'category_type': resp.meta.get('category_type'),
                         'pub_time': pub_time,
                     }, priority=(len(els)-n) * 100)
 
@@ -300,7 +299,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
         notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
         notice_item["content"] = content
         notice_item["area_id"] = self.area_id
-        notice_item["category"] = resp.meta.get('category')
+        notice_item["category"] = resp.meta.get('category_type')
         print(resp.meta.get('pub_time'), resp.url)
 
         return notice_item

@@ -26,16 +26,10 @@ class QccCrawlerSpider(scrapy.Spider):
         'ITEM_PIPELINES': {
             'spider_pro.pipelines.pipelines_extra.ExtraPipeline': 200,
         },
-        'DOWNLOADER_MIDDLEWARES': {
-            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
-            # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
-            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
-        },
-        'DOWNLOAD_DELAY': 2,
-        'CONCURRENT_REQUESTS': 4,
-        'CONCURRENT_REQUESTS_PER_IP': 4,
-        "ENABLE_PROXY_USE" : False
+        'DOWNLOAD_DELAY': 8,
+        'CONCURRENT_REQUESTS': 2,
+        'CONCURRENT_REQUESTS_PER_IP': 2,
+        # "ENABLE_PROXY_USE" : True
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
     basic_url = 'http://www.qcc.com'
@@ -250,7 +244,7 @@ class QccCrawlerSpider(scrapy.Spider):
                 'import_and_export_enterprise_code': company_info.get('进出口企业代码', ''),
                 'category': resp.meta.get('category_name', ''),
                 'industry_category': resp.meta.get('industry_category_name', ''),
-                'origin': resp.request.url,
+                'origin': resp.url,
             }
 
             err, invoice_info = QccCrawlerSpider.get_invoice_info(resp)
