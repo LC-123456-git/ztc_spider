@@ -102,7 +102,7 @@ class QccCrawlerSpider(scrapy.Spider):
 
                     'category_name': resp.meta.get('category_name', ''),
                     'industry_category_name': industry_category_name,
-                }, priority=1000 * len(industry_category_els) - n)
+                }, priority=10 * len(industry_category_els) - n)
 
     def parse_list(self, resp):
         """
@@ -129,14 +129,14 @@ class QccCrawlerSpider(scrapy.Spider):
 
                     'category_name': resp.meta.get('category_name', ''),
                     'industry_category_name': resp.meta.get('industry_category_name', ''),
-                }, priority=10000 * max_page - page)
+                }, priority=1000 * (max_page - page))
 
     def parse_detail(self, resp):
         """
         解析详情页地址
         """
         detail_urls = resp.xpath('//section[@id="searchlist"]/table//tr/td[2]/a/@href').extract()
-        for detail_url in detail_urls:
+        for n, detail_url in enumerate(detail_urls):
             c_url = ''.join([self.basic_url, detail_url])
 
             yield scrapy.Request(url=c_url, callback=self.parse_item, meta={
@@ -145,7 +145,7 @@ class QccCrawlerSpider(scrapy.Spider):
 
                 'category_name': resp.meta.get('category_name', ''),
                 'industry_category_name': resp.meta.get('industry_category_name', ''),
-            }, priority=100000)
+            }, priority=(len(detail_urls) -n) * 1000000)
 
     @classmethod
     def get_invoice_info(cls, resp):
