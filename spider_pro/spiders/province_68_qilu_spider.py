@@ -20,10 +20,6 @@ from spider_pro import constans as const
 from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, remove_specific_element
 
 
-
-
-
-
 class MySpider(CrawlSpider):
     name = 'province_68_qilu_spider'
     area_id = "68"
@@ -57,9 +53,7 @@ class MySpider(CrawlSpider):
             self.enable_incr = False
 
     def start_requests(self):
-        # info_url = 'http://www.qlebid.com/cms/channel/1ywgg1gc/1169.htm'
-        # yield scrapy.Request(url=info_url, callback=self.parse_item)
-        yield scrapy.Request(url=self.domain_url, callback=self.parse_urls)
+        yield scrapy.Request(url=self.domain_url, callback=self.parse_urls, dont_filter=True)
 
     def parse_urls(self, response):
         try:
