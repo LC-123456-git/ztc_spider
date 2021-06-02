@@ -120,6 +120,9 @@ class ReportOutput(DBQuery):
         '54': 'E共享交易平台',
         '57': '精彩纵横',
         '62': '新点电子交易平台',
+        '65': '国e平台',
+        '67': '阳光易招',
+        '68': '齐鲁招采网',
         '71': '招财进宝',
         '3301': '杭州市公共资源交易平台',
         '3303': '浙能集团电子招标投标交易平台',
@@ -357,5 +360,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-05-29', edt='2021-05-31')
+    rpt.output(sdt='2021-06-02', edt='2021-06-02')
     print((datetime.now() - start_time).total_seconds())
