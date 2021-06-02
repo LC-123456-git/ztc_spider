@@ -26,12 +26,19 @@ class QccCrawlerSpider(scrapy.Spider):
         'ITEM_PIPELINES': {
             'spider_pro.pipelines.pipelines_extra.ExtraPipeline': 200,
         },
+        'DOWNLOADER_MIDDLEWARES': {
+            # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
+            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+        },
         'DOWNLOAD_DELAY': 8,
-        'CONCURRENT_REQUESTS': 2,
-        'CONCURRENT_REQUESTS_PER_IP': 2,
-        # "ENABLE_PROXY_USE" : True
+        'CONCURRENT_REQUESTS': 1,
+        'CONCURRENT_REQUESTS_PER_IP': 1,
+        "ENABLE_PROXY_USE" : True
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
+    start_url = 'https://www.qcc.com/industry_A'
     basic_url = 'http://www.qcc.com'
     basic_info_re = '统一社会信用代码,(?P<统一社会信用代码>.*?),企业名称,(?P<企业名称>.*?),法定代表人,(?P<法定代表人>.*?),' \
                     '登记状态,(?P<登记状态>.*?),成立日期,(?P<成立日期>.*?),注册资本,(?P<注册资本>.*?),' + \
@@ -49,7 +56,7 @@ class QccCrawlerSpider(scrapy.Spider):
         return headers
 
     def start_requests(self):
-        yield scrapy.Request(url=self.query_url, callback=self.parse_category)
+        yield scrapy.Request(url=self.start_url, callback=self.parse_category)
 
     def parse_category(self, resp):
         """
@@ -160,13 +167,25 @@ class QccCrawlerSpider(scrapy.Spider):
         referer_url = resp.url
         com = re.compile(r'firm/(.*?)\.html')
         key_no = com.findall(referer_url)
-
+        
         url = 'https://www.qcc.com/tax_view?keyno={keyno}&ajaxflag=1'.format(keyno=key_no[0]) if key_no else ''
 
         invoice_info_dict = {}
         if url:
             headers = cls.get_headers(resp)
-            text = requests.get(url=url, headers=headers).text
+            proxy = resp.meta.get('proxy', {})
+            proxies = {}
+            if proxy:
+                print(proxy)
+                prefix, ip, port = proxy.split(":")
+                proxies[prefix] = '{0}:{1}'.format(ip, port)
+                
+                if k == 'https':
+                    proxies['https'] = proxy
+                else:
+                    proxies['http'] = proxy
+            
+            text = requests.get(url=url, headers=headers, proxies=proxies, verify=False).text
             """
             {
                 data: {
