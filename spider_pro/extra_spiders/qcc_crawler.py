@@ -32,10 +32,11 @@ class QccCrawlerSpider(scrapy.Spider):
             'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
             'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
         },
-        'DOWNLOAD_DELAY': 8,
-        'CONCURRENT_REQUESTS': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
-        "ENABLE_PROXY_USE" : True
+        'DOWNLOAD_DELAY': 4,
+        'CONCURRENT_REQUESTS': 4,
+        'CONCURRENT_REQUESTS_PER_IP': 4,
+        "ENABLE_PROXY_USE" : True,
+        "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
     start_url = 'https://www.qcc.com/industry_A'
@@ -176,14 +177,10 @@ class QccCrawlerSpider(scrapy.Spider):
             proxy = resp.meta.get('proxy', {})
             proxies = {}
             if proxy:
-                print(proxy)
-                prefix, ip, port = proxy.split(":")
-                proxies[prefix] = '{0}:{1}'.format(ip, port)
-                
-                if k == 'https':
-                    proxies['https'] = proxy
+                if proxy.startswith('https'):
+                    proxies = {'https': proxy}
                 else:
-                    proxies['http'] = proxy
+                    proxies = {'http': proxy}
             
             text = requests.get(url=url, headers=headers, proxies=proxies, verify=False).text
             """
