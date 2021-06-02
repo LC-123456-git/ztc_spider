@@ -22,6 +22,7 @@ from spider_pro.utils import get_accurate_pub_time, get_iframe_pdf_div_code
 class MySpider(CrawlSpider):
     name = 'province_21_shandong_spider'
     area_id = "21"
+    area_province = '山东公共资源交易网'
     domain_url = "http://ggzyjy.shandong.gov.cn"
     query_url = "http://ggzyjy.shandong.gov.cn/queryContent-jyxxgk.jspx"
     allowed_domains = ['ggzyjy.shandong.gov.cn']
@@ -131,14 +132,14 @@ class MySpider(CrawlSpider):
             notice_item["origin"] = origin
             notice_item["title_name"] = title_name
             notice_item["pub_time"] = pub_time
-            notice_item["info_source"] = response.meta.get("info_source")
+            notice_item["info_source"] = self.area_province + "-" + response.meta.get("info_source")
             notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
             notice_item["files_path"] = "" if not files_path else files_path
             notice_item["notice_type"] = name
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = response.meta.get("classifyShow")
-
+            print(notice_item["info_source"])
             # TODO 产品要求推送，故注释
             # # if not is_clean:
             #     notice_item['is_clean'] = const.TYPE_CLEAN_NOT_DONE

@@ -62,7 +62,6 @@ class MySpider(CrawlSpider):
         else:
             callback_url = self.parse_pages
         for item in self.all_list:
-        # item = "016001"
             info_dict = {"title": "", "lx": "0", "CategoryNum": item}
             yield scrapy.Request(url=f"{self.list_url}{urllib.parse.urlencode(info_dict)}", priority=2,
                                  dont_filter=True, meta={"item": item}, callback=callback_url)
@@ -118,37 +117,6 @@ class MySpider(CrawlSpider):
             yield scrapy.Request(url=info_url, callback=self.parse_item, dont_filter=True, priority=10,
                                  meta={"item": item, "title_name": title_name, "pub_time": pub_time,
                                        "classifyShow": classifyShow})
-
-        # if json.loads(response.text).get("message") == "成功":
-        #     categoryId = response.meta["categoryId"]
-        #     notice_type = response.meta["notice_type"]
-        #     total = json.loads(json.loads(response.text).get("data")).get("total")
-        #     pages = total // 100 + 1
-        #     self.logger.info(f"本次获取总条数为：{total} ")
-        #     for num in range(1, pages):
-        #         data_dict = {"categoryId": categoryId, "pageNumber": num, "pageSize": "100", "title": "", "pubshTime": ""}
-        #         yield scrapy.Request(url=f"{self.query_url}{urllib.parse.urlencode(data_dict)}", priority=8,
-        #                              callback=self.parse_info, meta={"notice_type": notice_type,
-        #                                                                   "categoryId": categoryId})
-
-
-    def parse_info(self, response):
-        try:
-            if json.loads(response.text).get("success"):
-                data_list = json.loads(json.loads(response.text).get("data")).get("rows")
-                categoryId = response.meta["categoryId"]
-                notice_type = response.meta["notice_type"]
-                for item in data_list:
-                    info_id = item.get("id")
-                    pub_time = item.get("publishTime")
-                    title_name = item.get("noticeName")
-                    data_dict = {"id": info_id}
-                    yield scrapy.Request(url=f"{self.info_url}{urllib.parse.urlencode(data_dict)}", priority=10,
-                                         callback=self.parse_item, meta={"notice_type": notice_type,
-                                         "pub_time": pub_time, "title_name": title_name, "categoryId": categoryId,
-                                                                         "info_id": info_id})
-        except Exception as e:
-            self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
     def parse_item(self, response):
         origin = response.url

@@ -77,7 +77,7 @@ class MySpider(CrawlSpider):
         self.pn_dict = {"pn": 0}
         self.r_dict = {"token": "", "rn": 12, "sdt": "", "edt": "", "wd": "", "inc_wd": "", "exc_wd": "",
                        "fields": "title", "cnum": "", "sort": "{'webdate':'0'}", "ssort": "title", "cl": 500,
-                       "terminal": "", "condition": [{"fieldName": "categorynum", "equal": "002",
+                       "terminal": "", "condition": [{"fieldName": "categorynum", "equal": "002001001",
                        "notEqual": None, "equalList": None, "notEqualList": None, "isLike": True,
                        "likeType": 2}], "highlights": "", "statistics": None, "unionCondition": None,
                        "accuracy": "", "noParticiple": "0", "searchRange": None, "isBusiness": "1"}
@@ -96,7 +96,7 @@ class MySpider(CrawlSpider):
     def start_requests(self):
         pages_dict = self.r_dict | self.time_dict
         self.type_dict = json.dumps(pages_dict | self.pn_dict)
-        yield scrapy.Request(url=self.query_url, method="POST", body=self.type_dict, callback=self.parse_urls)
+        yield scrapy.Request(url=self.query_url, method="POST", priority=6, body=self.type_dict, callback=self.parse_urls)
         # yield scrapy.Request(url=self.query_url, method="POST", body=self.type_dict, callback=self.parse_data_urls)
 
     def parse_urls(self, response):
@@ -115,7 +115,7 @@ class MySpider(CrawlSpider):
                 pn_dict = {"pn": pn}
                 self.page_dict = json.dumps(self.r_dict | pn_dict | self.time_dict)
                 yield scrapy.Request(
-                    url=self.query_url, method="POST", body=self.page_dict,
+                    url=self.query_url, method="POST", body=self.page_dict, priority=8,
                     callback=self.parse_data_urls)
         except Exception as e:
             self.logger.error(f"初始总页数提取错误 {response.meta=} {e} {response.url=}")
@@ -142,7 +142,7 @@ class MySpider(CrawlSpider):
                 name_project_category = self.project_category_dict.get(category_num[0:6], "")
                 data_url = self.domain_url + linkurl
                 # data_url = "http://ggzyjy.sc.gov.cn/jyxx/002008/002008001/20210330/2b4a62a4-bfec-4ad3-8ba1-d43bc2542337.html"
-                yield scrapy.Request(url=data_url, callback=self.parse_item, headers=self.data_headers,
+                yield scrapy.Request(url=data_url, callback=self.parse_item, headers=self.data_headers, priority=10,
                                      cb_kwargs=cb_kwargs, meta={"cb_kwargs": cb_kwargs, "area_in": area_in,
                                                                 "name_project_category": name_project_category,
                                                                 "pub_time": pub_time, "title_name": title_name})
@@ -155,19 +155,13 @@ class MySpider(CrawlSpider):
             test_text = response.text
             title_name = response.meta.get("title_name")
             print(title_name)
-            if not title_name:
-                title_name = response.xpath("//*[@id='tab-800']/div/div[2]/div/div/h2/text()").get()
-            if not title_name:
-                title_name = response.xpath("//*[@id='title']/text()").get()
-            if not title_name:
-                title_name = ""
-            else:
-                if re.search(r"终止|中止|流标|废标|异常", title_name):
-                    name = const.TYPE_ZB_ABNORMAL
-                if re.search(r"变更|更正|澄清", title_name):
-                    name = const.TYPE_ZB_ALTERATION
-                if re.search(r"候选人", title_name):
-                    name = const.TYPE_WIN_ADVANCE_NOTICE
+
+            if re.search(r"终止|中止|流标|废标|异常", title_name):
+                name = const.TYPE_ZB_ABNORMAL
+            if re.search(r"变更|更正|澄清", title_name):
+                name = const.TYPE_ZB_ALTERATION
+            if re.search(r"候选人", title_name):
+                name = const.TYPE_WIN_ADVANCE_NOTICE
             pub_time = response.meta.get("pub_time")
             pub_time = get_accurate_pub_time(pub_time)
             info_source = response.meta.get("area_in")
@@ -175,7 +169,6 @@ class MySpider(CrawlSpider):
                 info_source = self.area_province
             info_source = f"{self.area_province}-{info_source}"
             content = response.xpath('//div[@class="clearfix"]').get()
-
             pattern = re.compile(r'<p class="detailed-desc".*?>(.*?)</p>', re.S)
             contents = content.replace(''.join(re.findall(pattern, content)), '')
             print(content)
@@ -189,7 +182,14 @@ class MySpider(CrawlSpider):
             # print(pub_time)
             # print(info_source)
             # print(content)
-            files_path = []
+            files_path = {}
+            # text = re.findall('<a class="attachUrl" href="(.*?)" title="(.*?)">(.*?)</a>', content)
+            if div_url := response.xpath('//a[@class="attachUrl"]'):
+                for a in div_url:
+                    file_url = re.findall('<a class="attachUrl" href="(.*?)" title="(.*?)">(.*?)</a>', a.get())[0][0].split("&amp")[0]
+                    file_name = re.findall('<a class="attachUrl" href="(.*?)" title="(.*?)">(.*?)</a>', a.get())[0][1]
+                    files_path[file_name] = file_url
+
             # if content:
             #     pub_time_simple = pub_time.split(" ")[0]
             #     if files := re.findall(r"http://www.sxyxcg.com/UploadFile/.*?\"", content):
