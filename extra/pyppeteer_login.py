@@ -142,7 +142,8 @@ async def main():
         'path': TYC_PIC,
     })
 
-    await browser.close()
+    await asyncio.sleep(10)
+    # await browser.close()
 
 
 def get_gap(image1, image2):
@@ -198,7 +199,7 @@ def get_track(distance):
     # 减速阈值
     mid = distance * 2 / 5
     # 计算间隔
-    t = 0.3
+    t = 0.2
     # 初速度
     v = 1
 
@@ -212,7 +213,7 @@ def get_track(distance):
         move = v0 * t + 1 / 2 * a * t * t
         current += move
         track.append(round(move))
-    track.extend([1.2, 2.3, -2.5, -1])  # 滑过去再滑过来，不然有可能被吃
+    # track.extend([1.2, 2.3, -2.5, -1])  # 滑过去再滑过来，不然有可能被吃
     print('挪动距离边变动：{0}'.format(track))
     return track
 

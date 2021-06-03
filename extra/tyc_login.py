@@ -15,7 +15,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 PHONE = '18868271201'
 PASSWORD = 'laaimeng2011'
-BORDER = 6
+BORDER = 7
 
 
 class CrackGeetest():
@@ -58,12 +58,12 @@ class CrackGeetest():
             options.add_argument('disable-infobars')
             options.add_experimental_option('excludeSwitches', ['enable-automation'])
             options.add_argument("--disable-blink-features=AutomationControlled")
-
+            options.add_experimental_option('useAutomationExtension', False)
             self.browser = webdriver.Chrome(options=options)
             self.browser.get(self.url)
             self.browser.maximize_window()
             self.browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-                "source": "Object.defineProperties(navigator,{ webdriver:{ get: () => false } })"
+                "source": "Object.defineProperties(navigator,{ webdriver:{ get: () => undefined } })"
             })
             t = random.uniform(0.5, 1)
             time.sleep(t)
@@ -134,7 +134,7 @@ class CrackGeetest():
         # 当前位移
         current = 0
         # 减速阈值
-        mid = distance * 1 / 6
+        mid = distance * 1 / 10
         # 计算间隔
         t = 0.3
         # 初速度
@@ -142,9 +142,9 @@ class CrackGeetest():
 
         while current < distance:
             if current < mid:
-                a = 12.1212
+                a = 10
             else:
-                a = -2.0202
+                a = -1
             v0 = v
             v = v0 + a * t
             move = v0 * t + 1 / 2 * a * t * t
@@ -161,6 +161,7 @@ class CrackGeetest():
         # 使用click_and_hold()方法悬停在滑块上，perform()方法用于执行
         ActionChains(self.browser).click_and_hold(slider).perform()
         for x in trace:
+            time.sleep(random.uniform(0, 0.3))
             # 使用move_by_offset()方法拖动滑块，perform()方法用于执行
             ActionChains(self.browser).move_by_offset(xoffset=x, yoffset=0).perform()
         # 模拟人类对准时间
@@ -218,6 +219,7 @@ class CrackGeetest():
             self.move_to_gap(track)
 
             time.sleep(0.5)
+            # time.sleep(200)
             pause_tag = False
             while True:
                 for i in [x + 4 for x in range(10, 14)]:

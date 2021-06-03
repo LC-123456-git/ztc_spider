@@ -77,7 +77,8 @@ class QCCToExcel(object):
         # YYQXS, YYQXM, RYGM, CBRY, YWM, CYM, DJJG, HZRQ, ZCDZ, JYFW, JCKQYDM, QYFL, HYDL, create_time, update_time
         # FROM data_collection.QCC_qcc_crawler"""
         qcc_sql = """SELECT id, TYSHXYDM, QYMC, GSZCH, ZZJGDM, NSRSBH, NSRZZ,HY, FDDBR, QYLX, CLRQ, ZCZB, SJZB, HZRQ, YYQXS,
-        YYQXM, DJJG, ZCDZ, JYFW, create_time, update_time
+        YYQXM, DJJG, ZCDZ, JYFW, QYSH, QYDZ, DHHM, KHYH, YHZH,
+        create_time, update_time
         FROM data_collection.QCC_qcc_crawler"""
 
         file_name = '企业基本信息{0:%Y-%m-%d}.xlsx'.format(datetime.now())
@@ -88,7 +89,7 @@ class QCCToExcel(object):
         qcc_data = [
             [
                 qd[0], qd[1], qd[2], qd[3], qd[4], qd[5], qd[6], qd[7], qd[8], qd[9], qd[10], qd[11], qd[12], qd[13], 
-                qd[14], qd[15], qd[16], qd[17], qd[18], qd[19], qd[20], qd[21], qd[22], qd[23],qd[24], qd[25],
+                qd[14], qd[15], qd[16], qd[17], qd[18], qd[19], qd[20], qd[21], qd[22], qd[23],qd[24], qd[25]
             ] for qd in qcc_data]
 
         df_data = pd.DataFrame.from_records(qcc_data)
