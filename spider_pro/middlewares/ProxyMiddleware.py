@@ -81,10 +81,13 @@ class ProxyMiddleware(RetryMiddleware):
         else:
             reason = response_status_message(response.status)
             
-            # 企查查IP被封 特殊处理
-            if spider.name == 'qcc_crawler' and response.status == 301:
-                self.logger.info('当前IP访问企查查站点跳转301页面,IP被封禁.')
-                return self._retry(request, reason, spider) or response
+            if spider.name == 'qcc_crawler':
+                self.logger.info('当前响应的状态码: {}'.format(response.status))
+            
+            # # 企查查IP被封 特殊处理
+            # if spider.name == 'qcc_crawler' and response.status == 301:
+            #     self.logger.info('当前IP访问企查查站点跳转301页面,IP被封禁.')
+            #     return self._retry(request, reason, spider) or response
 
             if request.meta.get('retry_times', 0) >= self.max_retry_times:
                 self.logger.error(

@@ -30,12 +30,12 @@ class QccCrawlerSpider(scrapy.Spider):
             # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
             'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
             'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
         },
-        'DOWNLOAD_DELAY': 4,
-        'CONCURRENT_REQUESTS': 4,
-        'CONCURRENT_REQUESTS_PER_IP': 4,
-        "ENABLE_PROXY_USE" : True,
+        # 'DOWNLOAD_DELAY': 4,
+        # 'CONCURRENT_REQUESTS': 4,
+        # 'CONCURRENT_REQUESTS_PER_IP': 4,
+        "ENABLE_PROXY_USE" : False,
         "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'

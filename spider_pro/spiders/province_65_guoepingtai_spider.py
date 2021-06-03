@@ -30,7 +30,7 @@ class Province65GuoepingtaiSpiderSpider(scrapy.Spider):
     basic_area = '广东省-国e平台'
     keywords_map = {
         '资格审查': '资格预审结果公告',
-        '澄清|变更|补充|取消|更正|延期': '招标变更',
+        '澄清|变更|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
     }
     notices_type_map = {
