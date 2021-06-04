@@ -37,9 +37,10 @@ class QccCrawlerSpider(scrapy.Spider):
         'CONCURRENT_RTEQUESTS_PER_IP': 4,
         "ENABLE_PROXY_USE" : True,
         "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
+        'RETRY_TIMES': 5,
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
-    start_url = 'https://www.qcc.com/industry_A'
+    # start_url = 'https://www.qcc.com/industry_A'
     basic_url = 'http://www.qcc.com'
     basic_info_re = '统一社会信用代码,(?P<统一社会信用代码>.*?),企业名称,(?P<企业名称>.*?),法定代表人,(?P<法定代表人>.*?),' \
                     '登记状态,(?P<登记状态>.*?),成立日期,(?P<成立日期>.*?),注册资本,(?P<注册资本>.*?),' + \
@@ -57,7 +58,11 @@ class QccCrawlerSpider(scrapy.Spider):
         return headers
 
     def start_requests(self):
-        yield scrapy.Request(url=self.start_url, callback=self.parse_category)
+        yield scrapy.Request(url=self.query_url.format(**{
+                'industryCode': '',
+                'subIndustryCode': '',
+                'page': '',
+            }), callback=self.parse_category)
 
     def parse_category(self, resp):
         """
