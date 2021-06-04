@@ -76,20 +76,23 @@ class ProxyMiddleware(RetryMiddleware):
         :param spider: spider
         :return: response
         """
+        retry_times = request.meta.get('retry_times', 0)
         if response.status == 200:
+            if spider.name == 'qcc_crawler':
+                if '<script>window.location.href=' in response.text:
+                    self.logger.info('请求响应异常.')
+                    print('')
+                    if retry_times >= self.max_retry_times:
+                        self.logger.info(retry_times, request.url)
+                        self.process_exception(request, Exception('超过重试次数.'), spider)
+
+                    reason = Exception('请求响应异常.')
+                    
+                    return self._retry(request, reason, spider) or response
             return response
         else:
             reason = response_status_message(response.status)
-            
-            if spider.name == 'qcc_crawler':
-                self.logger.info('当前响应的状态码: {}'.format(response.status))
-            
-            # # 企查查IP被封 特殊处理
-            # if spider.name == 'qcc_crawler' and response.status == 301:
-            #     self.logger.info('当前IP访问企查查站点跳转301页面,IP被封禁.')
-            #     return self._retry(request, reason, spider) or response
-
-            if request.meta.get('retry_times', 0) >= self.max_retry_times:
+            if retry_times >= self.max_retry_times:
                 self.logger.error(
                     f"抓取失败 重试次数用完: {request.url=} {spider.area_id=} {reason=}")
                 return response
@@ -110,7 +113,8 @@ class ProxyMiddleware(RetryMiddleware):
         if isinstance(exception, IgnoreRequest):
             return
         if request.meta.get('retry_times', 0) >= self.max_retry_times:
-            if self.enable_proxy_infinite and self.enable_proxy_use:
+            if not self.enable_proxy_infinite and self.enable_proxy_use:
+                self.logger.info('移除代理:', request.meta.get("proxy"))
                 self.delete_redis_ip_from(request.meta.get("proxy"))
             self.logger.error(
                 f"捕获失败 重试次数用完: {request.url=} {spider.area_id=} {exception=}")
