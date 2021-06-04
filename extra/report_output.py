@@ -119,6 +119,7 @@ class ReportOutput(DBQuery):
         '56': '河北建投集团电子招投标交易平台',
         '54': 'E共享交易平台',
         '57': '精彩纵横',
+        '59': '鑫智链交易平台',
         '62': '新点电子交易平台',
         '65': '国e平台',
         '67': '阳光易招',
@@ -216,9 +217,9 @@ class ReportOutput(DBQuery):
             'area_id': area_id,
             'cdt': date,
         })
-        # print(download_sql + '\n')
-        # print(pub_sql + '\n')
-        # print(push_sql + '\n')
+        print(download_sql + '\n')
+        print(pub_sql + '\n')
+        print(push_sql + '\n')
         download_data = self.fetch_all(download_sql)  # [(area_id, n),]
         pub_data = self.fetch_all(pub_sql)
         push_data = self.fetch_all(push_sql)
@@ -360,5 +361,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-06-02', edt='2021-06-02')
+    rpt.output(sdt='2021-05-20', edt='2021-06-04')
     print((datetime.now() - start_time).total_seconds())
