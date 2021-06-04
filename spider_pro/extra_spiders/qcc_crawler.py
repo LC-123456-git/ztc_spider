@@ -33,8 +33,8 @@ class QccCrawlerSpider(scrapy.Spider):
             'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
         },
         'DOWNLOAD_DELAY': 4,
-        'CONCURREN_REQUESTS': 15,
-        'CONCURRENT_RTEQUESTS_PER_IP': 15,
+        'CONCURREN_REQUESTS': 4,
+        'CONCURRENT_RTEQUESTS_PER_IP': 4,
         "ENABLE_PROXY_USE" : True,
         "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
     }

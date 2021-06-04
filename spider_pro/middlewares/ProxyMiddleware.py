@@ -83,7 +83,6 @@ class ProxyMiddleware(RetryMiddleware):
                     self.logger.info('请求响应异常.')
                     print('')
                     if retry_times >= self.max_retry_times:
-                        self.logger.info(retry_times, request.url)
                         self.process_exception(request, Exception('超过重试次数.'), spider)
 
                     reason = Exception('请求响应异常.')
