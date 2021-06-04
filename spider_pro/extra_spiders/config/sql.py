@@ -4,20 +4,25 @@
 # @Description: sql
 
 
-COMPANY_NAMES = """SELECT QYMC FROM {db_name}.{table_name}"""
+COMPANY_NAMES = """SELECT company_name FROM {db_name}.{table_name}"""
 COMPANY_INFO_INSERT = """
                       INSERT INTO {db_name}.{table_name}
-                      (QYMC,SSDQ,FDDBR,CLRQ,DJZT,ZCZB,SJZB,TYSHXYDM,GSZCH,ZZJGDM,NSRSBH,NSRZZ,QYLX,HY,YYQXS,YYQXM,RYGM,CBRY,YWM,CYM,DJJG,HZRQ,ZCDZ,JYFW,JCKQYDM,QYFL,HYDL,
-                      QYSH,QYDZ,DHHM,KHYH,YHZH,origin,create_time,update_time)
+                      (company_name,location,legal_representative,date_of_establishment,operating_status,registered_capital,paid_in_capital,
+                      unified_social_credit_code,business_registration_number,organization_code,taxpayer_identification_number,taxpayer_qualification,
+                      type_of_enterprise,industry,operating_period_std,operating_period_edt,staff_size,number_of_participants,english_name,
+                      former_name,registration_authority,approved_date,registered_address,business_scope,import_and_export_enterprise_code,
+                      category,industry_category,credit_code,address,phone_number,bank,bank_account,origin,create_time,update_time)
                       VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                       """
 
 COMPANY_INFO_UPDATE = """
                       UPDATE {db_name}.{table_name} SET
-                      QYMC=%s,SSDQ=%s,FDDBR=%s,CLRQ=%s,DJZT=%s,ZCZB=%s,SJZB=%s,TYSHXYDM=%s,GSZCH=%s,ZZJGDM=%s,NSRSBH=%s,NSRZZ=%s,QYLX=%s,
-                      HY=%s,YYQXS=%s,YYQXM=%s,RYGM=%s,CBRY=%s,YWM=%s,CYM=%s,DJJG=%s,HZRQ=%s,ZCDZ=%s,JYFW=%s,JCKQYDM=%s,QYFL=%s,HYDL=%s,
-                      QYSH=%s,QYDZ=%s,DHHM=%s,KHYH=%s,YHZH=%s,origin=%s,update_time=%s
-                      WHERE QYMC=
+                      company_name=%s,location=%s,legal_representative=%s,date_of_establishment=%s,operating_status=%s,registered_capital=%s,paid_in_capital=%s,
+                      unified_social_credit_code=%s,business_registration_number=%s,organization_code=%s,taxpayer_identification_number=%s,taxpayer_qualification=%s,
+                      type_of_enterprise=%s,industry=%s,operating_period_std=%s,operating_period_edt=%s,staff_size=%s,number_of_participants=%s,english_name=%s,
+                      former_name=%s,registration_authority=%s,approved_date=%s,registered_address=%s,business_scope=%s,import_and_export_enterprise_code=%s,
+                      category=%s,industry_category=%s,credit_code=%s,address=%s,phone_number=%s,bank=%s,bank_account=%s,origin=%s,update_time=%s
+                      WHERE company_name=
                       """
 
 COMPANY_FETCH_BY_NAME = """SELECT COUNT(QYMC) c FROM {db_name}.{table_name} WHERE QYMC='%s'"""
@@ -25,10 +30,10 @@ COMPANY_FETCH_BY_NAME = """SELECT COUNT(QYMC) c FROM {db_name}.{table_name} WHER
 # 新增发票信息
 ADD_INVOICES = """
                ALTER TABLE `test2_data_collection`.`QCC_qcc_crawler`
-               ADD COLUMN `QYSH` VARCHAR(512) NULL DEFAULT NULL COMMENT '企业税号' AFTER `HYDL`,
-               ADD COLUMN `QYDZ` VARCHAR(512) NULL DEFAULT NULL COMMENT '企业地址' AFTER `QYSH`,
-               ADD COLUMN `DHHM` VARCHAR(512) NULL DEFAULT NULL COMMENT '电话号码' AFTER `QYDZ`,
-               ADD COLUMN `KHYH` VARCHAR(512) NULL DEFAULT NULL COMMENT '开户银行' AFTER `DHHM`,
-               ADD COLUMN `YHZH` VARCHAR(45) NULL DEFAULT NULL COMMENT '银行账户' AFTER `KHYH`;
+               ADD COLUMN `credit_code` VARCHAR(512) NULL DEFAULT NULL COMMENT '企业税号' AFTER `HYDL`,
+               ADD COLUMN `address` VARCHAR(512) NULL DEFAULT NULL COMMENT '企业地址' AFTER `QYSH`,
+               ADD COLUMN `phone_number` VARCHAR(512) NULL DEFAULT NULL COMMENT '电话号码' AFTER `QYDZ`,
+               ADD COLUMN `bank` VARCHAR(512) NULL DEFAULT NULL COMMENT '开户银行' AFTER `DHHM`,
+               ADD COLUMN `bank_account` VARCHAR(45) NULL DEFAULT NULL COMMENT '银行账户' AFTER `KHYH`;
                ADD COLUMN `origin` VARCHAR(45) NULL DEFAULT NULL COMMENT '网站地址' AFTER `origin`;
                """
