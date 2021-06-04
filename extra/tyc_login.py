@@ -134,23 +134,23 @@ class CrackGeetest():
         # 当前位移
         current = 0
         # 减速阈值
-        mid = distance * 1 / 10
+        mid = distance * 2 / 5
         # 计算间隔
-        t = 0.3
+        t = 0.2
         # 初速度
         v = 1
 
         while current < distance:
             if current < mid:
-                a = 10
+                a = 5
             else:
-                a = -1
+                a = -2
             v0 = v
             v = v0 + a * t
             move = v0 * t + 1 / 2 * a * t * t
             current += move
             track.append(round(move))
-        track.extend([1.2, 2.3, -2.5, -1]) # 滑过去再滑过来，不然有可能被吃
+        # track.extend([1.2, 2.3, -2.5, -1]) # 滑过去再滑过来，不然有可能被吃
         print('挪动距离边变动：{0}'.format(track))
         return track
 

@@ -76,9 +76,10 @@ class QCCToExcel(object):
         # qcc_sql = """SELECT id, QYMC, SSDQ, FDDBR, CLRQ, DJZT, ZCZB, SJZB, TYSHXYDM, GSZCH, ZZJGDM, NSRSBH, NSRZZ, QYLX, HY,
         # YYQXS, YYQXM, RYGM, CBRY, YWM, CYM, DJJG, HZRQ, ZCDZ, JYFW, JCKQYDM, QYFL, HYDL, create_time, update_time
         # FROM data_collection.QCC_qcc_crawler"""
-        qcc_sql = """SELECT id, TYSHXYDM, QYMC, GSZCH, ZZJGDM, NSRSBH, NSRZZ,HY, FDDBR, QYLX, CLRQ, ZCZB, SJZB, HZRQ, YYQXS,
-        YYQXM, DJJG, ZCDZ, JYFW, QYSH, QYDZ, DHHM, KHYH, YHZH,
-        create_time, update_time
+        qcc_sql = """SELECT id, unified_social_credit_code, company_name, business_registration_number, organization_code, taxpayer_identification_number, 
+        taxpayer_qualification,industry, legal_representative, type_of_enterprise, date_of_establishment, registered_capital, 
+        paid_in_capital, approved_date, operating_period_std,operating_period_edt, operating_status, business_scope, 
+        business_scope, credit_code, address, phone_number, bank, bank_account,create_time, update_time
         FROM data_collection.QCC_qcc_crawler"""
 
         file_name = '企业基本信息{0:%Y-%m-%d}.xlsx'.format(datetime.now())
