@@ -62,7 +62,7 @@ class ExtraPipeline(object):
             检查表中是否有列字段更新 新增表列
         """
         metadata = MetaData(self.engine)
-        my_table = Table(
+        enterprises = Table(
             self.table_name, metadata,
             Column('id', mysql.INTEGER(11), primary_key=True, nullable=False, comment="id"),
             Column('company_name', mysql.VARCHAR(512), nullable=True, comment="企业名称", unique=True),
@@ -101,8 +101,9 @@ class ExtraPipeline(object):
             Column('update_time', mysql.DATETIME, nullable=True, comment="更新时间"),
             Column('origin', mysql.VARCHAR(512), nullable=True, comment="网站地址"),
         )
-        Index("update_time", my_table.c.update_time)
+        Index("update_time", enterprises.c.update_time)
         metadata.create_all()
+        return enterprises
 
     def process_item(self, item, spider):
         """
