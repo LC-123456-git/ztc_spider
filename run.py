@@ -17,9 +17,11 @@ if __name__ == '__main__':
     # cmdline.execute("scrapy crawl qcc_crawler".split(" "))
     # cmdline.execute("scrapy crawl province_67_yangguangyizhao_spider -a sdt=2021-01-01 -a edt=2021-05-31".split(" "))
     # cmdline.execute("scrapy crawl province_65_guoepingtai_spider -a sdt=2021-01-01 -a edt=2021-06-03".split(" "))
-    cmdline.execute("scrapy crawl province_65_guoepingtai_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_65_guoepingtai_spider".split(" "))
     # cmdline.execute("scrapy crawl province_67_yangguangyizhao_spider".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider -a sdt=2021-05-27 -a edt=2021-05-28".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3302_zjcaigou_spider".split(" "))
     # cmdline.execute("scrapy crawl province_68_qilu_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_53_bilian_spider".split(" "))
+    cmdline.execute("scrapy crawl province_77_zhaobide_spider -a sdt=2021-05-27 -a edt=2021-06-07".split(" "))
     

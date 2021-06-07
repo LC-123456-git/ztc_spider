@@ -219,6 +219,7 @@ class Province65GuoepingtaiSpiderSpider(scrapy.Spider):
                 # YEILD ORIGIN BY tenderType|platformType|etId|htmlContentId|now_time
                 tender_type = content.get('tenderType', '')
                 platform_type = content.get('platformType', '')
+                pub_time = content.get('showDate', '')
 
                 origin = self.origin.format(**{
                     'tender_type': tender_type,
@@ -236,11 +237,12 @@ class Province65GuoepingtaiSpiderSpider(scrapy.Spider):
                     'now_time': now_time,
                 })
 
-                yield scrapy.Request(url=c_url, callback=self.parse_detail, meta={
-                    'notice_type': resp.meta.get('notice_type', ''), 
-                    'business_category': resp.meta.get('business_category', ''),
-                    'origin': origin,
-                }, dont_filter=True, priority=(len(content_list) - n) * 1000)
+                if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
+                    yield scrapy.Request(url=c_url, callback=self.parse_detail, meta={
+                        'notice_type': resp.meta.get('notice_type', ''), 
+                        'business_category': resp.meta.get('business_category', ''),
+                        'origin': origin,
+                    }, dont_filter=True, priority=(len(content_list) - n) * 1000)
 
     def parse_detail(self, resp):
         data = json.loads(resp.text)

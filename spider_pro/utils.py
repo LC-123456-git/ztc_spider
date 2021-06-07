@@ -41,7 +41,7 @@ def remove_element_contained(content, ele_name, attr_name, attr_value, specific_
             c_els = el.xpath('.//{specific_ele}'.format(specific_ele=specific_ele))
             if c_els:
                 el.getparent().remove(el)
-        content = etree.tounicode(doc)
+        content = etree.tounicode(doc, method='html')
     except Exception as e:
         msg = e
 
@@ -97,7 +97,7 @@ def remove_specific_element(content, ele_name, attr_name, attr_value, if_child=F
                             same += 1
                         else:  # 删除所有匹配节点
                             el.getparent().remove(el)
-            content = etree.tounicode(doc)
+            content = etree.tounicode(doc, method='html')
         else:  # 无属性元素 指定索引删除
             for n, el in enumerate(els):
                 if n + 1 == index:
@@ -122,7 +122,7 @@ def check_if_http_based(url):
     return True if 'http' in url else False
 
 
-def catch_files(content, base_url):
+def catch_files(content, base_url, **kwargs):
     """
     find doc/excel from content
     """
@@ -145,8 +145,10 @@ def catch_files(content, base_url):
         href_els = doc.xpath('//a')
         for href_el in href_els:
             file_name = href_el.xpath('.//text()')
+
             if file_name:
-                file_name = file_name[0]
+                file_name = ''.join(file_name).strip()
+
                 # check file_name exists zip|doc|docx|xls|xlsx
                 # RECORDS ALL LINKS EXCEPT CONTENT-TYPE CONTAINS 'text/html'
                 file_url = href_el.get('href', '')
@@ -154,14 +156,34 @@ def catch_files(content, base_url):
                     file_url = base_url + file_url
 
                 if re.search('\.pdf|\.rar|\.zip|\.doc|\.docx|\.xls|\.xlsx|\.xml|\.dwg|\.AJZF', file_name):
-                    files_path[file_name] = file_url
+                    files_path[file_name.strip()] = file_url
                 else:
                     content_type = requests.get(url=file_url, headers={
                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
                                       '(KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
                     }).headers.get('Content-Type')
                     if 'text/html' not in content_type:
-                        files_path[file_name] = file_url
+                        files_path[file_name.strip()] = file_url
+        iframe_els = doc.xpath('//iframe')
+
+        for iframe_el in iframe_els:
+            file_name = iframe_el.get('src', '')
+
+            # check file_name exists zip|doc|docx|xls|xlsx
+            # RECORDS ALL LINKS EXCEPT CONTENT-TYPE CONTAINS 'text/html'
+            file_url = iframe_el.get('src', '')
+            if not check_if_http_based(file_url):
+                file_url = base_url + file_url
+
+            if re.search('\.pdf|\.rar|\.zip|\.doc|\.docx|\.xls|\.xlsx|\.xml|\.dwg|\.AJZF', file_name):
+                files_path[file_name.strip()] = file_url
+            else:
+                content_type = requests.get(url=file_url, headers={
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+                                  '(KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
+                }).headers.get('Content-Type')
+                if 'text/html' not in content_type:
+                    files_path[file_name.strip()] = file_url
     except Exception as e:
         msg = e
     return msg, files_path

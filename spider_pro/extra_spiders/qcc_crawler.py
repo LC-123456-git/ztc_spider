@@ -37,7 +37,7 @@ class QccCrawlerSpider(scrapy.Spider):
         'CONCURRENT_RTEQUESTS_PER_IP': 4,
         "ENABLE_PROXY_USE" : True,
         "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
-        'RETRY_TIMES': 8,
+        'RETRY_TIMES': 10,
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
     # start_url = 'https://www.qcc.com/industry_A'
