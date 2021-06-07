@@ -98,7 +98,7 @@ class Province53BilianSpiderSpider(scrapy.Spider):
         total_page = resp.xpath('//*[@id="pagerSubmitForm"]/a[last()-1]/text()').get()
         try:
             total_page = int(total_page)
-        except ValueError as e:
+        except Exception as e:
             total_page = 1
         # for p in range(1, 2):
         for p in range(1, total_page + 1):
