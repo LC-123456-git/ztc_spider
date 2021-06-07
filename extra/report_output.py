@@ -192,8 +192,8 @@ class ReportOutput(DBQuery):
         result = []
 
         # if area_id not in [14, 8, 3305]:
-        today = date
-        tomorrow = '{0:%Y-%m-%d}'.format(datetime.strptime(today, '%Y-%m-%d') + timedelta(days=1))
+        today = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.strptime(date, '%Y-%m-%d'))
+        tomorrow = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.strptime(date, '%Y-%m-%d') + timedelta(days=1, seconds=-1))
         download_sql = """SELECT area_id n, COUNT(id) c FROM {db_name}.{table_name}
         WHERE update_time BETWEEN '{today}' AND '{tomorrow}'
         GROUP BY area_id;""".format(**{
@@ -361,5 +361,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-06-05', edt='2021-06-07')
+    rpt.output(sdt='2021-06-01', edt='2021-06-06')
     print((datetime.now() - start_time).total_seconds())
