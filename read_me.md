@@ -1,30 +1,44 @@
-***
+---
 
 ### TODO功能列表
+
 - [] 49 宁夏回族自治区公共资源交易网 图片功能未完成 - wwj
 
-***
+---
+
 ### TODO抓取列表
-- [x] 0 全国 http://www.ggzy.gov.cn/
+
+- [X] 0 全国 http://www.ggzy.gov.cn/
+
 - [] 1 全国 http://www.cebpubservice.com/
-- [x] 2 北京 http://ggzyfw.beijing.gov.cn
-- [x] 3 天津 http://ggzy.zwfwb.tj.gov.cn/
-- [x] 4 河北 http://ggzy.hebei.gov.cn/
-- [x] 5 山西 http://prec.sxzwfw.gov.cn
+
+- [X] 2 北京 http://ggzyfw.beijing.gov.cn
+- [X] 3 天津 http://ggzy.zwfwb.tj.gov.cn/
+- [X] 4 河北 http://ggzy.hebei.gov.cn/
+- [X] 5 山西 http://prec.sxzwfw.gov.cn
+
 - [] 6 内蒙古 http://ggzyjy.nmg.gov.cn
 - [] 7 辽宁 http://www.lnggzy.gov.cn/
-- [x] 8 吉林 http://www.jl.gov.cn/ggzy/
+
+- [X] 8 吉林 http://www.jl.gov.cn/ggzy/
+
 - [] 9 吉林 http://www.ggzyzx.jl.gov.cn/
-- [x] 10 黑龙江 http://hljggzyjyw.gov.cn
-- [x] 11 上海 http://www.shggzy.com
+
+- [X] 10 黑龙江 http://hljggzyjyw.gov.cn
+- [X] 11 上海 http://www.shggzy.com
+
 - [] 12 上海 http://www.shcpe.cn/jyfw/xxfw/index.html
-- [x] 13 江苏 http://jsggzy.jszwfw.gov.cn/
-- [x] 14 浙江 http://www.zjpubservice.com
-- [x] 15 浙江 http://www.zmctc.com/zjgcjy/jyxx/
+
+- [X] 13 江苏 http://jsggzy.jszwfw.gov.cn/
+- [X] 14 浙江 http://www.zjpubservice.com
+- [X] 15 浙江 http://www.zmctc.com/zjgcjy/jyxx/
+
 - [] 16 安徽 http://ggzy.ah.gov.cn/
 - [] 17 福建 https://ggzyfw.fujian.gov.cn/
-- [x] 18 福建 http://www.fjggzyjy.cn/
-- [x] 19 江西 https://www.jxsggzy.cn/web/
+
+- [X] 18 福建 http://www.fjggzyjy.cn/
+- [X] 19 江西 https://www.jxsggzy.cn/web/
+
 - [] 20 江西 http://ncztb.nc.gov.cn/nczbw/
 - [] 21 山东 http://ggzyjy.shandong.gov.cn/
 - [] 22 山东 http://ggzyjyzx.shandong.gov.cn/
@@ -33,9 +47,13 @@
 - [] 25 河南 http://slt.henan.gov.cn/bmzl/jsgl/ztbxx/
 - [] 26 湖北 http://jycg.hubei.gov.cn/
 - [] 27 湖北 http://www.hbggzyfwpt.cn/
-- [x] 28 湖南 https://ggzy.hunan.gov.cn/
+
+- [X] 28 湖南 https://ggzy.hunan.gov.cn/
+
 - [] 29 湖南 https://www.hnsggzy.com/
-- [x] 30 广东 http://bs.gdggzy.org.cn/osh-web/
+
+- [X] 30 广东 http://bs.gdggzy.org.cn/osh-web/
+
 - [] 31 广东 http://www.gzggzy.cn/
 - [] 32 广东 http://www.zgazxxw.com/
 - [] 33 广西 http://gxggzy.gxzf.gov.cn/
@@ -44,19 +62,27 @@
 - [] 36 海南 https://hng.zbytb.com/
 - [] 37 海南 https://www.ccgp-hainan.gov.cn/zhuzhan/
 - [] 38 海南 http://www.hncq.cn/
-- [x] 39 重庆 https://www.cqggzy.com/
+
+- [X] 39 重庆 https://www.cqggzy.com/
+
 - [] 40 四川 http://ggzyjy.sc.gov.cn/
 - [] 41 贵州 http://ggzy.guizhou.gov.cn/
 - [] 42 云南 http://ggzy.yn.gov.cn/
 - [] 43 云南 https://www.ynggzy.com/
 - [] 44 西藏 http://ggzy.xizang.gov.cn:9090/
-- [x] 45 陕西 http://www.sxggzyjy.cn/
+
+- [X] 45 陕西 http://www.sxggzyjy.cn/
+
 - [] 46 甘肃 https://ggzyjy.gansu.gov.cn
 - [] 47 青海 https://www.qhdzzbfw.gov.cn/
 - [] 48 青海 http://www.qhggzyjy.gov.cn/
-- [x] 49 宁夏 http://www.nxggzyjy.org/ 
+
+- [X] 49 宁夏 http://www.nxggzyjy.org/
+
 - [] 50 新疆 http://zwfw.xinjiang.gov.cn/xinjiangggzy/
-- [x] 51 兵团 http://ggzy.xjbt.gov.cn/
+
+- [X] 51 兵团 http://ggzy.xjbt.gov.cn/
+
 - [] 52 品茗-嗨招 https://www.hibidding.com/
 - [] 53 必联 https://www.ebnew.com/
 - [] 54 E共享交易平台 http://ebid.okap.com/
@@ -122,8 +148,10 @@
 - [] 114 光咨电子招投标交易平台 https://www.gzebid.cn/
 - [] 115 全国招标信息网 https://www.bidnews.cn/zjzd/
 
-***
+---
+
 ###地方
+
 - [] 3301 杭州公共资源交易网  https://www.hzctc.cn/
 - [] 3302 浙江政府采购网  https://zfcg.czt.zj.gov.cn/
 - [] 3303 浙江省能源集团电子招投标平台  https://www.zeec.cn/
@@ -147,78 +175,190 @@
 - [] 3321 临海市公共资源交易中心  http://www.linhai.gov.cn/
 - [] 3322 安吉公共资源交易中心    http://ggzy.anji.gov.cn/
 - [] 3323 萧山政府门户网站  http://www.xiaoshan.gov.cn/
-- [] 3324 南浔区公共资源交易中心  http://ggzy.nanxun.gov.cn/ 
+- [] 3324 南浔区公共资源交易中心  http://ggzy.nanxun.gov.cn/
 - [] 3325 德清县公共资源交易中心  http://116.62.168.209/zbgg/index.htm
 - [] 3326 龙游县公共资源交易中心  http://ztb.longyou.gov.cn/
 - [] 3327 平阳县公共资源交易中心  http://www.zjpy.gov.cn/
 - [] 3328 常山县公共资源交易网  http://qzcs.zjzwfw.gov.cn/
 
-
 ### 反爬策略汇总
->49 宁夏回族自治区公共资源交易网
-  > > 问题：提取页面数据时，id是页面加载完之后再添加的<br>
-      解决：提取原始界面分析xpath再提取<br>
 
->08 山西省公共资源交易平台
-> > 问题：信息类型分类时需要POST http://prec.sxzwfw.gov.cn/queryContent-jyxx.jspx
-***
+> 49 宁夏回族自治区公共资源交易网
+>
+>> 问题：提取页面数据时，id是页面加载完之后再添加的`<br>`
+>> 解决：提取原始界面分析xpath再提取`<br>`
+>>
+
+> 08 山西省公共资源交易平台
+>
+>> 问题：信息类型分类时需要POST http://prec.sxzwfw.gov.cn/queryContent-jyxx.jspx
+>>
+
+---
 
 ### 各站点异常统计
 
 > 53 必联网
-> >https://www.ebnew.com/businessShow/664346381.html，附件是一个展示链接
-    不是一个下载链接，当前无解决方案                          ——2021-4-22
+>
+>> https://www.ebnew.com/businessShow/664346381.html，附件是一个展示链接
+>> 不是一个下载链接，当前无解决方案                          ——2021-4-22
+>>
 
 > 57 精彩纵横
+>
 > # 代理机构已解析   后期可以不用清洗
+>
 > 该网站有两种分类 需要分别使用两种url请求 参数不一样          --2021-5-07
 
->3318  浙江金华公共资源交易中心  附件是需要先请求的get_url()方法  获取相应的uid 进行拼接
->                                                           --2021-04-28
+> 3318  浙江金华公共资源交易中心  附件是需要先请求的get_url()方法  获取相应的uid 进行拼接
+> --2021-04-28
 
 ### install 命令
->C:\Users\PC\AppData\Local\Programs\Python\Python39\python.exe
->C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts\pip3.9.exe
 
->pip install --index-url https://pypi.douban.com/simple <br>
-pip --default-timeout=1000 install PyQt5==5.10.1<br>
-pip --default-timeout=1000 install -i https://pypi.tuna.tsinghua.edu.cn/simple scrapy <br>
-pip --default-timeout=1000 install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt <br>
+> C:\Users\PC\AppData\Local\Programs\Python\Python39\python.exe
+> C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts\pip3.9.exe
 
->C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts\pip3.9.exe --default-timeout=1000 install -i https://pypi.tuna.tsinghua.edu.cn/simple
+> pip install --index-url https://pypi.douban.com/simple `<br>`
+> pip --default-timeout=1000 install PyQt5==5.10.1`<br>`
+> pip --default-timeout=1000 install -i https://pypi.tuna.tsinghua.edu.cn/simple scrapy `<br>`
+> pip --default-timeout=1000 install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt `<br>`
 
->C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts\pip3.9.exe freeze > requirements.txt
+> C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts\pip3.9.exe --default-timeout=1000 install -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+> C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts\pip3.9.exe freeze > requirements.txt
 
 ### 源码修改
-文件：
-    C:\Users\PC\AppData\Local\Programs\Python\Python39\Lib\site-packages\scrapy\spiders\crawl.py
-修改：
-    第101行（request = self._build_request(rule_index, link)）下面增加一行
-    request.meta["cb_kwargs"] = rule.cb_kwargs
 
+文件：
+C:\Users\PC\AppData\Local\Programs\Python\Python39\Lib\site-packages\scrapy\spiders\crawl.py
+修改：
+第101行（request = self._build_request(rule_index, link)）下面增加一行
+request.meta["cb_kwargs"] = rule.cb_kwargs
 
 ### 打包上传脚本命令(非虚拟环境，虚拟环境自行修改路径)
+
 前置
->先安装scrapyd-client<br>
->在该目录下新建scrapyd-deploy.bat 路径如下<br> 
->C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts
->开始写入<br>
-> @echo off<br>
-> "C:\Users\PC\AppData\Local\Programs\Python\Python39\python.exe" "C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts\scrapyd-deploy" %*<br>
->写入结束<br>
+
+> 先安装scrapyd-client`<br>`
+> 在该目录下新建scrapyd-deploy.bat 路径如下`<br>`
+> C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts
+> 开始写入`<br>`
+> @echo off`<br>`
+> "C:\Users\PC\AppData\Local\Programs\Python\Python39\python.exe" "C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts\scrapyd-deploy" %*`<br>`
+> 写入结束`<br>`
 
 命令(暂行，后面改成可视化操作)
-> 打包上传spiders<br>
-> scrapyd-deploy data-server -p spider_pro<br>
+
+> 打包上传spiders`<br>`
+> scrapyd-deploy data-server -p spider_pro`<br>`
 
 =======
+
 ### 代码上传至服务器
+
 # scrapyd_timing
+
 scp  D:\ztx_clone\ztx_spider\scrapyd_timing.py root@192.168.1.248:/home/python/scripts/scrapyd_timing.py
 
 # scrapyd_timing_post
+
 scp  D:\ztx_clone\ztx_spider\scrapyd_timing_post.py root@192.168.1.248:/home/python/scripts/scrapyd_timing_post.py
 
 # scrapyd_clean_data
+
 scp  D:\ztx_clone\ztx_spider\scrapyd_clean_data.py root@192.168.1.248:/home/python/scripts/scrapyd_clean_data.py
+
+### 容器部署
+
+* MySQL
+  版本：5.7
+  配置文件：
+
+  ```
+  [mysql]
+  default-character-set=utf8
+  [mysqld]
+  skip-grant-tables 
+  datadir=/var/lib/mysql
+  socket=/var/lib/mysql/mysql.sock
+  user=mysql
+  # Disabling symbolic-links is recommended to prevent assorted security risks
+  symbolic-links=0
+  character-set-server=utf8
+  default-storage-engine=INNODB
+  [mysqld_safe]
+  log-error=/var/log/mysqld.log
+  pid-file=/var/run/mysqld/mysqld.pid
+  ```
+* redislabs
+* scrapyd
+
+  - requirements.txt
+    ```
+    DBUtils==2.0.1
+    gevent==21.1.2
+    lxml==4.6.3
+    numpy==1.20.2
+    openpyxl==3.0.7
+    pandas==1.2.3
+    PyMySQL==1.0.2
+    python-dateutil
+    pytz==2021.1
+    redis==3.5.3
+    requests==2.5.0
+    Scrapy==2.4.1
+    SQLAlchemy==1.4.0
+    Twisted==21.2.0
+    urllib3==1.26.4
+    xlwt==1.3.0
+    xmltodict==0.12.0
+    scrapyd
+    scrapyd-client
+    scrapy-redis
+    redisbloom
+    pycryptodome
+    ```
+  - Dockerfile
+    ```
+    FROM python:3.9
+    #add the scrapyd configure file
+
+    # set timezone
+    RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+    RUN echo 'Asia/Shanghai' >/etc/timezone
+
+    ADD ./conf/scrapyd.conf /etc/scrapyd/scrapyd.conf
+    #add requirements.txt
+    ADD requirements.txt /opt/requirements.txt
+    WORKDIR /opt
+    #use other fast image
+    RUN pip3 install  -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+
+    CMD ["scrapyd"]
+
+    EXPOSE 6800
+    ```
+* 创建容器
+
+  ```
+  docker run -p 8050:3306 --name ztx_mysql \
+  -v $PWD/MYSQL/conf.d:/etc/mysql/conf.d \
+  -v $PWD/MYSQL/logs:/logs \
+  -v $PWD/MYSQL/data:/var/lib/mysql \
+  -e MYSQL_ROOT_PASSWORD=Ly3sa%@D0$pJt0y6 \
+  -d mysql:5.7
+
+
+  docker run -p 8090:6379 --restart=always --name ztx_redis \
+  -d redislabs/rebloom:latest
+
+  docker run -d -p 8060:6801 scrapyd
+  ```
+
 >>>>>>> Stashed changes
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>
