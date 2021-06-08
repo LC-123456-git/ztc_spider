@@ -37,24 +37,24 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
             'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
                          '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
         },
-        '变更公告': {
-            'category_tag': 'INFORM',
-            'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!informQuery.do?type=INFORM',
-            'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
-                         '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
-        },
-        '中标预告': {
-            'category_tag': 'ZBHXRGS',
-            'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type=ZBHXRGS',
-            'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
-                         '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
-        },
-        '中标公告': {
-            'category_tag': 'ZZXS',
-            'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-bidder!show.do',
-            'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-bidder!show.do?_packageCode_notnull=true&_platformType={category_tag}&_auditStatus=PASSED&_packageId_notnull=true' + \
-                         '&_bidState=1&ORDERBY=+submitDate+desc+&_projectVestingAddress_eq=&PAGE={page}&PAGESIZE=12',
-        },
+        # '招标变更': {
+        #     'category_tag': 'INFORM',
+        #     'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!informQuery.do?type=INFORM',
+        #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
+        #                  '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
+        # },
+        # '中标预告': {
+        #     'category_tag': 'ZBHXRGS',
+        #     'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type=ZBHXRGS',
+        #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
+        #                  '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
+        # },
+        # '中标公告': {
+        #     'category_tag': 'ZZXS',
+        #     'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-bidder!show.do',
+        #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-bidder!show.do?_packageCode_notnull=true&_platformType={category_tag}&_auditStatus=PASSED&_packageId_notnull=true' + \
+        #                  '&_bidState=1&ORDERBY=+submitDate+desc+&_projectVestingAddress_eq=&PAGE={page}&PAGESIZE=12',
+        # },
     }
 
     def __init__(self, *args, **kwargs):
@@ -207,6 +207,7 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
             })
 
     def turn_page(self, resp):
+        notice_type = resp.meta.get('notice_type', '')
         max_page_el = resp.xpath('//div[@class="page_manu r"]//a[last()]/@onclick').get()  # turnCostumerpage(3717)
         max_page_com = re.compile('(\d+)')
         max_page = max_page_com.findall(max_page_el)
@@ -228,10 +229,12 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
                     })
                 enhance_els = [
                     {'enhance_el': 'td', 'option': 'last()'},
+                ] if notice_type != '招标变更' else [
+                    {'enhance_el': 'tr', 'option': 'position()=1'},
                 ]
                 judge_status = self.judge_in_interval(
                     c_url, method='POST', ancestor_el='table', ancestor_attr='class', ancestor_val='tab_tb2',
-                    child_el='div', resp=resp, enhance_els=enhance_els,
+                    child_el='div' if notice_type != '招标变更' else 'td', resp=resp, enhance_els=enhance_els,
                 )
                 if judge_status == 0:
                     break
@@ -239,26 +242,30 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
                     continue
                 else:
                     yield scrapy.FormRequest(url=c_url, callback=self.parse_list, meta={
-                        'notice_type': resp.meta.get('notice_type', ''),
-                    }, priority=(max_page - page) * 10)
+                        'notice_type': notice_type,
+                    }, priority=(max_page - page) * 100, dont_filter=True)
 
     def parse_list(self, resp):
+        notice_type = resp.meta.get('notice_type', '')
         table_els = resp.xpath('//table')
         for n, table_el in enumerate(table_els):
             href = table_el.xpath('.//td[position()=1]//a/@href').get()
             title_name = table_el.xpath('.//td[position()=1]//a/text()').get()
             if href:
                 pub_time_pre = table_el.xpath('.//td[position()=2]//div[position()=2]/text()').get()
+                if notice_type == '招标变更':
+                    pub_time_pre = table_el.xpath('.//tr[position()=1]//td[last()]/text()[not(normalize-space()="")]').get()
                 com = re.compile('(\d+-\d+-\d+)')
                 pub_time = com.findall(pub_time_pre)
                 pub_time = pub_time[0] if pub_time else ''
 
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
-                    yield scrapy.Request(url=''.join([self.query_url, href]), callback=self.parse_detail, meta={
-                        'notice_type': resp.meta.get('notice_type'),
+                    c_url = ''.join([self.query_url, href])
+                    yield scrapy.Request(url=c_url, callback=self.parse_detail, meta={
+                        'notice_type': notice_type,
                         'pub_time': pub_time,
                         'title_name': title_name,
-                    }, priority=(len(table_els) - n) * 1000)
+                    }, priority=(len(table_els) - n) * 100000)
 
     def parse_detail(self, resp):
         title_name = resp.meta.get('title_name', '')
