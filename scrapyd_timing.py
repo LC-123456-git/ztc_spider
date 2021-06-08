@@ -168,6 +168,7 @@ if __name__ == "__main__":
         "province_67_yangguangyizhao_spider",
         "province_68_qilu_spider",
         "province_71_zhaocaijingbao_spider",
+        "province_79_xinEcai_spider",
         "ZJ_enterprise_3303_zhenengjituan_spider",
         "ZJ_enterprise_3304_shuiliting_spider",
         "ZJ_city_3305_ningbo_spider", 
