@@ -105,7 +105,7 @@ class MySpider(CrawlSpider):
         try:
             if self.enable_incr:
                 pn = 1
-                num = 1
+                num = 0
                 with self.engine.connect() as conn:
                     li_list = response.xpath('//form[@id="form1"]/div[@class="ewb-list"]')
                     for li in range(len(li_list)):
@@ -207,8 +207,8 @@ class MySpider(CrawlSpider):
                 notice_item["content"] = content
                 notice_item["area_id"] = self.area_id
                 notice_item["category"] = classifyShow
-                yield notice_item
-
+                # yield notice_item
+                print(notice_item)
 
 if __name__ == "__main__":
     from scrapy import cmdline

@@ -47,15 +47,24 @@ class MySpider(CrawlSpider):
     list_others_notice_num = ['']
 
     d_dict = {"token": "", "pn": '0', "rn": '50', "sdt": "", "edt": "", "wd": "", "inc_wd": "", "exc_wd": "",
-            "fields": "title,projectnum", "cnum": "005", "sort": "{\"infodate\":\"0\"}", "ssort": "title", "cl": '200',
-            "terminal": "", "condition": [{"fieldName": "categorynum", "isLike": 'true', "likeType": '2'},
-            {"fieldName": "xiaqucode", "isLike": 'true', "likeType": '2', "equal": "6500"}], "time": 'null', "highlights": "title",
-            "statistics": 'null', "unionCondition": 'null', "accuracy": "100", "noParticiple": "0", "searchRange": 'null', "isBusiness": '1'}
+          "fields": "title,projectnum", "cnum": "005", "sort": "{\"infodate\":\"0\"}", "ssort": "title", "cl": '200',
+          "terminal": "", "condition": [{"fieldName": "categorynum", "isLike": 'true', "likeType": '2', "equal": "001005001"},
+                                        {"fieldName": "xiaqucode", "isLike": 'true', "likeType": '2'}],
+          "time": [{"fieldName": "webdate", "startTime": "", "endTime": ""}], "highlights": "title",
+          "statistics": 'null',
+          "unionCondition": 'null', "accuracy": "100", "noParticiple": "0", "searchRange": 'null',
+          "isBusiness": '1'}
 
+    def __init__(self, *args, **kwargs):
+        super(MySpider, self).__init__()
+        if kwargs.get("sdt") and kwargs.get("edt"):
+            self.enable_incr = True
+            self.sdt_time = kwargs.get("sdt")
+            self.edt_time = kwargs.get("edt")
+        else:
+            self.enable_incr = False
 
     def start_requests(self):
-        # all_urls = 'http://zwfw.xinjiang.gov.cn/xinjiangggzy/jyxx/001006/001006001/20200824/13dfbecc-91bf-40ea-bfb1-8924b9d1c63b.html'
-        # yield scrapy.Request(url=all_urls, callback=self.parse_item)
         yield scrapy.Request(url=self.query_url, callback=self.parse_url)
 
     def parse_url(self, response):
@@ -105,7 +114,7 @@ class MySpider(CrawlSpider):
                         r_data = {'condition': [s_dict, self.d_dict['condition'][1]]}
                         data_dict = self.d_dict | r_data
                         yield scrapy.Request(url=self.base_url, method='POST', body=json.dumps(data_dict),  callback=self.parse_data_urls,
-                                         meta={'classifyShow': classifyShow, 'notice': notice, 's_dict': s_dict})
+                                         meta={'classifyShow': classifyShow, 'notice': notice, 'data_dict': data_dict})
 
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
@@ -113,21 +122,49 @@ class MySpider(CrawlSpider):
     def parse_data_urls(self, response):
         try:
             if json.loads(response.text)['result']['totalcount']:
-                total = json.loads(response.text)['result']['totalcount']
-                self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                page = int(math.ceil(int(total)/50))
-                pn = 0
-                for num in range(1, page+1):
-                    if num == 1:
-                        pn = 0
-                    else:
-                        pn += 50
+                if self.enable_incr:
+                    pn = 0
+                    _dict = response.meta['data_dict'] |['time'][0] | {'startTime': self.sdt_time} | {'endTime': self.edt_time}
+                    _data_dicts = _dict | {'time': [_dict]}
+                    data_info_list = json.loads(response.text)['result']['records']
+                    nums = 0
+                    for info in range(len(data_info_list)):
+                        pub_time = data_info_list['info']['infodate']
+                        pub_time = get_accurate_pub_time(pub_time)
+                        x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
+                        if x:
+                            nums += 1
+                            total = int(len(data_info_list))
+                            if total == None:
+                                return
+                            self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                        if nums >= len(data_info_list):
+                            pn += 50
+                        else:
+                            pn = 0
+                        info_dicts = _data_dicts | {'pn': str(pn)}
+                        yield scrapy.Request(url=self.base_url, method='POST', body=json.dumps(info_dicts),
+                                             callback=self.parse_info,
+                                             meta={'classifyShow': response.meta['classifyShow'],
+                                                   'notice': response.meta['notice']})
+                else:
+                    total = json.loads(response.text)['result']['totalcount']
+                    self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                    page = int(math.ceil(int(total)/50))
+                    pn = 0
+                    for num in range(1, page+1):
+                        if num == 1:
+                            pn = 0
+                        else:
+                            pn += 50
 
-                    r_data = {'condition': [response.meta['s_dict'], self.d_dict['condition'][1]]}
-                    info_dict = self.d_dict | r_data
-                    info_dicts = info_dict | {'pn': str(pn)}
-                    yield scrapy.Request(url=self.base_url, method='POST', body=json.dumps(info_dicts),  callback=self.parse_info,
-                                         meta={'classifyShow': response.meta['classifyShow'], 'notice': response.meta['notice']})
+                        r_data = {'condition': [response.meta['s_dict'], self.d_dict['condition'][1]]}
+                        info_dict = self.d_dict | r_data
+                        info_dicts = info_dict | {'pn': str(pn)}
+                        yield scrapy.Request(url=self.base_url, method='POST', body=json.dumps(info_dicts),
+                                             callback=self.parse_info,
+                                             meta={'classifyShow': response.meta['classifyShow'],
+                                                   'notice': response.meta['notice']})
         except Exception as e:
             self.logger.error(f"初始总页数提取错误 : {response.meta=} {e} {response.url=}")
 

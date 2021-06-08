@@ -66,8 +66,6 @@ class MySpider(CrawlSpider):
             self.enable_incr = False
 
     def start_requests(self):
-        # all_info_url = 'http://ggb.sx.gov.cn/art/2011/9/7/art_1518856_20424370.html'
-        # yield scrapy.Request(url=all_info_url, callback=self.parse_item)
         yield scrapy.Request(url=self.query_url, callback=self.parse_url)
 
     def parse_url(self, response):
@@ -94,8 +92,9 @@ class MySpider(CrawlSpider):
                     noticn = 'null'
                 if noticn != 'null':
                     info_dict = self.r_dict | {'columnid': str(code)}
-                    yield scrapy.FormRequest(url=self.base_url, formdata=info_dict, callback=self.parse_data_urls,
-                                         meta={'noticn': noticn, 'info_dict': info_dict})
+                    yield scrapy.FormRequest(url=self.base_url, formdata=info_dict,
+                                             callback=self.parse_data_urls, dont_filter=True,
+                                             meta={'noticn': noticn, 'info_dict': info_dict})
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
@@ -125,7 +124,7 @@ class MySpider(CrawlSpider):
                         startrecord = 1
                         endrecord = 120
                     yield scrapy.FormRequest(url=base_url.format(startrecord, endrecord),
-                                             formdata=response.meta['info_dict'],
+                                             formdata=response.meta['info_dict'],dont_filter=True,
                                              callback=self.parse_info, meta={'noticn': response.meta['noticn']})
             else:
                 total = response.xpath('//datastore/totalrecord/text()').get()
@@ -141,7 +140,8 @@ class MySpider(CrawlSpider):
                         startrecord += 120
                         endrecord += 120
                     yield scrapy.FormRequest(url=base_url.format(startrecord, endrecord), formdata=response.meta['info_dict'],
-                                         callback=self.parse_info, meta={'noticn': response.meta['noticn']})
+                                             callback=self.parse_info, dont_filter=True,
+                                             meta={'noticn': response.meta['noticn']})
         except Exception as e:
             self.logger.error(f"初始总页数提取错误 parse_data_urls : {response.meta=} {e} {response.url=}")
 
@@ -153,7 +153,8 @@ class MySpider(CrawlSpider):
                 pub_time = ''.join(re.findall('<span>(.*)</span>', info)[0]).replace('[', '').replace(']', '')
                 info_url = self.domain_url + re.findall('<a href="(.*)" .*>', info)[0]
 
-                yield scrapy.Request(url=info_url, callback=self.parse_item, meta={'pub_time': pub_time, 'noticn': response.meta['noticn']})
+                yield scrapy.Request(url=info_url, callback=self.parse_item,
+                                     meta={'pub_time': pub_time, 'noticn': response.meta['noticn']})
 
         except Exception as e:
             self.logger.error(f"发起数据请求失败 parse_info {e} {response.url=}")

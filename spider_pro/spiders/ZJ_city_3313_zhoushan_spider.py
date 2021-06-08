@@ -53,8 +53,6 @@ class MySpider(CrawlSpider):
             self.enable_incr = False
 
     def start_requests(self):
-        # all_info_url = 'http://zsztb.zhoushan.gov.cn/zsztbweb/InfoDetail/?InfoID=zcy-7736768&CategoryNum=011002'
-        # yield scrapy.Request(url=all_info_url, callback=self.parse_item)
         yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
 
     def parse_urls(self, response):
@@ -103,7 +101,7 @@ class MySpider(CrawlSpider):
             if response.xpath('//div[@class="pagemargin"]/div/table/tr/td[@class="huifont"]/text()').get():
                 if self.enable_incr:
                     pn = 1
-                    num = 1
+                    num = 0
                     li_list = response.xpath('//table[@class="article-body"]/tr/td/table/tr[@height="30"]')
                     for li in range(len(li_list)):
                         pub_time = ''.join(li_list[li].xpath('./td[3]/text()').get()).replace('[', '').replace(']', '')

@@ -104,7 +104,7 @@ class MySpider(CrawlSpider):
             if response.xpath('//div[@class="pages"]/span[last()]/text()').get():
                 if self.enable_incr:
                     page = 1
-                    num = 1
+                    num = 0
                     data_list = response.xpath('//div[@class="infolist"]/div/ul/li')
                     for li in range(len(data_list)):
                         pub_time = data_list[li].xpath('./a/em/text()').get()
@@ -116,7 +116,7 @@ class MySpider(CrawlSpider):
                             if total == None:
                                 return
                             self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                        if li >= num:
+                        if num >= len(data_list):
                             page += 1
                         else:
                             page = 1

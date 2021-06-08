@@ -121,7 +121,7 @@ class MySpider(CrawlSpider):
                 else:
                     notice = 'null'
 
-                yield scrapy.Request(url=data_url, callback=self.parse_data_urls, dont_filter=True,
+                yield scrapy.Request(url=data_url, callback=self.parse_data_urls,
                                      meta={'category_name': response.meta['category_name'], 'notice': notice})
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
@@ -130,7 +130,7 @@ class MySpider(CrawlSpider):
         try:
             if self.enable_incr:
                 pn = 1
-                num = 1
+                num = 0
                 li_list = response.xpath('//div[@class="right-slider-content"]/table/tr[@height="24"]')[1:]
                 for li in range(len(li_list)):
                     pub_time = li_list[li].xpath('./td[last()]/font/text()').get()
@@ -143,7 +143,7 @@ class MySpider(CrawlSpider):
                         pn += 1
                     else:
                         pn = 1
-                    yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info, dont_filter=True,
+                    yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info,
                                          meta={'category_name': response.meta['category_name'], 'notice': response.meta['notice']})
             else:
                 if response.xpath('//div[@class="pagemargin"]//td[@class="huifont"]/text()').get() is not None:
@@ -152,7 +152,7 @@ class MySpider(CrawlSpider):
                     self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
                     info_url = response.url[:response.url.rindex('/') + 1] + '?Paging={}'
                     for num in range(1, int(pages) + 1):
-                        yield scrapy.Request(url=info_url.format(num), callback=self.parse_info, dont_filter=True,
+                        yield scrapy.Request(url=info_url.format(num), callback=self.parse_info,
                                          meta={'category_name': response.meta['category_name'], 'notice': response.meta['notice']})
         except Exception as e:
             self.logger.error(f"parse_data_urls:初始总页数提取错误 {response.meta=} {e} {response.url=}")
@@ -180,7 +180,7 @@ class MySpider(CrawlSpider):
                         else:
                             notice_type = response.meta['notice']
                         #
-                        yield scrapy.Request(url=all_info_url, callback=self.parse_item, dont_filter=True, priority=15,
+                        yield scrapy.Request(url=all_info_url, callback=self.parse_item, priority=15,
                                          meta={'notice_type': notice_type, 'pub_time': pub_time,
                                                'title_name': title_name, 'category_name': response.meta['category_name'],
                                                })

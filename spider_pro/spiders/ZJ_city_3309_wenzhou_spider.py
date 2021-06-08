@@ -59,7 +59,7 @@ class MySpider(CrawlSpider):
         try:
             if self.enable_incr:
                 pn = 1
-                num = 1
+                num = 0
                 li_list = response.xpath('//div[@class="List-Li FloatL"]/ul/li')
                 for li in range(len(li_list)):
                     pub_time = li_list[li].xpath('./span/text()').get()
@@ -119,9 +119,9 @@ class MySpider(CrawlSpider):
                         notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
                     else:
                         notice_type = notice
-                    yield scrapy.Request(url=all_info_url, callback=self.parse_item, dont_filter=True, priority=150,
-                                     meta={'notice_type': notice_type, 'pub_time': pub_time,
-                                           'title_name': title_name, 'category_name': category_name})
+                    yield scrapy.Request(url=all_info_url, callback=self.parse_item, priority=150,
+                                         meta={'notice_type': notice_type, 'pub_time': pub_time,
+                                               'title_name': title_name, 'category_name': category_name})
         except Exception as e:
             self.logger.error(f"parse_info:发起数据请求失败 {e} {response.url=}")
 

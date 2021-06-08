@@ -80,24 +80,25 @@ class MySpider(CrawlSpider):
             if self.enable_incr:
                 page = 1
                 li_list = response.xpath('//ul[@class="list-body"]/li/p[2]')
+                nums = 0
                 for li in range(len(li_list)):
                     put_time = li_list[li].xpath('./text()').get()
                     put_time = get_accurate_pub_time(put_time)
                     x, y, z = judge_dst_time_in_interval(put_time, self.sdt_time, self.edt_time)
                     if x:
+                        nums += 1
                         total = int(len(li_list))
                         if total == None:
                             return
                         self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                        if li >= len(li_list):
+                        if nums >= len(li_list):
                             page += 1
                         else:
                             page = 1
                         data_url = self.query_url.format(page, response.meta['itme'])
                         yield scrapy.Request(url=data_url, callback=self.parse_data_urls, dont_filter=True,
                                      meta={"notice": response.meta['notice'], 'category': category_name})
-                    else:
-                        continue
+
             else:
                 pages = response.xpath('//ul[@class="pages-list"]/li[@class="select_page"]/select/option[last()]/text()').get()
                 self.logger.info(f"本次获取总条数为：{int(pages) * 10}")
@@ -170,6 +171,7 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_18_fujian_spider -a sdt=2021-02-01 -a edt=2021-03-01".split(" "))
+    cmdline.execute("scrapy crawl province_18_fujian_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_18_fujian_spider -a sdt=2021-02-01 -a edt=2021-03-01".split(" "))
 
 

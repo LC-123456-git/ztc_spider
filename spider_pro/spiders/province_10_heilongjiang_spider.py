@@ -110,17 +110,19 @@ class MySpider(Spider):
             if self.enable_incr:
                 page = 1
                 li_list = response.xpath('//div[@class="right_box"]/ul/li')
+                num = 0
                 for li in range(len(li_list)):
                     pub_time = li_list[li].xpath('./span[@class="date"]/text()').get()
                     pub_time = get_accurate_pub_time(pub_time)
                     x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
                     if x:
+                        num += 1
                         base_url = response.url + '&pageNo={}'
-                        if li >= len(li_list):
+                        if num >= len(li_list):
                             page += 1
                         else:
                             page = 1
-                        yield scrapy.Request(url=base_url.format(i), callback=self.parse_data_urls,
+                        yield scrapy.Request(url=base_url.format(page), callback=self.parse_data_urls,
                                              meta={'cid': response.meta.get('cid'), 'type': response.meta.get('type')})
             else:
                 pages = response.xpath('//div[@class="page"]/span[2]/b[2]/text()').get()  #页数
