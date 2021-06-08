@@ -119,21 +119,51 @@ class MySpider(CrawlSpider):
                     type_dict = self.dict_data | pages_dict
                     yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict), dont_filter=True,
                                          callback=self.parse_data_urls,
-                                         meta={'category': category, 'notice': notice})
+                                         meta={'category': category, 'notice': notice,
+                                               'type_dict': type_dict})
         except Exception as e:
             self.logger.error(f"parse_urls:发起数据请求失败 {e} {response.url=}")
 
     def parse_data_urls(self, response):
         try:
             if json.loads(response.text):
-                restul = json.loads(response.text)
-                total = restul['result']['totalcount']
-                self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                pages = int(math.ceil(total/50))
-                for num in range(pages):
-                    type_dict = self.dict_data | {'pn': num * 50}
-                    yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict), dont_filter=True, callback=self.parse_info_url,
-                                         meta={'category': response.meta['category'], 'notice': response.meta['notice']})
+                if self.enable_incr:
+                    page = 1
+                    _dict = response.meta['type_dict']['time'][0] | {'startTime': self.sdt_time} | {'endTime': self.edt_time}
+                    type_dict = response.meta['type_dict'] | {'time': [_dict]}
+                    if json.loads(response.text)['result']['records']:
+                        num_count = json.loads(response.text)['result']['records']
+                        nums = 0
+                        for num in range(len(num_count)):
+                            pub_time = num_count[num]['infodate'] or ''
+                            pub_time = get_accurate_pub_time(pub_time)
+                            x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
+                            if x:
+                                nums += 1
+                                total = int(len(num_count))
+                                if total == None:
+                                    return
+                                self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                            if nums >= len(num_count):
+                                page += 1
+                            else:
+                                page = 1
+                            _type_dict = type_dict | {'pn': (page - 1) * 50}
+
+                            yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict),
+                                                 dont_filter=True, callback=self.parse_info_url,
+                                                 meta={'category': response.meta['category'],
+                                                       'notice': response.meta['notice']})
+
+                else:
+                    restul = json.loads(response.text)
+                    total = restul['result']['totalcount']
+                    self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                    pages = int(math.ceil(total/50))
+                    for num in range(pages):
+                        type_dict = self.dict_data | {'pn': num * 50}
+                        yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict), dont_filter=True, callback=self.parse_info_url,
+                                             meta={'category': response.meta['category'], 'notice': response.meta['notice']})
         except Exception as e:
             self.logger.error(f"初始总数提取错误 {response.meta=} {e} {response.url=}")
 
@@ -200,5 +230,5 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
     cmdline.execute("scrapy crawl province_14_zhejiang_spider".split(" "))
-    # cmdline.execute("scrapy crawl province_14_zhejiang_spider -a sdt=2021-05-20 -a edt=2021-05-21".split(" "))
+    # cmdline.execute("scrapy crawl province_14_zhejiang_spider -a sdt=2021-05-20 -a edt=2021-06-08".split(" "))
 
