@@ -121,6 +121,14 @@ def avoid_escape(content):
 def check_if_http_based(url):
     return True if 'http' in url else False
 
+def clean_file_name(file_name, file_types):
+    for file_type in file_types:
+        if file_type in file_name:
+            file_name_split = file_name.split('.{0}'.format(file_type))
+            if len(file_name_split) > 1:
+                file_name = '{0}.{1}'.format(file_name_split[0], file_type)
+                break
+    return file_name
 
 def catch_files(content, base_url, **kwargs):
     """
@@ -128,7 +136,12 @@ def catch_files(content, base_url, **kwargs):
     """
     msg = ''
     files_path = {}
-
+    # file_types = ['\.pdf|\.rar|\.zip|\.doc|\.docx|\.xls|\.xlsx|\.xml|\.dwg|\.AJZF']
+    file_types = [
+        'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
+        'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF',
+    ]
+    search_regex = '|'.join(r'\.{0}'.format(file_type) for file_type in file_types)
     try:
         doc = etree.HTML(content)
         # pictures
@@ -142,6 +155,8 @@ def catch_files(content, base_url, **kwargs):
                 files_path['{uuid}.{suffix_name}'.format(uuid=str(uuid.uuid1()), suffix_name=suffix_name)] = src
 
         # files
+        has_suffix = kwargs.get('has_suffix', False)  # .pdf后有其他符号
+
         href_els = doc.xpath('//a')
         for href_el in href_els:
             file_name = href_el.xpath('.//text()')
@@ -149,13 +164,17 @@ def catch_files(content, base_url, **kwargs):
             if file_name:
                 file_name = ''.join(file_name).strip()
 
+                # 封装
+                if has_suffix:
+                    file_name = clean_file_name(file_name, file_types)
+
                 # check file_name exists zip|doc|docx|xls|xlsx
                 # RECORDS ALL LINKS EXCEPT CONTENT-TYPE CONTAINS 'text/html'
                 file_url = href_el.get('href', '')
                 if not check_if_http_based(file_url):
                     file_url = base_url + file_url
 
-                if re.search('\.pdf|\.rar|\.zip|\.doc|\.docx|\.xls|\.xlsx|\.xml|\.dwg|\.AJZF', file_name):
+                if re.search(search_regex, file_name):
                     files_path[file_name.strip()] = file_url
                 else:
                     content_type = requests.get(url=file_url, headers={
@@ -439,6 +458,12 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         return deal_area_dict
     elif area_id == "67":
         area_dict = const.he_nan
+        province_name = area_dict["name"]
+        province_code = area_dict["code"]
+        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
+        return deal_area_dict
+    elif area_id == "77":
+        area_dict = const.zhe_jiang
         province_name = area_dict["name"]
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)

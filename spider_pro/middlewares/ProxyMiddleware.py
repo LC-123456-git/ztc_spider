@@ -81,9 +81,8 @@ class ProxyMiddleware(RetryMiddleware):
             if spider.name == 'qcc_crawler':
                 if '<script>window.location.href=' in response.text:
                     self.logger.info('请求响应异常.')
-                    print('')
-                    if retry_times >= self.max_retry_times:
-                        self.process_exception(request, Exception('超过重试次数.'), spider)
+                    # if retry_times >= self.max_retry_times:
+                    #     self.process_exception(request, Exception('超过重试次数.'), spider)
 
                     reason = Exception('请求响应异常.')
                     

@@ -260,6 +260,46 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
 
         return msg, content.replace('<html><body>', '').replace('</body></html>', '')
 
+    @staticmethod
+    def handle_file_content(content):
+        """
+        - 合理化文件名 OK
+        - 剔除不需要链接 OK
+          项目相关公告节点删除
+          招标文件 内有登录节点 删除
+          公告附件下载节点 去除下载
+        """
+        msg = ''
+        try:
+            doc = etree.HTML(content)
+            
+            # cl mt15 mb-5 公告附件
+            # cl mt15 招标文件
+            notice_file_els = doc.xpath('//div[@class="cl mt15 mb-5"]')
+            invite_file_els = doc.xpath('//div[@class="cl mt15"]')
+            
+            for notice_file_el in notice_file_els:
+                # print(dir(notice_file_el))
+                next_el = notice_file_el.getnext()
+                next_a_els = next_el.xpath('.//a')
+                for next_a_el in next_a_els:
+                    if '下载' in next_a_el.text:
+                        next_a_el.getparent().remove(next_a_el)
+            for invite_file_el in invite_file_els:
+                next_el = invite_file_el.getnext()
+                c_text_els = next_el.xpath('.//text()')
+                c_text = ''.join(c_text_els)
+                
+                p_el = invite_file_el.getparent()
+                
+                if '登录' in c_text:
+                    p_el.getparent().remove(p_el)
+            content = etree.tounicode(doc, method='html').replace('\r', '')
+        except Exception as e:
+            msg = 'error: {0}'.format(e)
+        
+        return msg, content.replace('<html><body>', '').replace('</body></html>', '')
+
     def parse_detail(self, resp):
         """
         - business_category: 根据标题去匹配，招标公告中带（采购、购买）关键词的，匹配项目类型为采购，其余为工程
@@ -280,12 +320,17 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
             filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
         )
 
-        # HANDLE CONTENT FROM IFRAME HREF
+        # - HANDLE CONTENT FROM IFRAME HREF
         _, content = Province77ZhaobideSpiderSpider.handle_iframe_content(content, resp)
         _, content = utils.remove_specific_element(content, 'div', 'class', 'area01')
 
-        # 匹配文件
-        _, files_path = utils.catch_files(content, self.query_url)
+        # - 处理文件相关内容
+        _, content = Province77ZhaobideSpiderSpider.handle_file_content(content)
+
+        _, content = utils.remove_specific_element(content, 'div', 'class', 'pd-l10 pd-r10 border-t mt30 mb-30')
+
+        # - 匹配文件
+        _, files_path = utils.catch_files(content, self.query_url, has_suffix=True)
 
         notice_item = items.NoticesItem()
 

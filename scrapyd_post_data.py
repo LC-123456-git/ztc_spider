@@ -245,7 +245,7 @@ class ScrapyDataPost(object):
                 """
                 results = conn.execute(
                         # f"-- select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 1 and pub_time >= '{d_time}' and pub_time < '{e_time}'limit {err_start},{rows} ").fetchall()
-                        f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time > '{d_time}' and pub_time <= '{e_time}'limit {err_start},{rows} ").fetchall()
+                        f"select * from {table_name} where is_clean = 1 and is_have_file = 0 and is_upload = 0 and pub_time > '{d_time}' and pub_time <= '{e_time}'limit {err_start},{rows} ").fetchall()
                 if len(results) != 0:
                     area_id = results[0]['area_id']
                     push_time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
@@ -273,7 +273,15 @@ class ScrapyDataPost(object):
                         try:
                             data = deal_base_notices_data(item_dict, is_hump=True)
                             # 因为浙江没有项目类型，这里做特殊处理
-                            if table_name == "notices_15" or table_name == "notices_3304" or table_name == "notices_3324":
+                            # if table_name == "notices_15" or table_name == "notices_3304" or table_name == "notices_3324" or table_name == 'notices_53' or table_name == 'notices_65':
+                            if table_name in [
+                                    'notices_15', 
+                                    'notices_3304', 
+                                    'notices_3324', 
+                                    'notices_53', 
+                                    'notices_65',
+                                    'notices_77',
+                                ]:
                                 keys = ["title", "content", "classifyName", "area", "publishTime", "sourceUrl"]
                             else:
                                 keys = ["title", "content", "projectType", "classifyName", "area", "publishTime",
@@ -488,12 +496,12 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # 正式推数据 解开注释需要当心！！！
-    cp = ScrapyDataPost(table_name="notices_3324",
+    cp = ScrapyDataPost(table_name="notices_65",
                         # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4',
                         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
                         post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice")
-    cp.run_post(d_time='2021-03-01', e_time='2021-05-14')
-    # cp.run_post()
+    # cp.run_post(d_time='2018-01-01', e_time='2021-05-27')
+    cp.run_post()
 
     #'You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near \'14:02:50)\' at line 1'
     # 正式多线程推数据 解开注释需要当心！！！
