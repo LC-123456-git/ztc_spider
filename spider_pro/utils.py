@@ -462,14 +462,20 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
+    elif area_id == "71":
+        area_dict = const.he_bei
+        province_name = area_dict["name"]
+        province_code = area_dict["code"]
+        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
+        return deal_area_dict
     elif area_id == "77":
         area_dict = const.zhe_jiang
         province_name = area_dict["name"]
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id == "71":
-        area_dict = const.he_bei
+    elif area_id == "78":
+        area_dict = const.shang_hai
         province_name = area_dict["name"]
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
