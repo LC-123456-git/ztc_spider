@@ -62,10 +62,6 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
         self.start_time = kwargs.get('sdt', '')
         self.end_time = kwargs.get('edt', '')
 
-    @property
-    def _form_data(self):
-        return copy.deepcopy(self.form_data)
-
     @staticmethod
     def get_headers(resp):
         default_headers = resp.request.headers
@@ -203,22 +199,22 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
             first_url = urls.get('first_url', '')
             extra_url = urls.get('extra_url', '')
             category_tag = urls.get('category_tag', '')
-            
+
             yield scrapy.FormRequest(url=first_url, callback=self.turn_page, meta={
                 'notice_type': notice_type,
                 'extra_url': extra_url,
                 'category_tag': category_tag,
             })
-            
+
     def turn_page(self, resp):
-        max_page_el = resp.xpath('//div[@class="page_manu r"]//a[last()]/@onclick').get()  #  turnCostumerpage(3717)
+        max_page_el = resp.xpath('//div[@class="page_manu r"]//a[last()]/@onclick').get()  # turnCostumerpage(3717)
         max_page_com = re.compile('(\d+)')
         max_page = max_page_com.findall(max_page_el)
         c_url = resp.url
-        
+
         extra_url = resp.meta.get('extra_url', '')
         category_tag = resp.meta.get('category_tag', '')
-        
+
         try:
             max_page = int(max_page[0])
         except Exception as e:
@@ -263,12 +259,25 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
                         'pub_time': pub_time,
                         'title_name': title_name,
                     }, priority=(len(table_els) - n) * 1000)
-                    
+
     def parse_detail(self, resp):
         title_name = resp.meta.get('title_name', '')
+        title_trs = resp.xpath('//tr')
         content = resp.xpath('//form[@id="detailForm"]').get()
-
         notice_type_ori = resp.meta.get('notice_type')
+
+        # 提取内容页标题
+        for title_tr in title_trs:
+            check_text = title_tr.extract()
+            com = re.compile('招标.*?名称')
+            if check_text:
+                if com.search(check_text):
+                    title_name = title_tr.xpath('./td[position()=2]/*/text()').get()
+                    title_name = title_name.strip() if title_name else ''
+                    break
+
+        if notice_type_ori == '中标预告':
+            content = content.replace('下载回标报告', '下载回标报告.pdf')
 
         # 关键字重新匹配 notice_type
         matched, match_notice_type = self.match_title(title_name)
@@ -297,11 +306,10 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
         })
         print(resp.meta.get('pub_time'), resp.url)
         return notice_item
-    
+
 
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_78_zhuzhaixiushan_spider -a sdt=2020-01-01 -a edt=2021-06-08".split(" "))
+    cmdline.execute("scrapy crawl province_78_zhuzhaixiushan_spider -a sdt=2021-01-01 -a edt=2021-06-08".split(" "))
     # cmdline.execute("scrapy crawl province_78_zhuzhaixiushan_spider".split(" "))
-

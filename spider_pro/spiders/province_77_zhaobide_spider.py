@@ -329,6 +329,9 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
 
         _, content = utils.remove_specific_element(content, 'div', 'class', 'pd-l10 pd-r10 border-t mt30 mb-30')
 
+        # - 删除IFRAME
+        _, content = utils.remove_specific_element(content, 'div', 'id', 'frame_body')
+
         # - 匹配文件
         _, files_path = utils.catch_files(content, self.query_url, has_suffix=True)
 

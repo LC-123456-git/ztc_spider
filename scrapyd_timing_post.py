@@ -306,13 +306,14 @@ class ScrapyDataPost(object):
                             # 因为浙江没有项目类型，这里做特殊处理
                             # if table_name == "notices_15" or table_name == "notices_3304" or table_name == "notices_3324" or table_name == "notices_53" or table_name == 'notices_65':
                             if table_name in [
-                                    'notices_15',
-                                    'notices_3304',
-                                    'notices_3324',
-                                    'notices_53',
-                                    'notices_65',
-                                    'notices_77',
-                                ]:
+                                'notices_15',
+                                'notices_3304',
+                                'notices_3324',
+                                'notices_53',
+                                'notices_65',
+                                'notices_77',
+                                'notices_78',
+                            ]:
                                 keys = ["title", "content", "classifyName", "area", "publishTime", "sourceUrl"]
 
                             elif table_name in ['notices_79']:
