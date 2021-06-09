@@ -31,17 +31,17 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
         '候选人': '中标预告',
     }
     url_map = {
-        '招标公告': {
-            'category_tag': 'ZBGG',
-            'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type=ZBGG',
-            'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
-                         '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
-        },
+        # '招标公告': {
+        #     'category_tag': 'ZBGG',
+        #     'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type=ZBGG',
+        #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
+        #                  '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
+        # },
         # '招标变更': {
         #     'category_tag': 'INFORM',
         #     'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!informQuery.do?type=INFORM',
-        #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
-        #                  '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
+        #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!informQuery.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
+        #                  '&&pricingQuota=&&informType=&&_packageCode%23projectCode_like=&&name=&&_projectVestingAddress_like=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
         # },
         # '中标预告': {
         #     'category_tag': 'ZBHXRGS',
@@ -49,12 +49,12 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
         #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
         #                  '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
         # },
-        # '中标公告': {
-        #     'category_tag': 'ZZXS',
-        #     'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-bidder!show.do',
-        #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-bidder!show.do?_packageCode_notnull=true&_platformType={category_tag}&_auditStatus=PASSED&_packageId_notnull=true' + \
-        #                  '&_bidState=1&ORDERBY=+submitDate+desc+&_projectVestingAddress_eq=&PAGE={page}&PAGESIZE=12',
-        # },
+        '中标公告': {
+            'category_tag': 'ZZXS',
+            'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-bidder!show.do',
+            'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-bidder!show.do?_packageCode_notnull=true&_platformType={category_tag}&_auditStatus=PASSED&_packageId_notnull=true' + \
+                         '&_bidState=1&ORDERBY=+submitDate+desc+&_projectVestingAddress_eq=&PAGE={page}&PAGESIZE=12',
+        },
     }
 
     def __init__(self, *args, **kwargs):
@@ -122,7 +122,7 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
                                 enhance_condition += '//{0}{1}'.format(enhance_el, option)
 
                         # //div[@id="content"]//tbody//td[last()]/div[last()]//text()[not(normalize-space()="")]
-                        _path = '//{ancestor_el}[normalize-space(@{ancestor_attr})="{ancestor_val}"]{enhance_condition}//{child_el}[last()]/text()[not(normalize-space()="")]'.format(
+                        _path = '//{ancestor_el}[normalize-space(@{ancestor_attr})="{ancestor_val}"]{enhance_condition}//{child_el}[position()=2]/text()[not(normalize-space()="")]'.format(
                             **{
                                 'ancestor_el': ancestor_el,
                                 'ancestor_attr': ancestor_attr,
@@ -279,12 +279,34 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
             com = re.compile('招标.*?名称')
             if check_text:
                 if com.search(check_text):
-                    title_name = title_tr.xpath('./td[position()=2]/*/text()').get()
+                    if notice_type_ori == '招标公告':
+                        title_name = title_tr.xpath('./td[position()=2]//text()').get()
+                    if notice_type_ori in ['中标预告', '中标公告']:
+                        title_name = title_tr.xpath('./td[position()=2]/*/text()').get()
+                    # if notice_type_ori == '招标变更':
+                    #     c_com = re.compile('招标.*?名称[:|：](.*?)\<')
+                    #     title_names = c_com.findall(check_text)
+                    #     if title_names:
+                    #         title_name = title_names[0].strip()
                     title_name = title_name.strip() if title_name else ''
                     break
 
         if notice_type_ori == '中标预告':
-            content = content.replace('下载回标报告', '下载回标报告.pdf')
+            # 公开招标公告行|下载回标报告行 删除
+            _, content = utils.remove_specific_element(content, 'table', 'class', 'table_s', if_child=True, child_attr='tr', text='下载回标报告')
+            _, content = utils.remove_specific_element(content, 'table', 'class', 'table_s', if_child=True, child_attr='tr', text='公开招标公告行')
+
+        if notice_type_ori == '招标变更':
+            _, content = utils.remove_specific_element(content, 'form', 'id', 'detailForm', if_child=True, child_attr='a', text='点击下载补充招标文件')
+            _, content = utils.remove_specific_element(content, 'div', 'class', 'tex_center', index=2)
+            content = content.replace('下载文件：', '')
+
+            # ADD TITLE
+            c_com = re.compile('招标.*?名称[:|：](.*?)\<')
+            title_names = c_com.findall(content)
+            if title_names:
+                title_name = title_names[0].strip()
+                title_name = title_name.strip() if title_name else ''
 
         # 关键字重新匹配 notice_type
         matched, match_notice_type = self.match_title(title_name)

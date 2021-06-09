@@ -33,7 +33,9 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
     }
     base_url = 'https://www.zhaobide.com'
     query_url = 'https://www.zhaobide.com/Web/GetAfficheList_detail?afficheType={affiche_type}&type={type}'
-    detail_url = 'https://www.zhaobide.com/Web/WebAfficheIndex?tenderID={tender_id}&afficheID={affiche_id}&moduleID={module_id}&afficheType={affiche_type}'
+    # detail_url = 'https://www.zhaobide.com/Web/WebAfficheIndex?tenderID={tender_id}&afficheID={affiche_id}&moduleID={module_id}&afficheType={affiche_type}'
+    # detail_url = 'https://www.zhaobide.com/Web/WebAffichePropertyIndex?tenderID={tender_id}&afficheID={affiche_id}&moduleID={module_id}&afficheType={affiche_type}'
+    detail_url = 'https://www.zhaobide.com/Web/{query_index}?tenderID={tender_id}&afficheID={affiche_id}&moduleID={module_id}&afficheType={affiche_type}'
     bsniz_keywords_map = {
         '采购|购买': '采购',
     }
@@ -155,6 +157,80 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
     def post_data(self):
         return copy.deepcopy(self._post_data)
 
+    @classmethod
+    def handle_iframe_content(cls, content, resp):
+        """
+        根据响应的url与请求url对比，删除IFRAME，链接相同替换链接
+        """
+        msg = ''
+        try:
+            doc = etree.HTML(content)
+
+            iframe_href_els = doc.xpath('//iframe[@id="frame_content"]')
+            if iframe_href_els:
+                iframe_href_el = iframe_href_els[0]
+                iframe_href = iframe_href_el.attrib['src']
+
+                headers = cls.get_headers(resp)
+                response = requests.get(url=iframe_href, headers=headers)
+
+                # 移除IFRAME
+                # _, content = utils.remove_specific_element(content, 'div', 'id', 'frame_body')
+                if response.url == iframe_href:
+                    # 将iframe的html写入frame_content
+                    iframe_doc = etree.HTML(response.content.decode('utf-8'))
+
+                    iframe_body = iframe_doc.xpath('//div[@class="awdiv awpage"]')
+                    if iframe_body:
+                        iframe_href_el.getparent().insert(1, iframe_body[0])
+
+                iframe_href_el.getparent().remove(iframe_href_el)
+                content = etree.tounicode(doc, method='html')
+        except Exception as e:
+            msg = 'error: {0}'.format(e)
+
+        return msg, content.replace('<html><body>', '').replace('</body></html>', '')
+
+    @staticmethod
+    def handle_file_content(content):
+        """
+        - 合理化文件名 OK
+        - 剔除不需要链接 OK
+          项目相关公告节点删除
+          招标文件 内有登录节点 删除
+          公告附件下载节点 去除下载
+        """
+        msg = ''
+        try:
+            doc = etree.HTML(content)
+
+            # cl mt15 mb-5 公告附件
+            # cl mt15 招标文件
+            notice_file_els = doc.xpath('//div[@class="cl mt15 mb-5"]')
+            invite_file_els = doc.xpath('//div[@class="cl mt15"]')
+
+            for notice_file_el in notice_file_els:
+                # print(dir(notice_file_el))
+                next_el = notice_file_el.getnext()
+                next_a_els = next_el.xpath('.//a')
+                for next_a_el in next_a_els:
+                    if '下载' in next_a_el.text:
+                        next_a_el.getparent().remove(next_a_el)
+            for invite_file_el in invite_file_els:
+                next_el = invite_file_el.getnext()
+                c_text_els = next_el.xpath('.//text()')
+                c_text = ''.join(c_text_els)
+
+                p_el = invite_file_el.getparent()
+
+                if '登录' in c_text:
+                    p_el.getparent().remove(p_el)
+            content = etree.tounicode(doc, method='html').replace('\r', '')
+        except Exception as e:
+            msg = 'error: {0}'.format(e)
+
+        return msg, content.replace('<html><body>', '').replace('</body></html>', '')
+
     def start_requests(self):
         for pm, params in self.params_map.items():
             for param in params:
@@ -227,78 +303,14 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
                     'affiche_id': content.get('AfficheID', ''),
                     'module_id': module_id,
                     'affiche_type': content.get('AfficheType', ''),
+                    'query_index': 'WebAfficheIndex' if has_module_id else 'WebAffichePropertyIndex',
                 })
 
                 if utils.check_range_time(self.start_time, self.end_time, c_pub_time):
                     yield scrapy.Request(url=c_url, callback=self.parse_detail, meta={
                         'notice_type': resp.meta.get('notice_type', ''),
                         'pub_time': pub_time,
-                    }, priority=(len(content_list) - n) * 10000)
-
-    @classmethod
-    def handle_iframe_content(cls, content, resp):
-        """
-        HANDLE CONTENT FROM IFRAME HREF
-        """
-        msg = ''
-        try:
-            doc = etree.HTML(content)
-
-            iframe_href_els = doc.xpath('//iframe[@id="frame_content"]')
-            if iframe_href_els:
-                iframe_href_el = iframe_href_els[0]
-                iframe_href = iframe_href_el.attrib['src']
-
-                headers = cls.get_headers(resp)
-                response = requests.get(url=iframe_href, headers=headers)
-
-                iframe_href_el.attrib['src'] = response.url
-
-                content = etree.tounicode(doc, method='html')
-        except Exception as e:
-            msg = 'error: {0}'.format(e)
-
-        return msg, content.replace('<html><body>', '').replace('</body></html>', '')
-
-    @staticmethod
-    def handle_file_content(content):
-        """
-        - 合理化文件名 OK
-        - 剔除不需要链接 OK
-          项目相关公告节点删除
-          招标文件 内有登录节点 删除
-          公告附件下载节点 去除下载
-        """
-        msg = ''
-        try:
-            doc = etree.HTML(content)
-            
-            # cl mt15 mb-5 公告附件
-            # cl mt15 招标文件
-            notice_file_els = doc.xpath('//div[@class="cl mt15 mb-5"]')
-            invite_file_els = doc.xpath('//div[@class="cl mt15"]')
-            
-            for notice_file_el in notice_file_els:
-                # print(dir(notice_file_el))
-                next_el = notice_file_el.getnext()
-                next_a_els = next_el.xpath('.//a')
-                for next_a_el in next_a_els:
-                    if '下载' in next_a_el.text:
-                        next_a_el.getparent().remove(next_a_el)
-            for invite_file_el in invite_file_els:
-                next_el = invite_file_el.getnext()
-                c_text_els = next_el.xpath('.//text()')
-                c_text = ''.join(c_text_els)
-                
-                p_el = invite_file_el.getparent()
-                
-                if '登录' in c_text:
-                    p_el.getparent().remove(p_el)
-            content = etree.tounicode(doc, method='html').replace('\r', '')
-        except Exception as e:
-            msg = 'error: {0}'.format(e)
-        
-        return msg, content.replace('<html><body>', '').replace('</body></html>', '')
+                    }, priority=(len(content_list) - n) * 100000)
 
     def parse_detail(self, resp):
         """
@@ -329,9 +341,6 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
 
         _, content = utils.remove_specific_element(content, 'div', 'class', 'pd-l10 pd-r10 border-t mt30 mb-30')
 
-        # - 删除IFRAME
-        _, content = utils.remove_specific_element(content, 'div', 'id', 'frame_body')
-
         # - 匹配文件
         _, files_path = utils.catch_files(content, self.query_url, has_suffix=True)
 
@@ -358,6 +367,6 @@ if __name__ == "__main__":
     from scrapy import cmdline
 
     cmdline.execute(
-        "scrapy crawl province_77_zhaobide_spider -a sdt=2021-01-01 -a edt=2021-06-07".split(" ")
+        "scrapy crawl province_77_zhaobide_spider -a sdt=2021-01-01 -a edt=2021-06-09".split(" ")
     )
     # cmdline.execute("scrapy crawl province_77_zhaobide_spider".split(" "))
