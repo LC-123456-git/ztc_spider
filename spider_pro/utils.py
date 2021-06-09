@@ -121,6 +121,7 @@ def avoid_escape(content):
 def check_if_http_based(url):
     return True if 'http' in url else False
 
+
 def clean_file_name(file_name, file_types):
     for file_type in file_types:
         if file_type in file_name:
@@ -129,6 +130,7 @@ def clean_file_name(file_name, file_types):
                 file_name = '{0}.{1}'.format(file_name_split[0], file_type)
                 break
     return file_name
+
 
 def catch_files(content, base_url, **kwargs):
     """

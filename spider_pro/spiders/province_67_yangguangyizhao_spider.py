@@ -73,6 +73,14 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
             {'notice_type': '中标公告', 'url': 'http://www.sunbidding.com/jsljg/index.jhtml'},
         ]
     }
+    custom_settings = {
+        'DOWNLOADER_MIDDLEWARES': {
+            # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
+            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+        },
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -249,7 +257,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
                         yield scrapy.Request(url=c_url, callback=self.parse_list, meta={
                             'notice_type': resp.meta.get('notice_type', ''),
                             'category_type': resp.meta.get('category_type', '')
-                        }, priority=max_page - page)
+                        }, priority=max_page - page, dont_filter=True)
     
     def parse_list(self, resp):
         """
@@ -308,6 +316,6 @@ if __name__ == "__main__":
     from scrapy import cmdline
 
     cmdline.execute(
-        "scrapy crawl province_67_yangguangyizhao_spider -a sdt=2021-01-01 -a edt=2021-05-17".split(" ")
+        "scrapy crawl province_67_yangguangyizhao_spider -a sdt=2021-06-07 -a edt=2021-06-09".split(" ")
     )
     # cmdline.execute("scrapy crawl province_67_yangguangyizhao_spider".split(" "))
