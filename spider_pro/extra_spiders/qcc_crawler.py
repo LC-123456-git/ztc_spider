@@ -13,7 +13,11 @@ import requests
 import json
 from lxml import etree
 
+from scrapy.utils.project import get_project_settings
+
 from spider_pro import items
+from spider_pro.extra_spiders.public import db
+from spider_pro.extra_spiders.config import sql
 
 
 class QccCrawlerSpider(scrapy.Spider):
@@ -30,13 +34,13 @@ class QccCrawlerSpider(scrapy.Spider):
             # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
             'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
             'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
         },
         'DOWNLOAD_DELAY': 4,
         'CONCURREN_REQUESTS': 4,
         'CONCURRENT_RTEQUESTS_PER_IP': 4,
-        "ENABLE_PROXY_USE" : True,
-        "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
+        # "ENABLE_PROXY_USE": True,
+        # "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
         'RETRY_TIMES': 10,
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
@@ -50,6 +54,11 @@ class QccCrawlerSpider(scrapy.Spider):
                     '所属地区,(?P<所属地区>.*?),登记机关,(?P<登记机关>.*?),人员规模,(?P<人员规模>.*?),参保人数,(?P<参保人数>.*?),' + \
                     '曾用名,(?P<曾用名>.*?),英文名,(?P<英文名>.*?),进出口企业代码,(?P<进出口企业代码>.*?),' \
                     '注册地址,(?P<注册地址>.*?),经营范围,(?P<经营范围>.*)'
+    settings = get_project_settings()
+    debug = settings.get('DEBUG_MODE', True)
+    # debug = False
+    db_name = settings.get('MYSQL_TEST_DB_NAME', '') if debug else settings.get('MYSQL_DB_NAME', '')
+    search_url = 'https://www.qcc.com/web/search?key={key}'
 
     @staticmethod
     def get_headers(resp):
@@ -57,12 +66,66 @@ class QccCrawlerSpider(scrapy.Spider):
         headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
         return headers
 
+    @property
+    def db_query(self):
+        debug = self.settings.get('DEBUG_MODE', True)
+        db_name = self.settings.get('MYSQL_TEST_DB_NAME', '') if debug else self.settings.get(
+            'MYSQL_DB_NAME', ''
+        )
+        dbq = db.DBQuery(**{
+            'host': self.settings.get('MYSQL_IP', ''),
+            'user': self.settings.get('MYSQL_USER_NAME', ''),
+            'password': self.settings.get('MYSQL_PASSWORD', ''),
+            'db': db_name,
+        })
+        return dbq
+
     def start_requests(self):
-        yield scrapy.Request(url=self.query_url.format(**{
-                'industryCode': '',
-                'subIndustryCode': '',
-                'page': '',
-            }), callback=self.parse_category)
+        """
+        3种方式采集：
+            - 列表顺序采集
+            - 自补充发票信息 根据origin匹配
+            - 代理信息中企业信息采集
+        """
+        methods = ['order', 'origin', 'agency']
+        for method in methods:
+            c_url = ''
+            # if method == 'order':
+            #     yield scrapy.Request(url=self.query_url.format(**{
+            #         'industryCode': '',
+            #         'subIndustryCode': '',
+            #         'page': '',
+            #     }), callback=self.parse_category)
+            if method == 'origin':
+                dbq = self.db_query
+                # qcc_sql = sql.COMPANY_NAMES_WITHOUT_ORIGIN.format(db_name=self.db_name, table_name='QCC_qcc_crawler')
+                qcc_sql = sql.COMPANY_NAMES_WITHOUT_ORIGIN.format(
+                    db_name='data_collection', table_name='QCC_qcc_crawler'
+                )
+                companies = dbq.fetch_all(qcc_sql)
+
+                del dbq
+
+                for n, company in enumerate(companies):
+                    c_name = company.get('company_name', '')
+
+                    c_url = self.search_url.format(key=c_name)
+
+                    if c_url:
+                        yield scrapy.Request(
+                            url=c_url, callback=self.parse_search_list, priority=10 * (len(companies) - n),
+                        )
+            # if method == 'agency':
+            #     pass
+
+    def parse_search_list(self, resp):
+        doc = etree.HTML(resp.text)
+        detail_xpath = '//div[@class="maininfo"]//a/@href'
+        detail_urls = doc.xpath(detail_xpath)
+        if detail_urls:
+            detail_url = detail_urls[0]
+
+            yield scrapy.Request(url=detail_url, callback=self.parse_item, priority=100000)
 
     def parse_category(self, resp):
         """
@@ -158,7 +221,7 @@ class QccCrawlerSpider(scrapy.Spider):
 
                 'category_name': resp.meta.get('category_name', ''),
                 'industry_category_name': resp.meta.get('industry_category_name', ''),
-            }, priority=(len(detail_urls) -n) * 1000000)
+            }, priority=(len(detail_urls) - n) * 1000000)
 
     @classmethod
     def get_invoice_info(cls, resp):
@@ -173,7 +236,7 @@ class QccCrawlerSpider(scrapy.Spider):
         referer_url = resp.url
         com = re.compile(r'firm/(.*?)\.html')
         key_no = com.findall(referer_url)
-        
+
         url = 'https://www.qcc.com/tax_view?keyno={keyno}&ajaxflag=1'.format(keyno=key_no[0]) if key_no else ''
 
         invoice_info_dict = {}
@@ -186,7 +249,7 @@ class QccCrawlerSpider(scrapy.Spider):
                     proxies = {'https': proxy}
                 else:
                     proxies = {'http': proxy}
-            
+
             text = requests.get(url=url, headers=headers, proxies=proxies, verify=False).text
             """
             {

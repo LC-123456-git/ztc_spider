@@ -27,13 +27,7 @@ COMPANY_INFO_UPDATE = """
 
 COMPANY_FETCH_BY_NAME = """SELECT COUNT(company_name) c FROM {db_name}.{table_name} WHERE company_name='%s'"""
 
-# 新增发票信息
-ADD_INVOICES = """
-               ALTER TABLE `test2_data_collection`.`QCC_qcc_crawler`
-               ADD COLUMN `credit_code` VARCHAR(512) NULL DEFAULT NULL COMMENT '企业税号' AFTER `industry_category`,
-               ADD COLUMN `address` VARCHAR(512) NULL DEFAULT NULL COMMENT '企业地址' AFTER `credit_code`,
-               ADD COLUMN `phone_number` VARCHAR(512) NULL DEFAULT NULL COMMENT '电话号码' AFTER `address`,
-               ADD COLUMN `bank` VARCHAR(512) NULL DEFAULT NULL COMMENT '开户银行' AFTER `phone_number`,
-               ADD COLUMN `bank_account` VARCHAR(45) NULL DEFAULT NULL COMMENT '银行账户' AFTER `bank`;
-               ADD COLUMN `origin` VARCHAR(45) NULL DEFAULT NULL COMMENT '网站地址' AFTER `bank_account`;
-               """
+COMPANY_NAMES_WITHOUT_ORIGIN = """
+                               SELECT company_name FROM {db_name}.{table_name}
+                               WHERE origin IS NULL 
+                               """
