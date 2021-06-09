@@ -40,20 +40,20 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
         '采购|购买': '采购',
     }
     params_map = {
-        # '招标公告': [
-        #     {'affiche_type': 5, 'type': 0, 'has_module_id': True},  # 招标采购-招标公告
-        #     {'affiche_type': 1, 'type': 1, 'has_module_id': False},  # 产权交易-交易公告
-        # ],
-        # '招标变更': [
-        #     {'affiche_type': 6, 'type': 0, 'has_module_id': True},  # 招标采购-更正答疑
-        #     {'affiche_type': 2, 'type': 1, 'has_module_id': False},  # 产权交易-更正答疑
-        # ],
-        # '招标异常': [
-        #     {'affiche_type': 11, 'type': 0, 'has_module_id': True},  # 招标采购-废标公告
-        # ],
-        # '中标预告': [
-        #     {'affiche_type': 7, 'type': 0, 'has_module_id': True},  # 招标采购-中标候选人公示
-        # ],
+        '招标公告': [
+            {'affiche_type': 5, 'type': 0, 'has_module_id': True},  # 招标采购-招标公告
+            {'affiche_type': 1, 'type': 1, 'has_module_id': False},  # 产权交易-交易公告
+        ],
+        '招标变更': [
+            {'affiche_type': 6, 'type': 0, 'has_module_id': True},  # 招标采购-更正答疑
+            {'affiche_type': 2, 'type': 1, 'has_module_id': False},  # 产权交易-更正答疑
+        ],
+        '招标异常': [
+            {'affiche_type': 11, 'type': 0, 'has_module_id': True},  # 招标采购-废标公告
+        ],
+        '中标预告': [
+            {'affiche_type': 7, 'type': 0, 'has_module_id': True},  # 招标采购-中标候选人公示
+        ],
         '中标公告': [
             {'affiche_type': 8, 'type': 0, 'has_module_id': True},  # 招标采购-中标结果公告
             {'affiche_type': 3, 'type': 1, 'has_module_id': False},  # 产权交易-成交结果公告

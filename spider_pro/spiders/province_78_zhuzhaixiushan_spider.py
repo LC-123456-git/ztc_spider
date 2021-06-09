@@ -31,24 +31,24 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
         '候选人': '中标预告',
     }
     url_map = {
-        # '招标公告': {
-        #     'category_tag': 'ZBGG',
-        #     'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type=ZBGG',
-        #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
-        #                  '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
-        # },
-        # '招标变更': {
-        #     'category_tag': 'INFORM',
-        #     'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!informQuery.do?type=INFORM',
-        #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!informQuery.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
-        #                  '&&pricingQuota=&&informType=&&_packageCode%23projectCode_like=&&name=&&_projectVestingAddress_like=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
-        # },
-        # '中标预告': {
-        #     'category_tag': 'ZBHXRGS',
-        #     'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type=ZBHXRGS',
-        #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
-        #                  '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
-        # },
+        '招标公告': {
+            'category_tag': 'ZBGG',
+            'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type=ZBGG',
+            'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
+                         '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
+        },
+        '招标变更': {
+            'category_tag': 'INFORM',
+            'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!informQuery.do?type=INFORM',
+            'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!informQuery.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
+                         '&&pricingQuota=&&informType=&&_packageCode%23projectCode_like=&&name=&&_projectVestingAddress_like=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
+        },
+        '中标预告': {
+            'category_tag': 'ZBHXRGS',
+            'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type=ZBHXRGS',
+            'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
+                         '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
+        },
         '中标公告': {
             'category_tag': 'ZZXS',
             'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-bidder!show.do',
