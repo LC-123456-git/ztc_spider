@@ -109,11 +109,9 @@ class MySpider(CrawlSpider):
         try:
             info_lsit = json.loads(response.text)['result']['records']
             for info in info_lsit:
-                # _url = self.domain_url + info['linkurl']
-                _url = 'https://www.etrading.cn/jyxx/002001/002001003/20210508/ae9ac5f0-3cae-4288-a123-fcd5322733c4.html'
+                _url = self.domain_url + info['linkurl']
                 code = re.search('(\d{9})', _url)[0]
-                # t_name = info['title']
-                t_name = '宁夏固原市隆德县中药材国家农村产业融合发展示范园基础设施建设项目（新建工程）—示范园核心区集中供能（蒸汽管网）扩建工程中标候选人公示'
+                t_name = info['title']
                 if code in ['002002001', '002001001', '002003001', '002008001']:
                     notice = const.TYPE_ZB_NOTICE                     # 招标公告
                 elif code in ['002002002', '002001002', '002003002', '002008002']:
