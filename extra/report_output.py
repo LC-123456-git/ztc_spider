@@ -218,9 +218,9 @@ class ReportOutput(DBQuery):
             'area_id': area_id,
             'cdt': date,
         })
-        print(download_sql + '\n')
-        print(pub_sql + '\n')
-        print(push_sql + '\n')
+        # print(download_sql + '\n')
+        # print(pub_sql + '\n')
+        # print(push_sql + '\n')
         download_data = self.fetch_all(download_sql)  # [(area_id, n),]
         pub_data = self.fetch_all(pub_sql)
         push_data = self.fetch_all(push_sql)
@@ -238,10 +238,36 @@ class ReportOutput(DBQuery):
         except Exception as e:
             push_n = 0
 
-        result.append(
-            [date, serial_number, area_id, pub_n, download_n, push_n])
+        # - 异常分析() 
+        #   push_n > pub_n ERROR: 推送异常;
+        #   push_n < pub_n WARNING: 请检查部分未推送原因(重复); ×
 
-        self.data_list.extend([[x[0], x[1], self.area_map.get(str(x[2]), x[2]), x[3], x[4], x[5]] for x in result])
+        #   pub_n == 0 INFO: 今日未站点未发布文章;
+        #   download_n == 0 INFO: 今日未采集到文章;
+        #   push_n == 0     INFO: 今日未推送文章;
+        
+        #   pub_n > download_n WARNING: 请检查是否当日未采集完,第二天采集完造成;
+        errors = []
+        if push_n > pub_n:
+            errors.append('ERROR: 推送异常;')
+        # if push_n < pub_n:
+        #     errors.append('WARNING: 请检查部分未推送原因(重复);')
+        if pub_n == 0:
+            errors.append('INFO: 今日未站点未发布文章;')
+        if download_n == 0:
+            errors.append('INFO: 今日未采集到文章;')
+        if push_n == 0:
+            errors.append('INFO: 今日未推送文章;')
+        if pub_n > download_n:
+            errors.append('WARNING: 请检查是否当日未采集完,第二天采集完造成;')
+        
+        error = ''.join(errors)
+        
+        result.append(
+            [date, serial_number, area_id, pub_n, download_n, push_n, '', '', error]
+        )
+
+        self.data_list.extend([[x[0], x[1], self.area_map.get(str(x[2]), x[2]), x[3], x[4], x[5], x[6], x[7], x[8]] for x in result])
 
     @property
     def table_info(self):
@@ -276,7 +302,7 @@ class ReportOutput(DBQuery):
         return date_list
 
     def output(self, **kwargs):
-        tts = ['日期', '序号', '网站名称', '站点发布数', '采集数量', '推送数量', '发布数量', '待发布数量']
+        tts = ['日期', '序号', '网站名称', '站点发布数', '采集数量', '推送数量', '发布数量', '待发布数量', '异常分析']
         sdt = kwargs.get('sdt')
         edt = kwargs.get('edt')
 
@@ -343,7 +369,7 @@ class ReportOutput(DBQuery):
             horizontal="center", vertical="center"
         )
         # 样式
-        for col in ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1']:
+        for col in ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1', 'I1']:
             self.ws[col].border = self.border
         for row in self.ws['A']:
             row.border = self.border
