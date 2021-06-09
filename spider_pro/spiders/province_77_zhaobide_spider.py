@@ -9,12 +9,12 @@
 import scrapy
 import re
 import requests
-from lxml import etree
-from datetime import datetime
 import random
 import time
 import copy
 import json
+from lxml import etree
+from datetime import datetime
 
 from spider_pro import items, constans, utils
 
@@ -44,20 +44,20 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
             {'affiche_type': 5, 'type': 0, 'has_module_id': True},  # 招标采购-招标公告
             {'affiche_type': 1, 'type': 1, 'has_module_id': False},  # 产权交易-交易公告
         ],
-        '招标变更': [
-            {'affiche_type': 6, 'type': 0, 'has_module_id': True},  # 招标采购-更正答疑
-            {'affiche_type': 2, 'type': 1, 'has_module_id': False},  # 产权交易-更正答疑
-        ],
-        '招标异常': [
-            {'affiche_type': 11, 'type': 0, 'has_module_id': True},  # 招标采购-废标公告
-        ],
-        '中标预告': [
-            {'affiche_type': 7, 'type': 0, 'has_module_id': True},  # 招标采购-中标候选人公示
-        ],
-        '中标公告': [
-            {'affiche_type': 8, 'type': 0, 'has_module_id': True},  # 招标采购-中标结果公告
-            {'affiche_type': 3, 'type': 1, 'has_module_id': False},  # 产权交易-成交结果公告
-        ],
+        # '招标变更': [
+        #     {'affiche_type': 6, 'type': 0, 'has_module_id': True},  # 招标采购-更正答疑
+        #     {'affiche_type': 2, 'type': 1, 'has_module_id': False},  # 产权交易-更正答疑
+        # ],
+        # '招标异常': [
+        #     {'affiche_type': 11, 'type': 0, 'has_module_id': True},  # 招标采购-废标公告
+        # ],
+        # '中标预告': [
+        #     {'affiche_type': 7, 'type': 0, 'has_module_id': True},  # 招标采购-中标候选人公示
+        # ],
+        # '中标公告': [
+        #     {'affiche_type': 8, 'type': 0, 'has_module_id': True},  # 招标采购-中标结果公告
+        #     {'affiche_type': 3, 'type': 1, 'has_module_id': False},  # 产权交易-成交结果公告
+        # ],
     }
     _post_data = {
         'filter': '',
@@ -180,9 +180,9 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
                     # 将iframe的html写入frame_content
                     iframe_doc = etree.HTML(response.content.decode('utf-8'))
 
-                    iframe_body = iframe_doc.xpath('//div[@class="awdiv awpage"]')
-                    if iframe_body:
-                        iframe_href_el.getparent().insert(1, iframe_body[0])
+                    iframe_bodys = iframe_doc.xpath('//div[@class="awdiv awpage"]')
+                    for n, iframe_body in enumerate(iframe_bodys):
+                        iframe_href_el.getparent().insert(n, iframe_body)
 
                 iframe_href_el.getparent().remove(iframe_href_el)
                 content = etree.tounicode(doc, method='html')
