@@ -139,14 +139,13 @@ class MySpider(Spider):
                                      callback=self.parse_item, cb_kwargs=self.cb_kwargs, dont_filter=True,
                                      meta={"cb_kwargs": self.cb_kwargs, "info_source": info_source,
                                            "classifyShow": self.classifyShow, "pub_time": pub_time,
-                                           "title_name":title_name})
+                                           "title_name": title_name})
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
     def parse_item(self, response, name):
         if response.status == 200:
             origin = response.url
-            print(origin)
             info_source = response.meta.get("info_source")
             classifyShow = response.meta.get("classifyShow")
             title_name = response.meta.get("title_name")
@@ -256,5 +255,5 @@ class MySpider(Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl province_49_ningxia_spider -a std=2020-01-04 -a edt=2020-01-04".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3301_hangzhou_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3301_hangzhou_spider -a std=2021-06-09 -a edt=2021-06-09".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3301_hangzhou_spider".split(" "))

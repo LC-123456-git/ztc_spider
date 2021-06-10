@@ -55,10 +55,8 @@ class MySpider(Spider):
         else:
             self.enable_incr = False
 
-
     def start_requests(self):
         for item in self.list_all_category_num:
-            # item = "002001001"
             temp_info_dict = self.r_dict | {"categorynum": str(item)} | {"pageIndex": "0"}
             temp_dict = {"params": json.dumps(temp_info_dict)}
             yield scrapy.FormRequest(self.count_url, formdata=temp_dict, callback=self.parse_urls,
