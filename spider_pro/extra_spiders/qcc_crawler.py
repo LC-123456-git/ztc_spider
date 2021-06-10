@@ -206,7 +206,7 @@ class QccCrawlerSpider(scrapy.Spider):
         try:
             max_page = int(max_page)
         except (ValueError, IndexError, TypeError) as e:
-            self.log('error:{e}'.format(e=e))
+            self.logger.info('error:{e}'.format(e=e))
         else:
             # for page in range(1, 2):
             for page in range(1, max_page + 1):
@@ -354,7 +354,7 @@ class QccCrawlerSpider(scrapy.Spider):
             err, invoice_info = QccCrawlerSpider.get_invoice_info(resp)
 
             if err:
-                self.log(err)
+                self.logger.info(err)
             else:
                 company_info_items.update(**invoice_info)
             """
@@ -367,11 +367,11 @@ class QccCrawlerSpider(scrapy.Spider):
             """
             notice_item = items.QCCItem()
             notice_item.update(**company_info_items)
-            self.log('当前采集类型: {0}'.format(resp.meta.get('tag', '')))
+            self.logger.info('当前采集类型: {0}'.format(resp.meta.get('tag', '')))
             print('企业:{0}; 当前采集类型: {1}'.format(company_info.get('企业名称', ''), resp.meta.get('tag', '')))
             return notice_item
         else:
-            self.log('regular error.')
+            self.logger.info('regular error.')
 
 
 if __name__ == '__main__':
