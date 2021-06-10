@@ -34,14 +34,14 @@ class QccCrawlerSpider(scrapy.Spider):
             # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
             'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
             'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
         },
         'DOWNLOAD_DELAY': 4,
         'CONCURREN_REQUESTS': 4,
         'CONCURRENT_RTEQUESTS_PER_IP': 4,
-        # "ENABLE_PROXY_USE": True,
+        "ENABLE_PROXY_USE": True,
         # "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
-        'RETRY_TIMES': 10,
+        'RETRY_TIMES': 20,
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
     # start_url = 'https://www.qcc.com/industry_A'
@@ -95,8 +95,9 @@ class QccCrawlerSpider(scrapy.Spider):
                     'industryCode': '',
                     'subIndustryCode': '',
                     'page': '',
-                    'tag': 'order',
-                }), callback=self.parse_category)
+                }), callback=self.parse_category, meta={
+                    'tag': method,
+                })
             
             if method in ['origin', 'agency']:
                 dbq = self.db_query
@@ -123,7 +124,7 @@ class QccCrawlerSpider(scrapy.Spider):
 
                     if c_url:
                         yield scrapy.Request(
-                            url=c_url, callback=self.parse_search_list, priority=1000000 * (len(companies) - n), meta={
+                            url=c_url, callback=self.parse_search_list, priority=100000 * (len(companies) - n), meta={
                                 'tag': method,
                             },
                         )
@@ -135,7 +136,7 @@ class QccCrawlerSpider(scrapy.Spider):
         if detail_urls:
             detail_url = detail_urls[0]
 
-            yield scrapy.Request(url=detail_url, callback=self.parse_item, priority=100000, meta={
+            yield scrapy.Request(url=detail_url, callback=self.parse_item, priority=1000000, meta={
                 'tag': resp.meta.get('tag', '')
             })
 
@@ -162,7 +163,7 @@ class QccCrawlerSpider(scrapy.Spider):
                     'category': category,
                     'category_name': category_name,
                     'tag': resp.meta.get('tag', ''),
-                }, priority=1 * len(category_els) - n)
+                }, priority=10)
 
     def parse_industry_categories(self, resp):
         """
@@ -193,7 +194,7 @@ class QccCrawlerSpider(scrapy.Spider):
                     'industry_category_name': industry_category_name,
                     
                     'tag': resp.meta.get('tag', ''),
-                }, priority=10 * len(industry_category_els) - n)
+                }, priority=100)
 
     def parse_list(self, resp):
         """
@@ -222,7 +223,7 @@ class QccCrawlerSpider(scrapy.Spider):
                     'industry_category_name': resp.meta.get('industry_category_name', ''),
                     
                     'tag': resp.meta.get('tag', ''),
-                }, priority=1000 * (max_page - page))
+                }, priority=1000)
 
     def parse_detail(self, resp):
         """
@@ -238,7 +239,9 @@ class QccCrawlerSpider(scrapy.Spider):
 
                 'category_name': resp.meta.get('category_name', ''),
                 'industry_category_name': resp.meta.get('industry_category_name', ''),
-            }, priority=(len(detail_urls) - n) * 1000000)
+                
+                'tag': resp.meta.get('tag', ''),
+            }, priority=10000)
 
     @classmethod
     def get_invoice_info(cls, resp):
@@ -267,21 +270,21 @@ class QccCrawlerSpider(scrapy.Spider):
                 else:
                     proxies = {'http': proxy}
 
-            text = requests.get(url=url, headers=headers, proxies=proxies, verify=False).text
-            """
-            {
-                data: {
-                  "Name": "江门市姆斯皮园林绿化有限公司",
-                  "CreditCode": "91440703MA51T6BYXY",
-                  "Address": "江门市蓬江区江门万达广场16幢1506室之三",
-                  "PhoneNumber": null,
-                  "Bank": null,
-                  "Bankaccount": null
-                },
-                success: true
-            }
-            """
             try:
+                text = requests.get(url=url, headers=headers, proxies=proxies, verify=False).text
+                """
+                {
+                    data: {
+                    "Name": "江门市姆斯皮园林绿化有限公司",
+                    "CreditCode": "91440703MA51T6BYXY",
+                    "Address": "江门市蓬江区江门万达广场16幢1506室之三",
+                    "PhoneNumber": null,
+                    "Bank": null,
+                    "Bankaccount": null
+                    },
+                    success: true
+                }
+                """
                 invoice_info = json.loads(text)
                 success = invoice_info.get('success', False)
                 if success:
@@ -365,7 +368,7 @@ class QccCrawlerSpider(scrapy.Spider):
             notice_item = items.QCCItem()
             notice_item.update(**company_info_items)
             self.log('当前采集类型: {0}'.format(resp.meta.get('tag', '')))
-            print(company_info.get('企业名称', ''))
+            print('企业:{0}; 当前采集类型: {1}'.format(company_info.get('企业名称', ''), resp.meta.get('tag', '')))
             return notice_item
         else:
             self.log('regular error.')
