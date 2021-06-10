@@ -310,6 +310,8 @@ class ScrapyDataPost(object):
                                 'notices_3304',
                                 'notices_3324',
                                 'notices_53',
+                                'notices_59',
+                                'notices_62',
                                 'notices_52',
                                 'notices_65',
                                 'notices_77',
