@@ -34,14 +34,15 @@ class QccCrawlerSpider(scrapy.Spider):
             # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
             'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
             'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+            # 'spider_pro.middlewares.ExtraProxyMiddleware.ExtraProxyMiddleware': 100,
         },
         'DOWNLOAD_DELAY': 4,
-        'CONCURREN_REQUESTS': 4,
-        'CONCURRENT_RTEQUESTS_PER_IP': 4,
-        "ENABLE_PROXY_USE": True,
+        'CONCURREN_REQUESTS': 8,
+        'CONCURRENT_RTEQUESTS_PER_IP': 8,
+        "ENABLE_PROXY_USE": False,
         # "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
-        'RETRY_TIMES': 20,
+        'RETRY_TIMES': 5,
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
     # start_url = 'https://www.qcc.com/industry_A'
