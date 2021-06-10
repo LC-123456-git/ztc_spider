@@ -30,6 +30,14 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
     }
+    custom_settings = {
+        'DOWNLOADER_MIDDLEWARES': {
+            # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
+            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+        },
+    }
     url_map = {
         '招标公告': {
             'category_tag': 'ZBGG',
