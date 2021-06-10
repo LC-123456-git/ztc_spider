@@ -239,25 +239,19 @@ class ReportOutput(DBQuery):
             push_n = 0
 
         # - 异常分析() 
-        #   push_n > pub_n ERROR: 推送异常;
-        #   push_n < pub_n WARNING: 请检查部分未推送原因(重复); ×
-
-        #   pub_n == 0 INFO: 今日未站点未发布文章;
-        #   download_n == 0 INFO: 今日未采集到文章;
-        #   push_n == 0     INFO: 今日未推送文章;
-        
-        #   pub_n > download_n WARNING: 请检查是否当日未采集完,第二天采集完造成;
         errors = []
         if push_n > pub_n:
             errors.append('ERROR: 推送异常;')
         # if push_n < pub_n:
         #     errors.append('WARNING: 请检查部分未推送原因(重复);')
-        if pub_n == 0:
-            errors.append('INFO: 今日未站点未发布文章;')
-        if download_n == 0:
-            errors.append('INFO: 今日未采集到文章;')
-        if push_n == 0:
-            errors.append('INFO: 今日未推送文章;')
+        # if pub_n == 0:
+        #     errors.append('INFO: 今日未站点未发布文章;')
+        # if download_n == 0:
+        #     errors.append('INFO: 今日未采集到文章;')
+        # if push_n == 0:
+        #     errors.append('INFO: 今日未推送文章;')
+        if pub_n > 0 and push_n == 0:
+            errors.append('WARNING: 请检查文章未推送原因;')
         if pub_n > download_n:
             errors.append('WARNING: 请检查是否当日未采集完,第二天采集完造成;')
         
@@ -302,7 +296,7 @@ class ReportOutput(DBQuery):
         return date_list
 
     def output(self, **kwargs):
-        tts = ['日期', '序号', '网站名称', '站点发布数', '采集数量', '推送数量', '发布数量', '待发布数量', '异常分析']
+        tts = ['日期', '序号', '网站名称', '站点发布数', '采集数量', '推送数量', '发布数量', '待发布数量', '异常分析(WARNING|ERROR需检查)']
         sdt = kwargs.get('sdt')
         edt = kwargs.get('edt')
 
@@ -388,5 +382,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-06-07', edt='2021-06-09')
+    rpt.output(sdt='2021-06-10', edt='2021-06-10')
     print((datetime.now() - start_time).total_seconds())
