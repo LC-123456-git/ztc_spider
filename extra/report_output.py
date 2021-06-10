@@ -256,6 +256,7 @@ class ReportOutput(DBQuery):
             errors.append('WARNING: 请检查是否当日未采集完,第二天采集完造成;')
         
         error = ''.join(errors)
+        error = ''
         
         result.append(
             [date, serial_number, area_id, pub_n, download_n, push_n, '', '', error]
@@ -382,5 +383,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-06-10', edt='2021-06-10')
+    rpt.output(sdt='2021-06-09', edt='2021-06-10')
     print((datetime.now() - start_time).total_seconds())

@@ -87,22 +87,32 @@ class QccCrawlerSpider(scrapy.Spider):
             - 自补充发票信息 根据origin匹配
             - 代理信息中企业信息采集
         """
-        methods = ['order', 'origin', 'agency']
+        methods = ['origin', 'agency', 'order']
         for method in methods:
             c_url = ''
-            # if method == 'order':
-            #     yield scrapy.Request(url=self.query_url.format(**{
-            #         'industryCode': '',
-            #         'subIndustryCode': '',
-            #         'page': '',
-            #     }), callback=self.parse_category)
-            if method == 'origin':
+            if method == 'order':
+                yield scrapy.Request(url=self.query_url.format(**{
+                    'industryCode': '',
+                    'subIndustryCode': '',
+                    'page': '',
+                    'tag': 'order',
+                }), callback=self.parse_category)
+            
+            if method in ['origin', 'agency']:
                 dbq = self.db_query
-                # qcc_sql = sql.COMPANY_NAMES_WITHOUT_ORIGIN.format(db_name=self.db_name, table_name='QCC_qcc_crawler')
-                qcc_sql = sql.COMPANY_NAMES_WITHOUT_ORIGIN.format(
-                    db_name='data_collection', table_name='QCC_qcc_crawler'
-                )
-                companies = dbq.fetch_all(qcc_sql)
+
+                companies = []
+                if method == 'origin':
+                    qcc_sql = sql.COMPANY_NAMES_WITHOUT_ORIGIN.format(
+                        db_name=self.db_name, table_name='QCC_qcc_crawler'
+                    )
+                    companies = dbq.fetch_all(qcc_sql)
+
+                if method == 'agency':
+                    qcc_sql = sql.COMPANY_NAMES_FROM_AGENT.format(
+                        db_name=self.db_name, table_name='quanguo'
+                    )
+                    companies = dbq.fetch_all(qcc_sql)
 
                 del dbq
 
@@ -113,10 +123,10 @@ class QccCrawlerSpider(scrapy.Spider):
 
                     if c_url:
                         yield scrapy.Request(
-                            url=c_url, callback=self.parse_search_list, priority=10 * (len(companies) - n),
+                            url=c_url, callback=self.parse_search_list, priority=1000000 * (len(companies) - n), meta={
+                                'tag': method,
+                            },
                         )
-            # if method == 'agency':
-            #     pass
 
     def parse_search_list(self, resp):
         doc = etree.HTML(resp.text)
@@ -125,7 +135,9 @@ class QccCrawlerSpider(scrapy.Spider):
         if detail_urls:
             detail_url = detail_urls[0]
 
-            yield scrapy.Request(url=detail_url, callback=self.parse_item, priority=100000)
+            yield scrapy.Request(url=detail_url, callback=self.parse_item, priority=100000, meta={
+                'tag': resp.meta.get('tag', '')
+            })
 
     def parse_category(self, resp):
         """
@@ -149,6 +161,7 @@ class QccCrawlerSpider(scrapy.Spider):
                 yield scrapy.Request(url=category_url, callback=self.parse_industry_categories, meta={
                     'category': category,
                     'category_name': category_name,
+                    'tag': resp.meta.get('tag', ''),
                 }, priority=1 * len(category_els) - n)
 
     def parse_industry_categories(self, resp):
@@ -178,6 +191,8 @@ class QccCrawlerSpider(scrapy.Spider):
 
                     'category_name': resp.meta.get('category_name', ''),
                     'industry_category_name': industry_category_name,
+                    
+                    'tag': resp.meta.get('tag', ''),
                 }, priority=10 * len(industry_category_els) - n)
 
     def parse_list(self, resp):
@@ -205,6 +220,8 @@ class QccCrawlerSpider(scrapy.Spider):
 
                     'category_name': resp.meta.get('category_name', ''),
                     'industry_category_name': resp.meta.get('industry_category_name', ''),
+                    
+                    'tag': resp.meta.get('tag', ''),
                 }, priority=1000 * (max_page - page))
 
     def parse_detail(self, resp):
@@ -347,6 +364,7 @@ class QccCrawlerSpider(scrapy.Spider):
             """
             notice_item = items.QCCItem()
             notice_item.update(**company_info_items)
+            self.log('当前采集类型: {0}'.format(resp.meta.get('tag', '')))
             print(company_info.get('企业名称', ''))
             return notice_item
         else:
