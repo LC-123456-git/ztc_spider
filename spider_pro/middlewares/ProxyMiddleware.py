@@ -163,6 +163,7 @@ class ProxyMiddleware(RetryMiddleware):
         :param ts: 1 显示过期时间 0 不显示
         :return:
         """
+        self.logger.info('正在获取新的IP...')
         if retry_times >= 3:
             self.logger.error(f"获取代理失败 重试次数超出: {_type=} {port=} {num=} {yys=} {_time=} {data_type=} {mr=}")
             return False
@@ -297,13 +298,13 @@ class ProxyMiddleware(RetryMiddleware):
 
             proxy_list = self.redis_client.smembers(self.name_http_proxy)
             for item in proxy_list:
-                if not self.redis_client.exists(item) and not item.startswith("http://"):
+                if not self.redis_client.exists(item) or not item.startswith("http://"):
                     self.redis_client.srem(self.name_http_proxy, item)
                     self.redis_client.sadd(self.name_http_used_proxy, item)
 
             proxy_list = self.redis_client.smembers(self.name_https_proxy)
             for item in proxy_list:
-                if not self.redis_client.exists(item) and not item.startswith("https://"):
+                if not self.redis_client.exists(item) or not item.startswith("https://"):
                     self.redis_client.srem(self.name_https_proxy, item)
                     self.redis_client.sadd(self.name_https_used_proxy, item)
 
