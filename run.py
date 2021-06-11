@@ -25,4 +25,5 @@ if __name__ == '__main__':
     # cmdline.execute("scrapy crawl province_53_bilian_spider".split(" "))
     # cmdline.execute("scrapy crawl province_78_zhuzhaixiushan_spider -a sdt=2021-01-01 -a edt=2021-06-08".split(" "))
     # cmdline.execute("scrapy crawl province_77_zhaobide_spider -a sdt=2020-01-01 -a edt=2021-01-01".split(" "))
+    # cmdline.execute("scrapy crawl province_53_bilian_spider -a sdt=2020-01-01 -a edt=2021-06-10".split(" "))
     
