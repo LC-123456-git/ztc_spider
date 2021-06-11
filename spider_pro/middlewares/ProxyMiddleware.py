@@ -92,7 +92,11 @@ class ProxyMiddleware(RetryMiddleware):
             reason = response_status_message(response.status)
             if retry_times >= self.max_retry_times:
                 self.logger.error(
-                    f"抓取失败 重试次数用完: {request.url=} {spider.area_id=} {reason=}")
+                    f"抓取失败 重试次数用完: {request.url=} {spider.area_id=} {reason=}"
+                )
+                self.process_exception(request, Exception(
+                    f"抓取失败 重试次数用完: {request.url=} {spider.area_id=} {reason=}"
+                ), spider)
                 return response
             elif response.status == 404:
                 return self._retry(request, reason, spider) or response
@@ -293,13 +297,13 @@ class ProxyMiddleware(RetryMiddleware):
 
             proxy_list = self.redis_client.smembers(self.name_http_proxy)
             for item in proxy_list:
-                if not self.redis_client.exists(item) or not item.startswith("http://"):
+                if not self.redis_client.exists(item) and not item.startswith("http://"):
                     self.redis_client.srem(self.name_http_proxy, item)
                     self.redis_client.sadd(self.name_http_used_proxy, item)
 
             proxy_list = self.redis_client.smembers(self.name_https_proxy)
             for item in proxy_list:
-                if not self.redis_client.exists(item) or not item.startswith("https://"):
+                if not self.redis_client.exists(item) and not item.startswith("https://"):
                     self.redis_client.srem(self.name_https_proxy, item)
                     self.redis_client.sadd(self.name_https_used_proxy, item)
 
