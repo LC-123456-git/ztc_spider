@@ -153,7 +153,7 @@ class MySpider(CrawlSpider):
                             yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict),
                                                  dont_filter=True, callback=self.parse_info_url,
                                                  meta={'category': response.meta['category'],
-                                                       'notice': response.meta['notice']})
+                                                       'notice': response.meta['notice']}, priority=1000)
 
                 else:
                     restul = json.loads(response.text)
@@ -163,7 +163,7 @@ class MySpider(CrawlSpider):
                     for num in range(pages):
                         type_dict = self.dict_data | {'pn': num * 50}
                         yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict), dont_filter=True, callback=self.parse_info_url,
-                                             meta={'category': response.meta['category'], 'notice': response.meta['notice']})
+                                             meta={'category': response.meta['category'], 'notice': response.meta['notice']}, priority=1000)
         except Exception as e:
             self.logger.error(f"初始总数提取错误 {response.meta=} {e} {response.url=}")
 
@@ -185,7 +185,7 @@ class MySpider(CrawlSpider):
 
                     yield scrapy.Request(url=info_url, callback=self.parse_item,
                                          meta={'category': response.meta['category'], 'notice_type': notice_type,
-                                               'title_name': title_name, 'put_time': put_time, 'info_source': info_source})
+                                               'title_name': title_name, 'put_time': put_time, 'info_source': info_source}, priority=10000)
         except Exception as e:
             self.logger.error(f"初始总数提取错误 {response.meta=} {e} {response.url=}")
 
