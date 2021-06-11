@@ -80,9 +80,9 @@ class ProxyMiddleware(RetryMiddleware):
         if response.status == 200:
             if spider.name == 'qcc_crawler':
                 if '<script>window.location.href=' in response.text:
-                    self.logger.info('请求响应异常.')
-                    # if retry_times >= self.max_retry_times:
-                    #     self.process_exception(request, Exception('超过重试次数.'), spider)
+                    self.logger.info('请求响应异常, retry:{0}'.format(retry_times))
+                    if retry_times >= self.max_retry_times:
+                        self.process_exception(request, Exception('超过重试次数.'), spider)
 
                     reason = Exception('请求响应异常.')
                     
@@ -92,7 +92,11 @@ class ProxyMiddleware(RetryMiddleware):
             reason = response_status_message(response.status)
             if retry_times >= self.max_retry_times:
                 self.logger.error(
-                    f"抓取失败 重试次数用完: {request.url=} {spider.area_id=} {reason=}")
+                    f"抓取失败 重试次数用完: {request.url=} {spider.area_id=} {reason=}"
+                )
+                self.process_exception(request, Exception(
+                    f"抓取失败 重试次数用完: {request.url=} {spider.area_id=} {reason=}"
+                ), spider)
                 return response
             elif response.status == 404:
                 return self._retry(request, reason, spider) or response
@@ -112,7 +116,7 @@ class ProxyMiddleware(RetryMiddleware):
             return
         if request.meta.get('retry_times', 0) >= self.max_retry_times:
             if not self.enable_proxy_infinite and self.enable_proxy_use:
-                self.logger.info('移除代理:', request.meta.get("proxy"))
+                self.logger.info('移除代理:{0}'.format(request.meta.get("proxy")))
                 self.delete_redis_ip_from(request.meta.get("proxy"))
             self.logger.error(
                 f"捕获失败 重试次数用完: {request.url=} {spider.area_id=} {exception=}")
@@ -293,13 +297,13 @@ class ProxyMiddleware(RetryMiddleware):
 
             proxy_list = self.redis_client.smembers(self.name_http_proxy)
             for item in proxy_list:
-                if not self.redis_client.exists(item) or not item.startswith("http://"):
+                if not self.redis_client.exists(item) and not item.startswith("http://"):
                     self.redis_client.srem(self.name_http_proxy, item)
                     self.redis_client.sadd(self.name_http_used_proxy, item)
 
             proxy_list = self.redis_client.smembers(self.name_https_proxy)
             for item in proxy_list:
-                if not self.redis_client.exists(item) or not item.startswith("https://"):
+                if not self.redis_client.exists(item) and not item.startswith("https://"):
                     self.redis_client.srem(self.name_https_proxy, item)
                     self.redis_client.sadd(self.name_https_used_proxy, item)
 

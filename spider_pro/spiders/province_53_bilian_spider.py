@@ -131,9 +131,14 @@ class Province53BilianSpiderSpider(scrapy.Spider):
             except Exception as e:
                 self.log(e)
             detail_url = el.xpath('.//a/@href').get()
+            
+            # 获取地区
+            area_els = el.xpath('./div[2]/div[2]/p[2]/span[2]/text()')
+            area_name = area_els[0].get() if area_els else ''
             yield scrapy.Request(url=detail_url, callback=self.parse_item, meta={
                 'notice_type': resp.meta.get('notice_type'),
                 'pub_time': pub_time,
+                'area_name': area_name,
             }, dont_filter=True, priority=10)
 
     def match_title(self, title_name):
@@ -181,11 +186,12 @@ class Province53BilianSpiderSpider(scrapy.Spider):
         # 投标文件
         _, files_path = utils.catch_files(content, self.query_url)
 
+        area_name = resp.meta.get('area_name', '')
         notice_item = items.NoticesItem()
         notice_item["origin"] = resp.url
         notice_item["title_name"] = title_name
         notice_item["pub_time"] = resp.meta.get('pub_time')
-        notice_item["info_source"] = self.basic_area
+        notice_item["info_source"] = '-'.join([area_name, self.basic_area]) if area_name else self.basic_area
         notice_item["is_have_file"] = constans.TYPE_HAVE_FILE if files_path else constans.TYPE_NOT_HAVE_FILE
         notice_item["files_path"] = files_path
         notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE

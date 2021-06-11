@@ -30,6 +30,14 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
     }
+    custom_settings = {
+        'DOWNLOADER_MIDDLEWARES': {
+            # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
+            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+        },
+    }
     url_map = {
         '招标公告': {
             'category_tag': 'ZBGG',
@@ -37,24 +45,24 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
             'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
                          '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
         },
-        # '招标变更': {
-        #     'category_tag': 'INFORM',
-        #     'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!informQuery.do?type=INFORM',
-        #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!informQuery.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
-        #                  '&&pricingQuota=&&informType=&&_packageCode%23projectCode_like=&&name=&&_projectVestingAddress_like=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
-        # },
-        # '中标预告': {
-        #     'category_tag': 'ZBHXRGS',
-        #     'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type=ZBHXRGS',
-        #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
-        #                  '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
-        # },
-        # '中标公告': {
-        #     'category_tag': 'ZZXS',
-        #     'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-bidder!show.do',
-        #     'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-bidder!show.do?_packageCode_notnull=true&_platformType={category_tag}&_auditStatus=PASSED&_packageId_notnull=true' + \
-        #                  '&_bidState=1&ORDERBY=+submitDate+desc+&_projectVestingAddress_eq=&PAGE={page}&PAGESIZE=12',
-        # },
+        '招标变更': {
+            'category_tag': 'INFORM',
+            'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!informQuery.do?type=INFORM',
+            'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!informQuery.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
+                         '&&pricingQuota=&&informType=&&_packageCode%23projectCode_like=&&name=&&_projectVestingAddress_like=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
+        },
+        '中标预告': {
+            'category_tag': 'ZBHXRGS',
+            'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type=ZBHXRGS',
+            'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-tender-notice!query.do?type={category_tag}&&businessId=&&biddingType=&&dateType=' + \
+                         '&&pricingQuota=&&_packageCode%23projectCode_like=&&name=&&address=&&bidtype=&&_projectProperty=&PAGE={page}&PAGESIZE=12',
+        },
+        '中标公告': {
+            'category_tag': 'ZZXS',
+            'first_url': 'http://xsjypt.fgj.sh.gov.cn/sh-bidder!show.do',
+            'extra_url': 'http://xsjypt.fgj.sh.gov.cn/sh-bidder!show.do?_packageCode_notnull=true&_platformType={category_tag}&_auditStatus=PASSED&_packageId_notnull=true' + \
+                         '&_bidState=1&ORDERBY=+submitDate+desc+&_projectVestingAddress_eq=&PAGE={page}&PAGESIZE=12',
+        },
     }
 
     def __init__(self, *args, **kwargs):
@@ -339,10 +347,16 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
             if title_names:
                 title_name = title_names[0].strip()
                 title_name = title_name.strip() if title_name else ''
-
-        # 企业资质
+        
         if notice_type_ori == '招标公告':
-            _, content = Province78ZhuzhaixiushanSpiderSpider.parse_zz(content)
+            _, content = Province78ZhuzhaixiushanSpiderSpider.parse_zz(content)  # 企业资质
+            # 报表信息
+            _, content = utils.remove_specific_element(
+                content, 'div', 'style', 'text-align:center;', index=0,
+            )
+            _, content = utils.remove_specific_element(
+                content, 'div', 'style', 'text-align:center; position:relative', index=0,
+            )
 
         # 关键字重新匹配 notice_type
         matched, match_notice_type = self.match_title(title_name)
