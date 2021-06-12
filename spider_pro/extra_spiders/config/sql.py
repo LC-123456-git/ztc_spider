@@ -27,3 +27,20 @@ COMPANY_FETCH_BY_NAME = """SELECT COUNT(company_name) c FROM {db_name}.{table_na
 
 COMPANY_NAMES_WITHOUT_ORIGIN = """SELECT company_name FROM {db_name}.{table_name} WHERE origin IS NULL"""            
 COMPANY_NAMES_FROM_AGENT = """SELECT agency as company_name FROM {db_name}.{table_name}"""
+
+# 检查代理机构信息是否补全  == 29350表示全部补全
+AGENCY_IF_COMPLETE = """SELECT COUNT(qg.society_code) FROM data_collection.quanguo qg
+                     WHERE EXISTS (
+                         SELECT qcc.id FROM data_collection.QCC_qcc_crawler qcc
+                         WHERE qcc.unified_social_credit_code=qg.society_code
+                     )
+                     """
+                     
+# 企业信息与代理机构连表查询
+JOIN_FECTCH = """
+              SELECT qcc.id, qcc.company_name, qg.liaison FROM data_collection.QCC_qcc_crawler qcc
+              LEFT JOIN data_collection.quanguo qg 
+              ON qcc.unified_social_credit_code=qg.society_code
+              """
+
+
