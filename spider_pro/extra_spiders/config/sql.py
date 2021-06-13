@@ -43,4 +43,8 @@ JOIN_FECTCH = """
               ON qcc.unified_social_credit_code=qg.society_code
               """
 
-
+AGENCY_NOT_IN_QCC = """select qg.agency company_name from data_collection.quanguo qg
+                    where qg.society_code not in (
+                        select qcc.unified_social_credit_code from data_collection.QCC_qcc_crawler qcc
+                    ) and qg.society_code != ''
+                    """
