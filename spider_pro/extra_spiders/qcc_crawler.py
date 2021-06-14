@@ -34,15 +34,15 @@ class QccCrawlerSpider(scrapy.Spider):
             # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
             'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
             'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
-            'spider_pro.middlewares.RefererMiddleware.RefererMiddleware': 400,
+            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+            # 'spider_pro.middlewares.RefererMiddleware.RefererMiddleware': 400,
         },
         'DOWNLOAD_DELAY': 2,
         'CONCURREN_REQUESTS': 32,
         'CONCURRENT_RTEQUESTS_PER_IP': 32,
-        # "ENABLE_PROXY_USE": True,
-        "ENABLE_PROXY_USE": False,
-        # "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
+        "ENABLE_PROXY_USE": True,
+        # "ENABLE_PROXY_USE": False,
+        "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
         'RETRY_TIMES': 5,
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
@@ -91,7 +91,7 @@ class QccCrawlerSpider(scrapy.Spider):
         """
         methods = ['origin', 'agency', 'order']
         for method in methods:
-            c_url = ''
+            # c_url = ''
             if method == 'order':
                 yield scrapy.Request(url=self.query_url.format(**{
                     'industryCode': '',
