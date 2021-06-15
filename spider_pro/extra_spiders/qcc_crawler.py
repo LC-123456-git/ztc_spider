@@ -35,14 +35,14 @@ class QccCrawlerSpider(scrapy.Spider):
             'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
             'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
             'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
-            # 'spider_pro.middlewares.ExtraProxyMiddleware.ExtraProxyMiddleware': 100,
+            # 'spider_pro.middlewares.RefererMiddleware.RefererMiddleware': 400,
         },
         'DOWNLOAD_DELAY': 2,
-        'CONCURREN_REQUESTS': 16,
-        'CONCURRENT_RTEQUESTS_PER_IP': 16,
+        'CONCURREN_REQUESTS': 32,
+        'CONCURRENT_RTEQUESTS_PER_IP': 32,
         "ENABLE_PROXY_USE": True,
         # "ENABLE_PROXY_USE": False,
-        # "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
+        "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
         'RETRY_TIMES': 5,
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
@@ -91,7 +91,7 @@ class QccCrawlerSpider(scrapy.Spider):
         """
         methods = ['origin', 'agency', 'order']
         for method in methods:
-            c_url = ''
+            # c_url = ''
             if method == 'order':
                 yield scrapy.Request(url=self.query_url.format(**{
                     'industryCode': '',
@@ -102,22 +102,24 @@ class QccCrawlerSpider(scrapy.Spider):
                 })
             
             if method in ['origin', 'agency']:
-                dbq = self.db_query
+                # dbq = self.db_query
 
                 companies = []
-                if method == 'origin':
-                    qcc_sql = sql.COMPANY_NAMES_WITHOUT_ORIGIN.format(
-                        db_name=self.db_name, table_name='QCC_qcc_crawler'
-                    )
-                    companies = dbq.fetch_all(qcc_sql)
+                # if method == 'origin':
+                #     qcc_sql = sql.COMPANY_NAMES_WITHOUT_ORIGIN.format(
+                #         db_name=self.db_name, table_name='QCC_qcc_crawler'
+                #     )
+                #     companies = dbq.fetch_all(qcc_sql)
 
-                if method == 'agency':
-                    qcc_sql = sql.COMPANY_NAMES_FROM_AGENT.format(
-                        db_name=self.db_name, table_name='quanguo'
-                    )
-                    companies = dbq.fetch_all(qcc_sql)
-
-                del dbq
+                # if method == 'agency':
+                #     qcc_sql = sql.COMPANY_NAMES_FROM_AGENT.format(
+                #         db_name=self.db_name, table_name='quanguo'
+                #     )
+                #     companies = dbq.fetch_all(qcc_sql)
+                # if method == 'agency':
+                #     qcc_sql = sql.AGENCY_NOT_IN_QCC
+                #     companies = dbq.fetch_all(qcc_sql)
+                # del dbq
 
                 for n, company in enumerate(companies):
                     c_name = company.get('company_name', '')
@@ -126,8 +128,9 @@ class QccCrawlerSpider(scrapy.Spider):
 
                     if c_url:
                         yield scrapy.Request(
-                            url=c_url, callback=self.parse_search_list, priority=100000 * (len(companies) - n), meta={
+                            url=c_url, callback=self.parse_search_list, priority=10 * (len(companies) - n), meta={
                                 'tag': method,
+                                'company': c_name,
                             },
                         )
 
@@ -139,7 +142,8 @@ class QccCrawlerSpider(scrapy.Spider):
             detail_url = detail_urls[0]
 
             yield scrapy.Request(url=detail_url, callback=self.parse_item, priority=1000000, meta={
-                'tag': resp.meta.get('tag', '')
+                'tag': resp.meta.get('tag', ''),
+                'company': resp.meta.get('company', '')
             })
 
     def parse_category(self, resp):
@@ -369,7 +373,7 @@ class QccCrawlerSpider(scrapy.Spider):
             """
             notice_item = items.QCCItem()
             notice_item.update(**company_info_items)
-            self.logger.info('当前采集类型: {0}'.format(resp.meta.get('tag', '')))
+            self.logger.info('关键词:{0}; 企业:{1}; 当前采集类型: {2}'.format(resp.meta.get('company', ''), company_info.get('企业名称', ''), resp.meta.get('tag', '')))
             print('企业:{0}; 当前采集类型: {1}'.format(company_info.get('企业名称', ''), resp.meta.get('tag', '')))
             return notice_item
         else:

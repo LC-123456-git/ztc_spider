@@ -22,14 +22,14 @@ class Province53BilianSpiderSpider(scrapy.Spider):
         '评标结果': '中标预告',
         '中标|结果': '中标公告',
     }
-    custom_settings = {
-        'DOWNLOADER_MIDDLEWARES': {
-            # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
-            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
-            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
-        },
-    }
+    # custom_settings = {
+    #     'DOWNLOADER_MIDDLEWARES': {
+    #         # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
+    #         'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+    #         'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+    #         # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+    #     },
+    # }
     url_map = {
         '招标预告': {
             'info_class_code': ['zbyg'],
