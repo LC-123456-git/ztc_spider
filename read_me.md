@@ -151,6 +151,9 @@
 ---
 
 ###地方
+# 北京地区
+- [] 1101 北京市海淀区人民政府  http://www.bjhd.gov.cn/
+- [] 1102 北京市政府采购网  http://www.ccgp.gov.cn/
 
 - [] 3301 杭州公共资源交易网  https://www.hzctc.cn/
 - [] 3302 浙江政府采购网  https://zfcg.czt.zj.gov.cn/
