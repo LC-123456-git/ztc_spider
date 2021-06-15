@@ -105,7 +105,8 @@ def remove_specific_element(content, ele_name, attr_name, attr_value, if_child=F
     except Exception as e:
         msg = e
 
-    return msg, content.replace('<html><body>', '').replace('</body></html>', '')
+    # return msg, content.replace('<html><body>', '').replace('</body></html>', '')
+    return msg, content.replace('<html>', '').replace('<body>', '').replace('</body>', '').replace('</html>', '')
 
 
 def avoid_escape(content):
@@ -481,6 +482,12 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_name = area_dict["name"]
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
+        return deal_area_dict
+    elif area_id == "3101":
+        area_dict = const.shang_hai
+        province_name = area_dict.get("name")
+        province_code = area_dict.get("code")
+        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data, info_source)
         return deal_area_dict
     elif area_id == "3301":
         area_dict = const.zhe_jiang
