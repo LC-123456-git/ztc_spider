@@ -135,7 +135,7 @@ if __name__ == "__main__":
     spider_list = [
         "province_00_quanguo_spider",
         "province_02_beijing_spider",
-        "province_03_tianjin_spider", 
+        "province_03_tianjin_spider",
         "province_04_hebei_spider",
         "province_05_shanxi_spider",
         "province_08_jilin_spider",
@@ -144,7 +144,7 @@ if __name__ == "__main__":
         "province_13_jiangsu_spider",
         "province_14_zhejiang_spider",
         "province_15_zhejiang_spider",
-        "province_16_anhui_spider",
+        "province_16_anhui_spider", 
         "province_18_fujian_spider",
         "province_19_jiangxi_spider",
         "province_21_shandong_spider",
@@ -153,6 +153,7 @@ if __name__ == "__main__":
         "province_28_hunan_spider",
         "province_30_guangdong_spider",
         # "province_40_sichuan_spider",
+        "province_41_guizhou_spider",
         "province_44_xizang_spider",
         "province_45_shanxi_spider",
         # "province_49_ningxia_spider",
@@ -164,15 +165,19 @@ if __name__ == "__main__":
         "province_56_hebeijiantou_spider",
         "province_57_jingcaizongheng_spider",
         "province_59_xinzhi_spider",
-        "province_62_xindian_spider",
+        "province_65_guoepingtai_spider",
         "province_67_yangguangyizhao_spider",
         "province_68_qilu_spider",
+        "province_62_xindian_spider", 
         "province_71_zhaocaijingbao_spider",
         "province_78_zhuzhaixiushan_spider",
         "province_79_xinEcai_spider",
+        "province_83_wangcai_spider",
+        "province_85_anzhuangxinxi_spider",
+        "ZJ_city_3302_zjcaigou_spider",
         "ZJ_enterprise_3303_zhenengjituan_spider",
         "ZJ_enterprise_3304_shuiliting_spider",
-        "ZJ_city_3305_ningbo_spider", 
+        "ZJ_city_3305_ningbo_spider",
         "ZJ_city_3306_jiaxing_spider",
         "ZJ_city_3307_huzhou_spider",
         "ZJ_city_3309_wenzhou_spider",
@@ -239,7 +244,7 @@ if __name__ == "__main__":
 
                     arg_choices = {
                         'day': 1
-                    }              
+                    }
                 # if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
                 #     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
                 # if item == "province_57_jingcaizongheng_spider":

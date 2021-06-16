@@ -41,7 +41,7 @@ def process_request_category(origin):
 class MySpider(CrawlSpider):
     name = 'province_05_shanxi_spider'
     area_id = "05"
-    area_province = "山西"
+    area_province = "山西公共资源交易平台"
     domain_url = "http://prec.sxzwfw.gov.cn"
     query_url = "http://prec.sxzwfw.gov.cn/queryContent-jyxx.jspx"
     query_page_url = "http://prec.sxzwfw.gov.cn/queryContent_{}-jyxx.jspx"

@@ -304,9 +304,10 @@ class ScrapyDataPost(object):
                         try:
                             data = deal_base_notices_data(item_dict, is_hump=True)
                             # 因为浙江没有项目类型，这里做特殊处理
-                            # if table_name == "notices_15" or table_name == "notices_3304" or table_name == "notices_3324" or table_name == "notices_53" or table_name == 'notices_65':
+                            # if table_name == "notices_15" or table_name == "notices_3304" or table_name == "notices_3324" or table_name == "notices_53" or table_name == "notices_65":
                             if table_name in [
                                 'notices_15',
+                                'notices_3302',
                                 'notices_3304',
                                 'notices_3324',
                                 'notices_53',
@@ -319,10 +320,8 @@ class ScrapyDataPost(object):
                                 'notices_3101',
                             ]:
                                 keys = ["title", "content", "classifyName", "area", "publishTime", "sourceUrl"]
-
                             elif table_name in ['notices_79']:
-                                keys = ["title", "content", "classifyName", "publishTime", "sourceUrl"]
-
+                                keys = ['title', 'content', 'clasaifyName', 'publishTime', 'sourceUrl']
                             else:
                                 keys = ["title", "content", "projectType", "classifyName", "area", "publishTime",
                                         "sourceUrl"]
@@ -575,6 +574,7 @@ if __name__ == "__main__":
         "notices_28",
         "notices_30",
         #"notices_40",
+        "notices_41",
         "notices_44",
         "notices_45",
         "notices_49",
@@ -587,11 +587,15 @@ if __name__ == "__main__":
         "notices_57",
         "notices_59",
         "notices_62",
+        "notices_65",
         "notices_67",
         "notices_68",
         "notices_71",
-        "notices_78"
-        "notices_79"
+        "notices_78",
+        "notices_79",
+        "notices_83",
+        "notices_85",
+        "notices_3302",
         "notices_3303",
         "notices_3305",
         "notices_3306",

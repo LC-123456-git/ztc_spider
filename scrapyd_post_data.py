@@ -228,7 +228,7 @@ class ScrapyDataPost(object):
             print(e)
         return if_push, content
 
-    def run_post(self, d_time="1970-01-01", table_name=None, e_time=None):
+    def run_post(self, d_time="2021-06-10", table_name=None, e_time="2021-06-11"):
         table_name = table_name if table_name else self.table_name
         rows = 200
         err_start = 0
@@ -284,6 +284,8 @@ class ScrapyDataPost(object):
                                 'notices_65',
                                 'notices_77',
                                 'notices_78',
+                                'notices_83',
+                                'notices_85',
                             ]:
                                 keys = ["title", "content", "classifyName", "area", "publishTime", "sourceUrl"]
                             else:
@@ -499,15 +501,15 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # 正式推数据 解开注释需要当心！！！
-    cp = ScrapyDataPost(
-        table_name="notices_78",
-        # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4',
-        engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
-        post_url="http://192.168.1.243:30007/feign/data/v1/notice/addGatherNotice"
-        # post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice"
-    )
-    # cp.run_post(d_time='2018-01-01', e_time='2021-05-27')
-    cp.run_post()
+    # cp = ScrapyDataPost(
+    #     table_name="notices_11",
+    #     # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/data_collection?charset=utf8mb4',
+    #     engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4',
+    #     # post_url="http://192.168.1.243:30007/feign/data/v1/notice/addGatherNotice"
+    #     post_url="https://data-center.zhaotx.cn/feign/data/v1/notice/addGatherNotice"
+    # )
+    # # cp.run_post(d_time='2018-01-01', e_time='2021-05-27')
+    # cp.run_post()
 
     #'You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near \'14:02:50)\' at line 1'
     # 正式多线程推数据 解开注释需要当心！！！
@@ -537,10 +539,10 @@ if __name__ == "__main__":
     # ])
 
     # 测试推数据
-    # cp = ScrapyDataPost(table_name="notices_21",
-    #                     engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@192.168.1.248:3306/test2_data_collection?charset=utf8mb4',
-    #                     post_url="http://192.168.1.249:9007/feign/data/v1/notice/addGatherNotice")
-    # cp.run_post()
+    cp = ScrapyDataPost(table_name="notices_1101",
+                        engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
+                        post_url="http://192.168.1.243:30007/feign/data/v1/notice/addGatherNotice" )
+    cp.run_post()
     # # 测试多线程推数据
     # cp.run_multi_thead_prepare(st='2018-10-08', et='2018-12-31')
     # # 测试批量推数据

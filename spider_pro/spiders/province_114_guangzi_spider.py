@@ -131,6 +131,7 @@ class MySpider(CrawlSpider):
 
             # classifyShow = response.meta.get("classifyShow", "")
             title_name = response.meta.get("title_name", "")
+            print(title_name)
             pub_time = response.meta['pub_time']
             if not pub_time:
                 pub_time = "null"
@@ -191,8 +192,8 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl province_114_guangzi_spider -a sdt=2021-05-24".split(" "))
-
+    # cmdline.execute("scrapy crawl province_114_guangzi_spider -a sdt=2021-05-24".split(" "))
+    cmdline.execute("scrapy crawl province_114_guangzi_spider".split(" "))
 
 
 

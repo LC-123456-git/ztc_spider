@@ -44,12 +44,10 @@ class MySpider(CrawlSpider):
 
     def __init__(self, *args, **kwargs):
         super(MySpider, self).__init__()
+        self.currentPage = 1
         cookies_str = 'jsessionid_dzsw=q77lD-l-qR6PZeyvq5yqV2OXyGLpcWQ782HMVAYubWYoYT_KpFYf!-1912950762; ck=d9b08bef01d47609182f128ac9effc7fce91d73fa37b7caef862bc4f468116f57b4375c088582974398ba24c5f92493a; JSESSIONID=ea7cacb1-d39b-4757-95e4-b698208ea06a' # 抓包获取
         # 将cookies_str转换为cookies_dict
         self.cookies_dict = {i.split('=')[0]: i.split('=')[1] for i in cookies_str.split('; ')}
-
-
-
         if kwargs.get("sdt") and kwargs.get("edt"):
             self.enable_incr = True
             self.sdt_time = kwargs.get("sdt")
@@ -64,6 +62,7 @@ class MySpider(CrawlSpider):
             callback_url = self.parse_pages
         for item in self.all_list:
             for pattern in [0, 1]:
+
                 info_dict = {"yfFlg": pattern}
                 yield scrapy.Request(url=f"{self.list_url.format(item,1)}{urllib.parse.urlencode(info_dict)}", priority=2,
                                      dont_filter=True, meta={"item": item, "pattern": pattern}, callback=callback_url)
@@ -86,7 +85,6 @@ class MySpider(CrawlSpider):
         item = response.meta["item"]
         pattern = response.meta["pattern"]
         count_num = 0
-        currentPage = 1
         for info_item in info_list:
             pub_time = "".join(info_item.xpath("//div[@class='Row-3']/text()").get()).strip()
             pub_time = get_accurate_pub_time(pub_time)
@@ -105,12 +103,12 @@ class MySpider(CrawlSpider):
                                      cookies=self.cookies_dict,
                                      meta={"item": item, "title_name": title_name, "pub_time": pub_time,
                                            "info_source": info_source})
-                if count_num >= len(info_list):
-                    next_page = currentPage + 1
-                    if next_page <= int(pages):
-                        info_dict = {"yfFlg": pattern}
-                        yield scrapy.Request(url=f"{self.list_url.format(item, next_page)}{urllib.parse.urlencode(info_dict)}", priority=6,
-                                             dont_filter=True, callback=self.get_info_url, meta={"item": item})
+            if count_num >= len(info_list):
+                self.currentPage = self.currentPage + 1
+                if self.currentPage <= int(pages):
+                    info_dict = {"yfFlg": pattern}
+                    yield scrapy.Request(url=f"{self.list_url.format(item, self.currentPage)}{urllib.parse.urlencode(info_dict)}", priority=6,
+                                         dont_filter=True, callback=self.extract_data_urls, meta={"item": item})
 
     def get_info_url(self, response):
         try:
@@ -167,7 +165,7 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl province_83_wangcai_spider -a sdt=2021-06-01 -a edt=2021-06-08".split(" "))
+    cmdline.execute("scrapy crawl province_83_wangcai_spider -a sdt=2021-06-11 -a edt=2021-06-16".split(" "))
     # cmdline.execute("scrapy crawl province_83_wangcai_spider".split(" "))
 
 

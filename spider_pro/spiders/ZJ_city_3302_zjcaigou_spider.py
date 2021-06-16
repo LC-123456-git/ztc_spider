@@ -61,7 +61,6 @@ class MySpider(CrawlSpider):
                     "isGov": "true", "pubDate": self.pubDate, "endDate": self.endDate, "isExact": "1", "url": "notice"}
         self.page_dict = {"pageNo": "1"}
 
-
     def start_requests(self):
         # url = 'http://bidding.ningbo.gov.cn/cms/qtzbjg/169060.htm'
         # yield scrapy.Request(url=url, callback=self.parse_item)
@@ -114,7 +113,7 @@ class MySpider(CrawlSpider):
                 projectName = item.get("projectName", "")
                 districtName = item.get("districtName", "")
                 yield scrapy.Request(url=f"{self.query_url}{urllib.parse.urlencode({'noticeId':info_id, 'url': 'noticeDetail'})}"
-                                     , priority=10, callback=self.parse_item, dont_filter= True,
+                                     , priority=10, callback=self.parse_item, dont_filter=True,
                                      meta={"notice_type": notice_type, "title_name": title_name,
                                            "project_number": project_number, "projectName": projectName,
                                            "districtName": districtName, "info_url": info_url})
@@ -186,5 +185,5 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
     cmdline.execute("scrapy crawl ZJ_city_3302_zjcaigou_spider".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3302_zjcaigou_spider -a sdt=2021-05-28 -a edt=2021-05-29".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3302_zjcaigou_spider -a sdt=2021-06-28 -a edt=2021-05-29".split(" "))
 

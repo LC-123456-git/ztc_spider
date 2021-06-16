@@ -115,7 +115,6 @@ class MySpider(Spider):
         except Exception as e:
             self.logger.error(f"初始总页数提取错误 {response.meta=} {e} {response.url=}")
 
-
     def parse_data_urls(self, response):
         try:
             temp_list = response.xpath("//table[@cellspacing='3']/tr")
@@ -155,15 +154,14 @@ class MySpider(Spider):
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
-
     def parse_item(self, response, name):
         if response.status == 200:
             origin = response.url
-            print(origin)
-            info_source = response.meta.get("info_source")
-            classifyShow = response.meta.get("classifyShow")
-            title_name = response.meta.get("title_name")
-            pub_time = response.meta.get("pub_time")
+            info_source = response.meta.get("info_source", "")
+            classifyShow = response.meta.get("classifyShow", "")
+            title_name = response.meta.get("title_name", "")
+            print(title_name)
+            pub_time = response.meta.get("pub_time", "")
             if not pub_time:
                 pub_time = response.xpath("/html/body/div[3]/table/tbody/tr[2]/td/table/tbody/tr[1]/td/table/tbody/tr[2]/td/p/text()").get()
             pub_time = get_accurate_pub_time(pub_time)
@@ -222,8 +220,8 @@ class MySpider(Spider):
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = classifyShow
-            print(type(files_path))
-            print(notice_item)
+            # print(type(files_path))
+            # print(notice_item)
             # TODO 产品要求推送，故注释
             # if not is_clean:
             #     notice_item['is_clean'] = const.TYPE_CLEAN_NOT_DONE

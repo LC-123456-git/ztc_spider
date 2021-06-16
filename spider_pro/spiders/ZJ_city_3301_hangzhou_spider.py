@@ -255,5 +255,5 @@ class MySpider(Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3301_hangzhou_spider -a std=2021-06-09 -a edt=2021-06-09".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3301_hangzhou_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3301_hangzhou_spider -a std=2021-06-09 -a edt=2021-06-09".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3301_hangzhou_spider".split(" "))
