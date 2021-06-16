@@ -303,7 +303,7 @@ class ReportOutput(DBQuery):
         return date_list
 
     def output(self, **kwargs):
-        tts = ['日期', '序号', '网站名称', '站点发布数', '采集数量', '推送数量', '发布数量', '待发布数量', '异常分析(WARNING|ERROR需检查)']
+        tts = ['日期', '序号', '网站名称', '站点发布数', '采集数量', '推送数量', '发布数量', '待发布数量', '异常分析']
         sdt = kwargs.get('sdt')
         edt = kwargs.get('edt')
 
@@ -389,5 +389,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-06-12', edt='2021-06-13')
+    rpt.output(sdt='2021-06-12', edt='2021-06-15')
     print((datetime.now() - start_time).total_seconds())
