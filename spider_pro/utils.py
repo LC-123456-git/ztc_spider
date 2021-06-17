@@ -153,7 +153,7 @@ def catch_files(content, base_url, **kwargs):
             src = img_el.attrib.get('src')
             if '.' in src:
                 if not check_if_http_based(src):
-                    src = base_url + src
+                    src = ''.join([base_url, src])
                 suffix_name = src.split('.')[-1]
                 files_path['{uuid}.{suffix_name}'.format(uuid=str(uuid.uuid1()), suffix_name=suffix_name)] = src
 
@@ -175,7 +175,7 @@ def catch_files(content, base_url, **kwargs):
                 # RECORDS ALL LINKS EXCEPT CONTENT-TYPE CONTAINS 'text/html'
                 file_url = href_el.get('href', '')
                 if not check_if_http_based(file_url):
-                    file_url = base_url + file_url
+                    file_url = ''.join([base_url, file_url])
 
                 if re.search(search_regex, file_name):
                     files_path[file_name.strip()] = file_url

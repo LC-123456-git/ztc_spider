@@ -228,7 +228,7 @@ class ScrapyDataPost(object):
             print(e)
         return if_push, content
 
-    def run_post(self, d_time="2021-06-10", table_name=None, e_time="2021-06-11"):
+    def run_post(self, d_time="1970-01-01", table_name=None, e_time=None):
         table_name = table_name if table_name else self.table_name
         rows = 200
         err_start = 0
@@ -539,7 +539,7 @@ if __name__ == "__main__":
     # ])
 
     # 测试推数据
-    cp = ScrapyDataPost(table_name="notices_1101",
+    cp = ScrapyDataPost(table_name="notices_77",
                         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
                         post_url="http://192.168.1.243:30007/feign/data/v1/notice/addGatherNotice" )
     cp.run_post()

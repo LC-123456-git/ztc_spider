@@ -14,6 +14,7 @@ class Province53BilianSpiderSpider(scrapy.Spider):
     start_urls = ['http://ss.ebnew.com/']
     area_id = 53
     query_url = 'https://ss.ebnew.com/tradingSearch/index.html'
+    base_url = 'https://ss.ebnew.com'
     basic_area = '必联网'
     keywords_map = {
         '意向|需求': '招标预告',
@@ -184,7 +185,7 @@ class Province53BilianSpiderSpider(scrapy.Spider):
         _, content = utils.remove_specific_element(content, 'div', 'class', 'position-relative', index=2)
 
         # 投标文件
-        _, files_path = utils.catch_files(content, self.query_url)
+        _, files_path = utils.catch_files(content, self.base_url)
 
         area_name = resp.meta.get('area_name', '')
         notice_item = items.NoticesItem()

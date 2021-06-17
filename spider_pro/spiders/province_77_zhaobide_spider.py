@@ -342,7 +342,7 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
         _, content = utils.remove_specific_element(content, 'div', 'class', 'pd-l10 pd-r10 border-t mt30 mb-30')
 
         # - 匹配文件
-        _, files_path = utils.catch_files(content, self.query_url, has_suffix=True)
+        _, files_path = utils.catch_files(content, self.base_url, has_suffix=True)
 
         notice_item = items.NoticesItem()
 
@@ -367,6 +367,6 @@ if __name__ == "__main__":
     from scrapy import cmdline
 
     cmdline.execute(
-        "scrapy crawl province_77_zhaobide_spider -a sdt=2021-01-01 -a edt=2021-06-09".split(" ")
+        "scrapy crawl province_77_zhaobide_spider -a sdt=2021-01-01 -a edt=2021-06-17".split(" ")
     )
     # cmdline.execute("scrapy crawl province_77_zhaobide_spider".split(" "))

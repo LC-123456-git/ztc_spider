@@ -60,13 +60,13 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
         super().__init__()
         self.start_time = kwargs.get('sdt', '')
         self.end_time = kwargs.get('edt', '')
-        
+
     @staticmethod
     def get_headers(resp):
         default_headers = resp.request.headers
         headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
         return headers
-        
+
     def match_title(self, title_name):
         """
         根据标题匹配关键字 返回招标类别
@@ -83,8 +83,8 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
                 notice_type = value
                 matched = True
                 break
-        return matched, notice_type 
-        
+        return matched, notice_type
+
     def judge_in_interval_from_json(self, url, formdata=None, resp=None):
         status = 0
         headers = Province3101ShanghaigovSpiderSpider.get_headers(resp)
@@ -102,13 +102,13 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
                 content_list = hits.get('hits', [])
 
                 first_pub_time = time.strftime("%Y-%m-%d", time.localtime(
-                        content_list[0].get('_source', '').get('publishDate', '') / 1000
-                    )
+                    content_list[0].get('_source', '').get('publishDate', '') / 1000
                 )
+                                               )
                 final_pub_time = time.strftime("%Y-%m-%d", time.localtime(
-                        content_list[-1].get('_source', '').get('publishDate', '') / 1000
-                    )
+                    content_list[-1].get('_source', '').get('publishDate', '') / 1000
                 )
+                                               )
 
                 if all([first_pub_time, final_pub_time]):
                     first_pub_time = datetime.strptime(first_pub_time, '%Y-%m-%d')
@@ -132,7 +132,7 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
         else:
             status = 1  # 没有传递时间
         return status
- 
+
     def start_requests(self):
         for notice_type, formdata_list in self.formdata_map.items():
             for formdata in formdata_list:
@@ -142,7 +142,7 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
                 }, headers={
                     'Content-Type': 'application/json',
                 }, callback=self.get_max_page, dont_filter=True)
-            
+
     def get_max_page(self, resp):
         """
         {
@@ -188,7 +188,7 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
 
         hits = ret.get('hits', {})
         total_record = hits.get('total', 0)
-        
+
         try:
             max_pages = math.ceil(int(total_record) // 15)
         except Exception as e:
@@ -207,25 +207,25 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
                     yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(formdata), meta={
                         'notice_type': resp.meta.get('notice_type', ''),
                     }, headers={
-                    'Content-Type': 'application/json',
-                }, callback=self.parse_list, dont_filter=True, priority=10 * (max_pages - page))
-                    
+                        'Content-Type': 'application/json',
+                    }, callback=self.parse_list, dont_filter=True, priority=10 * (max_pages - page))
+
     def parse_list(self, resp):
         data = json.loads(resp.text)
 
         hits = data.get('hits', {})
 
         content_list = hits.get('hits', [])
-        
+
         for n, row in enumerate(content_list):
-            source = row.get('_source',{})
+            source = row.get('_source', {})
             title_name = source.get('title', '')
             c_url = source.get('url', '')
             district_name = source.get('districtName', '')
             pub_time = time.strftime("%Y-%m-%d", time.localtime(
-                    source.get('publishDate', '') / 1000
-                )
+                source.get('publishDate', '') / 1000
             )
+                                     )
 
             if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                 c_url = ''.join([self.base_url, c_url])
@@ -235,7 +235,7 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
                     'pub_time': pub_time,
                     'district_name': district_name,
                 }, callback=self.parse_detail, priority=100000 * (len(content_list) - n))
-    
+
     def parse_detail(self, resp):
         content_el = resp.xpath('//input[@name="articleDetail"]/@value').get()
         content_el = utils.avoid_escape(content_el)
@@ -246,14 +246,14 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
             content = content_el.get('content', '')
         except Exception as e:
             self.logger.info({'error:{0}'.format(e)})
-        else:        
+        else:
             title_name = resp.meta.get('title_name')
             notice_type_ori = resp.meta.get('notice_type')
 
             matched, match_notice_type = self.match_title(title_name)
             if matched:
                 notice_type_ori = match_notice_type
-            
+
             notice_types = list(
                 filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
             )
@@ -266,7 +266,8 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
             notice_item["origin"] = resp.url
             notice_item["title_name"] = title_name
             notice_item["pub_time"] = resp.meta.get('pub_time')
-            notice_item["info_source"] = self.basic_area.format(district_name='-%s' % district_name if district_name else '')
+            notice_item["info_source"] = self.basic_area.format(
+                district_name='-%s' % district_name if district_name else '')
             notice_item["is_have_file"] = constans.TYPE_HAVE_FILE if files_path else constans.TYPE_NOT_HAVE_FILE
             notice_item["files_path"] = files_path
             notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
@@ -275,13 +276,12 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
             notice_item["category"] = '采购'
             print(resp.meta.get('pub_time'), resp.url)
             return notice_item
-    
-    
-        
+
+
 if __name__ == "__main__":
     from scrapy import cmdline
 
     cmdline.execute(
-        "scrapy crawl province_3101_shanghaigov_spider -a sdt=2021-06-12 -a edt=2021-06-15".split(" ")
+        "scrapy crawl province_3101_shanghaigov_spider -a sdt=2021-06-11 -a edt=2021-06-15".split(" ")
     )
     # cmdline.execute("scrapy crawl province_3101_shanghaigov_spider".split(" "))

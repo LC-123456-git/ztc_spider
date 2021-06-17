@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+@file           :ZJ_city_3325_deqing_spider.py
+@description    :浙江省-湖州市-德清县-德清县公共资源交易平台
+@date           :2021/06/17 11:35:38
+@author         :miaokela
+@version        :1.0
+"""
 import re
 import requests
 import scrapy

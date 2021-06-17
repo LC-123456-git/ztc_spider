@@ -23,6 +23,7 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
     allowed_domains = ['www.xiaoshan.gov.cn', 'www.xiaoshan.gov.cnBulletinBrowse.aspx.']
     start_urls = ['http://www.xiaoshan.gov.cn/']
     query_url = 'http://gzjy.xiaoshan.gov.cn/Bulletin'
+    base_url = 'http://gzjy.xiaoshan.gov.cn'
     basic_area = '浙江省-杭州市-萧山区-萧山政府门户网站'
     area_id = 3323
     keywords_map = {
@@ -233,7 +234,7 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
             )
 
             # 匹配文件
-            _, files_path = utils.catch_files(content, self.query_url)
+            _, files_path = utils.catch_files(content, self.base_url)
 
             if '测试项目' not in title_name:
                 notice_item = items.NoticesItem()

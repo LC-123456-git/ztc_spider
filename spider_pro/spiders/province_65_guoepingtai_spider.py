@@ -22,6 +22,7 @@ class Province65GuoepingtaiSpiderSpider(scrapy.Spider):
     name = 'province_65_guoepingtai_spider'
     allowed_domains = ['www.ebidding.com']
     start_urls = ['http://www.ebidding.com/']
+    base_url = 'http://www.ebidding.com'
     query_url = 'https://www.ebidding.com/portal/announcement/ebd?type={sub_notice_code}&df=&department=' + \
                 '&industry=&bidType={business_category_code}&guanjianzi=&openMode=&showDateSort=1&platformType=&_={now_time}&on=false&page={page}'
     detail_url = 'https://www.ebidding.com/portal/announcement/ebd/{sub_notice_code}/{et_id}/{html_content_id}/?_={now_time}'
@@ -266,7 +267,7 @@ class Province65GuoepingtaiSpiderSpider(scrapy.Spider):
             )
 
             # 匹配文件
-            _, files_path = utils.catch_files(content, self.query_url)
+            _, files_path = utils.catch_files(content, self.base_url)
 
             notice_item = items.NoticesItem()
 
