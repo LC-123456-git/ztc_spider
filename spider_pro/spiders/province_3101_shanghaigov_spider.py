@@ -24,7 +24,8 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
     allowed_domains = ['ccgp-shanghai.gov.cn']
     start_urls = ['http://ccgp-shanghai.gov.cn/']
     area_id = 3101
-    basic_area = '上海市{district_name}-上海政府采购网'
+    basic_area = '上海市政府采购网'
+    # basic_area = '上海市{district_name}-上海政府采购网'
     base_url = 'http://www.ccgp-shanghai.gov.cn'
     query_url = 'http://www.ccgp-shanghai.gov.cn/front/search/category'
     notice_keywords_map = {
@@ -191,8 +192,8 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
         try:
             max_pages = math.ceil(int(total_record) // 15)
         except Exception as e:
-            max_pages = 0
-        finally:
+            self.logger.info('error:{0}'.format(e))
+        else:
             for page in range(1, max_pages + 1):
                 formdata['pageNo'] = str(page)
                 # 请求当前页 判断时间区间
@@ -271,7 +272,7 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
             notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
-            notice_item["project_type"] = '采购'
+            notice_item["category"] = '采购'
             print(resp.meta.get('pub_time'), resp.url)
             return notice_item
     
