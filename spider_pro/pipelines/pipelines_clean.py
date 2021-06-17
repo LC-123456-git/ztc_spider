@@ -308,9 +308,9 @@ class CleanPipeline(object):
         # 公共提取字段 15
         project_name = self.get_keys_value_from_content(content, ["项目名称", "招标项目", "工程名称", "招标工程项目"], area_id=area_id)
         project_number = self.get_keys_value_from_content(content, ["项目编号", "招标项目编号", "招标编号"], area_id=area_id)
-        tenderee = self.get_keys_value_from_content(content, ["招标人", "招&nbsp;标&nbsp;人", "招标单位"], area_id=area_id)
-        bidding_agency = self.get_keys_value_from_content(content, "招标代理", area_id=area_id)
-        budget_amount = self.get_keys_value_from_content(content, "项目金额", area_id=area_id)
+        tenderee = self.get_keys_value_from_content(content, ["招标人", "招&nbsp;标&nbsp;人", "招标单位", "建设单位"], area_id=area_id)
+        bidding_agency = self.get_keys_value_from_content(content, ["招标代理", "代理公司"], area_id=area_id)
+        budget_amount = self.get_keys_value_from_content(content, ["项目金额", "本期概算\(万元\)"], area_id=area_id)
         address = self.get_keys_value_from_content(content, "详细地址", area_id=area_id)
         liaison = self.get_keys_value_from_content(content, "联系人", area_id=area_id)
         contact_information = self.get_keys_value_from_content(content, "联系电话", area_id=area_id)
@@ -378,7 +378,7 @@ class CleanPipeline(object):
             return value
 
     def run_clean(self, table_name, engine_config, is_clean_default=1):
-        area_id = table_name.strip("_")[-1]
+        area_id = table_name.split("_")[-1]
         self.engine = create_engine(engine_config)
         rows = 5000
         start = 0
@@ -389,7 +389,8 @@ class CleanPipeline(object):
                 # results = conn.execute(
                 #     f"select * from {table_name} where is_clean =0 and is_upload=0  limit {start}, {rows}").fetchall()
                 results = conn.execute(
-                    f"select * from {table_name} where is_have_file = 1").fetchall()
+                    f"select * from {table_name} where is_have_file = 1 and id='10'").fetchall()
+                results = [dict(zip(result.keys(), result)) for result in results]
                 for item in results:
                     try:
                         if str(item["notice_type"]) == const.TYPE_UNKNOWN_NOTICE:
@@ -476,7 +477,7 @@ if __name__ == "__main__":
     # cp.run_clean(table_name="notices_11", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     # cp.run_clean(table_name="notices_13", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     # cp.run_clean(table_name="notices_15", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
-    cp.run_clean(table_name="notices_3307",
+    cp.run_clean(table_name="notices_3301",
                  engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4')
 
     # # 测试洗数据 默认测试

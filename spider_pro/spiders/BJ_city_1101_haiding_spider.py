@@ -22,8 +22,8 @@ class MySpider(Spider):
     area_province = "北京-海淀区公共资源交易信息网"
     allowed_domains = ['hzctc.cn']
     count_url = "http://www.bjhd.gov.cn/ggzyjy/queryContent_{}-jyfw.jspx?title=&channelId={}"
-    project_category_list = ["116"]
-    # project_category_list = ["116", "123"]  # 116 政府采购   123 房建市政
+    # project_category_list = ["116"]
+    project_category_list = ["116", "123"]  # 116 政府采购   123 房建市政
 
     def __init__(self, *args, **kwargs):
         super(MySpider, self).__init__()
@@ -154,5 +154,5 @@ class MySpider(Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl BJ_city_1101_haiding_spider -a sdt=2021-06-11 -a edt=2021-06-16".split(" "))
-    # cmdline.execute("scrapy crawl BJ_city_1101_haiding_spider".split(" "))
+    # cmdline.execute("scrapy crawl BJ_city_1101_haiding_spider -a sdt=2021-06-11 -a edt=2021-06-16".split(" "))
+    cmdline.execute("scrapy crawl BJ_city_1101_haiding_spider".split(" "))

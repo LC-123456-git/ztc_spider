@@ -146,6 +146,7 @@ class MySpider(Spider):
     def parse_item(self, response, name):
         if response.status == 200:
             origin = response.url
+            print(origin)
             info_source = response.meta.get("info_source")
             classifyShow = response.meta.get("classifyShow")
             title_name = response.meta.get("title_name")
@@ -216,7 +217,7 @@ class MySpider(Spider):
                             payload = {}
                             headers = {}
                             url_str = requests.request("POST", url, headers=headers, data=payload)
-                            file_path_str = "<a href='{}'>{}</a>".format(response.text, file_desc)
+                            file_path_str = "<a href='{}'>{}</a>".format(url_str.text, file_desc)
                             files_list.append(file_path_str)
                             key = file_path_num
                             files_path[key] = str(url_str.text)

@@ -622,31 +622,31 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
                 if re.search(fr"{key}", content):
                     # 匹配带冒号开始的文本内容
                     all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                                # print(value.strip())
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-                                    # print(value.strip())
-
-                    # 匹配带冒号开始的文本内容后面有标签且换行的
-                    if key in str(re.findall(re.compile(r'<td style=".*?">(.*?)</td>', re.S), content)):
-                        all_results_value = re.findall(re.compile(r'<td style=".*?">(.*?)</td>', re.S), content)[1::2]
-                        all_results_key = re.findall(re.compile(r'<td style=".*?">(.*?)</td>', re.S), content)[::2]
-                        for value, key_keys in zip(all_results_value, all_results_key):
-                            if key in key_keys:
-                                value = value.replace('\xa0', '')
-                                if value.strip():
-                                    # print(value.strip())
-                                    return value.strip()
-
-                    # 匹配带空格开始的文本内容
+                    # if all_results:
+                    #     for item in all_results:
+                    #         value = item.split(":")[-1].split("：")[-1].split("<")[0]
+                    #         if value.strip():
+                    #             return value.strip()
+                    #             # print(value.strip())
+                    #         tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
+                    #         if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
+                    #             value = value_str.group().split(">")[-2].split("</")[0]
+                    #             if value.strip():
+                    #                 return value.strip()
+                    #                 # print(value.strip())
+                    #
+                    # # 匹配带冒号开始的文本内容后面有标签且换行的
+                    # if key in str(re.findall(re.compile(r'<td style=".*?">(.*?)</td>', re.S), content)):
+                    #     all_results_value = re.findall(re.compile(r'<td style=".*?">(.*?)</td>', re.S), content)[1::2]
+                    #     all_results_key = re.findall(re.compile(r'<td style=".*?">(.*?)</td>', re.S), content)[::2]
+                    #     for value, key_keys in zip(all_results_value, all_results_key):
+                    #         if key in key_keys:
+                    #             value = value.replace('\xa0', '')
+                    #             if value.strip():
+                    #                 # print(value.strip())
+                    #                 return value.strip()
+                    #
+                    # # 匹配带空格开始的文本内容
                     all_results = re.findall(fr"{key}\s+?<", content)
                     if all_results:
                         for item in all_results:
@@ -656,17 +656,51 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
                                     # print(v_item.strip())
                                     return v_item.strip()
 
-                    # 匹配不带任何开始标记的文本内容
+                    # 匹配带表格标记的文本内容
                     if re.findall(fr"</td>", content):
+                        data_dict = {}
                         doc = etree.HTML(content)
-                        sss = doc.xpath("//table/tbody/tr/td/p/span/text()")
-                        for i, item in enumerate(sss):
+                        content_list = doc.xpath("//div[@class='WordSection1']//text()")
+
+                        if not content_list:
+                            content_list = doc.xpath("//div[@class='Section0']//text()")
+                            content_list.remove("工程概况")
+                            b_list = content_list[1::2]
+                            c_list = content_list[0::2]
+                            for i, t in zip(b_list, c_list):
+                                data_dict[t] = i
                             for keys in keys_str_list:
-                                if keys == item:
-                                    vlaue = sss[i+1]
-                                    print(keys + ":" + vlaue)
-                                    return vlaue
+                                value = data_dict.get(keys)
+                                if value:
+                                    return value
+                        else:
+                            content_list.remove("工程概况")
+                            a_list = []
+                            for item in content_list:
+                                if re.search(("\S+"), item):
+                                    a_list.append(item)
+                                    b_list = a_list[1::2]
+                                    c_list = a_list[0::2]
+                                    for i, t in zip(b_list, c_list):
+                                        data_dict[t] = i
+                                    for keys in keys_str_list:
+                                        value = data_dict.get(keys)
+                                        if value:
+                                            return value
+                            # info_list = content_str.split("\n  \n \n \n  \n  ")
+                            # for keys in keys_str_list:
+                            #     for item in info_list:
+                            #         data_dict[item.split("\n  \n  \n  ")[0]] = item.split("\n  \n  \n  ")[1]
+                            #         value = data_dict.get(keys)
+                            #         if value:
+                            #             return value
+                        # return value
+
+                    data_dict = {}
+                    doc = etree.HTML(content)
+                    content_str = doc.xpath("//div[@class='MainList']/div[2]/div//text()")
         except Exception as e:
+            print("清洗出错")
             print(e)
             return ""
 
@@ -733,10 +767,6 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
                                 if value.strip():
                                     # print(value.strip())
                                     return value.strip()
-
-
-
-
 
                 # return ""
         except Exception as e:
