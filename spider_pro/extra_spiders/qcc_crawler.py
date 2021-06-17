@@ -100,7 +100,7 @@ class QccCrawlerSpider(scrapy.Spider):
                 }), callback=self.parse_category, meta={
                     'tag': method,
                 })
-            
+
             if method in ['origin', 'agency']:
                 # dbq = self.db_query
 
@@ -169,7 +169,7 @@ class QccCrawlerSpider(scrapy.Spider):
                     'category': category,
                     'category_name': category_name,
                     'tag': resp.meta.get('tag', ''),
-                }, priority=10)
+                }, priority=1 * (len(category_els) - n))
 
     def parse_industry_categories(self, resp):
         """
@@ -198,9 +198,9 @@ class QccCrawlerSpider(scrapy.Spider):
 
                     'category_name': resp.meta.get('category_name', ''),
                     'industry_category_name': industry_category_name,
-                    
+
                     'tag': resp.meta.get('tag', ''),
-                }, priority=100)
+                }, priority=100 * len(industry_category_els) - n)
 
     def parse_list(self, resp):
         """
@@ -227,9 +227,9 @@ class QccCrawlerSpider(scrapy.Spider):
 
                     'category_name': resp.meta.get('category_name', ''),
                     'industry_category_name': resp.meta.get('industry_category_name', ''),
-                    
+
                     'tag': resp.meta.get('tag', ''),
-                }, priority=1000)
+                }, priority=10000 * (max_page - page))
 
     def parse_detail(self, resp):
         """
@@ -245,9 +245,9 @@ class QccCrawlerSpider(scrapy.Spider):
 
                 'category_name': resp.meta.get('category_name', ''),
                 'industry_category_name': resp.meta.get('industry_category_name', ''),
-                
+
                 'tag': resp.meta.get('tag', ''),
-            }, priority=10000)
+            }, priority=100000000 * (len(detail_urls) - n))
 
     @classmethod
     def get_invoice_info(cls, resp):
@@ -373,7 +373,9 @@ class QccCrawlerSpider(scrapy.Spider):
             """
             notice_item = items.QCCItem()
             notice_item.update(**company_info_items)
-            self.logger.info('关键词:{0}; 企业:{1}; 当前采集类型: {2}'.format(resp.meta.get('company', ''), company_info.get('企业名称', ''), resp.meta.get('tag', '')))
+            self.logger.info(
+                '关键词:{0}; 企业:{1}; 当前采集类型: {2}'.format(resp.meta.get('company', ''), company_info.get('企业名称', ''),
+                                                      resp.meta.get('tag', '')))
             print('企业:{0}; 当前采集类型: {1}'.format(company_info.get('企业名称', ''), resp.meta.get('tag', '')))
             return notice_item
         else:
