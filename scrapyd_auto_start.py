@@ -213,9 +213,10 @@ def get_back_date_by_month(month):
 
 if __name__ == "__main__":
     # scrapyd_deploy()
-
-    # scrapyd_cancel(job='city-2021-05-10-13-38')
-    days_before = get_back_date(2)
+    # exit(0)
+    # scrapyd_cancel(job='crawler-2021-06-13-18-6')
+    # exit(0)
+    days_before = get_back_date(10)
     yesterday = get_back_date(1)
     today = '{0:%Y-%m-%d}'.format(datetime.datetime.now())
 
@@ -243,7 +244,7 @@ if __name__ == "__main__":
     spider_list = [
         # "province_00_quanguo_spider",  # error_12
         # "province_02_beijing_spider",  # ok
-        # "province_03_tianjin_spider",  # ok
+        "province_03_tianjin_spider",  # ok
         # "province_04_hebei_spider",  # error_04
         # "province_05_shanxi_spider",
         # "province_08_jilin_spider",  # ok + error_06
@@ -269,7 +270,9 @@ if __name__ == "__main__":
         # "province_54_Egongxiang_spider",  # ok + error_09
         # "province_55_tiangong_spider",  # ok
         # "province_57_jingcaizongheng_spider",  # error_01
+        # 'province_65_guoepingtai_spider',
         # "province_71_zhaocaijingbao_spider",  # error_04
+        # "province_78_zhuzhaixiushan_spider",  # error_04
         "province_83_wangcai_spider",
         "province_85_anzhuangxinxi_spider"
         # "ZJ_city_3302_zjcaigou_spider"
@@ -291,6 +294,11 @@ if __name__ == "__main__":
         # "ZJ_city_3323_xiaoshan_spider",
         # "ZJ_city_3326_longyou_spider",
         # "qcc_crawler",
+        # "ZJ_city_3327_pingyang_spider",
+        # "ZJ_city_3328_changshan_spider",
+        # "province_68_qilu_spider",
+        # "province_67_yangguangyizhao_spider",
+        # "province_59_xinzhi_spider",
     ]
 
     # 优先判断运行状态

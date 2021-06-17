@@ -267,6 +267,10 @@ class KeywordsExtract(object):
 
 
 if __name__ == '__main__':
+    # 正则替换前先做一个评估, 设置一个评估规则
+    # TODO 不满足的情况
+    
+    
     # 优先级设置： 关键字多排在前
     regular_plans = {  # 正则必须命名:agency, contacts, address, phone
         1: '代理机构[:|：](?P<agency>.*?)[,|，]地.*?址.*?地.*?址[:|：](?P<address>.*?)[,|，].*?联系人.*?联系人[:|：](?P<contacts>.*?)[,|，|\s*].*?电.*?话.*?电.*?话[:|：](?P<phone>.*?)[,|，]',

@@ -271,7 +271,7 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
             notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
-            notice_item["business_category"] = '采购'
+            notice_item["project_type"] = '采购'
             print(resp.meta.get('pub_time'), resp.url)
             return notice_item
     
@@ -281,6 +281,6 @@ if __name__ == "__main__":
     from scrapy import cmdline
 
     cmdline.execute(
-        "scrapy crawl province_3101_shanghaigov_spider -a sdt=2021-01-01 -a edt=2021-06-15".split(" ")
+        "scrapy crawl province_3101_shanghaigov_spider -a sdt=2021-06-12 -a edt=2021-06-15".split(" ")
     )
     # cmdline.execute("scrapy crawl province_3101_shanghaigov_spider".split(" "))
