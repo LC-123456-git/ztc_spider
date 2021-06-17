@@ -209,6 +209,7 @@ class MySpider(CrawlSpider):
                             if ''.join(values).split('.')[-1] not in suffix_list:
                                 if 'http:' not in values:
                                     value = ''.join(values).replace('./', response.url[:response.url.rindex('/') + 1])
+                                    contents = ''.join(content).replace(values, value)
                                 else:
                                     value = values
                                 if cont.xpath('.//text()'):
@@ -218,6 +219,10 @@ class MySpider(CrawlSpider):
                                     else:
                                         key = keys
                                     files_path[key] = value
+                if files_path:
+                    content = contents
+                else:
+                    content = content
 
 
                 notice_item = NoticesItem()
