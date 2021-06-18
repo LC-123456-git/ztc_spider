@@ -217,7 +217,6 @@ class Province80YankuangzhaocaiSpiderSpider(scrapy.Spider):
             max_pages = page_com.findall(last_page_str)
 
             if max_pages:
-                max_page = max_pages[0]
                 try:
                     max_page = int(max_pages[0])
                 except ValueError as e:

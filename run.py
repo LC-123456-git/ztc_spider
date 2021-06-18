@@ -13,7 +13,7 @@ if __name__ == '__main__':
     # cmdline.execute("scrapy crawl province_00_quanguo_spider -a sdt=2021-02-13 -a edt=2021-03-13 -s DOWNLOAD_DELAY=0 -s CONCURRENT_REQUESTS_PER_IP=20".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3323_xiaoshan_spider -a sdt=2020-08-01 -a edt=2021-04-30".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3328_changshan_spider -a sdt=2018-05-01 -a edt=2018-12-30".split(" "))
-    # cmdline.execute("scrapy crawl qcc_crawler".split(" "))
+    cmdline.execute("scrapy crawl qcc_crawler".split(" "))
     # cmdline.execute("scrapy crawl province_67_yangguangyizhao_spider -a sdt=2021-01-01 -a edt=2021-05-31".split(" "))
     # cmdline.execute("scrapy crawl province_65_guoepingtai_spider -a sdt=2021-01-01 -a edt=2021-06-03".split(" "))
     # cmdline.execute("scrapy crawl province_65_guoepingtai_spider".split(" "))
@@ -32,6 +32,6 @@ if __name__ == '__main__':
     #     "scrapy crawl province_3101_shanghaigov_spider -a sdt=2021-06-12 -a edt=2021-06-15".split(" ")
     # )
     
-    cmdline.execute(
-        "scrapy crawl province_80_yankuangzhaocai_spider -a sdt=2021-05-01 -a edt=2021-06-17".split(" ")
-    )
+    # cmdline.execute(
+    #     "scrapy crawl province_80_yankuangzhaocai_spider -a sdt=2021-05-01 -a edt=2021-06-17".split(" ")
+    # )
