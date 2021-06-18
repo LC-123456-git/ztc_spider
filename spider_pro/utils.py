@@ -321,7 +321,7 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id == "4" or area_id == "04" or area_id == "76" or area_id == "71":
+    elif area_id in ["4", "04", "76", "71"]:
         area_dict = const.he_bei
         province_name = area_dict["name"]
         province_code = area_dict["code"]
@@ -351,7 +351,7 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id == "11":
+    elif area_id in ["11", "3101", "78"]:
         area_dict = const.shang_hai
         province_name = area_dict["name"]
         province_code = area_dict["code"]
@@ -363,7 +363,9 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id == "15" or area_id == "14" or area_id == "3302":
+    elif area_id in ["14", "15", "52", "77", "3301", "3302", "3303", "3304", "3305", "3306", "3307", "3308", '3309',
+                     '3310', '3311', '3312', '3313', '3314', '3315', '3316', '3317', '3318', '3319', '3320', '3321',
+                     '3322', '3323', '3324', '3325', '3326', '3327', '3328', '3329']:
         area_dict = const.zhe_jiang
         province_name = area_dict["name"]
         province_code = area_dict["code"]
@@ -393,7 +395,7 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id == "23":
+    elif area_id in ["23", "67"]:
         area_dict = const.he_nan
         province_name = area_dict["name"]
         province_code = area_dict["code"]
@@ -405,7 +407,7 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id == "30":
+    elif area_id in ["30", "65"]:
         area_dict = const.guang_dong
         province_name = area_dict["name"]
         province_code = area_dict["code"]
@@ -442,155 +444,21 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
     elif area_id == "50":
-        area_dict = const.ning_xia
+        area_dict = const.xin_jiang
         province_name = area_dict["name"]
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id == "52":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "65":
-        area_dict = const.guang_dong
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "67":
-        area_dict = const.he_nan
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "71":
-        area_dict = const.he_bei
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "77":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "78":
-        area_dict = const.shang_hai
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3101":
-        area_dict = const.shang_hai
-        province_name = area_dict.get("name")
-        province_code = area_dict.get("code")
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data, info_source)
-        return deal_area_dict
-    elif area_id == "3301":
-        area_dict = const.zhe_jiang
-        province_name = area_dict.get("name")
-        province_code = area_dict.get("code")
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data, info_source)
-        return deal_area_dict
-    elif area_id == "3304":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3305":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3306":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3307":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3309":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3312":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3313":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3314":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3320":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3321":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3322":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3323":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3325":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3326":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3327":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
-    elif area_id == "3328":
-        area_dict = const.zhe_jiang
-        province_name = area_dict["name"]
-        province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
+    elif area_id in ["80"]:
+        for province in const.PROVINCE_LIST:
+            province_name = province["name"]
+            province_code = province["code"]
+            if re.search(province_name, title_name):
+                deal_area_dict = temp_area_data(province_name, province_code, province, data)
+                return deal_area_dict
+            elif re.search(province_name, data):
+                deal_area_dict = temp_area_data(province_name, province_code, province, data)
+                return deal_area_dict
     else:
         for province in const.PROVINCE_LIST:
             province_name = province["name"]
@@ -947,8 +815,8 @@ def get_iframe_pdf_div_code(url):
 if __name__ == "__main__":
     # print(get_real_url('http://ggzyjy.shandong.gov.cn:80/jsgczbgg/4795851.jhtml'))
     # pass
-    title_name = '黄骅市第七中学建设项目设计中标候选人公示'
-    info_source = '河北-廊坊市'
-    area_id = '04'
+    title_name = '内蒙古荣信化工有限公司电动机维修服务   招标公告'
+    info_source = '浙江杭州市公共资源交易网'
+    area_id = '3302'
     ret = deal_area_data(title_name, info_source, area_id)
     print(ret)
