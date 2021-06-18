@@ -12,7 +12,7 @@ from urllib import parse
 from scrapy.spiders import Spider
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
-from spider_pro.utils import get_accurate_pub_time, get_back_date
+from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_time_in_interval
 
 
 class MySpider(Spider):
@@ -84,13 +84,59 @@ class MySpider(Spider):
 
     def __init__(self, *args, **kwargs):
         super(MySpider, self).__init__()
+        self.num = 0
+        self.currentPage = 1
+        if kwargs.get("sdt") and kwargs.get("edt"):
+            self.enable_incr = True
+            self.sdt_time = kwargs.get("sdt")
+            self.edt_time = kwargs.get("edt")
+        else:
+            self.enable_incr = False
 
     def start_requests(self):
-        # for item in self.list_all_category_num:
-        item = "071001001001"
-        count_url = "http://lssggzy.lishui.gov.cn/lsweb/jyxx/{}/{}/{}/".format(item[0:6], item[0:9], item[0:12])
-        yield scrapy.Request(count_url, callback=self.parse_urls, priority=0,
+        if self.enable_incr:
+            callback_url = self.extract_data_urls
+        else:
+            callback_url = self.parse_urls
+        for item in self.list_all_category_num:
+        # item = "071001001001"
+            count_url = "http://lssggzy.lishui.gov.cn/lsweb/jyxx/{}/{}/{}/".format(item[0:6], item[0:9], item[0:12])
+            yield scrapy.Request(count_url, callback=callback_url, priority=0,
                              meta={"afficheType": str(item)})
+
+    def extract_data_urls(self, response):
+        temp_list = response.xpath("//table[@cellspacing='3']/tr")
+        afficheType = response.meta["afficheType"]
+        pages_text = response.xpath("//td[@class='huifont']/text()").get()
+        pages = pages_text.split('/')[1]
+        count_num = 0
+        for item in temp_list:
+            pub_time = item.xpath("./td[3]/font/text()").get()
+            pub_time = get_accurate_pub_time(pub_time)
+            x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
+            if x:
+                count_num += 1
+                info_url = item.xpath("./td[2]/a/@href").get()
+                title_name = item.xpath("./td[2]/a/@title").get()
+                pub_time = item.xpath("./td[3]/font/text()").get()
+                category_num = response.meta["afficheType"]
+                classifyShow = self.project_category_dict.get(category_num[0:6], "")
+                info_source_num = category_num[10:12]
+                info_source = self.info_dict.get(info_source_num)
+                data_url = self.domain_url + info_url
+                yield scrapy.Request(url=data_url, callback=self.parse_item, dont_filter=True,
+                                     priority=10, meta={"category_num": category_num, "info_source": info_source,
+                                                        "classifyShow": classifyShow, "pub_time": pub_time,
+                                                        "title_name": title_name})
+            if count_num >= len(temp_list):
+                self.currentPage = self.currentPage + 1
+                if self.currentPage <= int(pages):
+                    count_url = "http://lssggzy.lishui.gov.cn/lsweb/jyxx/{}/{}/{}/?Paging={}".format(afficheType[0:6],
+                                                                                                     afficheType[0:9],
+                                                                                                     afficheType[0:12],
+                                                                                                     self.currentPage)
+                    yield scrapy.Request(count_url, callback=self.extract_data_urls, priority=5,
+                                         meta={"afficheType": str(afficheType)})
 
     def parse_urls(self, response):
         try:
@@ -123,19 +169,6 @@ class MySpider(Spider):
                 title_name = item.xpath("./td[2]/a/@title").get()
                 pub_time = item.xpath("./td[3]/font/text()").get()
                 category_num = response.meta["afficheType"]
-                if category_num in self.list_notice_category_num:
-                    self.cb_kwargs = {"name": const.TYPE_ZB_NOTICE}
-                elif category_num in self.list_alteration_category_num:
-                    self.cb_kwargs = {"name": const.TYPE_ZB_ALTERATION}
-                elif category_num in self.list_win_notice_category_num:
-                    self.cb_kwargs = {"name": const.TYPE_WIN_NOTICE}
-                elif category_num in self.list_win_advance_notice_num:
-                    self.cb_kwargs = {"name": const.TYPE_WIN_ADVANCE_NOTICE}
-                elif category_num in self.list_other_notice:
-                    self.cb_kwargs = {"name": const.TYPE_OTHERS_NOTICE}
-                else:
-                    self.cb_kwargs = {"name": const.TYPE_UNKNOWN_NOTICE}
-
                 classifyShow = self.project_category_dict.get(category_num[0:6], "")
                 info_source_num = category_num[10:12]
                 info_source = self.info_dict.get(info_source_num)
@@ -147,24 +180,26 @@ class MySpider(Spider):
                 #                      meta={"cb_kwargs": self.cb_kwargs, "info_source": info_source,
                 #                            "classifyShow": self.classifyShow, "pub_time": pub_time,
                 #                            "title_name":title_name})
-                yield scrapy.Request(url=data_url, callback=self.parse_item, cb_kwargs=self.cb_kwargs, dont_filter=True,
-                                     priority=10, meta={"cb_kwargs": self.cb_kwargs, "info_source": info_source,
+                yield scrapy.Request(url=data_url, callback=self.parse_item, dont_filter=True,
+                                     priority=10, meta={"category_num": category_num, "info_source": info_source,
                                                         "classifyShow": classifyShow, "pub_time": pub_time,
                                                         "title_name": title_name})
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
-    def parse_item(self, response, name):
+    def parse_item(self, response):
         if response.status == 200:
             origin = response.url
             info_source = response.meta.get("info_source", "")
             classifyShow = response.meta.get("classifyShow", "")
             title_name = response.meta.get("title_name", "")
-            print(title_name)
+            category_num = response.meta.get("category_num", "")
+
             pub_time = response.meta.get("pub_time", "")
             if not pub_time:
                 pub_time = response.xpath("/html/body/div[3]/table/tbody/tr[2]/td/table/tbody/tr[1]/td/table/tbody/tr[2]/td/p/text()").get()
             pub_time = get_accurate_pub_time(pub_time)
+            print(title_name + pub_time)
             if info_source:
                 if info_source in ["青田", "缙云", "遂昌", "松阳", "云和", "庆元", ""]:
                     info_city = info_source + "县"
@@ -182,7 +217,18 @@ class MySpider(Spider):
                 info_source = self.area_province
             # content = response.xpath("/html/body/div[4]/div[2]/div[5]").get()
             content = response.xpath('//table[@height="100%"]').get()
-
+            if category_num in self.list_notice_category_num:
+                notice_type = const.TYPE_ZB_NOTICE
+            elif category_num in self.list_alteration_category_num:
+                notice_type = const.TYPE_ZB_ALTERATION
+            elif category_num in self.list_win_notice_category_num:
+                notice_type = const.TYPE_WIN_NOTICE
+            elif category_num in self.list_win_advance_notice_num:
+                notice_type = const.TYPE_WIN_ADVANCE_NOTICE
+            elif category_num in self.list_other_notice:
+                notice_type = const.TYPE_OTHERS_NOTICE
+            else:
+                notice_type = const.TYPE_UNKNOWN_NOTICE
             try:
                 files_path = {}
                 is_clean = True
@@ -216,7 +262,7 @@ class MySpider(Spider):
             notice_item["info_source"] = info_source
             notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
             notice_item["files_path"] = "null" if not files_path else files_path
-            notice_item["notice_type"] = name
+            notice_item["notice_type"] = notice_type
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = classifyShow
@@ -231,5 +277,5 @@ class MySpider(Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl ZJ_city_3311_lishui_spider -a std=2020-01-04 -a edt=2020-01-04".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3311_lishui_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3311_lishui_spider -a sdt=2021-06-11 -a edt=2021-06-17".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3311_lishui_spider".split(" "))
