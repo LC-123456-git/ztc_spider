@@ -34,13 +34,13 @@ class QccCrawlerSpider(scrapy.Spider):
             # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
             'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
             'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
             # 'spider_pro.middlewares.RefererMiddleware.RefererMiddleware': 400,
         },
-        'DOWNLOAD_DELAY': 2,
-        'CONCURREN_REQUESTS': 32,
-        'CONCURRENT_RTEQUESTS_PER_IP': 32,
-        "ENABLE_PROXY_USE": True,
+        'DOWNLOAD_DELAY': 1,
+        'CONCURREN_REQUESTS': 8,
+        'CONCURRENT_RTEQUESTS_PER_IP': 8,
+        # "ENABLE_PROXY_USE": True,
         # "ENABLE_PROXY_USE": False,
         "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
         'RETRY_TIMES': 5,
@@ -101,10 +101,10 @@ class QccCrawlerSpider(scrapy.Spider):
                     'tag': method,
                 })
 
-            if method in ['origin', 'agency']:
+            # if method in ['origin', 'agency']:
                 # dbq = self.db_query
 
-                companies = []
+                # companies = []
                 # if method == 'origin':
                 #     qcc_sql = sql.COMPANY_NAMES_WITHOUT_ORIGIN.format(
                 #         db_name=self.db_name, table_name='QCC_qcc_crawler'
@@ -121,18 +121,18 @@ class QccCrawlerSpider(scrapy.Spider):
                 #     companies = dbq.fetch_all(qcc_sql)
                 # del dbq
 
-                for n, company in enumerate(companies):
-                    c_name = company.get('company_name', '')
+                # for n, company in enumerate(companies):
+                #     c_name = company.get('company_name', '')
 
-                    c_url = self.search_url.format(key=c_name)
+                #     c_url = self.search_url.format(key=c_name)
 
-                    if c_url:
-                        yield scrapy.Request(
-                            url=c_url, callback=self.parse_search_list, priority=10 * (len(companies) - n), meta={
-                                'tag': method,
-                                'company': c_name,
-                            },
-                        )
+                #     if c_url:
+                #         yield scrapy.Request(
+                #             url=c_url, callback=self.parse_search_list, priority=10 * (len(companies) - n), meta={
+                #                 'tag': method,
+                #                 'company': c_name,
+                #             },
+                #         )
 
     def parse_search_list(self, resp):
         doc = etree.HTML(resp.text)
@@ -200,7 +200,7 @@ class QccCrawlerSpider(scrapy.Spider):
                     'industry_category_name': industry_category_name,
 
                     'tag': resp.meta.get('tag', ''),
-                }, priority=100 * len(industry_category_els) - n)
+                }, priority=10 * len(industry_category_els) - n)
 
     def parse_list(self, resp):
         """
