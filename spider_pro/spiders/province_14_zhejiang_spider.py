@@ -12,9 +12,9 @@ import random
 import urllib
 import datetime
 from urllib import parse
+from lxml import etree
 
-
-from spider_pro.utils import get_real_url
+from spider_pro.utils import get_real_url, remove_specific_element
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from spider_pro.items import NoticesItem, FileItem
@@ -27,6 +27,7 @@ from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, 
 class MySpider(CrawlSpider):
     name = 'province_14_zhejiang_spider'
     area_id = "14"
+    data_url = 'http://zjpubservice.zjzwfw.gov.cn'
     domain_url = "http://www.zjpubservice.com"
     base_url = 'http://zjpubservice.zjzwfw.gov.cn/jyxxgk/list.html'
     query_url = "http://zjpubservice.zjzwfw.gov.cn/inteligentsearch/rest/inteligentSearch/getFullTextData"
@@ -198,19 +199,52 @@ class MySpider(CrawlSpider):
                 info_source = self.area_province
             category = response.meta.get("category")
             title_name = response.meta['title_name']
-            pub_time = response.meta['put_time']
-            notice_type = response.meta['notice_type']
+            pub_time = response.meta['pub_time']
             pub_time = get_accurate_pub_time(pub_time)
-            files_path = {}
-            if response.xpath('//div[@class="con"]/p[@id="fujian"]/a'):
-                content = response.xpath('//div[@id="attach"]').get()
-                conet_list = response.xpath('//div[@class="con"]/p[@id="fujian"]/a')
-                for con in conet_list:
-                    value = 'http://zjpubservice.zjzwfw.gov.cn' + con.xpath('./@href').get()
-                    keys = con.xpath('./text()').get()
-                    files_path[keys] = value
+            if re.search(r'更正公告|变更公告', title_name):  # 招标变更
+                notice_type = const.TYPE_ZB_ALTERATION
+            elif re.search(r'中止|终止|异常|废标|流标', title_name):  # 招标异常
+                notice_type = const.TYPE_ZB_ABNORMAL
             else:
-                content = response.xpath('//div[@class="con"]').get()
+                notice_type = response.meta['notice']
+            files_path = {}
+
+            content = response.xpath('//div[@class="ewb-container clearfix"]').get()
+            # 去除导航栏
+            _, content = remove_specific_element(content, 'p', 'class', 'info-sources')
+            # 去除 title
+            pattern = re.compile(r'<h1>(.*?)</h1>', re.S)
+            content = content.replace(re.findall(pattern, content)[0], '')
+
+            # 去除横线
+            pattern = re.compile(r'(<hr .*?>)', re.S)
+            content = content.replace(re.findall(pattern, content)[0], '')
+            #去除尾部
+            _, content = remove_specific_element(content, 'div', 'id', 'pdff')
+            suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##']
+            files_text = etree.HTML(content)
+            if files_text.xpath('//a/@href'):
+                files_list = files_text.xpath('//a')
+                for cont in files_list:
+                    if cont.xpath('./@href'):
+                        values = cont.xpath('./@href')[0]
+                        if ''.join(values).split('.')[-1] not in suffix_list:
+                            if 'http:' not in values:
+                                value = self.data_url + values
+                                contents = ''.join(content).replace(values, value)
+                            else:
+                                value = values
+                            if cont.xpath('.//text()'):
+                                keys = ''.join(cont.xpath('.//text()')).strip()
+                                if ''.join(values).split('.')[-1] not in keys:
+                                    key = keys + '.' + ''.join(values).split('.')[-1]
+                                else:
+                                    key = keys
+                                files_path[key] = value
+            if files_path:
+                content = contents
+            else:
+                content = content
 
             notice_item = NoticesItem()
             notice_item["origin"] = origin
@@ -229,6 +263,6 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl province_14_zhejiang_spider".split(" "))
-    # cmdline.execute("scrapy crawl province_14_zhejiang_spider -a sdt=2021-05-20 -a edt=2021-06-08".split(" "))
+    # cmdline.execute("scrapy crawl province_14_zhejiang_spider".split(" "))
+    cmdline.execute("scrapy crawl province_14_zhejiang_spider -a sdt=2021-05-20 -a edt=2021-06-18".split(" "))
 
