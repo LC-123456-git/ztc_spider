@@ -101,12 +101,12 @@ class MySpider(CrawlSpider):
                 elif type_name in self.list_others_notice_num:
                     notice = const.TYPE_OTHERS_NOTICE                 # 其它公告
                 else:
-                    notice = 'null'
-                if notice != 'null':
+                    notice = ''
+                if notice:
                     info_dict = self.r_dict | {'columnid': str(code)}
                     yield scrapy.FormRequest(url=self.base_url, formdata=info_dict, callback=self.parse_data_info,
-                                         meta={'classifyShow': response.meta['classifyShow'], 'notice': notice,
-                                               'info_dict': info_dict, 'code': code})
+                                             meta={'classifyShow': response.meta['classifyShow'], 'notice': notice,
+                                                   'info_dict': info_dict, 'code': code})
         except Exception as e:
             self.logger.error(f"发起数据请求失败  {e} {response.url=}")
 
@@ -123,6 +123,8 @@ class MySpider(CrawlSpider):
                         startrecord = 1
                         endrecord = 120
                         for info in jsonstr:
+                            title_name = re.findall('<a .*?>(.*)</a>', info)[0]
+                            info_url = self.domain_url + "/" + re.findall("<a href='(.*)' title=.*?>", info)[0]
                             pub_time = ''.join(re.findall('<span>(.*)</span>', info)[0]).replace('[', '').replace(']', '')
                             pub_time = get_accurate_pub_time(pub_time)
                             x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
@@ -132,15 +134,18 @@ class MySpider(CrawlSpider):
                                 if total == None:
                                     return
                                 self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                                yield scrapy.Request(url=info_url, callback=self.parse_item, priority=15,
+                                                     meta={'notice': response.meta['notice'],
+                                                           'pub_time': pub_time, 'title_name': title_name,
+                                                           'classifyShow': response.meta['classifyShow']})
+
                             if num >= len(jsonstr):
                                 startrecord += 120
                                 endrecord += 120
-                            else:
-                                startrecord = 1
-                                endrecord = 120
-                            yield scrapy.FormRequest(url=base_url.format(startrecord, endrecord), formdata=response.meta['info_dict'], dont_filter=True,
-                                                     callback=self.parse_info,
-                                                     meta={'notice': response.meta['notice'], 'classifyShow': response.meta['classifyShow']})
+                                yield scrapy.FormRequest(url=base_url.format(startrecord, endrecord), dont_filter=True,
+                                                         formdata=response.meta['info_dict'], callback=self.parse_info,
+                                                         meta={'notice': response.meta['notice'],
+                                                                'classifyShow': response.meta['classifyShow']})
                 else:
                     if response.xpath('//datastore/totalrecord/text()').get():
                         total = response.xpath('//datastore/totalrecord/text()').get()
@@ -155,9 +160,11 @@ class MySpider(CrawlSpider):
                             else:
                                 startrecord += 120
                                 endrecord += 120
-                            yield scrapy.FormRequest(url=base_url.format(startrecord, endrecord), formdata=response.meta['info_dict'],
-                                             dont_filter=True, callback=self.parse_info, priority=10,
-                                             meta={'notice': response.meta['notice'], 'classifyShow': response.meta['classifyShow']})
+                            yield scrapy.FormRequest(url=base_url.format(startrecord, endrecord),
+                                                     formdata=response.meta['info_dict'], dont_filter=True,
+                                                     callback=self.parse_info, priority=10,
+                                                     meta={'notice': response.meta['notice'],
+                                                           'classifyShow': response.meta['classifyShow']})
         except Exception as e:
             self.logger.error(f"初始总页数提取错误  {response.meta=} {e} {response.url=}")
 
@@ -170,21 +177,12 @@ class MySpider(CrawlSpider):
                     jsonstr = json.loads(json.dumps(xmlparse))['datastore']['recordset']['record'] or \
                               json.loads(json.dumps(xmlparse))['datastore']['nextgroup']
                     for li in jsonstr:
-                        put_time = re.findall('<span>(.*)</span>', li)[0]
+                        pub_time = re.findall('<span>(.*)</span>', li)[0]
                         title_name = re.findall('<a .*?>(.*)</a>', li)[0]
                         info_url = self.domain_url + "/" + re.findall("<a href='(.*)' title=.*?>", li)[0]
-                        if re.search(r'候选人', title_name):                    # 中标预告
-                            notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-                        elif re.search(r'废标|流标', title_name):                # 招标异常
-                            notice_type = const.TYPE_ZB_ABNORMAL
-                        elif re.search(r'变更|答疑|澄清|补充|延期', title_name):   # 招标变更
-                            notice_type = const.TYPE_ZB_ALTERATION
-                        elif re.search(r'中标', title_name):                     # 中标公告
-                            notice_type = const.TYPE_WIN_NOTICE
-                        else:
-                            notice_type = response.meta['notice']
-                        yield scrapy.Request(url=info_url, callback=self.parse_item, priority=15,
-                                             meta={'notice_type': notice_type, 'put_time': put_time, 'title_name': title_name,
+                        yield scrapy.Request(url=info_url, callback=self.parse_item, priority=150,
+                                             meta={'notice': response.meta['notice'],
+                                                   'pub_time': pub_time, 'title_name': title_name,
                                                    'classifyShow': response.meta['classifyShow']})
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
@@ -193,13 +191,20 @@ class MySpider(CrawlSpider):
         if response.status == 200:
             origin = response.url
             info_source = self.area_province
-            notice_type = response.meta['notice_type']
             classifyShow = response.meta.get("classifyShow")
             title_name = response.meta.get("title_name")
-            pub_time = response.meta['put_time']
-            if not pub_time:
-                pub_time = "null"
+            pub_time = response.meta['pub_time']
             pub_time = get_accurate_pub_time(pub_time)
+            if re.search(r'候选人', title_name):  # 中标预告
+                notice_type = const.TYPE_WIN_ADVANCE_NOTICE
+            elif re.search(r'废标|流标', title_name):  # 招标异常
+                notice_type = const.TYPE_ZB_ABNORMAL
+            elif re.search(r'变更|答疑|澄清|补充|延期', title_name):  # 招标变更
+                notice_type = const.TYPE_ZB_ALTERATION
+            elif re.search(r'中标', title_name):  # 中标公告
+                notice_type = const.TYPE_WIN_NOTICE
+            else:
+                notice_type = response.meta['notice']
             content = response.xpath('//div[@class="content"]').get()
             files_path = {}
 

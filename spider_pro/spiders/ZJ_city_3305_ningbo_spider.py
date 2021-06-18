@@ -52,8 +52,6 @@ class MySpider(CrawlSpider):
             self.enable_incr = False
 
     def start_requests(self):
-        # url = 'http://bidding.ningbo.gov.cn/cms/qtzbjg/169060.htm'
-        # yield scrapy.Request(url=url, callback=self.parse_item)
         yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
 
     def parse_urls(self, response):
@@ -75,9 +73,11 @@ class MySpider(CrawlSpider):
                     notice = const.TYPE_OTHERS_NOTICE
                 elif type_name in self.list_advance_notice_:
                     notice = const.TYPE_ZB_ADVANCE_NOTICE
-
-                yield scrapy.Request(url=data_url, callback=self.parse_data_urls,
-                                     meta={'notice': notice})
+                else:
+                    notice = ''
+                if notice:
+                    yield scrapy.Request(url=data_url, callback=self.parse_data_urls,
+                                         meta={'notice': notice})
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
@@ -85,22 +85,31 @@ class MySpider(CrawlSpider):
         try:
             if self.enable_incr:
                 pn = 1
-                num = 1
+                num = 0
                 li_list = response.xpath('//div[@class="c1-body"]/li')
                 category = response.xpath('//div[@class="navCurrent"]/span/a[3]/text()').get()
                 for li in range(len(li_list)):
+                    title_name = li_list[li].xpath('./a/@title').get()
+                    all_info_url = self.domain_url + li_list[li].xpath('./a/@href').get()
                     pub_time = li_list[li].xpath('./span[@class="date"]/text()').get()
                     pub_time = get_accurate_pub_time(pub_time)
                     x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
                     if x:
                         num += 1
+                        total = int(len(li_list))
+                        if total == None:
+                            return
+                        self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                        yield scrapy.Request(url=all_info_url, callback=self.parse_item,
+                                             meta={'notice': response.meta['notice'], 'pub_time': pub_time,
+                                                   'title_name': title_name, 'category': response.meta['category']})
+
+
                     info_url = response.url[:response.url.rindex('/') + 1] + 'index_{}.jhtml'
                     if num >= len(li_list):
                         pn += 1
-                    else:
-                        pn = 1
-                    yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info,
-                                         meta={'notice': response.meta['notice'], 'category': category})
+                        yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info,
+                                             meta={'notice': response.meta['notice'], 'category': category})
             else:
                 category = response.xpath('//div[@class="navCurrent"]/span/a[3]/text()').get()
                 pages = re.findall('/(\d+)', response.xpath('//div[@class="pg-3"]/div/text()').get())[0]
@@ -120,20 +129,9 @@ class MySpider(CrawlSpider):
                 title_name = li.xpath('./a/@title').get()
                 all_info_url = self.domain_url + li.xpath('./a/@href').get()
                 pub_time = li.xpath('./span[@class="date"]/text()').get()
-                if re.search(r'变更| 更正| 澄清', title_name):
-                    notice_type = const.TYPE_ZB_ALTERATION
-                elif re.search(r'候选人', title_name):
-                    notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-                elif re.search(r'中标结果| 中选公示', title_name):
-                    notice_type = const.TYPE_WIN_NOTICE
-                elif re.search(r'终止| 中止 | 终结', title_name):
-                    notice_type = const.TYPE_ZB_ABNORMAL
-                elif re.search(r'预公示| 预告', title_name):
-                    notice_type = const.TYPE_ZB_ADVANCE_NOTICE
-                else:
-                    notice_type = response.meta['notice']
+
                 yield scrapy.Request(url=all_info_url, callback=self.parse_item,
-                                     meta={'notice_type': notice_type, 'pub_time': pub_time,
+                                     meta={'notice': response.meta['notice'], 'pub_time': pub_time,
                                            'title_name': title_name, 'category': response.meta['category']})
         except Exception as e:
             self.logger.error(f"parse_info:发起数据请求失败 {e} {response.url=}")
@@ -145,16 +143,24 @@ class MySpider(CrawlSpider):
             origin = response.url
             info_source = self.area_province
             category = response.meta['category']
-            notice_type = response.meta['notice_type']
             title_name = response.meta['title_name']
             pub_time = response.meta['pub_time']
             if not pub_time:
                 pub_time = "null"
             pub_time = get_accurate_pub_time(pub_time)
             contents = response.xpath("//div[@style='width: 100%; overflow: auto']").get()
-    #
-    #         # title_names = ''.join(re.findall('项目名称：(.*?)</.*>', contents)).strip() or re.findall('项目名称：.*>$(.*?)</.*>', contents) or \
-    #         #               re.findall('项目名称：.*>$(.*?)<.*>', contents) or re.findall('项目名称：.*">$(.*?)</.*>', contents)
+            if re.search(r'变更| 更正| 澄清', title_name):
+                notice_type = const.TYPE_ZB_ALTERATION
+            elif re.search(r'候选人', title_name):
+                notice_type = const.TYPE_WIN_ADVANCE_NOTICE
+            elif re.search(r'中标结果| 中选公示', title_name):
+                notice_type = const.TYPE_WIN_NOTICE
+            elif re.search(r'终止| 中止 | 终结', title_name):
+                notice_type = const.TYPE_ZB_ABNORMAL
+            elif re.search(r'预公示| 预告', title_name):
+                notice_type = const.TYPE_ZB_ADVANCE_NOTICE
+            else:
+                notice_type = response.meta['notice']
 
             files_path = {}
             if response.xpath('//div[@style="width: 100%; overflow: auto"]//img/@src'):

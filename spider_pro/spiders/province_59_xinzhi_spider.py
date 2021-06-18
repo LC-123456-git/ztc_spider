@@ -106,6 +106,8 @@ class MySpider(CrawlSpider):
                     nums = 1
                     data_li_list = response.xpath('//div[@class="info"]/ul/li')
                     for li in range(len(data_li_list)):
+                        data_info_url = self.base_url + data_li_list[li].xpath('./a/@href').get()
+                        title_name = re.findall('(.*)\[', data_li_list[li].xpath('./a/text()').get())[0]
                         put_time = re.findall('.*\[(.*)\]', data_li_list[li].xpath('./a/text()').get())[0]
                         put_time = get_accurate_pub_time(put_time)
                         x, y, z = judge_dst_time_in_interval(put_time, self.sdt_time, self.edt_time)
@@ -115,12 +117,15 @@ class MySpider(CrawlSpider):
                             if total == None:
                                 return
                             self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                            yield scrapy.Request(url=data_info_url, callback=self.parse_item, priority=150,
+                                                 meta={"title_name": title_name,
+                                                       "put_time": put_time,
+                                                       'notice': response.meta['notice']})
                         if nums >= len(data_li_list):
                             page += 1
-                        else:
-                            page = 1
-                        yield scrapy.Request(url=data_info_urls.format(page), callback=self.parse_data_info, priority=100,
-                                             meta={'notice': response.meta['notice']})
+                            yield scrapy.Request(url=data_info_urls.format(page),
+                                                 callback=self.parse_data_info, priority=100,
+                                                 meta={'notice': response.meta['notice']})
                 else:
                     for num in range(1, int(pages) + 1):
                         yield scrapy.Request(url=data_info_urls.format(num), callback=self.parse_data_info, priority=100,
@@ -135,36 +140,33 @@ class MySpider(CrawlSpider):
                 title_name = re.findall('(.*)\[', li.xpath('./a/text()').get())[0]
                 put_time = re.findall('.*\[(.*)\]', li.xpath('./a/text()').get())[0]
                 data_info_url = self.base_url + li.xpath('./a/@href').get()
-                if re.search(r'资格审查', title_name):
-                    notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
-                elif re.search(r'变更|更正|澄清|补充|取消|延期', title_name):
-                    notice_type = const.TYPE_ZB_ALTERATION
-                elif re.search(r'终止|中止|废标|流标', title_name):
-                    notice_type = const.TYPE_ZB_ABNORMAL
-                elif re.search(r'评标结果', title_name):
-                    notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-                elif re.search(r'中标|成交|结果', title_name):
-                    notice_type = const.TYPE_WIN_NOTICE
-                else:
-                    notice_type = response.meta['notice']
                 yield scrapy.Request(url=data_info_url, callback=self.parse_item, priority=150,
                                      meta={"title_name": title_name,
                                            "put_time": put_time,
-                                           'notice_type': notice_type})
+                                           'notice': response.meta['notice']})
         except Exception as e:
             self.logger.error(f"初始总页数提取错误parse_data_info {response.meta=} {e} {response.url=}")
 
 
     def parse_item(self, response):
-        # TODO  未完成   项目类型没有
-
         if response.status == 200:
             origin = response.url
             info_source =self.area_province
             title_name = response.meta['title_name']
             pub_time = response.meta['put_time']
-            notice_type = response.meta['notice_type']
             pub_time = get_accurate_pub_time(pub_time)
+            if re.search(r'资格审查', title_name):
+                notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
+            elif re.search(r'变更|更正|澄清|补充|取消|延期', title_name):
+                notice_type = const.TYPE_ZB_ALTERATION
+            elif re.search(r'终止|中止|废标|流标', title_name):
+                notice_type = const.TYPE_ZB_ABNORMAL
+            elif re.search(r'评标结果', title_name):
+                notice_type = const.TYPE_WIN_ADVANCE_NOTICE
+            elif re.search(r'中标|成交|结果', title_name):
+                notice_type = const.TYPE_WIN_NOTICE
+            else:
+                notice_type = response.meta['notice']
 
             content = response.xpath('//div[@id="pageInfoX"]').get()
             # 去除 项目资料

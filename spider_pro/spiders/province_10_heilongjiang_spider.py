@@ -75,14 +75,12 @@ class MySpider(Spider):
         for cid in self.all_cid:
             if cid == 16:
                 for type in self.project_type_list:
+
+
                     yield scrapy.Request(
                             url=f"{self.count_url}{urllib.parse.urlencode({'cid': cid} | {'type': type})}",
                             callback=self.parse_page_urls, meta={'type': type, 'cid': cid})
-            # if cid == 17:
-            #     for type in self.purchase_type_list:
-            #         yield scrapy.Request(
-            #                 url=f"{self.count_url}{urllib.parse.urlencode({'cid': cid} | {'type': type})}",
-            #                 callback=self.parse_page_urls, meta={'type': type, 'cid': cid})
+
             if cid == 18:
                 for type in self.purchase_type_list:
                     yield scrapy.Request(
@@ -98,11 +96,7 @@ class MySpider(Spider):
                     yield scrapy.Request(
                         url=f"{self.count_url}{urllib.parse.urlencode({'cid': cid} | {'type': type})}",
                         callback=self.parse_page_urls, meta={'type': type, 'cid': cid})
-            # if cid == 21:
-            #     for type in self.purchase_type_list:
-            #         yield scrapy.Request(
-            #             url=f"{self.count_url}{urllib.parse.urlencode({'cid': cid} | {'type': type})}",
-            #             callback=self.parse_page_urls, meta={'type': type, 'cid': cid})
+
             continue
 
     def parse_page_urls(self, response):
@@ -259,4 +253,4 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl province_10_heilongjiang_spider -a sdt=2021-05-20 -a edt=2021-05-21".split(" "))
+    cmdline.execute("scrapy crawl province_10_heilongjiang_spider".split(" "))

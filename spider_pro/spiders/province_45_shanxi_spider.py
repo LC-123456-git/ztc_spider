@@ -107,6 +107,8 @@ class MySpider(CrawlSpider):
                     nums = 1
                     data_li_list = response.xpath('//div[@id="categorypagingcontent"]/ul/li')
                     for li in range(len(data_li_list)):
+                        title_name = data_li_list[li].xpath('./a/@title').get()
+                        data_info_url = self.domain_url + data_li_list[li].xpath('./a/@href').get()
                         put_time = data_li_list[li].xpath('./span/text()').get()
                         put_time = get_accurate_pub_time(put_time)
                         x, y, z = judge_dst_time_in_interval(put_time, self.sdt_time, self.edt_time)
@@ -116,7 +118,12 @@ class MySpider(CrawlSpider):
                             if total == None:
                                 return
                             self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                        if li >= nums:
+                            yield scrapy.Request(url=data_info_url, callback=self.parse_item, priority=150,
+                                                 meta={"category": response.meta['category'],
+                                                       "title_name": title_name,
+                                                       "put_time": put_time,
+                                                       'notice': response.meta['notice']})
+                        if nums >= len(data_li_list):
                             page += 1
                         else:
                             page = 1
@@ -137,19 +144,9 @@ class MySpider(CrawlSpider):
                 title_name = li.xpath('./a/@title').get()
                 put_time = li.xpath('./span/text()').get()
                 data_info_url = self.domain_url + li.xpath('./a/@href').get()
-                if re.search(r'资格预审', title_name):
-                    notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
-                elif re.search(r'变更|更正|澄清', title_name):
-                    notice_type = const.TYPE_ZB_ALTERATION
-                elif re.search(r'终止|中止|异常|废标|流标', title_name):
-                    notice_type = const.TYPE_ZB_ABNORMAL
-                elif re.search(r'候选人', title_name):
-                    notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-                else:
-                    notice_type = response.meta['notice']
                 yield scrapy.Request(url=data_info_url, callback=self.parse_item, priority=150,
                                      meta={"category": response.meta['category'], "title_name": title_name,
-                                           "put_time": put_time, 'notice_type': notice_type})
+                                           "put_time": put_time, 'notice': response.meta['notice']})
         except Exception as e:
             self.logger.error(f"初始总页数提取错误parse_data_info {response.meta=} {e} {response.url=}")
 
@@ -165,7 +162,6 @@ class MySpider(CrawlSpider):
             category = response.meta.get("category")
             title_name = response.meta['title_name']
             pub_time = response.meta['put_time']
-            notice_type = response.meta['notice_type']
             pub_time = get_accurate_pub_time(pub_time)
             content = response.xpath('//div[@class="ewb-main"]').get()
             # 去除 title
@@ -181,6 +177,16 @@ class MySpider(CrawlSpider):
 
             _, content = remove_specific_element(content, 'div', 'id', 'cont001001004')
 
+            if re.search(r'资格预审', title_name):
+                notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
+            elif re.search(r'变更|更正|澄清', title_name):
+                notice_type = const.TYPE_ZB_ALTERATION
+            elif re.search(r'终止|中止|异常|废标|流标', title_name):
+                notice_type = const.TYPE_ZB_ABNORMAL
+            elif re.search(r'候选人', title_name):
+                notice_type = const.TYPE_WIN_ADVANCE_NOTICE
+            else:
+                notice_type = response.meta['notice']
             files_path = {}
             suffix_list = ['html', 'com', 'com/', 'cn', 'cn/']
             files_text = etree.HTML(content)

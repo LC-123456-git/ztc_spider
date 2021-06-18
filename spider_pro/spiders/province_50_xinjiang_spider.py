@@ -48,8 +48,7 @@ class MySpider(CrawlSpider):
 
     d_dict = {"token": "", "pn": '0', "rn": '50', "sdt": "", "edt": "", "wd": "", "inc_wd": "", "exc_wd": "",
           "fields": "title,projectnum", "cnum": "005", "sort": "{\"infodate\":\"0\"}", "ssort": "title", "cl": '200',
-          "terminal": "", "condition": [{"fieldName": "categorynum", "isLike": 'true', "likeType": '2', "equal": "001005001"},
-                                        {"fieldName": "xiaqucode", "isLike": 'true', "likeType": '2'}],
+          "terminal": "", "condition": [{"fieldName": "categorynum", "isLike": 'true', "likeType": '2', "equal": "001005001"}],
           "time": [{"fieldName": "webdate", "startTime": "", "endTime": ""}], "highlights": "title",
           "statistics": 'null',
           "unionCondition": 'null', "accuracy": "100", "noParticiple": "0", "searchRange": 'null',
@@ -111,10 +110,11 @@ class MySpider(CrawlSpider):
                         classifyShow = 'null'
                     if classifyShow != 'null':
                         s_dict = self.d_dict['condition'][0] | {'equal': code}
-                        r_data = {'condition': [s_dict, self.d_dict['condition'][1]]}
-                        data_dict = self.d_dict | r_data
-                        yield scrapy.Request(url=self.base_url, method='POST', body=json.dumps(data_dict),  callback=self.parse_data_urls,
-                                         meta={'classifyShow': classifyShow, 'notice': notice, 'data_dict': data_dict})
+                        data_dict = self.d_dict | {'condition': [s_dict]}
+                        yield scrapy.Request(url=self.base_url, method='POST', body=json.dumps(data_dict),
+                                             callback=self.parse_data_urls,
+                                             meta={'classifyShow': classifyShow,
+                                                   'notice': notice, 'data_dict': data_dict})
 
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
@@ -124,13 +124,13 @@ class MySpider(CrawlSpider):
             if json.loads(response.text)['result']['totalcount']:
                 if self.enable_incr:
                     pn = 0
-                    _dict = response.meta['data_dict'] |['time'][0] | {'startTime': self.sdt_time} | {'endTime': self.edt_time}
-                    _data_dicts = _dict | {'time': [_dict]}
                     data_info_list = json.loads(response.text)['result']['records']
                     nums = 0
                     for info in range(len(data_info_list)):
-                        pub_time = data_info_list['info']['infodate']
+                        pub_time = data_info_list[info]['infodate']
                         pub_time = get_accurate_pub_time(pub_time)
+                        title_name = data_info_list[info]['title']
+                        info_url = self.domain_url + data_info_list[info]['linkurl']
                         x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
                         if x:
                             nums += 1
@@ -138,13 +138,19 @@ class MySpider(CrawlSpider):
                             if total == None:
                                 return
                             self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                        if nums >= len(data_info_list):
-                            pn += 50
-                        else:
-                            pn = 0
-                        info_dicts = _data_dicts | {'pn': str(pn)}
+
+                            yield scrapy.Request(url=info_url, callback=self.parse_item,
+                                                 meta={'classifyShow': response.meta['classifyShow'],
+                                                       'notice': response.meta['notice'],
+                                                       'title_name': title_name,
+                                                       'pub_time': pub_time})
+
+                    if nums >= len(data_info_list):
+                        pn += 50
+                        info_dicts = response.meta['data_dict'] | {'pn': str(pn)}
+
                         yield scrapy.Request(url=self.base_url, method='POST', body=json.dumps(info_dicts),
-                                             callback=self.parse_info,
+                                             callback=self.parse_info, priority=200,
                                              meta={'classifyShow': response.meta['classifyShow'],
                                                    'notice': response.meta['notice']})
                 else:
@@ -157,10 +163,7 @@ class MySpider(CrawlSpider):
                             pn = 0
                         else:
                             pn += 50
-
-                        r_data = {'condition': [response.meta['s_dict'], self.d_dict['condition'][1]]}
-                        info_dict = self.d_dict | r_data
-                        info_dicts = info_dict | {'pn': str(pn)}
+                        info_dicts = response.meta['data_dict'] | {'pn': str(pn)}
                         yield scrapy.Request(url=self.base_url, method='POST', body=json.dumps(info_dicts),
                                              callback=self.parse_info,
                                              meta={'classifyShow': response.meta['classifyShow'],
@@ -170,25 +173,17 @@ class MySpider(CrawlSpider):
 
     def parse_info(self, response):
         try:
-            data_info_list = json.loads(response.text)['result']['records']
-            for info in data_info_list:
-                title_name = info['title']
-                pub_time = info['infodate']
-                info_url = self.domain_url + info['linkurl']
-                if response.meta['notice'] != 'null':
-                    if re.search(r'资格预审', title_name):
-                        notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
-                    elif re.search(r'候选人', title_name):
-                        notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-                    elif re.search(r'终止|中止|异常|废标|流标', title_name):
-                        notice_type = const.TYPE_ZB_ABNORMAL
-                    elif re.search(r'变更|更正|澄清', title_name):
-                        notice_type = const.TYPE_ZB_ALTERATION
-                    else:
-                        notice_type = response.meta['notice']
-                    yield scrapy.Request(url=info_url, callback=self.parse_item,
-                                     meta={'classifyShow': response.meta['classifyShow'], 'notice_type': notice_type,
-                                           'pub_time': pub_time, 'title_name': title_name})
+            if json.loads(response.text)['result']['records']:
+                data_info_list = json.loads(response.text)['result']['records']
+                for info in data_info_list:
+                    title_name = info['title']
+                    pub_time = info['infodate']
+                    info_url = self.domain_url + info['linkurl']
+                    yield scrapy.Request(url=info_url, callback=self.parse_item, priority=200,
+                                          meta={'classifyShow': response.meta['classifyShow'],
+                                               'notice': response.meta['notice'],
+                                               'pub_time': pub_time,
+                                               'title_name': title_name})
 
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
@@ -203,7 +198,6 @@ class MySpider(CrawlSpider):
             classifyShow = response.meta.get("classifyShow")
             title_name = response.meta.get("title_name")
             pub_time = response.meta['pub_time']
-            notice_type = response.meta['notice_type']
             if not pub_time:
                 pub_time = "null"
             pub_time = get_accurate_pub_time(pub_time)
@@ -230,24 +224,37 @@ class MySpider(CrawlSpider):
                             value = self.base_url + content_text.xpath("./a/@href").get()
                         keys = content_text.xpath("./a/text()").get()
                         files_path[keys] = value
+            if re.search(r'资格预审', title_name):
+                notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
+            elif re.search(r'候选人', title_name):
+                notice_type = const.TYPE_WIN_ADVANCE_NOTICE
+            elif re.search(r'终止|中止|异常|废标|流标', title_name):
+                notice_type = const.TYPE_ZB_ABNORMAL
+            elif re.search(r'变更|更正|澄清', title_name):
+                notice_type = const.TYPE_ZB_ALTERATION
+            else:
+                notice_type = response.meta['notice']
 
-            notice_item = NoticesItem()
-            notice_item["origin"] = origin
-            notice_item["title_name"] = title_name
-            notice_item["pub_time"] = pub_time
-            notice_item["info_source"] = info_source
-            notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
-            notice_item["files_path"] = "" if not files_path else files_path
-            notice_item["notice_type"] = notice_type
-            notice_item["content"] = content
-            notice_item["area_id"] = self.area_id
-            notice_item["category"] = classifyShow
-            # print(notice_item)
-            yield notice_item
+            if notice_type != 'null':
+
+                notice_item = NoticesItem()
+                notice_item["origin"] = origin
+                notice_item["title_name"] = title_name
+                notice_item["pub_time"] = pub_time
+                notice_item["info_source"] = info_source
+                notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
+                notice_item["files_path"] = "" if not files_path else files_path
+                notice_item["notice_type"] = notice_type
+                notice_item["content"] = content
+                notice_item["area_id"] = self.area_id
+                notice_item["category"] = classifyShow
+                # print(notice_item)
+                yield notice_item
 
 
 if __name__ == "__main__":
     from scrapy import cmdline
     cmdline.execute("scrapy crawl province_50_xinjiang_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_50_xinjiang_spider -a sdt=2021-05-18 -a edt=2021-06-10".split(" "))
 
 

@@ -82,19 +82,19 @@ class MySpider(CrawlSpider):
                 elif type_name in self.list_win_advance_notice_num:
                     notice = const.TYPE_WIN_ADVANCE_NOTICE            # 中标预告
                 else:
-                    notice = 'null'
+                    notice = ''
+                if notice:
+                    if 'jsgc' in type_url:
+                        classifyShow = '建设工程'
+                    elif 'zfcg' in type_url:
+                        classifyShow = '采购公告'
+                    elif 'qycg' in type_url:
+                        classifyShow = '企业采购'
+                    else:
+                        classifyShow = '土地使用权'
 
-                if 'jsgc' in type_url:
-                    classifyShow = '建设工程'
-                elif 'zfcg' in type_url:
-                    classifyShow = '采购公告'
-                elif 'qycg' in type_url:
-                    classifyShow = '企业采购'
-                else:
-                    classifyShow = '土地使用权'
-
-                yield scrapy.Request(url=type_url, callback=self.parse_data_urls,
-                                 meta={'classifyShow': classifyShow, 'notice': notice})
+                    yield scrapy.Request(url=type_url, callback=self.parse_data_urls,
+                                         meta={'classifyShow': classifyShow, 'notice': notice})
 
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
@@ -107,6 +107,9 @@ class MySpider(CrawlSpider):
                     num = 0
                     data_list = response.xpath('//div[@class="infolist"]/div/ul/li')
                     for li in range(len(data_list)):
+                        info_url = self.domain_url + ''.join(data_list[li].xpath('./a/@href').get()).replace('\n', '').replace('\t', '').replace('\r', '').strip()
+                        info_source = data_list[li].xpath('./a//span[@class=" "]/text()').get() or ''
+                        title_name = data_list[li].xpath('./a/@title').get()
                         pub_time = data_list[li].xpath('./a/em/text()').get()
                         pub_time = get_accurate_pub_time(pub_time)
                         x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
@@ -116,14 +119,18 @@ class MySpider(CrawlSpider):
                             if total == None:
                                 return
                             self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                            yield scrapy.Request(url=info_url, callback=self.parse_item,
+                                                 meta={'notice': response.meta['notice'],
+                                                       'pub_time': pub_time, 'title_name': title_name,
+                                                       'classifyShow': response.meta['classifyShow'],
+                                                       'info_source': info_source}, priority=100)
                         if num >= len(data_list):
                             page += 1
-                        else:
-                            page = 1
-                        r_dict = {'pageNo': str(num), 'city': '', 'bidType': '', 'timeType': ''}
-                        yield scrapy.FormRequest(url=response.url, formdata=r_dict, callback=self.parse_info,
-                                                 meta={'classifyShow': response.meta['classifyShow'],
-                                                       'notice': response.meta['notice']})
+                            r_dict = {'pageNo': str(num), 'city': '', 'bidType': '', 'timeType': ''}
+                            yield scrapy.FormRequest(url=response.url, formdata=r_dict,
+                                                     callback=self.parse_info, priority=50,
+                                                     meta={'classifyShow': response.meta['classifyShow'],
+                                                           'notice': response.meta['notice']})
                 else:
                     pages = response.xpath('//div[@class="pages"]/span[last()]/text()').get()
                     total = int(pages) * 10
@@ -141,27 +148,16 @@ class MySpider(CrawlSpider):
         try:
             data_list = response.xpath('//div[@class="infolist"]/div/ul/li')
             for li in data_list:
-                put_time = li.xpath('./a/em/text()').get()
+                pub_time = li.xpath('./a/em/text()').get()
                 title_name = li.xpath('./a/@title').get()
                 info_url = self.domain_url + ''.join(li.xpath('./a/@href').get()).replace('\n', '').replace('\t', '').replace('\r', '').strip()
                 info_source = li.xpath('./a//span[@class=" "]/text()').get() or ''
-                if response.meta['notice'] != "null":
-                    if re.search(r'资格预审', title_name):                   # 资格预审
-                        notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
-                    elif re.search(r'候选人', title_name):                   # 中标预告
-                        notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-                    elif re.search(r'废标|流标', title_name):                # 招标异常
-                        notice_type = const.TYPE_ZB_ABNORMAL
-                    elif re.search(r'变更|答疑|澄清|补充|延期', title_name):   # 招标变更
-                        notice_type = const.TYPE_ZB_ALTERATION
-                    elif re.search(r'中标', title_name):                     # 中标公告
-                        notice_type = const.TYPE_WIN_NOTICE
-                    else:
-                        notice_type = response.meta['notice']
-                    # print(info_url)
-                    yield scrapy.Request(url=info_url, callback=self.parse_item,
-                                         meta={'notice_type': notice_type, 'put_time': put_time, 'title_name': title_name,
-                                               'classifyShow': response.meta['classifyShow'], 'info_source': info_source}, priority=15)
+
+                yield scrapy.Request(url=info_url, callback=self.parse_item,
+                                     meta={'notice': response.meta['notice'],
+                                           'pub_time': pub_time, 'title_name': title_name,
+                                           'classifyShow': response.meta['classifyShow'],
+                                           'info_source': info_source}, priority=15)
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
@@ -173,14 +169,23 @@ class MySpider(CrawlSpider):
                 info_source = self.area_province + response.meta['info_source']
             else:
                 info_source = self.area_province
-            notice_type = response.meta['notice_type']
+
             classifyShow = response.meta.get("classifyShow")
             title_name = response.meta.get("title_name")
-            pub_time = response.meta['put_time']
-            if not pub_time:
-                pub_time = "null"
+            pub_time = response.meta['pub_time']
             pub_time = get_accurate_pub_time(pub_time)
-
+            if re.search(r'资格预审', title_name):                       # 资格预审
+                notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
+            elif re.search(r'候选人', title_name):                       # 中标预告
+                notice_type = const.TYPE_WIN_ADVANCE_NOTICE
+            elif re.search(r'废标|流标', title_name):                    # 招标异常
+                notice_type = const.TYPE_ZB_ABNORMAL
+            elif re.search(r'变更|答疑|澄清|补充|延期', title_name):      # 招标变更
+                notice_type = const.TYPE_ZB_ALTERATION
+            elif re.search(r'中标', title_name):                         # 中标公告
+                notice_type = const.TYPE_WIN_NOTICE
+            else:
+                notice_type = response.meta['notice']
             content = response.xpath('//div[@class="article-content"]').get()
             # 去除第一个广告
             pattern = re.compile(r'<a class="broadcast_flb_05".*?>(.*?)</a>', re.S)

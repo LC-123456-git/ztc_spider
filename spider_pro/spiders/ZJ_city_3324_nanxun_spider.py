@@ -107,7 +107,9 @@ class MySpider(CrawlSpider):
                 num = 0
                 td_list = response.xpath('//div[@id="ajaxpage-list"]/table/tr/td[3]')
                 for td in range(len(td_list)):
-                    pub_time = td_list['td'].xpath('./span/text()').get()
+                    td_url = td_list[td]['url']
+                    t_name = td_list[td]['title']
+                    pub_time = td_list[td].xpath('./span/text()').get()
                     pub_time = get_accurate_pub_time(pub_time)
                     x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
                     if x:
@@ -116,12 +118,13 @@ class MySpider(CrawlSpider):
                         if total == None:
                             return
                         self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                    info_url = self.query_url + code + '&pageno={}'
-                    if num != 0:
-                        if len(td_list) >= num:
-                            page += 1
-                        else:
-                            page = 1
+                        yield scrapy.Request(url=td_url, callback=self.parse_item, priority=150,
+                                             meta={'t_name': t_name, 'notice': response.meta['notice'],
+                                                   'classifyShow': response.meta['classifyShow'],
+                                                   'pub_time': pub_time})
+                    if num >= len(td_list):
+                        page += 1
+                        info_url = self.query_url + code + '&pageno={}'
                         yield scrapy.Request(url=info_url.format(page), callback=self.parse_info, priority=100,
                                              meta={'classifyShow': response.meta['classifyShow'],
                                                    'notice': response.meta['notice']})
@@ -146,19 +149,8 @@ class MySpider(CrawlSpider):
                 _url = td['url']
                 t_name = td['title']
                 pub_time = td['daytime']
-
-                if re.search(r"流标|废标|终止|中止", t_name):               # 招标异常
-                    notice_type = const.TYPE_ZB_ABNORMAL
-                elif re.search(r"变更|答疑|澄清|补充|延期", t_name):        # 招标变更
-                    notice_type = const.TYPE_ZB_ALTERATION
-                elif re.search(r"候选人|预成交|侯选人", t_name):            # 中标预告
-                    notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-                elif re.search(r"中标|成交|成交公示", t_name):              # 中标公告
-                    notice_type = const.TYPE_WIN_NOTICE
-                else:
-                    notice_type = response.meta['notice']
                 yield scrapy.Request(url=_url, callback=self.parse_item, priority=150,
-                                     meta={'t_name': t_name, 'notice_type': notice_type,
+                                     meta={'t_name': t_name, 'notice': response.meta['notice'],
                                            'classifyShow': response.meta['classifyShow'],
                                            'pub_time': pub_time})
         except Exception as e:
@@ -169,10 +161,19 @@ class MySpider(CrawlSpider):
             info_source = self.area_province
             classifyShow = response.meta['classifyShow'] or ''
             title_name = response.meta.get("t_name") or ''
-            notice_type = response.meta.get("notice_type") or ''
             pub_time = response.meta['pub_time']
             pub_time = get_accurate_pub_time(pub_time)
             origin = response.url
+            if re.search(r"流标|废标|终止|中止", title_name):  # 招标异常
+                notice_type = const.TYPE_ZB_ABNORMAL
+            elif re.search(r"变更|答疑|澄清|补充|延期", title_name):  # 招标变更
+                notice_type = const.TYPE_ZB_ALTERATION
+            elif re.search(r"候选人|预成交|侯选人", title_name):  # 中标预告
+                notice_type = const.TYPE_WIN_ADVANCE_NOTICE
+            elif re.search(r"中标|成交|成交公示", title_name):  # 中标公告
+                notice_type = const.TYPE_WIN_NOTICE
+            else:
+                notice_type = response.meta['notice']
             files_path = {}
             # 判断content 里面是否有正文
             if response.xpath('//div[@id="zoom"]'):

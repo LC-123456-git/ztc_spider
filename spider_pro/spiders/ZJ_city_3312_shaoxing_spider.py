@@ -89,8 +89,8 @@ class MySpider(CrawlSpider):
                 elif code in self.list_others_notice_num:
                     noticn = const.TYPE_OTHERS_NOTICE
                 else:
-                    noticn = 'null'
-                if noticn != 'null':
+                    noticn = ''
+                if noticn:
                     info_dict = self.r_dict | {'columnid': str(code)}
                     yield scrapy.FormRequest(url=self.base_url, formdata=info_dict,
                                              callback=self.parse_data_urls, dont_filter=True,
@@ -108,6 +108,7 @@ class MySpider(CrawlSpider):
                 startrecord = 1
                 endrecord = 120
                 for info in jsonstr:
+                    info_url = self.domain_url + re.findall('<a href="(.*)" .*>', info)[0]
                     pub_time = ''.join(re.findall('<span>(.*)</span>', info)[0]).replace('[', '').replace(']', '')
                     pub_time = get_accurate_pub_time(pub_time)
                     x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
@@ -117,15 +118,15 @@ class MySpider(CrawlSpider):
                         if total == None:
                             return
                         self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                        yield scrapy.Request(url=info_url, callback=self.parse_item,
+                                             meta={'pub_time': pub_time,
+                                                   'noticn': response.meta['noticn']})
                     if num >= len(jsonstr):
                         startrecord += 120
                         endrecord += 120
-                    else:
-                        startrecord = 1
-                        endrecord = 120
-                    yield scrapy.FormRequest(url=base_url.format(startrecord, endrecord),
-                                             formdata=response.meta['info_dict'],dont_filter=True,
-                                             callback=self.parse_info, meta={'noticn': response.meta['noticn']})
+                        yield scrapy.FormRequest(url=base_url.format(startrecord, endrecord),
+                                                 formdata=response.meta['info_dict'], dont_filter=True,
+                                                 callback=self.parse_info, meta={'noticn': response.meta['noticn']})
             else:
                 total = response.xpath('//datastore/totalrecord/text()').get()
                 self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
@@ -139,7 +140,8 @@ class MySpider(CrawlSpider):
                     else:
                         startrecord += 120
                         endrecord += 120
-                    yield scrapy.FormRequest(url=base_url.format(startrecord, endrecord), formdata=response.meta['info_dict'],
+                    yield scrapy.FormRequest(url=base_url.format(startrecord, endrecord),
+                                             formdata=response.meta['info_dict'],
                                              callback=self.parse_info, dont_filter=True,
                                              meta={'noticn': response.meta['noticn']})
         except Exception as e:
@@ -152,9 +154,9 @@ class MySpider(CrawlSpider):
             for info in jsonstr:
                 pub_time = ''.join(re.findall('<span>(.*)</span>', info)[0]).replace('[', '').replace(']', '')
                 info_url = self.domain_url + re.findall('<a href="(.*)" .*>', info)[0]
-
                 yield scrapy.Request(url=info_url, callback=self.parse_item,
-                                     meta={'pub_time': pub_time, 'noticn': response.meta['noticn']})
+                                     meta={'pub_time': pub_time,
+                                           'noticn': response.meta['noticn']})
 
         except Exception as e:
             self.logger.error(f"发起数据请求失败 parse_info {e} {response.url=}")

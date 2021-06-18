@@ -11,6 +11,8 @@ import scrapy
 import random
 import datetime
 from urllib import parse
+
+from lxml import etree
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from spider_pro.items import NoticesItem, FileItem
@@ -23,11 +25,11 @@ class MySpider(CrawlSpider):
     name = 'province_57_jingcaizongheng_spider'
     area_id = "57"
     domain_url = "http://jczh.jczh100.com"
-    query_url = "http://jczh.jczh100.com/JCZH//showinfo/IframeZbxxZn.aspx?type=&Infotype={}&Ggtype={}&StartDate=&EndDate=&title=&categoryNum=014"
-    base_url = 'http://jczh.jczh100.com/JCZH//showinfo/IframeQycgZn.aspx?Infotype={}&Ggtype={}&StartDate=&EndDate=&title=&categoryNum=013'
+    query_url = "http://jczh.jczh100.com/JCZH//showinfo/IframeZbxxZn.aspx?type={}&Infotype={}&Ggtype={}&StartDate=&EndDate=&title="
+    base_url = 'http://jczh.jczh100.com/JCZH//showinfo/IframeQycgZn.aspx?Infotype={}&Ggtype={}&StartDate=&EndDate=&title='
     allowed_domains = ['jczh.jczh100.com']
     area_province = "精彩纵横"
-    engine_config = 'mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'
+    engine_config = 'mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4'
     engine = create_engine(engine_config, pool_size=105)
 
 
@@ -50,6 +52,8 @@ class MySpider(CrawlSpider):
     type_name_list = ['政府采购', '建设工程', '国际招标', '其他招标', '询价采购', '竞谈采购', '招标采购', '竞价采购']
     # all 分类的code
     type_code_list = ['001', '002', '003', '004', '013001001', '013001002', '013001003', '013001004']
+    # 城市名称
+    city_name_list = ['云南', '江西', '广西', '贵州', '广东', '其他']
 
     # 招标信息类的分类info_name
     info_name_list = ['招标公告', '变更公告', '流标公告', '结果公告', '中标候选人公示']
@@ -73,7 +77,7 @@ class MySpider(CrawlSpider):
     def start_requests(self):
         for Infotype in self.type_code_list:
             if Infotype in re.findall('\d{3}', Infotype):
-                for Ggtype,type_name in zip(self.info_code_list, self.info_name_list):
+                for Ggtype, type_name, city_name in zip(self.info_code_list, self.info_name_list, self.city_name_list):
                     if Infotype == '001':
                         classifyShow = '建设工程'
                     elif Infotype == '002':
@@ -82,9 +86,14 @@ class MySpider(CrawlSpider):
                         classifyShow = '国际招标'
                     else:
                         classifyShow = '其他招标'
-                    info_url = self.query_url.format(Infotype, Ggtype)
-                    yield scrapy.Request(url=info_url, callback=self.parse_urls,
-                                         meta={'classifyShow': classifyShow, 'type_name': type_name})
+                    code = parse.quote(city_name.encode('unicode-escape').upper()).replace('%5CU', '%u')
+                    info_url = self.query_url.format(code, Infotype, Ggtype)
+                    info_source = city_name
+                    print(city_name, info_url)
+                    # yield scrapy.Request(url=info_url, callback=self.parse_urls,
+                    #                      meta={'classifyShow': classifyShow,
+                    #                            'type_name': type_name,
+                    #                            'info_source': info_source})
 
             else:
                 for Ggtype, type_name in zip(self.data_code_list, self.data_name_list):
@@ -97,9 +106,11 @@ class MySpider(CrawlSpider):
                     else:
                         classifyShow = '竞价采购'
                     data_url = self.base_url.format(Infotype, Ggtype)
+                    info_source = ''
                     yield scrapy.Request(url=data_url, callback=self.parse_urls,
-                                         meta={'classifyShow': classifyShow, 'type_name': type_name})
-
+                                         meta={'classifyShow': classifyShow,
+                                               'type_name': type_name,
+                                               'info_source': info_source})
 
     def parse_urls(self, response):
         try:
@@ -109,19 +120,28 @@ class MySpider(CrawlSpider):
                 with self.engine.connect() as conn:
                     li_list = response.xpath('//form[@id="form1"]/div[@class="ewb-list"]')
                     for li in range(len(li_list)):
+                        info_url = self.domain_url + li_list[li].xpath('./div[1]/a[1]/@href').get()
                         title_name = li_list[li].xpath('./div[1]/a[1]/@title').get()
-                        result = conn.execute(f"select * from notices_57 where title_name='{title_name}' and pub_time >= '{self.sdt_time}' and pub_time < '{self.edt_time}'").fetchall()
-                        # result = conn.execute(f"select * from notices_57 where title_name='{title_name}' and pub_time >= '{self.sdt_time}' and pub_time < '{self.edt_time}'").fetchall()
-                        if not result:
+                        c_sql = f"select * from notices_57 where title_name='{title_name}' and pub_time > '{self.sdt_time}' and pub_time <= '{self.edt_time}'"
+                        result = conn.execute(c_sql).fetchall()
+                        if result:
                             num += 1
-                        info_url = response.url + '&Paging={}'
+                            total = int(len(li_list))
+                            if total == None:
+                                return
+                            self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                            yield scrapy.Request(url=info_url, callback=self.parse_item, priority=150,
+                                                 meta={'classifyShow': response.meta['classifyShow'],
+                                                       'type_name': response.meta['type_name'],
+                                                       'title_name': title_name,
+                                                       'info_source': response.meta['info_source']})
                         if num >= len(li_list):
                             pn += 1
-                        else:
-                            pn = 1
-                        yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info, priority=100,
-                                             meta={'classifyShow': response.meta['classifyShow'],
-                                                   'type_name': response.meta['type_name']})
+                            info_url = response.url + '&Paging={}'
+                            yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info, priority=100,
+                                                 meta={'classifyShow': response.meta['classifyShow'],
+                                                       'type_name': response.meta['type_name'],
+                                                       'info_source': response.meta['info_source']})
 
             else:
                 if response.xpath('//div[@class="pagemargin"]/div/table/tr/td[@class="huifont"]/text()').get():
@@ -133,7 +153,8 @@ class MySpider(CrawlSpider):
                         url = response.url + '&Paging={}'.format(num)
                         yield scrapy.Request(url=url, callback=self.parse_info, priority=100,
                                              meta={'classifyShow': response.meta['classifyShow'],
-                                                   'type_name': response.meta['type_name']})
+                                                   'type_name': response.meta['type_name'],
+                                                   'info_source': response.meta['info_source']})
 
         except Exception as e:
             self.logger.error(f"parse_urls:初始总页数提取错误 {response.meta=} {e} {response.url=}")
@@ -144,9 +165,28 @@ class MySpider(CrawlSpider):
             li_list = response.xpath('//form[@id="form1"]/div[@class="ewb-list"]')
             for li in li_list:
                 info_url = self.domain_url + li.xpath('./div[1]/a[1]/@href').get()
-                info_title = li.xpath('./div[1]/a[1]/@title').get()
+                title_name = li.xpath('./div[1]/a[1]/@title').get()
                 # 代理机构   后期可以不用清洗
                 bidding_agency = li.xpath('./div[2]/div[@class="l"]/text()').get().replace('代理机构：', '')
+                yield scrapy.Request(url=info_url, callback=self.parse_item, priority=150,
+                                     meta={'classifyShow': response.meta['classifyShow'],
+                                           'type_name': response.meta['type_name'],
+                                           'title_name': title_name,
+                                           'info_source': response.meta['info_source']})
+        except Exception as e:
+            self.logger.error(f"发起数据请求失败 {e} {response.url=}")
+
+
+    def parse_item(self, response):
+        if response.status == 200:
+            if response.xpath('//div[@class="ewb-span15 r"]/div[2]/div[@class="ewb-right-sub"]/span/span/text()').get():
+                pub_time = re.findall('\d{4}-\d{1,2}-\d{1,2}', response.xpath('//div[@class="ewb-span15 r"]/div[2]/div[@class="ewb-right-sub"]/span/span/text()').get())[0]
+                pub_time = get_accurate_pub_time(pub_time)
+                origin = response.url
+
+                title_name = response.meta['title_name']
+                classifyShow = response.meta['classifyShow']
+
                 if response.meta['type_name'] in self.list_notice_category_num:
                     notice = const.TYPE_ZB_NOTICE                             # 招标公告
                 elif response.meta['type_name'] in self.list_win_notice_category_num:
@@ -158,35 +198,30 @@ class MySpider(CrawlSpider):
                 else:
                     notice = const.TYPE_WIN_ADVANCE_NOTICE                    # 中标预告
 
-                if re.search(r"变更", info_title):
+                if re.search(r"变更", title_name):
                     notice_type = const.TYPE_ZB_ALTERATION       # 招标变更
-                elif re.search(r"废标|流标", info_title):
+                elif re.search(r"废标|流标", title_name):
                     notice_type = const.TYPE_ZB_ABNORMAL         # 招标异常
-                elif re.search(r"候选人", info_title):
+                elif re.search(r"候选人", title_name):
                     notice_type = const.TYPE_WIN_ADVANCE_NOTICE  # 中标预告
-                elif re.search(r"中标", info_title):
+                elif re.search(r"中标", title_name):
                     notice_type = const.TYPE_WIN_NOTICE          # 中标公告
                 else:
                     notice_type = notice
-
-                yield scrapy.Request(url=info_url, callback=self.parse_item, priority=150,
-                                     meta={'classifyShow': response.meta['classifyShow'],
-                                     'info_title': info_title, 'notice_type': notice_type})
-        except Exception as e:
-            self.logger.error(f"发起数据请求失败 {e} {response.url=}")
-
-
-    def parse_item(self, response):
-        if response.status == 200:
-            if response.xpath('//div[@class="ewb-span15 r"]/div[2]/div[@class="ewb-right-sub"]/span/span/text()').get():
-                pub_time = re.findall('\d{4}-\d{1,2}-\d{1,2}', response.xpath('//div[@class="ewb-span15 r"]/div[2]/div[@class="ewb-right-sub"]/span/span/text()').get())[0]
-                pub_time = get_accurate_pub_time(pub_time)
-                origin = response.url
-                info_source = self.area_province
-                title_name = response.meta['info_title']
-                classifyShow = response.meta['classifyShow']
-                notice_type = response.meta['notice_type']
                 content = response.xpath('//div[@class="ewb-right-txt"]').get()
+                text = etree.HTML(content)
+                name = ''.join(text.xpath('//div[@class="ewb-right-txt"]//text()'))\
+                    .replace('\n', '').replace('\t', '').replace('\r', '').strip()[2]
+                if response.meta['info_source']:
+                    info_source = response.meta['info_source'] + self.area_province
+                else:
+                    for province in const.PROVINCE_LIST:
+                        if name in province['name']:
+                            info_source = name + self.area_province
+                        else:
+                            info_source = self.area_province
+
+
                 files_path = {}
                 if response.xpath('//div[@class="ewb-right-txt"]/span[@class="infodetail"]/a/@href'):
                     con_list = response.xpath('//div[@class="ewb-right-txt"]/span[@class="infodetail"]/a')
@@ -208,8 +243,8 @@ class MySpider(CrawlSpider):
                 notice_item["area_id"] = self.area_id
                 notice_item["category"] = classifyShow
                 # yield notice_item
-                print(notice_item)
+                # print(notice_item)
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl province_57_jingcaizongheng_spider".split(" "))
+    cmdline.execute("scrapy crawl province_57_jingcaizongheng_spider -a sdt=2021-06-10 -a edt=2021-06-11".split(" "))

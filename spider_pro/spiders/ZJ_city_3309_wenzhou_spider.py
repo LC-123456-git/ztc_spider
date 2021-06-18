@@ -61,18 +61,30 @@ class MySpider(CrawlSpider):
                 pn = 1
                 num = 0
                 li_list = response.xpath('//div[@class="List-Li FloatL"]/ul/li')
+                category = response.xpath('//div[@class="List-head"]/h4/a[2]/text()').get()
                 for li in range(len(li_list)):
+                    title_name = li_list[li].xpath('./a/@title').get()
+                    all_info_url = self.domain_url + li_list[li].xpath('./a/@href').get()
+                    category_name = li_list[li].xpath('./a/em/text()').get()
                     pub_time = li_list[li].xpath('./span/text()').get()
                     pub_time = get_accurate_pub_time(pub_time)
                     x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
                     if x:
                         num += 1
-                    info_url = response.url[:response.url.rindex('/') + 1] + 'index_{}.htm'
+                        total = int(len(li_list))
+                        if total == None:
+                            return
+                        self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+
+                        yield scrapy.Request(url=all_info_url, callback=self.parse_item, priority=150,
+                                             meta={'pub_time': pub_time,
+                                                   'title_name': title_name,
+                                                   'category_name': category_name,
+                                                   'category': category})
                     if num >= len(li_list):
                         pn += 1
-                    else:
-                        pn = 1
-                    yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info, priority=100)
+                        info_url = response.url[:response.url.rindex('/') + 1] + 'index_{}.htm'
+                        yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info, priority=100)
             else:
                 page_list = response.xpath('//div[@class="Zy-Page FloatL"]/div/text()').get()
                 total = re.findall('共(\d+).*', page_list)[0]         #总条数
@@ -87,41 +99,18 @@ class MySpider(CrawlSpider):
     def parse_info(self, response):
         try:
             li_list = response.xpath('//div[@class="List-Li FloatL"]/ul/li')
+            category = response.xpath('//div[@class="List-head"]/h4/a[2]/text()').get()
             for li in li_list:
                 title_name = li.xpath('./a/@title').get()
                 all_info_url = self.domain_url + li.xpath('./a/@href').get()
                 category_name = li.xpath('./a/em/text()').get()
                 pub_time = li.xpath('./span/text()').get()
-                if category_name in self.list_notice_category_num:
-                    notice = const.TYPE_ZB_NOTICE
-                elif category_name in self.list_win_advance_notice_num:
-                    notice = const.TYPE_WIN_ADVANCE_NOTICE
-                elif category_name in self.list_win_notice_category_num:
-                    notice = const.TYPE_WIN_NOTICE
-                elif category_name in self.list_qita_code:
-                    notice = const.TYPE_OTHERS_NOTICE
-                elif category_name in self.list_zb_abnormal_num:
-                    notice = const.TYPE_ZB_ALTERATION
-                else:
-                    notice = 'null'
-                if notice != 'null':
-                    if re.search(r'变更|更正|澄清|修正|补充', title_name):  # 招标异常
-                        notice_type = const.TYPE_ZB_ALTERATION
-                    elif re.search(r'候选人|评标结果', title_name):         # 中标预告
-                        notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-                    elif re.search(r'中标|结果|成交', title_name):         # 中标公告
-                        notice_type = const.TYPE_WIN_NOTICE
-                    elif re.search(r'终止|中止|流标|废标', title_name):   # 招标异常
-                        notice_type = const.TYPE_ZB_ABNORMAL
-                    elif re.search(r'招标|谈判|磋商|出让|招租', title_name):    # 招标公告
-                        notice_type = const.TYPE_ZB_NOTICE
-                    elif re.search(r'资格预审', title_name):
-                        notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
-                    else:
-                        notice_type = notice
-                    yield scrapy.Request(url=all_info_url, callback=self.parse_item, priority=150,
-                                         meta={'notice_type': notice_type, 'pub_time': pub_time,
-                                               'title_name': title_name, 'category_name': category_name})
+
+                yield scrapy.Request(url=all_info_url, callback=self.parse_item, priority=150,
+                                     meta={'pub_time': pub_time,
+                                           'title_name': title_name,
+                                           'category_name': category_name,
+                                           'category': category})
         except Exception as e:
             self.logger.error(f"parse_info:发起数据请求失败 {e} {response.url=}")
 
@@ -134,48 +123,75 @@ class MySpider(CrawlSpider):
                 info_source = self.area_province + info_source
             else:
                 info_source = self.area_province
-            category = response.meta['category_name']
-            notice_type = response.meta['notice_type']
+            category_name = response.meta['category_name']
             title_name = response.meta['title_name']
+            category = response.meta['category']
             pub_time = response.meta['pub_time']
-            if not pub_time:
-                pub_time = "null"
             pub_time = get_accurate_pub_time(pub_time)
-            contents = response.xpath('//div[@class="Main-p"]').get()
 
-            files_path = {}
-            if response.xpath('//div[@class="Main-p"]/ul/li/p/a'):
-                conet_list = response.xpath('//div[@class="Main-p"]/ul/li/p/a')
-                for con in conet_list:
-                    if con.xpath('./@href'):
-                        if 'http' in con.xpath('./@href').get():
-                            value = con.xpath('./@href').get()
-                        else:
-                            value = self.domain_url + con.xpath('./@href').get()
+            if category_name in self.list_notice_category_num:
+                notice = const.TYPE_ZB_NOTICE
+            elif category_name in self.list_win_advance_notice_num:
+                notice = const.TYPE_WIN_ADVANCE_NOTICE
+            elif category_name in self.list_win_notice_category_num:
+                notice = const.TYPE_WIN_NOTICE
+            elif category_name in self.list_qita_code:
+                notice = const.TYPE_OTHERS_NOTICE
+            elif category_name in self.list_zb_abnormal_num:
+                notice = const.TYPE_ZB_ALTERATION
+            else:
+                notice = 'null'
 
-                        if con.xpath('./text()').get():
-                            keys = con.xpath('./text()').get()
-                        else:
-                            keys = 'img/pdf/doc/xls'
+            if re.search(r'变更|更正|澄清|修正|补充', title_name):  # 招标异常
+                notice_type = const.TYPE_ZB_ALTERATION
+            elif re.search(r'候选人|评标结果', title_name):  # 中标预告
+                notice_type = const.TYPE_WIN_ADVANCE_NOTICE
+            elif re.search(r'中标|结果|成交', title_name):  # 中标公告
+                notice_type = const.TYPE_WIN_NOTICE
+            elif re.search(r'终止|中止|流标|废标', title_name):  # 招标异常
+                notice_type = const.TYPE_ZB_ABNORMAL
+            elif re.search(r'招标|谈判|磋商|出让|招租', title_name):  # 招标公告
+                notice_type = const.TYPE_ZB_NOTICE
+            elif re.search(r'资格预审', title_name):
+                notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
+            else:
+                notice_type = notice
+            if notice_type != 'null':
+                contents = response.xpath('//div[@class="Main-p"]').get()
 
-                        files_path[keys] = value
-            notice_item = NoticesItem()
-            notice_item["origin"] = origin
-            notice_item["title_name"] = title_name
-            notice_item["pub_time"] = pub_time
-            notice_item["info_source"] = info_source
-            notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
-            notice_item["files_path"] = "" if not files_path else files_path
-            notice_item["notice_type"] = notice_type
-            notice_item["content"] = contents
-            notice_item["area_id"] = self.area_id
-            notice_item["category"] = category
-            yield notice_item
+                files_path = {}
+                if response.xpath('//div[@class="Main-p"]/ul/li/p/a'):
+                    conet_list = response.xpath('//div[@class="Main-p"]/ul/li/p/a')
+                    for con in conet_list:
+                        if con.xpath('./@href'):
+                            if 'http' in con.xpath('./@href').get():
+                                value = con.xpath('./@href').get()
+                            else:
+                                value = self.domain_url + con.xpath('./@href').get()
+
+                            if con.xpath('./text()').get():
+                                keys = con.xpath('./text()').get()
+                            else:
+                                keys = 'img/pdf/doc/xls'
+
+                            files_path[keys] = value
+                notice_item = NoticesItem()
+                notice_item["origin"] = origin
+                notice_item["title_name"] = title_name
+                notice_item["pub_time"] = pub_time
+                notice_item["info_source"] = info_source
+                notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
+                notice_item["files_path"] = "" if not files_path else files_path
+                notice_item["notice_type"] = notice_type
+                notice_item["content"] = contents
+                notice_item["area_id"] = self.area_id
+                notice_item["category"] = category
+                yield notice_item
 
 
 if __name__ == "__main__":
     from scrapy import cmdline
     cmdline.execute("scrapy crawl ZJ_city_3309_wenzhou_spider".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3309_wenzhou_spider -a sdt=2015-02-01 -a edt=2021-03-10".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3309_wenzhou_spider -a sdt=2021-02-01 -a edt=2021-06-15".split(" "))
 
 

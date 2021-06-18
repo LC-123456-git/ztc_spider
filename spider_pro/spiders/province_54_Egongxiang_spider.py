@@ -69,7 +69,8 @@ class MySpider(CrawlSpider):
             else:
                 info_dict = self.r_dict | {'projectClass': 'qt'} | {"sort": '5'}
 
-            yield scrapy.FormRequest(url=self.base_url, formdata=info_dict, callback=self.parse_urls, meta={'classifyShow': classifyShow, "info_dict": info_dict})
+            yield scrapy.FormRequest(url=self.base_url, formdata=info_dict, callback=self.parse_urls,
+                                     meta={'classifyShow': classifyShow, "info_dict": info_dict})
 
 
     def parse_urls(self, response):
@@ -77,11 +78,19 @@ class MySpider(CrawlSpider):
             if response.status == 200:
                 if self.enable_incr:
                     page = 1
-                    num = 1
+                    num = 0
                     data_list = json.loads(response.text)['result']['list']
+                    sort = response.meta['info_dict']['sort']
                     for li in range(len(data_list)):
                         pub_time = data_list[li]['V_TIME']
                         pub_time = get_accurate_pub_time(pub_time)
+                        title_name = data_list[li]['V_PROJECT_NAME']
+                        code_id = data_list[li]['V_PROJECTID']
+                        code_dict = {'projectId': code_id}
+                        code_type = data_list[li]['V_PROJECT_CLASSIFICATION']
+                        info_url = 'http://ebid.okap.com/api/ebidproject/infoProject'
+                        origin = 'http://ebid.okap.com/#/front/tradingContent?id={}&tabSelectedIndex={}&classification={}' \
+                            .format(code_id, sort, code_type)
                         x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
                         if x:
                             num += 1
@@ -89,14 +98,19 @@ class MySpider(CrawlSpider):
                             if total == None:
                                 return
                             self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                        if li >= num:
+                            yield scrapy.FormRequest(url=info_url, callback=self.parse_item,
+                                                     formdata=code_dict, priority=15,
+                                                     meta={'classifyShow': response.meta['classifyShow'],
+                                                           'title_name': title_name,
+                                                           'origin': origin})
+
+                        if num >= len(data_list):
                             page += 1
-                        else:
-                            page = 1
-                        r_info_dict = response.meta['info_dict'] | {'pageNum': str(page)}
-                        yield scrapy.FormRequest(url=self.base_url, formdata=r_info_dict, callback=self.parse_data_urls,
-                                                 meta={'classifyShow': response.meta['classifyShow'],
-                                                       'r_info_dict': r_info_dict})
+                            r_info_dict = response.meta['info_dict'] | {'pageNum': str(page)}
+                            yield scrapy.FormRequest(url=self.base_url, formdata=r_info_dict,
+                                                     callback=self.parse_data_urls,
+                                                     meta={'classifyShow': response.meta['classifyShow'],
+                                                           'r_info_dict': r_info_dict})
                 else:
                     total = json.loads(response.text)['result']['total']
                     pages = math.ceil(int(total) / 40)
@@ -132,7 +146,6 @@ class MySpider(CrawlSpider):
         numstr = '零一二三四五六七八九'
         if response.status == 200:
             data_info = json.loads(response.text)['result']['infoTime']
-
             content = """<iframe href="{}" width="100%" heigth="800" border="0" frameboder="0" style="border: none;"></iframe>
                       """
             file_url = ''

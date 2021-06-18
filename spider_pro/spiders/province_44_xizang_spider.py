@@ -120,7 +120,7 @@ class MySpider(CrawlSpider):
                             if total == None:
                                 return
                             self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                        if li >= num:
+                        if num >= len(li_list):
                             page += 1
                         else:
                             page = 1
@@ -219,8 +219,8 @@ class MySpider(CrawlSpider):
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = classifyShow
-            # print(notice_item)
-            yield notice_item
+            print(notice_item)
+            # yield notice_item
 
 
 if __name__ == "__main__":

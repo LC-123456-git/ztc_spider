@@ -104,19 +104,30 @@ class MySpider(CrawlSpider):
                     num = 0
                     li_list = response.xpath('//table[@class="article-body"]/tr/td/table/tr[@height="30"]')
                     for li in range(len(li_list)):
+                        title_name = li_list[li].xpath('./td[2]/a/@title').get()
+                        all_info_url = self.domain_url + li_list[li].xpath('./td[2]/a/@href').get()
                         pub_time = ''.join(li_list[li].xpath('./td[3]/text()').get()).replace('[', '').replace(']', '')
                         pub_time = get_accurate_pub_time(pub_time)
                         x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
                         if x:
                             num += 1
-                        info_url = response.url + '?Paging={}'
+                            total = int(len(li_list))
+                            if total == None:
+                                return
+                            self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                            yield scrapy.Request(url=all_info_url, callback=self.parse_item,
+                                                 dont_filter=True, priority=100,
+                                                 meta={'notice': response.meta['noticn'],
+                                                       'pub_time': pub_time,
+                                                       'title_name': title_name,
+                                                       'category_name': response.meta['category_name']})
+
                         if num >= len(li_list):
                             pn += 1
-                        else:
-                            pn = 1
-                        yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info,
-                                             meta={'noticn': response.meta['noticn'], 'category_name': response.meta['category_name']}
-                                             )
+                            info_url = response.url + '?Paging={}'
+                            yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info,
+                                                 meta={'noticn': response.meta['noticn'],
+                                                       'category_name': response.meta['category_name']})
                 else:
                     pages = re.findall('\/(\d+)', response.xpath('//div[@class="pagemargin"]/div/table/tr/td[@class="huifont"]/text()').get())[0]
                     total = int(pages) * 20
@@ -124,7 +135,8 @@ class MySpider(CrawlSpider):
                     info_url = response.url + '?Paging={}'
                     for num in range(1, int(pages) + 1):
                         yield scrapy.Request(url=info_url.format(num), callback=self.parse_info,
-                                             meta={'noticn': response.meta['noticn'], 'category_name': response.meta['category_name']})
+                                             meta={'noticn': response.meta['noticn'],
+                                                   'category_name': response.meta['category_name']})
         except Exception as e:
             self.logger.error(f"初始总页数提取错误 {response.meta=} {e} {response.url=}")
 
@@ -135,24 +147,11 @@ class MySpider(CrawlSpider):
                 title_name = li.xpath('./td[2]/a/@title').get()
                 all_info_url = self.domain_url + li.xpath('./td[2]/a/@href').get()
                 pub_time = ''.join(li.xpath('./td[3]/text()').get()).replace('[', '').replace(']', '')
-                if re.search(r'变更|更正|澄清|修正|补充', title_name):  # 招标异常
-                    notice_type = const.TYPE_ZB_ALTERATION
-                elif re.search(r'候选人|评标结果', title_name):         # 中标预告
-                    notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-                elif re.search(r'中标|结果|成交', title_name):         # 中标公告
-                    notice_type = const.TYPE_WIN_NOTICE
-                elif re.search(r'终止|中止|流标|废标', title_name):   # 招标异常
-                    notice_type = const.TYPE_ZB_ABNORMAL
-                elif re.search(r'招标|谈判|磋商', title_name):    # 招标公告    priority=10
-                    notice_type = const.TYPE_ZB_NOTICE
-                elif re.search(r'资格预审', title_name):
-                    notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
-                else:
-                    notice_type = response.meta['noticn']
-
-                yield scrapy.Request(url=all_info_url, callback=self.parse_item, dont_filter=True,
-                                     meta={'notice_type': notice_type, 'pub_time': pub_time,
-                                           'title_name': title_name, 'category_name': response.meta['category_name']})
+                yield scrapy.Request(url=all_info_url, callback=self.parse_item, dont_filter=True, priority=100,
+                                     meta={'notice': response.meta['noticn'],
+                                           'pub_time': pub_time,
+                                           'title_name': title_name,
+                                           'category_name': response.meta['category_name']})
         except Exception as e:
             self.logger.error(f"parse_info:发起数据请求失败 {e} {response.url=}")
 
@@ -170,12 +169,25 @@ class MySpider(CrawlSpider):
                 info_source = self.area_province
 
             category = response.meta['category_name']
-            notice_type = response.meta['notice_type']
             title_name = response.meta['title_name']
             pub_time = response.meta['pub_time']
-            if not pub_time:
-                pub_time = "null"
             pub_time = get_accurate_pub_time(pub_time)
+
+            if re.search(r'变更|更正|澄清|修正|补充', title_name):  # 招标异常
+                notice_type = const.TYPE_ZB_ALTERATION
+            elif re.search(r'候选人|评标结果', title_name):  # 中标预告
+                notice_type = const.TYPE_WIN_ADVANCE_NOTICE
+            elif re.search(r'中标|结果|成交', title_name):  # 中标公告
+                notice_type = const.TYPE_WIN_NOTICE
+            elif re.search(r'终止|中止|流标|废标', title_name):  # 招标异常
+                notice_type = const.TYPE_ZB_ABNORMAL
+            elif re.search(r'招标|谈判|磋商', title_name):  # 招标公告
+                notice_type = const.TYPE_ZB_NOTICE
+            elif re.search(r'资格预审', title_name):
+                notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
+            else:
+                notice_type = response.meta['noticn']
+
             cont = response.xpath('//table[@width="1002"]').extract()[0]
             contents = cont.replace(r"/zsztbweb/UploadFile/", "http://zsztb.zhoushan.gov.cn/zsztbweb/UploadFile/")
 
