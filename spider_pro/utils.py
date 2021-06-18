@@ -12,6 +12,8 @@ import base64
 from Crypto.Cipher import AES
 from spider_pro import constans as const
 from dateutil.relativedelta import relativedelta
+from spider_pro import rules_clean
+
 from lxml import etree
 import html
 import uuid

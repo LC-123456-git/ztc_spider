@@ -136,6 +136,9 @@ class MySpider(CrawlSpider):
                         num_count = json.loads(response.text)['result']['records']
                         nums = 0
                         for num in range(len(num_count)):
+                            title_name = num_count[num]['title'] or ''
+                            info_url = self.domain_url + num_count[num]['linkurl']
+                            info_source = num_count[num]['infod'] or ''
                             pub_time = num_count[num]['infodate'] or ''
                             pub_time = get_accurate_pub_time(pub_time)
                             x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
@@ -145,16 +148,20 @@ class MySpider(CrawlSpider):
                                 if total == None:
                                     return
                                 self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                                yield scrapy.Request(url=info_url, callback=self.parse_item,
+                                                     meta={'category': response.meta['category'],
+                                                           'notice': response.meta['notice'],
+                                                           'title_name': title_name,
+                                                           'pub_time': pub_time,
+                                                           'info_source': info_source})
+
                             if nums >= len(num_count):
                                 page += 1
-                            else:
-                                page = 1
-                            _type_dict = type_dict | {'pn': (page - 1) * 50}
-
-                            yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict),
-                                                 dont_filter=True, callback=self.parse_info_url,
-                                                 meta={'category': response.meta['category'],
-                                                       'notice': response.meta['notice']}, priority=1000)
+                                _type_dict = type_dict | {'pn': (page - 1) * 50}
+                                yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict),
+                                                     dont_filter=True, callback=self.parse_data_urls,
+                                                     meta={'category': response.meta['category'],
+                                                           'notice': response.meta['notice']})
 
                 else:
                     restul = json.loads(response.text)
@@ -164,7 +171,7 @@ class MySpider(CrawlSpider):
                     for num in range(pages):
                         type_dict = self.dict_data | {'pn': num * 50}
                         yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict), dont_filter=True, callback=self.parse_info_url,
-                                             meta={'category': response.meta['category'], 'notice': response.meta['notice']}, priority=1000)
+                                             meta={'category': response.meta['category'], 'notice': response.meta['notice']})
         except Exception as e:
             self.logger.error(f"初始总数提取错误 {response.meta=} {e} {response.url=}")
 
@@ -174,19 +181,15 @@ class MySpider(CrawlSpider):
                 num_count = json.loads(response.text)['result']['records']
                 for num in num_count:
                     title_name = num['title'] or ''
-                    put_time = num['infodate'] or ''
+                    pub_time = num['infodate'] or ''
                     info_url = self.domain_url + num['linkurl']
                     info_source = num['infod'] or ''
-                    if re.search(r'更正公告|变更公告', title_name):  # 招标变更
-                        notice_type = const.TYPE_ZB_ALTERATION
-                    elif re.search(r'中止|终止|异常|废标|流标', title_name):  # 招标异常
-                        notice_type = const.TYPE_ZB_ABNORMAL
-                    else:
-                        notice_type = response.meta['notice']
-
                     yield scrapy.Request(url=info_url, callback=self.parse_item,
-                                         meta={'category': response.meta['category'], 'notice_type': notice_type,
-                                               'title_name': title_name, 'put_time': put_time, 'info_source': info_source}, priority=10000)
+                                         meta={'category': response.meta['category'],
+                                               'notice': response.meta['notice'],
+                                               'title_name': title_name,
+                                               'pub_time': pub_time,
+                                               'info_source': info_source})
         except Exception as e:
             self.logger.error(f"初始总数提取错误 {response.meta=} {e} {response.url=}")
 
