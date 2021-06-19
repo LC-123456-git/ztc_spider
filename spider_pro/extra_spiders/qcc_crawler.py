@@ -34,16 +34,20 @@ class QccCrawlerSpider(scrapy.Spider):
             # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
             'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
             'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
             # 'spider_pro.middlewares.RefererMiddleware.RefererMiddleware': 400,
         },
-        'DOWNLOAD_DELAY': 1,
-        'CONCURREN_REQUESTS': 8,
-        'CONCURRENT_RTEQUESTS_PER_IP': 8,
-        # "ENABLE_PROXY_USE": True,
+        'DOWNLOAD_DELAY': 4,
+        'CONCURREN_REQUESTS': 1,
+        'CONCURRENT_RTEQUESTS_PER_IP': 1,
+        "ENABLE_PROXY_USE": True,
         # "ENABLE_PROXY_USE": False,
         "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
         'RETRY_TIMES': 5,
+
+        # 'DEPTH_PRIORITY': 1,
+        # 'SCHEDULER_DISK_QUEUE': 'scrapy.squeues.PickleFifoDiskQueue',
+        # 'SCHEDULER_MEMORY_QUEUE': 'scrapy.squeues.FifoMemoryQueue',
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
     # start_url = 'https://www.qcc.com/industry_A'
@@ -169,7 +173,7 @@ class QccCrawlerSpider(scrapy.Spider):
                     'category': category,
                     'category_name': category_name,
                     'tag': resp.meta.get('tag', ''),
-                }, priority=1 * (len(category_els) - n))
+                }, priority=10)
 
     def parse_industry_categories(self, resp):
         """
@@ -200,7 +204,7 @@ class QccCrawlerSpider(scrapy.Spider):
                     'industry_category_name': industry_category_name,
 
                     'tag': resp.meta.get('tag', ''),
-                }, priority=10 * len(industry_category_els) - n)
+                }, priority=100)
 
     def parse_list(self, resp):
         """
@@ -215,6 +219,9 @@ class QccCrawlerSpider(scrapy.Spider):
             self.logger.info('error:{e}'.format(e=e))
         else:
             # for page in range(1, 2):
+            if max_page > 10:  # 只抓10 页
+                max_page = 10
+
             for page in range(1, max_page + 1):
                 list_url = self.query_url.format(**{
                     'industryCode': category,
@@ -229,7 +236,7 @@ class QccCrawlerSpider(scrapy.Spider):
                     'industry_category_name': resp.meta.get('industry_category_name', ''),
 
                     'tag': resp.meta.get('tag', ''),
-                }, priority=10000 * (max_page - page))
+                }, priority=1000)
 
     def parse_detail(self, resp):
         """
@@ -247,7 +254,7 @@ class QccCrawlerSpider(scrapy.Spider):
                 'industry_category_name': resp.meta.get('industry_category_name', ''),
 
                 'tag': resp.meta.get('tag', ''),
-            }, priority=100000000 * (len(detail_urls) - n))
+            }, priority=10000)
 
     @classmethod
     def get_invoice_info(cls, resp):
