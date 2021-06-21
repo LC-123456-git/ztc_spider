@@ -33,14 +33,14 @@ class QccCrawlerSpider(scrapy.Spider):
             # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
             'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
             'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
             # 'spider_pro.middlewares.RefererMiddleware.RefererMiddleware': 400,
         },
         'DOWNLOAD_DELAY': 2,
         'CONCURREN_REQUESTS': 8,
         'CONCURRENT_RTEQUESTS_PER_IP': 8,
-        # "ENABLE_PROXY_USE": True,
-        "ENABLE_PROXY_USE": False,
+        "ENABLE_PROXY_USE": True,
+        # "ENABLE_PROXY_USE": False,
         "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
         'RETRY_TIMES': 5,
     }
@@ -438,7 +438,6 @@ class QccCrawlerSpider(scrapy.Spider):
                 industry_category_name = industry_category_node.get('industory_category_name', '')
                 c_url = industry_category_node.get('url', '')
                 url = ''.join([self.basic_url, c_url])
-                print((len(self.node_tree) - i) * (len(industry_category_list) - j))
                 yield scrapy.Request(url=url, callback=self.parse_list, meta={
                     'category': category,
                     'industry_category': industry_category,
@@ -460,7 +459,7 @@ class QccCrawlerSpider(scrapy.Spider):
             self.logger.info('error:{e}'.format(e=e))
         else:
             # for page in range(1, 2):
-            if max_page > 5:  # 只抓1 页
+            if max_page > 5:  # 只抓5 页
                 max_page = 5
 
             for page in range(1, max_page + 1):
