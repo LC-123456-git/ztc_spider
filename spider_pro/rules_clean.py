@@ -1035,7 +1035,7 @@ class KeywordsExtract:
                             else:
                                 for t_key, t_dic in t_dics.items():
                                     try:
-                                        assert int(t_key), 'TH NODE.'
+                                        assert isinstance(t_key, int), 'TH NODE.'
                                     except:
                                         com = re.compile(key)
                                         ks = com.findall(t_key)
