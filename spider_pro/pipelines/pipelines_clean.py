@@ -357,8 +357,9 @@ class CleanPipeline(object):
         ]
         tenderee = self.get_keys_value_from_content(content, tenderee_tags, area_id=area_id, field_name='tenderee')  # √
         bidding_agency_tags = [
-            "招标代理",
+            "招标代理机构",
             "采购代理机构信息[ψ \s]*?名[\s]+称",
+            "招标代理",
         ]
         bidding_agency = self.get_keys_value_from_content(
             content, bidding_agency_tags, area_id=area_id, field_name='bidding_agency'
