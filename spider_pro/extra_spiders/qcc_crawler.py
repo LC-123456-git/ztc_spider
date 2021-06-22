@@ -459,8 +459,8 @@ class QccCrawlerSpider(scrapy.Spider):
             self.logger.info('error:{e}'.format(e=e))
         else:
             # for page in range(1, 2):
-            if max_page > 5:  # 只抓5 页
-                max_page = 5
+            if max_page > 10:  # 只抓10 页
+                max_page = 10
 
             for page in range(1, max_page + 1):
                 list_url = self.query_url.format(**{
