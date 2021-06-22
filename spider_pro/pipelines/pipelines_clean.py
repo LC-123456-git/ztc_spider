@@ -3,6 +3,11 @@
 # @Time : 2021/01/14
 # @Author : wwj
 # @Describe: notices item数据清洗
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
 import re
 import html
 import time
@@ -219,7 +224,7 @@ class CleanPipeline(object):
                                                 area_id=item["area_id"]) or {}
             if item["is_have_file"] == "1" or item["is_have_file"] == 1:
                 self.is_have_file = True
-                # content_str = item["content"]
+                content_str = item["content"]
                 msg, content_str = self.request_download(files_path=str(item["files_path"]), content=item["content"],
                                                          is_have_file=item["is_have_file"])
                 # 请求失败 修改 is_have_file
@@ -261,8 +266,15 @@ class CleanPipeline(object):
                 self.get_keys_value_from_content(data, "招标文件获取截止时间", area_id=area_id))
             apply_end_time = get_accurate_pub_time(
                 self.get_keys_value_from_content(data, "报名截止时间", area_id=area_id))
+
+            tenderopen_time_tags = [
+                "开标时间",
+                "开启时间",
+            ]
             tenderopen_time = get_accurate_pub_time(
-                self.get_keys_value_from_content(data, "开标时间", area_id=area_id))
+                self.get_keys_value_from_content(data, tenderopen_time_tags, area_id=area_id,
+                                                 field_name='tenderopen_time')  # √
+            )
 
             # 特殊处理 未获取到值则使用开标时间
             if not notice_end_time:
@@ -281,8 +293,23 @@ class CleanPipeline(object):
             notice_end_time = get_accurate_pub_time(
                 self.get_keys_value_from_content(data, "公告结束时间", area_id=area_id))
         elif pre_data.get("classify_id") == const.TYPE_WIN_NOTICE:
-            successful_bidder = self.get_keys_value_from_content(data, ["中标人", "中标人名称", "中标单位"], area_id=area_id)
-            bid_amount = self.get_keys_value_from_content(data, "中标价格", area_id=area_id)
+            successful_bidder_tags = [
+                "中标人",
+                "中标人名称",
+                "中标单位",
+                "供应商名称",
+            ]
+            successful_bidder = self.get_keys_value_from_content(
+                data, successful_bidder_tags, area_id=area_id, field_name='successful_bidder'
+            )  # √
+            bid_amount_tags = [
+                "中标价格",
+                "中标价",
+                "中标（成交）金额(元)",
+            ]
+            bid_amount = self.get_keys_value_from_content(
+                data, bid_amount_tags, area_id=area_id, field_name='bid_amount'
+            )  # √
         elif pre_data.get("classify_id") == const.TYPE_QUALIFICATION_ADVANCE_NOTICE:
             pass
         elif pre_data.get("classify_id") == const.TYPE_OTHERS_NOTICE:
@@ -306,14 +333,58 @@ class CleanPipeline(object):
         sign_type = const.TYPE_UPLOAD_NOTICES_SIGN_COLLECT  # 标讯类型 0-平台发布1-用户发布2-采集发布
 
         # 公共提取字段 15
-        project_name = self.get_keys_value_from_content(content, ["项目名称", "招标项目", "工程名称", "招标工程项目"], area_id=area_id)
-        project_number = self.get_keys_value_from_content(content, ["项目编号", "招标项目编号", "招标编号"], area_id=area_id)
-        tenderee = self.get_keys_value_from_content(content, ["招标人", "招&nbsp;标&nbsp;人", "招标单位", "建设单位"], area_id=area_id)
-        bidding_agency = self.get_keys_value_from_content(content, ["招标代理", "代理公司"], area_id=area_id)
-        budget_amount = self.get_keys_value_from_content(content, ["项目金额", "本期概算\(万元\)"], area_id=area_id)
+        project_tags = [
+            "项目名称",
+            "招标项目",
+            "工程名称",
+            "招标工程项目",
+        ]
+        project_name = self.get_keys_value_from_content(content, project_tags, area_id=area_id,
+                                                        field_name='project_name')  # √
+        project_number_tags = [
+            "编号",
+            "项目编号",
+            "招标项目编号",
+            "招标编号",
+        ]
+        project_number = self.get_keys_value_from_content(content, project_number_tags, area_id=area_id,
+                                                          field_name='project_number')  # √
+        tenderee_tags = [
+            "招标人",
+            "招&nbsp;标&nbsp;人",
+            "招标单位",
+            "采购人信息[ψ \s]*?名[\s]+称",
+        ]
+        tenderee = self.get_keys_value_from_content(content, tenderee_tags, area_id=area_id, field_name='tenderee')  # √
+        bidding_agency_tags = [
+            "招标代理",
+            "采购代理机构信息[ψ \s]*?名[\s]+称",
+        ]
+        bidding_agency = self.get_keys_value_from_content(
+            content, bidding_agency_tags, area_id=area_id, field_name='bidding_agency'
+        )  # √
+        budget_amount_tags = [
+            "项目金额",
+            "预算金额（元）",
+        ]
+        budget_amount = self.get_keys_value_from_content(
+            content, budget_amount_tags, area_id=area_id, field_name='budget_amount'
+        )  # √
         address = self.get_keys_value_from_content(content, "详细地址", area_id=area_id)
-        liaison = self.get_keys_value_from_content(content, "联系人", area_id=area_id)
-        contact_information = self.get_keys_value_from_content(content, "联系电话", area_id=area_id)
+        liaison_tags = [
+            "联系人",
+            "联\s*系\s*人",
+            "项目经理",
+        ]
+        liaison = self.get_keys_value_from_content(content, liaison_tags, area_id=area_id, field_name='liaison')
+        contact_information_tags = [
+            "联系电话",
+            "联系方式",
+            "电\s*话",
+        ]
+        contact_information = self.get_keys_value_from_content(
+            content, contact_information_tags, area_id=area_id, field_name='contact_information'
+        )
         email = self.get_keys_value_from_content(content, "电子邮箱", area_id=area_id)
         description = self.get_keys_value_from_content(content, ["招标范围", "招标方式", "招标组织形式"], area_id=area_id)
         bid_type = self.get_keys_value_from_content(content, "招标方式", area_id=area_id)
@@ -367,8 +438,8 @@ class CleanPipeline(object):
                 'is_have_file': is_have_file,
                 }
 
-    def get_keys_value_from_content(self, content: str, keys, area_id="00"):
-        value = get_keys_value_from_content_ahead(content, keys, area_id=area_id)
+    def get_keys_value_from_content(self, content: str, keys, area_id="00", field_name=None):
+        value = get_keys_value_from_content_ahead(content, keys, area_id=area_id, field_name=field_name)
         # 再次针对性清洗数据
         try:
             if ">" in value:
@@ -389,7 +460,11 @@ class CleanPipeline(object):
                 # results = conn.execute(
                 #     f"select * from {table_name} where is_clean =0 and is_upload=0  limit {start}, {rows}").fetchall()
                 results = conn.execute(
-                    f"select * from {table_name} where is_have_file = 1 and id='10'").fetchall()
+                    # f"select * from {table_name} where is_clean =0 and is_upload=0 limit {start}, {rows}"
+                    f"select * from {table_name} where is_clean=1"
+                ).fetchall()
+                # results = conn.execute(
+                #     f"select * from {table_name} where is_have_file = 1").fetchall()
                 results = [dict(zip(result.keys(), result)) for result in results]
                 for item in results:
                     try:
@@ -401,18 +476,36 @@ class CleanPipeline(object):
                         deal_data = self.extract_data(pre_data=pre_process_dict, area_id=area_id)
                         deal_data = deal_base_notices_data(deal_data, is_hump=False)
 
+                        # update_sql = text(
+                        #     """UPDATE {} set """.format(table_name) +
+                        #     """ , """.join(["""{} = :{}""".format(var, var) for var in self.clean_filed_list]) +
+                        #     """, is_clean = {} """.format(is_clean_default) +
+                        #     """where id = {} """.format(item_id))
+                        # 指定需要更新的字段
+                        update_fields = [
+                            'project_name',
+                            'project_number',
+                            'budget_amount',
+                            'tenderee',
+                            'bidding_agency',
+                            'liaison',
+                            'contact_information',
+                            'successful_bidder',
+                            'bid_amount',
+                            'tenderopen_time',
+                        ]
                         update_sql = text(
                             """UPDATE {} set """.format(table_name) +
-                            """ , """.join(["""{} = :{}""".format(var, var) for var in self.clean_filed_list]) +
+                            """ , """.join(["""{} = :{}""".format(var, var) for var in update_fields]) +
                             """, is_clean = {} """.format(is_clean_default) +
                             """where id = {} """.format(item_id))
-
+                        print('item_id:{0}'.format(item_id))
+                        deal_data = {k: deal_data[k] for k in update_fields}
                         result = conn.execute(update_sql, **deal_data)
                         if result.rowcount != 1:
                             print("error")
                         else:
-                            pass
-                            # print("true", item_id)
+                            print('ID:{0}'.format(result.inserted_primary_key))
 
                     except Exception as e:
                         print(f"{e=} {item_id=}")
@@ -477,8 +570,11 @@ if __name__ == "__main__":
     # cp.run_clean(table_name="notices_11", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     # cp.run_clean(table_name="notices_13", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     # cp.run_clean(table_name="notices_15", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
-    cp.run_clean(table_name="notices_3301",
-                 engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4')
+    cp.run_clean(
+        table_name="notices_3320",
+        engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
+        # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4',
+    )
 
     # # 测试洗数据 默认测试
     # cp.run_clean_ex(table_name="notices_47", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4')
