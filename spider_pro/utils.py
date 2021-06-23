@@ -155,7 +155,7 @@ def catch_files(content, base_url, **kwargs):
             src = img_el.attrib.get('src')
             if '.' in src:
                 if not check_if_http_based(src):
-                    src = base_url + src
+                    src = ''.join([base_url, src])
                 suffix_name = src.split('.')[-1]
                 files_path['{uuid}.{suffix_name}'.format(uuid=str(uuid.uuid1()), suffix_name=suffix_name)] = src
 
