@@ -484,7 +484,7 @@ class CleanPipeline(object):
                 # results = conn.execute(f"select * from {table_name} where is_clean =1 and is_upload=0 and
                 #                          files_path='' and classify_name ='中标预告' limit {start}, {rows}").fetchall()
                 results = conn.execute(
-                    f"select * from {table_name} where id=244").fetchall()
+                    f"select * from {table_name}").fetchall()
                 results = [dict(zip(result.keys(), result)) for result in results]
                 for item in results:
                     try:
