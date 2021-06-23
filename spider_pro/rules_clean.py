@@ -1246,168 +1246,423 @@ class KeywordsExtract:
 
 if __name__ == '__main__':
     content = """
-    <td height="500" align="left" valign="top">
-        <table height="100%" width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tbody>
+    <tr>
+        <td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                    <td valign="top" class="infodetail" id="TDContent" align="left">
-                        <div style=" padding-left:40px; padding-right:40px;">
-
-
-
-                            <title>Report</title>
-                            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-                            <style type="text/css">
-                                .sf0391be7 {
-                                    Font: bold 20pt 宋体;
-                                    border: 0px;
-                                    border-top-color: #696969;
-                                    border-top-style: solid;
-                                    border-top-width: 1px;
-                                    border-left-color: #696969;
-                                    border-left-style: solid;
-                                    border-left-width: 1px;
-                                    border-right-color: #696969;
-                                    border-right-style: solid;
-                                    border-right-width: 1px;
-                                    border-bottom-color: #696969;
-                                    border-bottom-style: solid;
-                                    border-bottom-width: 1px;
-                                    text-align: center;
-                                    vertical-align: middle;
-                                    line-height: 1.15em;
-                                    overflow: hidden;
-                                    white-space: nowrap;
-                                }
-
-                                .s109075b4 {
-                                    Font: 14pt 宋体;
-                                    border: 0px;
-                                    border-top-color: #696969;
-                                    border-top-style: solid;
-                                    border-top-width: 1px;
-                                    border-left-color: #696969;
-                                    border-left-style: solid;
-                                    border-left-width: 1px;
-                                    border-right-color: #696969;
-                                    border-right-style: solid;
-                                    border-right-width: 1px;
-                                    border-bottom-color: #696969;
-                                    border-bottom-style: solid;
-                                    border-bottom-width: 1px;
-                                    text-align: center;
-                                    vertical-align: middle;
-                                    line-height: 1.15em;
-                                    word-wrap: break-word;
-                                }
-
-                                .se0dab9d7 {
-                                    Font: bold 16pt 宋体;
-                                    border: 0px;
-                                    border-top-color: #696969;
-                                    border-top-style: solid;
-                                    border-top-width: 1px;
-                                    border-left-color: #696969;
-                                    border-left-style: solid;
-                                    border-left-width: 1px;
-                                    border-right-color: #696969;
-                                    border-right-style: solid;
-                                    border-right-width: 1px;
-                                    border-bottom-color: #696969;
-                                    border-bottom-style: solid;
-                                    border-bottom-width: 1px;
-                                    text-align: center;
-                                    vertical-align: middle;
-                                    line-height: 1.15em;
-                                    overflow: hidden;
-                                    white-space: nowrap;
-                                }
-                            </style>
-
-
-
-                            <table cellspacing="0" cellpadding="0" border="0"
-                                style="border-width:0px;width:748px;border-collapse:collapse;">
-                                <tbody>
-                                    <tr>
-                                        <td class="sf0391be7" colspan="4" style="width:748px;height:35px;">
-                                            <div style="width:748px;">中标结果公告</div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="s109075b4" colspan="4" style="width:748px;height:32px;">
-                                            <div style="width:748px;">苍南县职业中等专业学校变压器增容及双向供电设施改造工程</div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="se0dab9d7" style="width:189px;height:31px;">
-                                            <div style="width:189px;">标段编号</div>
-                                        </td>
-                                        <td class="s109075b4" style="width:189px;height:31px;">
-                                            <div style="width:189px;">A3303270480001365001001</div>
-                                        </td>
-                                        <td class="se0dab9d7" style="width:189px;height:31px;">
-                                            <div style="width:189px;">交易方式</div>
-                                        </td>
-                                        <td class="s109075b4" style="width:181px;height:31px;">
-                                            <div style="width:181px;">公开招标</div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="se0dab9d7" style="width:189px;height:32px;">
-                                            <div style="width:189px;">建设单位</div>
-                                        </td>
-                                        <td class="s109075b4" style="width:189px;height:32px;">
-                                            <div style="width:189px;">苍南县职业中等专业学校</div>
-                                        </td>
-                                        <td class="se0dab9d7" style="width:189px;height:32px;">
-                                            <div style="width:189px;">工程地点</div>
-                                        </td>
-                                        <td class="s109075b4" style="width:181px;height:32px;">
-                                            <div style="width:181px;">苍南县职业中等专业学校</div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="se0dab9d7" style="width:189px;height:31px;">
-                                            <div style="width:189px;">中标单位</div>
-                                        </td>
-                                        <td class="s109075b4" colspan="3" style="width:559px;height:31px;">
-                                            <div style="width:559px;">浙江智城建筑科技有限公司</div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="height:1px;width:189px;border:0px;"></td>
-                                        <td style="height:1px;width:189px;border:0px;"></td>
-                                        <td style="height:1px;width:189px;border:0px;"></td>
-                                        <td style="height:1px;width:181px;border:0px;"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                        </div>
-                        <div> </div>
+                    <td style="padding:10px;">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td height="120">
+                                    <table width="100%" height="120" border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td height="30" />
+                                        </tr>
+                                        <tr>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="500" align="left" valign="top">
+                                    <table height="100%" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td valign="top" class="infodetail" id="TDContent" align="left">
+                                                <div style=" padding-left:40px; padding-right:40px;">
+                                                    <p style="FONT-SIZE: medium; FONT-FAMILY: " Microsoft YaHei";
+                                                        WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none;
+                                                        FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; ORPHANS: 2;
+                                                        WIDOWS: 2; LETTER-SPACING: normal; LINE-HEIGHT: 1.5em; TEXT-INDENT:
+                                                        0px; font-variant-ligatures: normal; font-variant-caps: normal;
+                                                        -webkit-text-stroke-width: 0px; text-decoration-style: initial;
+                                                        text-decoration-color: initial; overflow-wrap: break-word"><strong
+                                                            style="FONT-SIZE: 18px; FONT-FAMILY: SimHei, sans-serif; TEXT-ALIGN: justify">一、项目编号：</strong><span
+                                                            style="FONT-SIZE: 18px; FONT-FAMILY: 黑体, SimHei"> <span
+                                                                class="bookmark-item uuid-1596280499822 code-00004 addWord single-line-text-input-box-cls">CNDL2021185</span> </span> 
+                                                                       </p>
+                                                    <p
+                                                        style="FONT-SIZE: 18px; FONT-FAMILY: SimHei, sans-serif; WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none; FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; TEXT-ALIGN: justify; ORPHANS: 2; WIDOWS: 2; MARGIN: 10px 0px; LETTER-SPACING: normal; LINE-HEIGHT: 1.5em; TEXT-INDENT: 0px; font-variant-ligatures: normal; font-variant-caps: normal; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; overflow-wrap: break-word; break-after: avoid">
+                                                        <span style="FONT-SIZE: 18px"><strong>二、项目名称：</strong> <span
+                                                                class="bookmark-item uuid-1591615489941 code-00003 addWord single-line-text-input-box-cls">苍南县沿浦湾海岸线整治修复工程涉海前期专题服务采购项目</span> </span><span> </span> 
+                                                                         </p>
+                                                    <p style="FONT-SIZE: medium; MARGIN-BOTTOM: 10px; FONT-FAMILY: "
+                                                        Microsoft YaHei"; WHITE-SPACE: normal; WORD-SPACING: 0px;
+                                                        MARGIN-TOP: 10px; TEXT-TRANSFORM: none; FONT-WEIGHT: 400; COLOR:
+                                                        rgb(0,0,0); FONT-STYLE: normal; ORPHANS: 2; WIDOWS: 2;
+                                                        LETTER-SPACING: normal; LINE-HEIGHT: 1.5em; TEXT-INDENT: 0px;
+                                                        font-variant-ligatures: normal; font-variant-caps: normal;
+                                                        -webkit-text-stroke-width: 0px; text-decoration-style: initial;
+                                                        text-decoration-color: initial; overflow-wrap: break-word">
+                                                        <strong><span
+                                                                style="FONT-SIZE: 18px; FONT-FAMILY: SimHei, sans-serif">三、中标（成交）信息</span></strong><span> </span> 
+                                                                         </p>
+                                                    <div
+                                                        style="FONT-SIZE: 18px; FONT-FAMILY: FangSong; WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none; FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; ORPHANS: 2; WIDOWS: 2; LETTER-SPACING: normal; LINE-HEIGHT: 20px; TEXT-INDENT: 0px; font-variant-ligatures: normal; font-variant-caps: normal; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial">
+                                                        <p style="LINE-HEIGHT: normal; overflow-wrap: break-word"><span
+                                                                style="FONT-SIZE: 18px">   1.中标结果：</span>  </p>
+                                                        <table
+                                                            class="template-bookmark uuid-1599570948000 code-AM014zbcj001 text-中标/成交结果信息"
+                                                            style="WIDTH: 718px; BORDER-COLLAPSE: collapse">
+                                                            <thead>
+                                                                <tr class="firstRow">
+                                                                    <th
+                                                                        style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; BACKGROUND-COLOR: rgb(255,255,255); break-inside: avoid">
+                                                                        序号</th>
+                                                                    <th
+                                                                        style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; BACKGROUND-COLOR: rgb(255,255,255); break-inside: avoid">
+                                                                        中标（成交）金额(元)</th>
+                                                                    <th
+                                                                        style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; BACKGROUND-COLOR: rgb(255,255,255); break-inside: avoid">
+                                                                        中标供应商名称</th>
+                                                                    <th
+                                                                        style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; BACKGROUND-COLOR: rgb(255,255,255); break-inside: avoid">
+                                                                        中标供应商地址</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr style="TEXT-ALIGN: center" width="100%">
+                                                                    <td class="code-sectionNo"
+                                                                        style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid">
+                                                                        1</td>
+                                                                    <td class="code-summaryPrice"
+                                                                        style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid">
+                                                                        最终报价:1248000(元)</td>
+                                                                    <td class="code-winningSupplierName"
+                                                                        style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid">
+                                                                        杭州希澳环境科技有限公司</td>
+                                                                    <td class="code-winningSupplierAddr"
+                                                                        style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid">
+                                                                        中联大厦2幢1204室</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <p
+                                                            style="MARGIN-TOP: 5px; LINE-HEIGHT: normal; overflow-wrap: break-word">
+                                                               2.废标结果:  </p>
+                                                        <p class="sub"
+                                                            style="MARGIN-BOTTOM: 5px; LINE-HEIGHT: normal; overflow-wrap: break-word">
+                                                               </p>
+                                                        <table class="form-panel-input-cls" width="100%">
+                                                            <tbody>
+                                                                <tr class="firstRow" style="TEXT-ALIGN: center"
+                                                                    width="100%">
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="25%">序号</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="25%">标项名称</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="25%">废标理由</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="25%">其他事项</td>
+                                                                </tr>
+                                                                <tr style="TEXT-ALIGN: center" width="100%">
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="25%">/</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="25%">/</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="25%">/</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="25%">/</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                         
+                                                        <p style="overflow-wrap: break-word" />
+                                                    </div>
+                                                    <p
+                                                        style="FONT-SIZE: 18px; FONT-FAMILY: SimHei, sans-serif; WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none; FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; TEXT-ALIGN: justify; ORPHANS: 2; WIDOWS: 2; MARGIN: 10px 0px; LETTER-SPACING: normal; LINE-HEIGHT: 30px; TEXT-INDENT: 0px; font-variant-ligatures: normal; font-variant-caps: normal; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; overflow-wrap: break-word; break-after: avoid">
+                                                        <span
+                                                            style="FONT-SIZE: 18px"><strong>四、主要标的信息</strong></span><span> </span> 
+                                                                         </p>
+                                                    <div
+                                                        style="FONT-SIZE: 18px; FONT-FAMILY: FangSong; WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none; FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; ORPHANS: 2; WIDOWS: 2; LETTER-SPACING: normal; LINE-HEIGHT: 20px; TEXT-INDENT: 0px; font-variant-ligatures: normal; font-variant-caps: normal; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial">
+                                                        <p style="LINE-HEIGHT: normal; overflow-wrap: break-word"><span
+                                                                style="FONT-SIZE: 18px"> 
+                                                                 1.货物类主要标的信息：</span><span> </span>   </p>
+                                                        <p style="LINE-HEIGHT: normal; overflow-wrap: break-word">     </p>
+                                                        <p style="LINE-HEIGHT: normal; overflow-wrap: break-word"> 
+                                                             2.工程类主要标的信息：</p>
+                                                        <p style="LINE-HEIGHT: normal; overflow-wrap: break-word">      </p>
+                                                        <p style="LINE-HEIGHT: normal; overflow-wrap: break-word"> 
+                                                             3.服务类主要标的信息：</p>
+                                                        <p class="sub"
+                                                            style="LINE-HEIGHT: normal; overflow-wrap: break-word">    </p>
+                                                        <table class="form-panel-input-cls" width="100%">
+                                                            <tbody>
+                                                                <tr class="firstRow" style="TEXT-ALIGN: center"
+                                                                    width="100%">
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">序号</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">标项名称</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">标的名称</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">服务范围</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">服务要求</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">服务时间</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">服务标准</td>
+                                                                </tr>
+                                                                <tr style="TEXT-ALIGN: center" width="100%">
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">1</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">苍南县沿浦湾海岸线整治修复工程涉海前期专题服务</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">苍南县沿浦湾海岸线整治修复工程涉海前期专题服务</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">
+                                                                        内容包含：海洋水文动力环境现状调查、岸滩稳定性分析及数值模型预测专题报告编制、海洋环境影响评价报告编制、海域使用论证报告编制。
+                                                                    </td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">按采购文件要求</td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">中标人需在合同签订后3个月内完成所有工作，并提交相关部门审查通过。
+                                                                    </td>
+                                                                    <td style="BORDER-TOP: rgb(221,221,221) 1px solid; BORDER-RIGHT: rgb(221,221,221) 1px solid; BORDER-BOTTOM: rgb(221,221,221) 1px solid; WORD-BREAK: break-all; PADDING-BOTTOM: 5px; PADDING-TOP: 5px; PADDING-LEFT: 10px; BORDER-LEFT: rgb(221,221,221) 1px solid; PADDING-RIGHT: 10px; break-inside: avoid"
+                                                                        width="14.29%">按采购文件要求</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                         
+                                                        <p style="overflow-wrap: break-word" />
+                                                    </div>
+                                                    <p
+                                                        style="FONT-SIZE: 18px; FONT-FAMILY: SimHei, sans-serif; WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none; FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; TEXT-ALIGN: justify; ORPHANS: 2; WIDOWS: 2; MARGIN: 10px 0px; LETTER-SPACING: normal; LINE-HEIGHT: 30px; TEXT-INDENT: 0px; font-variant-ligatures: normal; font-variant-caps: normal; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; overflow-wrap: break-word; break-after: avoid">
+                                                        <span
+                                                            style="FONT-SIZE: 18px"><strong>五、评审专家（单一来源采购人员）名单：</strong></span><span> </span> 
+                                                                         </p>
+                                                    <p style="FONT-SIZE: medium; FONT-FAMILY: " Microsoft YaHei";
+                                                        WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none;
+                                                        FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; ORPHANS: 2;
+                                                        WIDOWS: 2; LETTER-SPACING: normal; TEXT-INDENT: 0px;
+                                                        font-variant-ligatures: normal; font-variant-caps: normal;
+                                                        -webkit-text-stroke-width: 0px; text-decoration-style: initial;
+                                                        text-decoration-color: initial; overflow-wrap: break-word"><span
+                                                            style="FONT-SIZE: 18px; FONT-FAMILY: FangSong; LINE-HEIGHT: 20px"> 
+                                                              <span
+                                                                class="bookmark-item uuid-1589193390811 code-85005 addWord multi-line-text-input-box-cls">饶大举,李丕阜,郑世东</span> </span><span> </span> 
+                                                                         </p>
+                                                    <p
+                                                        style="FONT-SIZE: 18px; FONT-FAMILY: SimHei, sans-serif; WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none; FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; TEXT-ALIGN: justify; ORPHANS: 2; WIDOWS: 2; MARGIN: 10px 0px; LETTER-SPACING: normal; LINE-HEIGHT: 30px; TEXT-INDENT: 0px; font-variant-ligatures: normal; font-variant-caps: normal; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; overflow-wrap: break-word; break-after: avoid">
+                                                        <span
+                                                            style="FONT-SIZE: 18px"><strong>六、代理服务收费标准及金额：</strong></span> 
+                                                                       </p>
+                                                    <p style="FONT-SIZE: medium; FONT-FAMILY: " Microsoft YaHei";
+                                                        WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none;
+                                                        FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; ORPHANS: 2;
+                                                        WIDOWS: 2; LETTER-SPACING: normal; TEXT-INDENT: 0px;
+                                                        font-variant-ligatures: normal; font-variant-caps: normal;
+                                                        -webkit-text-stroke-width: 0px; text-decoration-style: initial;
+                                                        text-decoration-color: initial; overflow-wrap: break-word"><span
+                                                            style="FONT-SIZE: 18px; FONT-FAMILY: FangSong; LINE-HEIGHT: 20px"> 
+                                                             1.代理服务收费标准：<span
+                                                                class="bookmark-item uuid-1591615554332 code-AM01400039 addWord multi-line-text-input-box-cls">按标准</span> </span><span> </span> 
+                                                                         </p>
+                                                    <p style="FONT-SIZE: medium; FONT-FAMILY: " Microsoft YaHei";
+                                                        WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none;
+                                                        FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; ORPHANS: 2;
+                                                        WIDOWS: 2; LETTER-SPACING: normal; TEXT-INDENT: 0px;
+                                                        font-variant-ligatures: normal; font-variant-caps: normal;
+                                                        -webkit-text-stroke-width: 0px; text-decoration-style: initial;
+                                                        text-decoration-color: initial; overflow-wrap: break-word"><span
+                                                            style="FONT-SIZE: 18px; FONT-FAMILY: FangSong; LINE-HEIGHT: 20px"> 
+                                                             2.代理服务收费金额（元）：<span
+                                                                class="bookmark-item uuid-1591615558580 code-AM01400040 addWord numeric-input-box-cls readonly">19000</span> </span> 
+                                                    </p>
+                                                    <p
+                                                        style="FONT-SIZE: 18px; FONT-FAMILY: SimHei, sans-serif; WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none; FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; TEXT-ALIGN: justify; ORPHANS: 2; WIDOWS: 2; MARGIN: 10px 0px; LETTER-SPACING: normal; LINE-HEIGHT: 30px; TEXT-INDENT: 0px; font-variant-ligatures: normal; font-variant-caps: normal; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; overflow-wrap: break-word; break-after: avoid">
+                                                        <span
+                                                            style="FONT-SIZE: 18px"><strong>七、公告期限</strong></span><span> </span> 
+                                                                         </p>
+                                                    <p style="FONT-SIZE: medium; FONT-FAMILY: " Microsoft YaHei";
+                                                        WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none;
+                                                        FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; ORPHANS: 2;
+                                                        WIDOWS: 2; LETTER-SPACING: normal; TEXT-INDENT: 0px;
+                                                        font-variant-ligatures: normal; font-variant-caps: normal;
+                                                        -webkit-text-stroke-width: 0px; text-decoration-style: initial;
+                                                        text-decoration-color: initial; overflow-wrap: break-word"><span
+                                                            style="FONT-SIZE: 18px; FONT-FAMILY: FangSong; LINE-HEIGHT: 20px"> 
+                                                             自本公告发布之日起1个工作日。</span><span> </span>                   </p>
+                                                    <p
+                                                        style="FONT-SIZE: medium; FONT-FAMILY: SimHei, sans-serif; WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none; FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; TEXT-ALIGN: justify; ORPHANS: 2; WIDOWS: 2; MARGIN: 10px 0px; LETTER-SPACING: normal; LINE-HEIGHT: 30px; TEXT-INDENT: 0px; font-variant-ligatures: normal; font-variant-caps: normal; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; overflow-wrap: break-word; break-after: avoid">
+                                                        <span style="FONT-SIZE: 18px"><strong>八、其他补充事宜</strong></span>     
+                                                                     </p>
+                                                    <p style="FONT-SIZE: medium; FONT-FAMILY: " Microsoft YaHei";
+                                                        WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none;
+                                                        FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; ORPHANS: 2;
+                                                        WIDOWS: 2; LETTER-SPACING: normal; LINE-HEIGHT: 1.5em; TEXT-INDENT:
+                                                        0px; font-variant-ligatures: normal; font-variant-caps: normal;
+                                                        -webkit-text-stroke-width: 0px; text-decoration-style: initial;
+                                                        text-decoration-color: initial; overflow-wrap: break-word"><span
+                                                            style="FONT-SIZE: 18px; FONT-FAMILY: FangSong; LINE-HEIGHT: 20px"> 
+                                                             
+                                                            1.各参加政府采购活动的供应商认为该中标/成交结果和采购过程等使自己的权益受到损害的，可以自本公告期限届满之日（本公告发布之日后第2个工作日）起7个工作日内，以书面形式向采购人或受其委托的采购代理机构提出质疑。质疑供应商对采购人、采购代理机构的答复不满意或者采购人、采购代理机构未在规定的时间内作出答复的，可以在答复期满后十五个工作日内向同级政府采购监督管理部门投诉。质疑函范本、投诉书范本请到浙江政府采购网下载专区下载。</span> 
+                                                                  </p>
+                                                    <p style="FONT-SIZE: medium; FONT-FAMILY: " Microsoft YaHei";
+                                                        WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none;
+                                                        FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; ORPHANS: 2;
+                                                        WIDOWS: 2; LETTER-SPACING: normal; LINE-HEIGHT: 1.5em; TEXT-INDENT:
+                                                        0px; font-variant-ligatures: normal; font-variant-caps: normal;
+                                                        -webkit-text-stroke-width: 0px; text-decoration-style: initial;
+                                                        text-decoration-color: initial; overflow-wrap: break-word"><span
+                                                            style="FONT-SIZE: 18px; FONT-FAMILY: FangSong; LINE-HEIGHT: 20px"> 
+                                                              2.其他事项：  </span><span> </span>                   </p>
+                                                    <p
+                                                        style="FONT-SIZE: 18px; FONT-FAMILY: SimHei, sans-serif; WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none; FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; TEXT-ALIGN: justify; ORPHANS: 2; WIDOWS: 2; MARGIN: 10px 0px; LETTER-SPACING: normal; LINE-HEIGHT: 32px; TEXT-INDENT: 0px; font-variant-ligatures: normal; font-variant-caps: normal; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; overflow-wrap: break-word; break-after: avoid">
+                                                        <span
+                                                            style="FONT-SIZE: 18px"><strong>九、对本次公告内容提出询问、质疑、投诉，请按以下方式联系</strong><span
+                                                                style="FONT-SIZE: 16px; FONT-FAMILY: sans-serif">　　　</span></span><span
+                                                            style="FONT-SIZE: 18px; FONT-FAMILY: FangSong"> 
+                                                             </span><span> </span>       </p>
+                                                    <div
+                                                        style="FONT-SIZE: medium; FONT-FAMILY: FangSong; WHITE-SPACE: normal; WORD-SPACING: 0px; TEXT-TRANSFORM: none; FONT-WEIGHT: 400; COLOR: rgb(0,0,0); FONT-STYLE: normal; ORPHANS: 2; WIDOWS: 2; LETTER-SPACING: normal; LINE-HEIGHT: 30px; TEXT-INDENT: 0px; font-variant-ligatures: normal; font-variant-caps: normal; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial">
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  1.采购人信息</span>           </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  名    称：<span
+                                                                    class="bookmark-item uuid-1596004663203 code-00014 editDisable interval-text-box-cls readonly">苍南县自然资源和规划局</span>  </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  地    址：<span
+                                                                    class="bookmark-item uuid-1596004672274 code-00018 addWord single-line-text-input-box-cls">苍南县灵溪镇工人文化宫南侧</span> </span> 
+                                                                   </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  传    真：<span
+                                                                    class="bookmark-item uuid-1596004680354 code-00017 addWord single-line-text-input-box-cls">0577-59909673</span> </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  项目联系人（询问）：<span
+                                                                    class="bookmark-item uuid-1596004688403 code-00015 editDisable single-line-text-input-box-cls readonly">徐女士</span> </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  项目联系方式（询问）：<span
+                                                                    class="bookmark-item uuid-1596004695990 code-00016 editDisable single-line-text-input-box-cls readonly">(0577)
+                                                                    599-09673</span>  </span>         </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  质疑联系人：<span
+                                                                    class="bookmark-item uuid-1596004703774 code-AM014cg001 addWord single-line-text-input-box-cls">徐玉宣</span> </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  质疑联系方式：<span
+                                                                    class="bookmark-item uuid-1596004712085 code-AM014cg002 addWord single-line-text-input-box-cls">15869466005</span> </span> 
+                                                                       </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                 <br />
+                                                                    2.采购代理机构信息</span><span> </span>           </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  名    称：<span
+                                                                    class="bookmark-item uuid-1596004721081 code-00009 addWord interval-text-box-cls">温州超然招标代理有限公司</span> </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  地    址：<span
+                                                                    class="bookmark-item uuid-1596004728442 code-00013 editDisable single-line-text-input-box-cls readonly">苍南县灵溪镇上江小区1-7幢1单元202室</span> </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  传    真：<span
+                                                                    class="bookmark-item uuid-1596004736097 code-00012 addWord single-line-text-input-box-cls">0577-68803069</span> </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  项目联系人（询问）：<span
+                                                                    class="bookmark-item uuid-1596004745033 code-00010 editDisable single-line-text-input-box-cls readonly">陈仕盈（13587830757）</span>  </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  项目联系方式（询问）：<span
+                                                                    class="bookmark-item uuid-1596004753055 code-00011 addWord single-line-text-input-box-cls">0577-68803069</span> </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  质疑联系人：<span
+                                                                    class="bookmark-item uuid-1596004761573 code-AM014cg003 addWord single-line-text-input-box-cls">陈奇</span> </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  质疑联系方式：<span
+                                                                    class="bookmark-item uuid-1596004769998 code-AM014cg004 addWord single-line-text-input-box-cls">15727866665</span> 　　　　　　　　　　</span> 
+                                                             <span style="FONT-SIZE: 18px">   </span></p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                 <br />
+                                                                    3.同级政府采购监督管理部门</span><span> </span>           </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  名    称：<span
+                                                                    class="bookmark-item uuid-1596004778916 code-00019 addWord single-line-text-input-box-cls">苍南县政府采购监督管理办公室</span> </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  地    址：<span
+                                                                    class="bookmark-item uuid-1596004787211 code-00023 addWord single-line-text-input-box-cls">苍南县灵溪镇春晖路555号</span> </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  传    真：<span
+                                                                    class="bookmark-item uuid-1596004796586 code-00022 addWord single-line-text-input-box-cls">0577-59867927</span> </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  联系人 ：<span
+                                                                    class="bookmark-item uuid-1596004804824 code-00020 addWord single-line-text-input-box-cls">陈先生</span> </span><span> </span> 
+                                                                     </p>
+                                                        <p style="overflow-wrap: break-word"><span style="FONT-SIZE: 18px"> 
+                                                                  监督投诉电话：<span
+                                                                    class="bookmark-item uuid-1596004812886 code-00021 addWord single-line-text-input-box-cls">0577-59867927</span></span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div> </div>
+                                            </td>
+                                        </tr>
+                                        <tr style="display:none;">
+                                            <td align="right">
+                                                <br />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td />
+                                        </tr>
+                                        <tr>
+                                            <td height="10" />
+                                        </tr>
+                                        <tr>
+                                            <td valign="bottom"> </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="4" />
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="1">
+                                    <hr size="1" color="#dedede" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="30" align="center">
+                                    <table width="200" border="0" cellspacing="0" cellpadding="0" align="center">
+                                        <tr>
+                                            <td width="25" align="center"><img
+                                                    src="http://file.zhaotx.cn/view?systemUrl=webfile/20210513/jpg/E918082ECECF4898AE2D5C650DAEF128.jpg"
+                                                    width="17" height="16" /></td>
+                                            <td />
+                                            <td width="25" align="center"><img
+                                                    src="http://file.zhaotx.cn/view?systemUrl=webfile/20210513/jpg/8FA73C75D0D1443ABD19014BE717165A.jpg"
+                                                    width="16" height="16" /></td>
+                                            <td />
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="20" />
+                            </tr>
+                            <tr>
+                                <td> </td>
+                            </tr>
+                        </table>
                     </td>
                 </tr>
-                <tr style="display:none;">
-                    <td align="right">
-                        <br>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td height="10"></td>
-                </tr>
-                <tr>
-                    <td valign="bottom"> </td>
-                </tr>
-                <tr>
-                    <td height="4"></td>
-                </tr>
-            </tbody>
-        </table>
-    </td>
+            </table>
+        </td>
+    </tr>
     """
 
     ke = KeywordsExtract(content, [
@@ -1428,14 +1683,14 @@ if __name__ == '__main__':
         # "项目经理（负责人）",
         # "项目负责人",
 
-        # "招标人",  # tenderee
-        # "招 标 人",
-        # "招&nbsp;标&nbsp;人",
-        # "招\s*?标\s*?人：",
-        # "招标单位",
-        # "采购人信息[ψ \s]*?名[\s]+称",
-        # "建设（招标）单位",
-        # "建设单位",
+        "招标人",  # tenderee
+        "招 标 人",
+        "招&nbsp;标&nbsp;人",
+        "招\s*?标\s*?人：",
+        "招标单位",
+        "采购人信息[ψ \s]*?名[\s]+称",
+        "建设（招标）单位",
+        "建设单位",
 
         # "招标代理",  # bidding_agency
         # "采购代理机构信息[ψ \s]*?名[\s]+称",
@@ -1463,7 +1718,7 @@ if __name__ == '__main__':
         # "中标单位",
         # "供应商名称",
     # ], field_name='bidding_agency')
-    ], field_name='successful_bidder', area_id="3320")
+    ], field_name='tenderee', area_id="3320")
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
         'project_name': [

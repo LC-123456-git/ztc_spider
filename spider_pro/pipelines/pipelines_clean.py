@@ -370,6 +370,8 @@ class CleanPipeline(object):
             tenderee = re.findall('(.*)?[(|（]', tenderees)
         else:
             tenderee = tenderees
+        if len(tenderee) < 2:
+            tenderee = ''
 
         bidding_agency_tags = [
             "招标代理机构",
