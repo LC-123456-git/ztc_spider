@@ -1246,351 +1246,168 @@ class KeywordsExtract:
 
 if __name__ == '__main__':
     content = """
-    <tr>
-        <td>
-            <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                <tbody>
-                    <tr>
-                        <td style="padding:10px;">
-                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <td height="500" align="left" valign="top">
+        <table height="100%" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tbody>
+                <tr>
+                    <td valign="top" class="infodetail" id="TDContent" align="left">
+                        <div style=" padding-left:40px; padding-right:40px;">
+
+
+
+                            <title>Report</title>
+                            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+                            <style type="text/css">
+                                .sf0391be7 {
+                                    Font: bold 20pt 宋体;
+                                    border: 0px;
+                                    border-top-color: #696969;
+                                    border-top-style: solid;
+                                    border-top-width: 1px;
+                                    border-left-color: #696969;
+                                    border-left-style: solid;
+                                    border-left-width: 1px;
+                                    border-right-color: #696969;
+                                    border-right-style: solid;
+                                    border-right-width: 1px;
+                                    border-bottom-color: #696969;
+                                    border-bottom-style: solid;
+                                    border-bottom-width: 1px;
+                                    text-align: center;
+                                    vertical-align: middle;
+                                    line-height: 1.15em;
+                                    overflow: hidden;
+                                    white-space: nowrap;
+                                }
+
+                                .s109075b4 {
+                                    Font: 14pt 宋体;
+                                    border: 0px;
+                                    border-top-color: #696969;
+                                    border-top-style: solid;
+                                    border-top-width: 1px;
+                                    border-left-color: #696969;
+                                    border-left-style: solid;
+                                    border-left-width: 1px;
+                                    border-right-color: #696969;
+                                    border-right-style: solid;
+                                    border-right-width: 1px;
+                                    border-bottom-color: #696969;
+                                    border-bottom-style: solid;
+                                    border-bottom-width: 1px;
+                                    text-align: center;
+                                    vertical-align: middle;
+                                    line-height: 1.15em;
+                                    word-wrap: break-word;
+                                }
+
+                                .se0dab9d7 {
+                                    Font: bold 16pt 宋体;
+                                    border: 0px;
+                                    border-top-color: #696969;
+                                    border-top-style: solid;
+                                    border-top-width: 1px;
+                                    border-left-color: #696969;
+                                    border-left-style: solid;
+                                    border-left-width: 1px;
+                                    border-right-color: #696969;
+                                    border-right-style: solid;
+                                    border-right-width: 1px;
+                                    border-bottom-color: #696969;
+                                    border-bottom-style: solid;
+                                    border-bottom-width: 1px;
+                                    text-align: center;
+                                    vertical-align: middle;
+                                    line-height: 1.15em;
+                                    overflow: hidden;
+                                    white-space: nowrap;
+                                }
+                            </style>
+
+
+
+                            <table cellspacing="0" cellpadding="0" border="0"
+                                style="border-width:0px;width:748px;border-collapse:collapse;">
                                 <tbody>
                                     <tr>
-                                        <td height="120">
-                                            <table width="100%" height="120" border="0" cellpadding="0" cellspacing="0">
-                                                <tbody>
-                                                    <tr>
-                                                        <td height="30"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td id="tdTitle" align="center" runat="server" valign="middle">
-                                                            <div
-                                                                style="line-height 30px; background url(/TPFrontNew/template/deflaut/images/child_rightbg.gif) repeat-x top">
-                                                                <font color="" style="font-size: 25px"><b>
-                                                                        [意见征询]关于2021年苍南县教育局新型教学空间采购项目文件公开征询意见的公告</b>
-                                                                </font>
-                                                            </div>
-                                                            <div style="height: 30px; line-height: 30px;"> </div>
-                                                            <div style="height: 20px; line-height: 20px;">
-                                                                <font color="#000000" class="webfont"> 发布时间：
-                                                                    2021/6/1
-                                                                    &nbsp;&nbsp;访问次数：
-                                                                    <script
-                                                                        src="/TPFrontNew//Upclicktimes.aspx?InfoID=f3742dea-d8af-43f9-a5ce-c63b7ce6c30c">
-                                                                    </script>146
-                                                                    &nbsp;&nbsp;
-
-                                                                </font><span>
-                                                                    <!--  <label style="margin-left: 4px;">&nbsp;&nbsp;字体: </label>
-                            【<span onClick="document.getElementById('TDContent').className='infodetailbig'" style="cursor: hand">大</span> <span onClick="document.getElementById('TDContent').className='infodetailmiddle'"
-                                                                                                                                                                                            style="cursor: hand">中</span> <span onClick="document.getElementById('TDContent').className='infodetailsmall'"
-                                                                                                                                                                                                                                style="cursor: hand">小</span>】 </span> </div>-->
-                                                                    <div style="height:50px;"></div>
-                                                                </span>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                        <td class="sf0391be7" colspan="4" style="width:748px;height:35px;">
+                                            <div style="width:748px;">中标结果公告</div>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td height="500" align="left" valign="top">
-                                            <table height="100%" width="100%" cellpadding="0" cellspacing="0" border="0">
-                                                <tbody>
-                                                    <tr>
-                                                        <td valign="top" class="infodetail" id="TDContent" align="left">
-                                                            <div style=" padding-left:40px; padding-right:40px;">
-                                                                <p style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: center; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric"
-                                                                    align="center"><b><span
-                                                                            style="FONT-SIZE: 18pt; FONT-FAMILY: 微软雅黑; COLOR: rgb(74,74,74); LINE-HEIGHT: 150%">
-                                                                            <font face="微软雅黑">关于</font>
-                                                                        </span></b><b><span
-                                                                            style="FONT-SIZE: 18pt; FONT-FAMILY: 微软雅黑; COLOR: rgb(74,74,74); LINE-HEIGHT: 150%">
-                                                                            <font face="微软雅黑">2021年苍南县教育局新型教学空间采购项目</font>
-                                                                        </span></b><b><span
-                                                                            style="FONT-SIZE: 18pt; FONT-FAMILY: 微软雅黑; COLOR: rgb(74,74,74); LINE-HEIGHT: 150%">
-                                                                            <font face="微软雅黑">文件公开征询意见的公告</font>
-                                                                        </span></b></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 21pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">中纬工程管理咨询有限公司</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">受</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">苍南县教育局</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">委托，就</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">2021年苍南县教育局新型教学空间采购项目</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">
-                                                                            进行招标，为避免采购人的采购需求不合法或带有倾向性，现将招标文件征求意见稿（详见</font>
-                                                                        <font face="宋体">“附件下载”）公布如下,以公开征求意见。</font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">一</font>
-                                                                        <font face="宋体">.征求意见范围：</font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">1、是否出现明显的倾向性意见和特定的功能指标； </font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">2、影响政府采购“公开、公平、公正”原则的其他情况。</font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">二</font>
-                                                                        <font face="宋体">.征求意见回复：</font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">1、意见递交时间：202</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">1</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">-</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">6</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">-</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">4</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">&nbsp;下午17:00前</font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">2、意见递交方式：现场递交、邮寄&nbsp;</font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">3、意见接收机构：</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">中纬工程管理咨询有限公司</font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">4、联系人：</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">杨</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">先生</font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">5、联系电话：0577-68885883，13566105192
-                                                                        </font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">5、联系邮箱：</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">475531348</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">@qq.com</font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">四</font>
-                                                                        <font face="宋体">.合格的修改意见和建议书要求</font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">
-                                                                            1、供应商提出修改意见和建议的，书面材料须加盖单位公章和经法人代表签字确认，是授权代理人签字的，必须出具针对该项目的法人代表授权书及联系电话。
-                                                                        </font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">
-                                                                            2、专家提出修改意见和建议的，须出具本人与该项目相关专业证书复印件及联系电话。 </font>
-                                                                    </span></p>
-                                                                <p
-                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
-                                                                    <span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">
-                                                                            3、各供应商及专家提出修改意见和建议内容必须是真实的，并附相关依据，如发现存在提供虚假材料或恶意扰乱政府采购正常秩序的，一经查实将提请有关政府采购管理机构，列入不良行为记录。
-                                                                        </font>
-                                                                    </span></p>
-                                                                <p style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: justify; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 21pt"
-                                                                    align="justify"><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">五</font>
-                                                                        <font face="宋体">.&nbsp;注意事项：</font>
-                                                                    </span></p>
-                                                                <p style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: justify; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric"
-                                                                    align="justify"><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">&nbsp;&nbsp;&nbsp;
-                                                                            各供应商及专家提出修改意见和建议的，请于202</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">1</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">年</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">6</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">月</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">4</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">日下午</font>
-                                                                        <font face="宋体">17时前送达</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">中纬工程管理咨询有限公司</font>
-                                                                    </span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">
-                                                                            (温州市苍南县灵溪镇中驰御景园7-9-11幢101)。同时将有关意见建议的电子文档发送至以下信箱：
-                                                                        </font>
-                                                                    </span><span><a href="mailto:734397477@qq.com"><span
-                                                                                style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                                <font face="宋体">475531348</font>
-                                                                            </span><span
-                                                                                style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                                <font face="宋体">@qq.com</font>
-                                                                            </span></a></span><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
-                                                                        <font face="宋体">。对逾期送达的意见、建议书恕不接受。</font>
-                                                                    </span></p>
-                                                                <p style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: justify; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric"
-                                                                    align="justify"><span
-                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: Calibri; COLOR: rgb(74,74,74); LINE-HEIGHT: 150%">&nbsp;</span>
-                                                                </p>
-                                                                <p
-                                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: Calibri; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 150%; TEXT-AUTOSPACE: ideograph-numeric">
-                                                                    &nbsp;</p>
-                                                            </div>
-                                                            <div> </div>
-                                                        </td>
-                                                    </tr>
-                                                    <tr style="display:none;">
-                                                        <td align="right">
-                                                            <br>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td height="10"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td valign="bottom"><span class="infodetailattach">附件：</span>
-                                                            <table id="filedown" cellspacing="1" cellpadding="1"
-                                                                width="100%" border="0" runat="server">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td>1、<a href="http://122.228.139.57///TPFrontNew///AttachStorage/202106/J181/f3742dea-d8af-43f9-a5ce-c63b7ce6c30c/意见征询—2021年苍南县教育局新型教学空间采购项目（1）.doc"
-                                                                                target="_blank">
-                                                                                <font class="infodetailattachfile">
-                                                                                    意见征询—2021年苍南县教育局新型教学空间采购项目（1）.doc</font>
-                                                                            </a></td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td height="4"></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                        <td class="s109075b4" colspan="4" style="width:748px;height:32px;">
+                                            <div style="width:748px;">苍南县职业中等专业学校变压器增容及双向供电设施改造工程</div>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td height="1">
-                                            <hr size="1" color="#dedede">
+                                        <td class="se0dab9d7" style="width:189px;height:31px;">
+                                            <div style="width:189px;">标段编号</div>
+                                        </td>
+                                        <td class="s109075b4" style="width:189px;height:31px;">
+                                            <div style="width:189px;">A3303270480001365001001</div>
+                                        </td>
+                                        <td class="se0dab9d7" style="width:189px;height:31px;">
+                                            <div style="width:189px;">交易方式</div>
+                                        </td>
+                                        <td class="s109075b4" style="width:181px;height:31px;">
+                                            <div style="width:181px;">公开招标</div>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td height="30" align="center">
-                                            <table width="200" border="0" cellspacing="0" cellpadding="0" align="center">
-                                                <tbody>
-                                                    <tr>
-                                                        <td width="25" align="center"><img
-                                                                src="/TPFrontNew/Template/Default/images/printpic.jpg"
-                                                                width="17" height="16"></td>
-                                                        <td><a href="javascript:void(0)" onclick="window.print();">【打印】</a>
-                                                        </td>
-                                                        <td width="25" align="center"><img
-                                                                src="/TPFrontNew/Template/Default/images/closepic.jpg"
-                                                                width="16" height="16"></td>
-                                                        <td><a href="javascript:window.close()">【关闭】</a></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                        <td class="se0dab9d7" style="width:189px;height:32px;">
+                                            <div style="width:189px;">建设单位</div>
+                                        </td>
+                                        <td class="s109075b4" style="width:189px;height:32px;">
+                                            <div style="width:189px;">苍南县职业中等专业学校</div>
+                                        </td>
+                                        <td class="se0dab9d7" style="width:189px;height:32px;">
+                                            <div style="width:189px;">工程地点</div>
+                                        </td>
+                                        <td class="s109075b4" style="width:181px;height:32px;">
+                                            <div style="width:181px;">苍南县职业中等专业学校</div>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td height="20"></td>
+                                        <td class="se0dab9d7" style="width:189px;height:31px;">
+                                            <div style="width:189px;">中标单位</div>
+                                        </td>
+                                        <td class="s109075b4" colspan="3" style="width:559px;height:31px;">
+                                            <div style="width:559px;">浙江智城建筑科技有限公司</div>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td> </td>
+                                        <td style="height:1px;width:189px;border:0px;"></td>
+                                        <td style="height:1px;width:189px;border:0px;"></td>
+                                        <td style="height:1px;width:189px;border:0px;"></td>
+                                        <td style="height:1px;width:181px;border:0px;"></td>
                                     </tr>
                                 </tbody>
                             </table>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
+
+                        </div>
+                        <div> </div>
+                    </td>
+                </tr>
+                <tr style="display:none;">
+                    <td align="right">
+                        <br>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td height="10"></td>
+                </tr>
+                <tr>
+                    <td valign="bottom"> </td>
+                </tr>
+                <tr>
+                    <td height="4"></td>
+                </tr>
+            </tbody>
+        </table>
+    </td>
     """
 
     ke = KeywordsExtract(content, [
@@ -1612,13 +1429,16 @@ if __name__ == '__main__':
         # "项目负责人",
 
         # "招标人",  # tenderee
+        # "招 标 人",
         # "招&nbsp;标&nbsp;人",
+        # "招\s*?标\s*?人：",
         # "招标单位",
         # "采购人信息[ψ \s]*?名[\s]+称",
-        # "招标代理机构",
+        # "建设（招标）单位",
+        # "建设单位",
 
-        "招标代理",  # bidding_agency
-        "采购代理机构信息[ψ \s]*?名[\s]+称",
+        # "招标代理",  # bidding_agency
+        # "采购代理机构信息[ψ \s]*?名[\s]+称",
 
         # "项目编号",  # project_number
         # "招标项目编号",
@@ -1637,8 +1457,13 @@ if __name__ == '__main__':
         
         # "开标时间",  # tenderee
         # "开启时间",
+        
+        # "中标人",  # successful_bidder
+        # "中标人名称",
+        # "中标单位",
+        # "供应商名称",
     # ], field_name='bidding_agency')
-    ], field_name='bidding_agency', area_id="3320")
+    ], field_name='successful_bidder', area_id="3320")
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
         'project_name': [

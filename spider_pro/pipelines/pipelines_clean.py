@@ -347,6 +347,7 @@ class CleanPipeline(object):
             "招标项目编号",
             "招标编号",
             "编号",
+            "标段编号",
         ]
         project_numbers = self.get_keys_value_from_content(content, project_number_tags, area_id=area_id, field_name='project_number')  # √
         if re.findall(r'.*\/(.*)', project_numbers):
@@ -360,7 +361,8 @@ class CleanPipeline(object):
             "招\s*?标\s*?人：",
             "招标单位",
             "采购人信息[ψ \s]*?名[\s]+称",
-            "建设（招标）单位"
+            "建设（招标）单位",
+            "建设单位",
         ]
         tenderees = self.get_keys_value_from_content(content, tenderee_tags, area_id=area_id, field_name='tenderee')  # √
 

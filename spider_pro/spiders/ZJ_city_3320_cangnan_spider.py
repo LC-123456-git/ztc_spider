@@ -62,7 +62,7 @@ class ZjCity3320CangnanSpiderSpider(scrapy.Spider):
             {'category': '政府采购',
              'url': 'http://ggzy.cncn.gov.cn/TPFrontNew/jyxx/004002/004002005/'},
             {'category': '产权交易',
-             'url': 'http://ggzy.cncn.gov.cn/TPFrontNew/jyxx/004005/004005003/'},
+             'url': 'http://ggzy.cncn.gov.cn/TPFrontNew/jyxx/004005/004005003/'}, 
             {'category': '乡镇及建设平台',
              'url': 'http://ggzy.cncn.gov.cn/TPFrontNew/jyxx/004007/004007004/'},
             {'category': '直属机关及企事业单位',
@@ -70,7 +70,7 @@ class ZjCity3320CangnanSpiderSpider(scrapy.Spider):
         ],
         '其他公告': [
             {'category': '政府采购',
-             'url': 'http://ggzy.cncn.gov.cn/TPFrontNew/jyxx/004002/004002002/'},
+             'url': 'http://ggzy.cncn.gov.cn/TPFrontNew/jyxx/004002/004002002/'}, 
         ]
     }
     page_com = re.compile('Paging=(\d+)')
