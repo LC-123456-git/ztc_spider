@@ -3,6 +3,10 @@
 # @Time : 2021/01/14
 # @Author : wwj
 # @Describe: notices item数据清洗
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 import re
 import html
 import time
@@ -218,15 +222,16 @@ class CleanPipeline(object):
             else:
                 area_deal_dict = deal_area_data(title_name=item["title_name"], info_source=item["info_source"],
                                                 area_id=item["area_id"]) or {}
-            if item["is_have_file"] == "1" or item["is_have_file"] == 1:
-                self.is_have_file = True
-                # content_str = item["content"]
-                msg, content_str = self.request_download(files_path=str(item["files_path"]), content=item["content"],
-                                                         is_have_file=item["is_have_file"])
-                # 请求失败 修改 is_have_file
-                # msg = 'test file request error'
-                if msg:
-                    item['is_have_file'] = "2"
+            content_str = item["content"]                                    
+            # if item["is_have_file"] == "1" or item["is_have_file"] == 1:
+            #     self.is_have_file = True
+            #     content_str = item["content"]
+            #     msg, content_str = self.request_download(files_path=str(item["files_path"]), content=item["content"],
+            #                                              is_have_file=item["is_have_file"])
+            #     # 请求失败 修改 is_have_file
+            #     # msg = 'test file request error'
+            #     if msg:
+            #         item['is_have_file'] = "2"
 
         except Exception as e:
             self.logger.error(f"文件服务替换失败 {e} ")
@@ -352,6 +357,7 @@ class CleanPipeline(object):
             "招标人",
             "招 标 人",
             "招&nbsp;标&nbsp;人",
+            "招\s*?标\s*?人：",
             "招标单位",
             "采购人信息[ψ \s]*?名[\s]+称",
             "建设（招标）单位"
@@ -393,7 +399,7 @@ class CleanPipeline(object):
         contact_information_tags = [
             "联系电话",
             "联系方式",
-            "电\s*话"
+            "电\s*话",
         ]
         contact_informations = self.get_keys_value_from_content(content, contact_information_tags, area_id=area_id,
                                                                 field_name='contact_information')  # √
@@ -478,7 +484,7 @@ class CleanPipeline(object):
                 # results = conn.execute(f"select * from {table_name} where is_clean =1 and is_upload=0 and
                 #                          files_path='' and classify_name ='中标预告' limit {start}, {rows}").fetchall()
                 results = conn.execute(
-                    f"select * from {table_name} where is_have_file = 1 and id='10'").fetchall()
+                    f"select * from {table_name} where id=244").fetchall()
                 results = [dict(zip(result.keys(), result)) for result in results]
                 for item in results:
                     try:
@@ -591,7 +597,7 @@ if __name__ == "__main__":
     # cp.run_clean(table_name="notices_11", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     # cp.run_clean(table_name="notices_13", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     # cp.run_clean(table_name="notices_15", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
-    cp.run_clean(table_name="notices_3305",
+    cp.run_clean(table_name="notices_3309",
                  engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4')
 
     # # 测试洗数据 默认测试
