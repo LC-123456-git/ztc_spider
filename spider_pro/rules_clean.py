@@ -949,11 +949,11 @@ class KeywordsExtract:
         self.area_id = area_id
         self.field_name = field_name
         self.msg = ''
-        self.keysss = ["招标项目", "中标（成交）金额(元)", "代理机构", "中标供应商名称", "工程名称", "项目名称", "成交价格", "招标工程项目", "项目编号", "招标项目编号",
-                       "招标编号",
-                       "招标人", "招 标 人", "发布时间", "招标单位", "招标代理:", "招标代理：", "招标代理机构",
-                       "项目金额", "预算金额（元）", "招标估算价", "中标（成交）金额（元）", "联系人", "联 系 人",
-                       "项目经理（负责人）"]
+        self.keysss = [
+            "招标项目", "中标（成交）金额(元)", "代理机构", "中标供应商名称", "工程名称", "项目名称", "成交价格", "招标工程项目", "项目编号", "招标项目编号",
+            "招标编号", "招标人", "招 标 人", "发布时间", "招标单位", "招标代理:", "招标代理：", "招标代理机构", "项目金额", "预算金额（元）", "招标估算价", 
+            "中标（成交）金额（元）", "联系人", "联 系 人", "项目经理（负责人）", "标段编号", "建设单位", "中标单位",
+        ]
         # 各字段对应的规则
         self.fields_regular = {
             'project_name': [
@@ -1172,16 +1172,21 @@ class KeywordsExtract:
                         r'本招标项目([^，,]*?)[已由 , ，]',
                         r'项目名称：([0-9 \s \u4e00-\u9fa5]+?)三',
                         r'根据(.*?)（[\s \u4e00-\u9fa5]*?编号：',
+                        r'本工程项目名称\s*([^，,]*?)\s*[。 , ，]',
+                        r'就([0-9 \s \u4e00-\u9fa5]+?)进行招标',
                     ]
+                # 中纬工程管理咨询有限公司受苍南县教育局委托
                 if self.field_name == 'tenderee':
                     regular_list = [
                         r'招标人为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
                         r'项目业主为([\s \u4e00-\u9fa5]*?)（下称招标人）',
+                        r'受([\s \u4e00-\u9fa5]*?)委托',
                     ]
                 if self.field_name == 'bidding_agency':
                     regular_list = [
                         r'招标代理：([\s \u4e00-\u9fa5]*?)地',
                         r'委托([^，,。]*?)[进行 , ，]',
+                        r'公告([\s \u4e00-\u9fa5]*?)受',
                     ]
                 if self.field_name == 'project_number':  # 项目代码：2020-330327-48-01-167360）批准建  目（编号：A3303270480001353001001）招标文件（以
                     regular_list = [
@@ -1193,11 +1198,16 @@ class KeywordsExtract:
                     ]
                 if self.field_name == 'contact_information':
                     regular_list = [
-                        r'电\s*话[: ：]([^\u4e00-\u9fa5]+?)传'
+                        r'电\s*话[: ：]([^\u4e00-\u9fa5]+?)传',
+                        r'电话[: ：]\s*?([0-9]+?)\s*?[\u4e00-\u9fa5]',
+                        # r'联系电话：0577-68885883，135661051925',
+                        r'联系电话：([0-9 \-]+?)[\s , ，]',
                     ]
                 if self.field_name == 'liaison':
                     regular_list = [
-                        r'联.*系.*人[: ：]\s*([\u4e00-\u9fa5]+?)电'
+                        r'联.*系.*人[: ：]\s*([\u4e00-\u9fa5]+?)电',
+                        r'异议受理部门[: ：]\s*([\u4e00-\u9fa5]+)联',
+                        r'联系人[: ：]\s*([\u4e00-\u9fa5]+)5',
                     ]
                 self.reset_regular(regular_list, with_symbol=False)
 
@@ -1236,359 +1246,351 @@ class KeywordsExtract:
 
 if __name__ == '__main__':
     content = """
-    <div class="Content-Main FloatL">
-        <span class="Bold" id="title">浙江策鼎工程项目管理有限公司关于2021年瑞安市桥梁常规检测、护栏升级改造检测及道路塌陷、脱空隐患排查评估(重1)的竞争性磋商公告</span>
-        <div class="Content-news">
-            <em>&nbsp; 发布时间：2021-04-26 &nbsp;</em>
-            <div class="share">
-                <div id="share-2" class="share-component social-share">
-                    <div class="pic"></div>
-                    <a class="social-share-icon icon-weibo" target="_blank" onclick="shareTo('sina')"></a>
-                    <a class="social-share-icon icon-wechat" tabindex="-1" onclick="shareTo('wechat')"></a>
-                    <a class="social-share-icon icon-qzone" onclick="shareTo('qzone')">
-                    </a>
-                </div>
-            </div><br><br><br>
-            <p>温馨提示:本网站以下公告内容来源于浙江政府采购网，具体内容以浙江政府采购网为准，浙江政府采购网网址：https://zfcg.czt.zj.gov.cn/。</p>
-        </div>
-        <div class="Main-p" id="imgPic">
-            <style id="fixTableStyle" type="text/css">
-                th,
-                td {
-                    border: 1px solid #DDD;
-                    padding: 5px 10px;
-                }
-            </style>
-            <div id="fixTableStyle" type="text/css" cdata_tag="style"
-                cdata_data="th,td {border:1px solid #DDD;padding: 5px 10px;}" _ue_custom_node_="true"></div>
-            <div>
-                <div>
-                    <div>
-                        <div>
-                            <div>
-                                <div>
-                                    <div>
-                                        <div style="border:2px solid">
-                                            <div style="font-family:FangSong;">
-                                                <p style="margin-bottom: 10px;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                        项目概况</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                                                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                                                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                                                <p><span style="font-size: 18px; line-height:30px; ">&nbsp; &nbsp; <span
-                                                            class="bookmark-item uuid-1595987346914 code-00003 addWord single-line-text-input-box-cls">2021年瑞安市桥梁常规检测、护栏升级改造检测及道路塌陷、脱空隐患排查评估(重1)</span></span><span
-                                                        style="font-size: 18px;">采购项目的潜在供应商应在<span
-                                                            class="bookmark-item uuid-1595987856888 code-25007 editDisable single-line-text-input-box-cls readonly">登录浙江政府采购网（http：//zfcg.czt.zj.gov.cn）申请获取采购文件。</span></span><span
-                                                        style="font-size: 18px;">获取（下载）采购文件，并于<span
-                                                            class="bookmark-item uuid-1595988328924 code-25011 addWord date-time-selection-cls">2021年05月10日
-                                                            09:00</span></span><span
-                                                        style="font-size: 18px;">（北京时间）前提交（上传）响应文件。</span>&nbsp; &nbsp;
-                                                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                                                    &nbsp; &nbsp;&nbsp;</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <p
-                                        style="margin: 17px 0;text-align: justify;line-height: 30px;break-after: avoid;font-size: 21px;font-family: SimHei, sans-serif;white-space: normal">
-                                        <span style="font-size: 18px;"><strong>一、项目基本情况</strong></span></p>
-                                    <div style="font-family:FangSong;line-height:20px;">
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 项目编号：<span
-                                                    class="bookmark-item uuid-1595987359344 code-00004 addWord single-line-text-input-box-cls">ZJCDRACG-20210402</span>&nbsp;</span>
-                                        </p>
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 项目名称：<span
-                                                    class="bookmark-item uuid-1595987369689 code-00003 addWord single-line-text-input-box-cls">2021年瑞安市桥梁常规检测、护栏升级改造检测及道路塌陷、脱空隐患排查评估(重1)</span>&nbsp;</span>
-                                        </p>
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 采购方式：竞争性磋商</span>&nbsp;</p>
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 预算金额（元）：<span
-                                                    class="bookmark-item uuid-1595987387629 code-AM01400034 addWord numeric-input-box-cls">1289100</span>&nbsp;&nbsp;</span>
-                                        </p>
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 最高限价（元）：<span
-                                                    class="bookmark-item uuid-1589437289226 code-AM014priceCeiling addWord single-line-text-input-box-cls">1289100</span>&nbsp;</span>&nbsp;
-                                        </p>
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 采购需求：<br></span></p>
-                                        <div>
-                                            <div style="padding: 10px"
-                                                class="template-bookmark uuid-1596252080953 code-AM014jzx08 text-竞争性磋商公告-对象面板-新 object-panel-cls">
-                                                &nbsp; <span style="font-size: 18px;">&nbsp;<span
-                                                        class="bookmark-item uuid-1596252109084 code-AM014sectionNo editDisable "></span>&nbsp;<br>&nbsp;
-                                                    &nbsp;数量：<span
-                                                        class="bookmark-item uuid-1596252133269 code-AM014bidItemCount editDisable single-line-text-input-box-cls">1</span>&nbsp;</span>
-                                                <p><span style="font-size: 18px;">&nbsp; &nbsp;预算金额（元）：<span
-                                                            class="bookmark-item uuid-1596252138981 code-AM014budgetPrice editDisable single-line-text-input-box-cls">1289100</span>&nbsp;</span>
-                                                </p>
-                                                <p><span style="font-size: 18px;">&nbsp; &nbsp;单位：<span
-                                                            class="bookmark-item uuid-1596252143569 code-AM014bidItemUnit editDisable single-line-text-input-box-cls">项</span>&nbsp;</span>
-                                                </p>
-                                                <p><span style="font-size: 18px;">&nbsp; &nbsp;简要规格描述：<span
-                                                            class="bookmark-item uuid-1596252148371 code-AM014briefSpecificationDesc editDisable single-line-text-input-box-cls">2021年瑞安市桥梁常规检测、护栏升级改造检测及道路塌陷、脱空隐患排查评估(重1)（详见磋商文件第三部分）。</span>&nbsp;</span>
-                                                </p>
-                                                <p><span style="font-size: 18px;">&nbsp; &nbsp;备注：<span
-                                                            class="bookmark-item uuid-1596252152299 code-AM014remarks editDisable single-line-text-input-box-cls">1289100元（其中：桥梁常规检测、护栏升级改造检测最高限价为789100元；
-                                                            桥梁结构检测最高限价为200000元；道路塌陷、脱空隐患排查评估最高限价为300000元。）
-                                                        </span>&nbsp;</span></p>
-                                            </div>
-                                        </div>
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 合同履约期限：<span
-                                                    class="bookmark-item uuid-1589437299696 code-AM014ContractPerformancePeriod addWord single-line-text-input-box-cls">标项
-                                                    1，合同签订之日起60日内完成（包括出具检测报告并通过专家评审，录入检测数据、资料及出具道路塌陷、脱空隐患排查评估报告）。</span>&nbsp;</span>&nbsp;<br>
-                                        </p>
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 本项目（<span
-                                                    class="bookmark-item uuid-1589181188930 code-AM014cg005 addWord single-line-text-input-box-cls">否</span>）接受联合体投标。</span>&nbsp;&nbsp;
-                                        </p>
-                                    </div>
-                                    <p
-                                        style="margin: 17px 0;text-align: justify;line-height: 30px;break-after: avoid;font-size: 18px;font-family: SimHei, sans-serif;white-space: normal">
-                                        <span style="font-size: 18px;"><strong>二、申请人的资格要求：</strong></span></p>
-                                    <div style="font-family:FangSong;line-height:20px;">
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 1.满足《中华人民共和国政府采购法》第二十二条规定；<span
-                                                    style="font-family: FangSong; font-size: 18px;">未被“信用中国”（www.creditchina.gov.cn)、中国政府采购网（www.ccgp.gov.cn）列入失信被执行人、重大税收违法案件当事人名单、政府采购严重违法失信行为记录名单。</span></span>
-                                        </p>
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 2.落实政府采购政策需满足的资格要求：<span
-                                                    class="bookmark-item uuid-1595987425520 code-23021 editDisable multi-line-text-input-box-cls readonly">无</span>&nbsp;</span>
-                                        </p>
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 3.本项目的特定资格要求：<span
-                                                    class="bookmark-item uuid-1596276761070 code-22002 editDisable multi-line-text-input-box-cls readonly">标项1:（1）具备省级及以上建设行政主管部门颁发的建设工程质量检测机构资质证书（检测范围须包含市政桥梁检测和市政（道路）工程材料见证取样检测（或见证取样检测（通用））；
-                                                    （2）具备省级及以上计量主管部门颁发的含有桥梁、道路（或路基路面）检测项目的CMA计量认证证书； </span>&nbsp;</span>
-                                        </p>
-                                    </div>
-                                    <p
-                                        style="margin: 17px 0;text-align: justify;line-height: 30px;break-after: avoid;font-size: 18px;font-family: SimHei, sans-serif;white-space: normal">
-                                        <span style="font-size: 18px;"><strong>三、获取（下载）采购文件</strong></span></p>
-                                    <div style="font-family:FangSong;line-height:20px;">
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; </span><span
-                                                style="font-size: 18px; text-decoration: none;">时间：<span
-                                                    class="bookmark-item uuid-1595987985571 code-25003 addWord date-selection-cls">/</span>至<span
-                                                    class="bookmark-item uuid-1595987959773 code-25004 editDisable date-selection-cls readonly">2021年05月10日</span>，每天上午<span
-                                                    class="bookmark-item uuid-1595988019709 code-25005 addWord morning-time-section-selection-cls">00:00至12:00</span>，下午<span
-                                                    class="bookmark-item uuid-1595988030421 code-25006 addWord afternoon-time-section-selection-cls">12:00至23:59</span>（北京时间，线上获取法定节假日均可，线下获取文件法定节假日除外）</span>
-                                        </p>
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 地点（网址）：<span
-                                                    class="bookmark-item uuid-1595988073673 code-25007 editDisable single-line-text-input-box-cls readonly">登录浙江政府采购网（http：//zfcg.czt.zj.gov.cn）申请获取采购文件。</span>&nbsp;</span>
-                                        </p>
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 方式：<span
-                                                    class="bookmark-item uuid-1595988080611 code-25008 editDisable single-line-text-input-box-cls readonly">供应商登录浙江政府采购网（http://www.zfcg.czt.zj.gov.cn）申请获取采购文件。</span>&nbsp;</span>
-                                        </p>
-                                        <p><span style="font-size: 18px;">&nbsp; &nbsp; 售价（元）：<span
-                                                    class="bookmark-item uuid-1595988095908 code-25009 addWord numeric-input-box-cls">0</span>&nbsp;</span>
-                                        </p>
-                                    </div>
-                                    <p
-                                        style="margin: 17px 0;text-align: justify;line-height: 30px;break-after: avoid;font-size: 18px;font-family: SimHei, sans-serif;white-space: normal">
-                                        <span style="font-size: 18px;"><strong>四、响应文件提交（上传）</strong></span>&nbsp;</p>
-                                    <div style="font-family:FangSong; font-size:18px; line-height:20px;">
-                                        <p>&nbsp; &nbsp; 截止时间：<span
-                                                class="bookmark-item uuid-1595988122451 code-25011 addWord date-time-selection-cls">2021年05月10日
-                                                09:00</span>（北京时间）</p>
-                                        <p>&nbsp; &nbsp; 地点（网址）：<span
-                                                class="bookmark-item uuid-1595988200124 code-25012 editDisable single-line-text-input-box-cls readonly">磋商供应商应当在磋商截止时间前将电子磋商响应文件上传到“政采云”平台。</span>&nbsp;
-                                        </p>
-                                    </div>
-                                    <p
-                                        style="margin: 17px 0;text-align: justify;line-height: 30px;break-after: avoid;font-size: 18px;font-family: SimHei, sans-serif;white-space: normal">
-                                        <span style="font-size: 18px;"><strong>五、响应文件开启</strong></span>&nbsp;</p>
-                                    <div style="font-size:18px; font-family:FangSong; line-height:20px;">
-                                        <p>&nbsp; &nbsp; 开启时间：<span
-                                                class="bookmark-item uuid-1595988227171 code-25011 addWord date-time-selection-cls">2021年05月10日
-                                                09:00</span>&nbsp;（北京时间）</p>
-                                        <p>&nbsp; &nbsp; 地点（网址）：<span
-                                                class="bookmark-item uuid-1595988252461 code-25015 editDisable single-line-text-input-box-cls readonly">瑞安市公共资源交易中心（瑞安市外滩满庭芳大楼三楼）。</span>&nbsp;
-                                        </p>
-                                    </div>
-                                    <p
-                                        style="margin: 17px 0;text-align: justify;line-height: 30px;break-after: avoid;font-size: 21px;font-family: SimHei, sans-serif;white-space: normal">
-                                        <span style="font-size: 18px;line-height:20px;"><strong>六、公告期限</strong></span></p>
-                                    <p><span style="font-size: 18px; font-family:FangSong;">&nbsp; &nbsp;
-                                            自本公告发布之日起3个工作日。</span></p>
-                                    <p
-                                        style="margin: 17px 0;text-align: justify;line-height: 30px;break-after: avoid;font-size: 18px;font-family: SimHei, sans-serif;white-space: normal">
-                                        <span style="font-size: 18px;"><strong>七、其他补充事宜</strong></span>&nbsp;</p>
-                                    <p style="line-height: 1.5em;"><span
-                                            style="font-size: 18px;font-family:FangSong;line-height:20px;">&nbsp; &nbsp;
-                                            1.供应商认为采购文件使自己的权益受到损害的，可以自获取采购文件之日或者采购文件公告期限届满之日（公告期限届满后获取采购文件的，以公告期限届满之日为准）起7个工作日内，<span
-                                                style="font-family: FangSong; font-size: 18px; background-color: #FFFFFF;">对采购文件需求的以书面形式向采购人提出质疑，对其他内容的以书面形式向采购人和采购代理机构提出质疑。</span>质疑供应商对采购人、采购代理机构的答复不满意或者采购人、采购代理机构未在规定的时间内作出答复的，可以在答复期满后十五个工作日内向同级政府采购监督管理部门投诉。质疑函范本、投诉书范本请到浙江政府采购网下载专区下载。<br>&nbsp;
-                                            &nbsp; 2.其他事项：<span
-                                                class="bookmark-item uuid-1589194982864 code-31006 addWord multi-line-text-input-box-cls">1、供应商认为采购文件使自己的权益受到损害的，可以自获取采购文件之日或者采购文件公告期限届满之日（公告期限届满后获取采购文件的，以公告期限届满之日为准）起7个工作日内，以书面形式向采购人和采购代理机构提出质疑。供应商应当在法定质疑期内须一次性提出针对同一采购程序环节的质疑，否则采购代理机构有权拒绝第一次质疑以外其他所有质疑。质疑供应商对采购人、采购代理机构的答复不满意或者采购人、采购代理机构未在规定的时间内作出答复的，可以在答复期满后十五个工作日内向同级政府采购监督管理部门投诉。质疑函范本、投诉书范本请到浙江政府采购网下载专区下载。
-                                                2、潜在供应商应当按照规定方式获取采购文件，未按照规定方式获取采购文件的，不得对采购文件提起质疑投诉。
-                                                3、本项目采取电子招投标，电子招投标有关事项说明如下： (1)
-                                                本项目实行电子投标，磋商供应商无须提交纸质磋商响应文件，无须授权代表参加开标会议。应按照本项目磋商文件和政采云平台的要求编制、加密并递交磋商响应文件。供应商在使用系统进行投标的过程中遇到涉及平台使用的任何问题，可致电政采云平台技术支持热线咨询，联系方式：400-881-7190。
-                                                (2)
-                                                磋商供应商应在开标前完成CA数字证书办理。（办理流程详见http://zfcg.czt.zj.gov.cn/bidClientTemplate/2019-05-27/12945.html）。
-                                                完成CA数字证书办理预计一周左右，建议各磋商供应商抓紧时间办理。 (3)
-                                                磋商供应商通过政采云平台电子投标工具制作磋商响应文件，电子投标工具请供应商自行前往浙江省政府采购网下载并安装，
-                                                （下载网址：http://zfcg.czt.zj.gov.cn/bidClientTemplate/2019-05-27/12946.html），电子投标具体流程详见《供应商-政府采购项目电子交易操作指南》
-                                                （网址：https://help.zcygov.cn/web/site_2/2018/12-28/2573.html)（以下简称《操作指南》）。 (4)
-                                                考虑到系统兼容性建议磋商供应商在操作电子投标流程时使用windows7 64位或以上操作系统。 (5)
-                                                磋商供应商用CA数字证书（制作本项目电子磋商响应文件的同一个CA）在电脑上完成磋商响应文件解密等事宜。解密时长为从磋商截止时间起30分钟。
-                                                4、根据《浙江省政府采购供应商注册登记和诚信管理暂行办法》，中标成交的磋商供应商，必须事先申请加入“浙江省政府采购供应商库”；请磋商供应商登入“浙江政府采购网”进行登记注册。
-                                                5、 本项目执行促进中小企业发展（监狱企业、残疾人福利性单位视同小型、微型企业）、优先采购节能产品、优先采购环境标志产品政策。
-                                            </span>&nbsp;</span><span
-                                            style="font-size: 18px;font-family:FangSong;line-height:20px;">&nbsp;</span></p>
-                                    <p
-                                        style="margin: 17px 0;text-align: justify;line-height: 32px;break-after: avoid;font-size: 21px;font-family: SimHei, sans-serif;white-space: normal">
-                                        <span style="font-size: 18px;"><strong>八、凡对本次招标提出询问、质疑、投诉，请按以下方式联系</strong></span>
-                                    </p>
-                                    <div style="font-family:FangSong;line-height:30px;">
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                1.采购人信息</span></p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                名&nbsp;&nbsp;&nbsp; 称：<span
-                                                    class="bookmark-item uuid-1596004663203 code-00014 editDisable interval-text-box-cls readonly">瑞安市市政工程管理中心</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                地&nbsp;&nbsp;&nbsp; 址：<span
-                                                    class="bookmark-item uuid-1596004672274 code-00018 addWord single-line-text-input-box-cls">瑞安市滨江大道新湖大厦北侧</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp; 传&nbsp;
-                                                &nbsp; 真：<span
-                                                    class="bookmark-item uuid-1596004680354 code-00017  addWord"></span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                项目联系人（询问）：<span
-                                                    class="bookmark-item uuid-1596004688403 code-00015 editDisable single-line-text-input-box-cls readonly">木朝晖</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                项目联系方式（询问）：<span
-                                                    class="bookmark-item uuid-1596004695990 code-00016 editDisable single-line-text-input-box-cls readonly">13868386122</span>&nbsp;&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                质疑联系人：<span
-                                                    class="bookmark-item uuid-1596004703774 code-AM014cg001 addWord single-line-text-input-box-cls">潘建峰</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                质疑联系方式：<span
-                                                    class="bookmark-item uuid-1596004712085 code-AM014cg002 addWord single-line-text-input-box-cls">13587525553</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                <br>&nbsp; &nbsp; 2.采购代理机构信息</span></p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                名&nbsp;&nbsp;&nbsp; 称：<span
-                                                    class="bookmark-item uuid-1596004721081 code-00009 addWord interval-text-box-cls">浙江策鼎工程项目管理有限公司</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                地&nbsp;&nbsp;&nbsp; 址：<span
-                                                    class="bookmark-item uuid-1596004728442 code-00013 editDisable single-line-text-input-box-cls readonly">瑞安市安阳南路669号三楼</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp; 传&nbsp;
-                                                &nbsp; 真：<span
-                                                    class="bookmark-item uuid-1596004736097 code-00012  addWord"></span>&nbsp;</span>&nbsp;
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                项目联系人（询问）：<span
-                                                    class="bookmark-item uuid-1596004745033 code-00010 editDisable single-line-text-input-box-cls readonly">戴巍巍</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                项目联系方式（询问）：<span
-                                                    class="bookmark-item uuid-1596004753055 code-00011 addWord single-line-text-input-box-cls">13625872310</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                质疑联系人：<span
-                                                    class="bookmark-item uuid-1596004761573 code-AM014cg003 addWord single-line-text-input-box-cls">胡丽娜</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                质疑联系方式：<span
-                                                    class="bookmark-item uuid-1596004769998 code-AM014cg004 addWord single-line-text-input-box-cls">13587528100</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                <br>&nbsp; &nbsp; 3.同级政府采购监督管理部门</span></p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                名&nbsp;&nbsp;&nbsp; 称：<span
-                                                    class="bookmark-item uuid-1596004778916 code-00019 addWord single-line-text-input-box-cls">瑞安市财政局政府采购监管科</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                地&nbsp;&nbsp;&nbsp; 址：<span
-                                                    class="bookmark-item uuid-1596004787211 code-00023 addWord single-line-text-input-box-cls">瑞安市财税大楼1505室</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp; 传&nbsp;
-                                                &nbsp; 真：<span
-                                                    class="bookmark-item uuid-1596004796586 code-00022 addWord single-line-text-input-box-cls">0577-65827570</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp; 联系人
-                                                ：<span
-                                                    class="bookmark-item uuid-1596004804824 code-00020 addWord single-line-text-input-box-cls">张先生</span>&nbsp;</span>
-                                        </p>
-                                        <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;
-                                                监督投诉电话：<span
-                                                    class="bookmark-item uuid-1596004812886 code-00021 addWord single-line-text-input-box-cls">0577-65827567</span></span>
-                                        </p>
-                                    </div>
-                                </div><br><br>
-                                <div style="font-family:FangSong;">
-                                    <p>若对项目采购电子交易系统操作有疑问，可登录政采云（https://www.zcygov.cn/），点击右侧咨询小采，获取采小蜜智能服务管家帮助，或拨打政采云服务热线400-881-7190获取热线服务帮助。&nbsp;
-                                        &nbsp; &nbsp; &nbsp;&nbsp;</p>
-                                    <p>CA问题联系电话（人工）：汇信CA 400-888-4636；天谷CA 400-087-8198。<br>&nbsp;</p>
-                                    <blockquote style="display: none;"><span
-                                            class="bookmark-item uuid-1596276900507 code-AM014acquirePurFileDetailUrl addWord single-line-text-input-box-cls">
-                                            <a class="purInfoPublishEditAcquireDetailUrl"
-                                                id="purInfoPublishEditAcquireDetailUrl"
-                                                href="https://www.zcygov.cn/bidding-entrust/#/acquirepurfile/launch/5e430c913c7f7e6e"
-                                                style="padding: 2px 15px;margin: 0;font-size: 14px;border-radius: 4px;border: 1px solid transparent;font-weight: 400;white-space: nowrap;text-align: center;background-image: none;color: #fff;background-color: #1890ff;border-color: #1890ff;text-decoration:none;display:none"
-                                                target="_blank">潜在供应商</a></span></blockquote>&nbsp;<p><br></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <p><br></p>
-            <p><br></p>
-            <p><br></p>
-            <p style="font-size" class="fjxx">附件信息：</p>
-            <ul class="fjxx" style="font-size: 16px;margin-left: 38px;color: #0065ef;list-style-type: none;">
-                <li>
-                    <p style="display:inline-block"><a
-                            href="https://zcy-gov-open-doc.oss-cn-north-2-gov-1.aliyuncs.com/1023FP/331102/10006417326/20214/43f29faf-a0d2-42fc-bb86-d72501f51481">2021年瑞安市桥梁常规检测、护栏升级改造检测及道路塌陷、脱空隐患排查评估定稿(重1)..docx</a>
-                    </p>
-                    <p style="display:inline-block;margin-left:20px">241.5K</p>
-                </li>
-            </ul>
-        </div>
+    <tr>
+        <td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <td style="padding:10px;">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                    <tr>
+                                        <td height="120">
+                                            <table width="100%" height="120" border="0" cellpadding="0" cellspacing="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td height="30"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="tdTitle" align="center" runat="server" valign="middle">
+                                                            <div
+                                                                style="line-height 30px; background url(/TPFrontNew/template/deflaut/images/child_rightbg.gif) repeat-x top">
+                                                                <font color="" style="font-size: 25px"><b>
+                                                                        [意见征询]关于2021年苍南县教育局新型教学空间采购项目文件公开征询意见的公告</b>
+                                                                </font>
+                                                            </div>
+                                                            <div style="height: 30px; line-height: 30px;"> </div>
+                                                            <div style="height: 20px; line-height: 20px;">
+                                                                <font color="#000000" class="webfont"> 发布时间：
+                                                                    2021/6/1
+                                                                    &nbsp;&nbsp;访问次数：
+                                                                    <script
+                                                                        src="/TPFrontNew//Upclicktimes.aspx?InfoID=f3742dea-d8af-43f9-a5ce-c63b7ce6c30c">
+                                                                    </script>146
+                                                                    &nbsp;&nbsp;
 
-        <div class="pagebar"></div>
-
-        <table>
-            <tbody>
-                <tr>
-                    <th class="Th-Left">相关链接</th>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="BottomNone">
-                            <span><a href="/wzcms/zfcgcggg/73544.htm" title="杭州华旗招标代理有限公司关于苍南县质量技术监督检测院多参数监护仪检定装置的竞争性谈判公告"
-                                    target="_blank">杭州华旗招标代理有限公司关于苍南县质量技术监督检测院多参数...</a></span>
-                            <span><a href="/wzcms/zfcgzbgg/73543.htm"
-                                    title="中纬工程管理咨询有限公司关于苍南县应急管理局安全技能提升项目制培训采购项目（标项一）（重2）的中标(成交)结果公告"
-                                    target="_blank">中纬工程管理咨询有限公司关于苍南县应急管理局安全技能提升项...</a></span>
-                            <span><a href="/wzcms/zfcgdybc/73542.htm"
-                                    title="浙江得信工程管理有限公司关于瑞安市云周街道站西社区、周苌村垃圾临时堆放场清运服务（重2）的废标公告"
-                                    target="_blank">浙江得信工程管理有限公司关于瑞安市云周街道站西社区、周苌村...</a></span>
-                            <span><a href="/wzcms/zfcgdybc/73541.htm" title="温州中源工程造价咨询有限公司关于温州市榕园学校教学用具采购项目的更正公告"
-                                    target="_blank">温州中源工程造价咨询有限公司关于温州市榕园学校教学用具采购...</a></span>
-                            <span><a href="/wzcms/zfcgcggg/73540.htm"
-                                    title="温州元信工程项目管理有限公司关于温州市第十七届运动会（青少年部）田径比赛承办服务的公开招标公告"
-                                    target="_blank">温州元信工程项目管理有限公司关于温州市第十七届运动会（青少...</a></span>
-                            <span><a href="/wzcms/zfcgcggg/73539.htm"
-                                    title="温州元信工程项目管理有限公司关于温州市第十七届运动会（青少年部）游泳比赛承办服务的公开招标公告"
-                                    target="_blank">温州元信工程项目管理有限公司关于温州市第十七届运动会（青少...</a></span>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <table>
-            <tbody>
-                <tr>
-                    <td>
-                        <h4></h4><strong>上一篇：</strong><a
-                            href="/wzcms/zfcgcggg/70186.htm">浙江嘉德工程项目管理有限公司关于瑞安市城市道路建设规划（2021—2025年）的竞争性磋商公告</a>
-                    </td>
-                    <td>
-                        <h4></h4>下一篇：<a href="/wzcms/zfcgcggg/70180.htm">浙江国际招（投）标公司关于瑞安市高楼镇卫生院胃镜系统项目的公开招标公告</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-    </div>
+                                                                </font><span>
+                                                                    <!--  <label style="margin-left: 4px;">&nbsp;&nbsp;字体: </label>
+                            【<span onClick="document.getElementById('TDContent').className='infodetailbig'" style="cursor: hand">大</span> <span onClick="document.getElementById('TDContent').className='infodetailmiddle'"
+                                                                                                                                                                                            style="cursor: hand">中</span> <span onClick="document.getElementById('TDContent').className='infodetailsmall'"
+                                                                                                                                                                                                                                style="cursor: hand">小</span>】 </span> </div>-->
+                                                                    <div style="height:50px;"></div>
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="500" align="left" valign="top">
+                                            <table height="100%" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td valign="top" class="infodetail" id="TDContent" align="left">
+                                                            <div style=" padding-left:40px; padding-right:40px;">
+                                                                <p style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: center; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric"
+                                                                    align="center"><b><span
+                                                                            style="FONT-SIZE: 18pt; FONT-FAMILY: 微软雅黑; COLOR: rgb(74,74,74); LINE-HEIGHT: 150%">
+                                                                            <font face="微软雅黑">关于</font>
+                                                                        </span></b><b><span
+                                                                            style="FONT-SIZE: 18pt; FONT-FAMILY: 微软雅黑; COLOR: rgb(74,74,74); LINE-HEIGHT: 150%">
+                                                                            <font face="微软雅黑">2021年苍南县教育局新型教学空间采购项目</font>
+                                                                        </span></b><b><span
+                                                                            style="FONT-SIZE: 18pt; FONT-FAMILY: 微软雅黑; COLOR: rgb(74,74,74); LINE-HEIGHT: 150%">
+                                                                            <font face="微软雅黑">文件公开征询意见的公告</font>
+                                                                        </span></b></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 21pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">中纬工程管理咨询有限公司</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">受</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">苍南县教育局</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">委托，就</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">2021年苍南县教育局新型教学空间采购项目</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">
+                                                                            进行招标，为避免采购人的采购需求不合法或带有倾向性，现将招标文件征求意见稿（详见</font>
+                                                                        <font face="宋体">“附件下载”）公布如下,以公开征求意见。</font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">一</font>
+                                                                        <font face="宋体">.征求意见范围：</font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">1、是否出现明显的倾向性意见和特定的功能指标； </font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">2、影响政府采购“公开、公平、公正”原则的其他情况。</font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">二</font>
+                                                                        <font face="宋体">.征求意见回复：</font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">1、意见递交时间：202</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">1</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">-</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">6</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">-</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">4</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">&nbsp;下午17:00前</font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">2、意见递交方式：现场递交、邮寄&nbsp;</font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">3、意见接收机构：</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">中纬工程管理咨询有限公司</font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">4、联系人：</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">杨</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">先生</font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">5、联系电话：0577-68885883，13566105192
+                                                                        </font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">5、联系邮箱：</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">475531348</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">@qq.com</font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">四</font>
+                                                                        <font face="宋体">.合格的修改意见和建议书要求</font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">
+                                                                            1、供应商提出修改意见和建议的，书面材料须加盖单位公章和经法人代表签字确认，是授权代理人签字的，必须出具针对该项目的法人代表授权书及联系电话。
+                                                                        </font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">
+                                                                            2、专家提出修改意见和建议的，须出具本人与该项目相关专业证书复印件及联系电话。 </font>
+                                                                    </span></p>
+                                                                <p
+                                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: left; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 24pt">
+                                                                    <span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">
+                                                                            3、各供应商及专家提出修改意见和建议内容必须是真实的，并附相关依据，如发现存在提供虚假材料或恶意扰乱政府采购正常秩序的，一经查实将提请有关政府采购管理机构，列入不良行为记录。
+                                                                        </font>
+                                                                    </span></p>
+                                                                <p style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: justify; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric; TEXT-INDENT: 21pt"
+                                                                    align="justify"><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">五</font>
+                                                                        <font face="宋体">.&nbsp;注意事项：</font>
+                                                                    </span></p>
+                                                                <p style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: justify; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric"
+                                                                    align="justify"><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">&nbsp;&nbsp;&nbsp;
+                                                                            各供应商及专家提出修改意见和建议的，请于202</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">1</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">年</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">6</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">月</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">4</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">日下午</font>
+                                                                        <font face="宋体">17时前送达</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">中纬工程管理咨询有限公司</font>
+                                                                    </span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">
+                                                                            (温州市苍南县灵溪镇中驰御景园7-9-11幢101)。同时将有关意见建议的电子文档发送至以下信箱：
+                                                                        </font>
+                                                                    </span><span><a href="mailto:734397477@qq.com"><span
+                                                                                style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                                <font face="宋体">475531348</font>
+                                                                            </span><span
+                                                                                style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                                <font face="宋体">@qq.com</font>
+                                                                            </span></a></span><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; TEXT-TRANSFORM: none; COLOR: rgb(74,74,74); LETTER-SPACING: 0pt; LINE-HEIGHT: 150%">
+                                                                        <font face="宋体">。对逾期送达的意见、建议书恕不接受。</font>
+                                                                    </span></p>
+                                                                <p style="FONT-SIZE: 12pt; FONT-FAMILY: Calibri; PADDING-BOTTOM: 0pt; TEXT-ALIGN: justify; PADDING-TOP: 0pt; PADDING-LEFT: 0pt; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 150%; PADDING-RIGHT: 0pt; TEXT-AUTOSPACE: ideograph-numeric"
+                                                                    align="justify"><span
+                                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: Calibri; COLOR: rgb(74,74,74); LINE-HEIGHT: 150%">&nbsp;</span>
+                                                                </p>
+                                                                <p
+                                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: Calibri; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 150%; TEXT-AUTOSPACE: ideograph-numeric">
+                                                                    &nbsp;</p>
+                                                            </div>
+                                                            <div> </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr style="display:none;">
+                                                        <td align="right">
+                                                            <br>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td height="10"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td valign="bottom"><span class="infodetailattach">附件：</span>
+                                                            <table id="filedown" cellspacing="1" cellpadding="1"
+                                                                width="100%" border="0" runat="server">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>1、<a href="http://122.228.139.57///TPFrontNew///AttachStorage/202106/J181/f3742dea-d8af-43f9-a5ce-c63b7ce6c30c/意见征询—2021年苍南县教育局新型教学空间采购项目（1）.doc"
+                                                                                target="_blank">
+                                                                                <font class="infodetailattachfile">
+                                                                                    意见征询—2021年苍南县教育局新型教学空间采购项目（1）.doc</font>
+                                                                            </a></td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td height="4"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="1">
+                                            <hr size="1" color="#dedede">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="30" align="center">
+                                            <table width="200" border="0" cellspacing="0" cellpadding="0" align="center">
+                                                <tbody>
+                                                    <tr>
+                                                        <td width="25" align="center"><img
+                                                                src="/TPFrontNew/Template/Default/images/printpic.jpg"
+                                                                width="17" height="16"></td>
+                                                        <td><a href="javascript:void(0)" onclick="window.print();">【打印】</a>
+                                                        </td>
+                                                        <td width="25" align="center"><img
+                                                                src="/TPFrontNew/Template/Default/images/closepic.jpg"
+                                                                width="16" height="16"></td>
+                                                        <td><a href="javascript:window.close()">【关闭】</a></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="20"></td>
+                                    </tr>
+                                    <tr>
+                                        <td> </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
     """
 
     ke = KeywordsExtract(content, [
@@ -1606,7 +1608,8 @@ if __name__ == '__main__':
         # "联系人",  # liaison
         # "联\s*系\s*人",
         # "项目经理",
-
+        # "项目经理（负责人）",
+        # "项目负责人",
 
         # "招标人",  # tenderee
         # "招&nbsp;标&nbsp;人",
@@ -1614,13 +1617,14 @@ if __name__ == '__main__':
         # "采购人信息[ψ \s]*?名[\s]+称",
         # "招标代理机构",
 
-        # "招标代理",  # bidding_agency
-        # "采购代理机构信息[ψ \s]*?名[\s]+称",
+        "招标代理",  # bidding_agency
+        "采购代理机构信息[ψ \s]*?名[\s]+称",
 
         # "项目编号",  # project_number
         # "招标项目编号",
         # "招标编号",
-        # "项目代码",
+        # "编号",
+        # "标段编号",
 
         # "项目金额",  # budget_amount
         # "预算金额（元）",
@@ -1631,10 +1635,10 @@ if __name__ == '__main__':
 
         # "招标方式",
         
-        "开标时间",  # tenderopen_time
-        "开启时间",
-    ], field_name='tenderopen_time')
-    # ], field_name='bid_amount', area_id="3320")
+        # "开标时间",  # tenderee
+        # "开启时间",
+    # ], field_name='bidding_agency')
+    ], field_name='bidding_agency', area_id="3320")
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
         'project_name': [
