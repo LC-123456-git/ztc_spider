@@ -834,38 +834,38 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
         except Exception as e:
             print(e)
             return ""
-    elif area_id in ["3309", "3320"]:
+    elif area_id in ["3309", "3320", "3319"]:
         ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id)
         ke.fields_regular = {
             'project_name': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'project_number': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'budget_amount': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'tenderee': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'bidding_agency': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'liaison': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
             ],
             'contact_information': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
             ],
             'successful_bidder': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'bid_amount': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'tenderopen_time': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
         }
         return ke.get_value()
@@ -957,34 +957,34 @@ class KeywordsExtract:
         # 各字段对应的规则
         self.fields_regular = {
             'project_name': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'project_number': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'budget_amount': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'tenderee': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'bidding_agency': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'liaison': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
             ],
             'contact_information': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
             ],
             'successful_bidder': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'bid_amount': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'tenderopen_time': [
-                r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
             ],
         }
         self.fields_regular_with_symbol = copy.deepcopy(self.fields_regular)
@@ -1198,8 +1198,15 @@ class KeywordsExtract:
                     ]
                 if self.field_name == 'budget_amount':  # 本工程预算金额约为479万元。
                     regular_list = [
-                        r'预算金额.*?为(\d+)万元',
-                        r'本工程投资约(.*?)万元'
+                        r'预算金额.*?为\s*(\d+\s*万元)',
+                        r'预算金额.*?为\s*(\d+\s*元)',
+                        r'本工程投资约\s*(\d+\s*万元)'
+                        r'本工程投资约\s*(\d+\s*元)'
+                    ]
+                if self.field_name == 'bid_amount':
+                    regular_list = [
+                        r'中标价[: ：]\s*(\d+\s*万元)',
+                        r'中标价[: ：]\s*(\d+\s*元)',
                     ]
                 if self.field_name == 'contact_information':
                     regular_list = [
@@ -1210,7 +1217,7 @@ class KeywordsExtract:
                     ]
                 if self.field_name == 'liaison':
                     regular_list = [
-                        r'联.*系.*人[: ：]\s*([\u4e00-\u9fa5]+?)[监督投诉 电]',
+                        r'联.*?系.*?人[: ：]\s*([\u4e00-\u9fa5]+?)[监督投诉 电]',
                         r'异议受理部门[: ：]\s*([\u4e00-\u9fa5]+)联',
                         r'联系人[: ：]\s*([\u4e00-\u9fa5]+)5',
                     ]
@@ -1218,13 +1225,15 @@ class KeywordsExtract:
 
                 self._extract_from_text(with_symbol=False)
 
-        if self.area_id == '3319':  # 苍南
+        if self.area_id == '3319':  # 长兴
             self._value = self._value if self._value else ''
             if not self._value.strip():
                 regular_list = []
 
                 if self.field_name == 'project_name':
                     regular_list = [
+                        r'([\u4e00-\u9fa5 （ ）]*?工程)',
+
                         # r'本招标项目([^，,]*?)[已由 , ，]',
                         # r'项目名称：([0-9 \s \u4e00-\u9fa5]+?)三',
                         # r'根据(.*?)（[\s \u4e00-\u9fa5]*?编号：',
@@ -1251,20 +1260,27 @@ class KeywordsExtract:
                     ]
                 if self.field_name == 'budget_amount':
                     regular_list = [
-                        r'预算约(\d+)万元',
+                        r'预算约\s*(\d+\s*万元)',
+                        r'预算约\s*(\d+\s*元)',
 
                         # r'预算金额.*?为(\d+)万元',
                         # r'本工程投资约(.*?)万元'
                     ]
+                if self.field_name == 'bid_amount':
+                    regular_list = [
+                        r'中标价[: ：]\s*(\d+\s*万元)',
+                        r'中标价[: ：]\s*(\d+\s*元)',
+                    ]
                 if self.field_name == 'contact_information':
                     regular_list = [
-                        r'电\s*话[: ：]([^\u4e00-\u9fa5]+?)招',
+                        r'电\s*话[: ：]([^\u4e00-\u9fa5]+?)[招 电话]',
                         # r'电话[: ：]\s*?([0-9 \-]+?)\s*?[\u4e00-\u9fa5 \s]',
                         # r'联系电话：([0-9 \-]+?)[, ，]',
                     ]
                 if self.field_name == 'liaison':
                     regular_list = [
-                        # r'联.*系.*人[: ：]\s*([\u4e00-\u9fa5]+?)[监督投诉 电]',
+                        # 联系人：孙敏丽电话：
+                        r'联\s*系\s*人[: ：]\s*([\u4e00-\u9fa5]+?)[联 电]',
                         # r'异议受理部门[: ：]\s*([\u4e00-\u9fa5]+)联',
                         # r'联系人[: ：]\s*([\u4e00-\u9fa5]+)5',
                     ]
@@ -1281,9 +1297,10 @@ class KeywordsExtract:
         if self.area_id == '3320':  # 苍南
             pass
 
-    def remove_several_symbols(self):
+    def clean_value(self):
         """
-        去除符号/替换空格为一个
+        - 去除符号/替换空格为一个
+        - bid_amount/budget_amount 处理万元/元
         """
         symbols = ['？', '?']
 
@@ -1294,272 +1311,111 @@ class KeywordsExtract:
         except:
             pass
 
+        if self.field_name in ['bid_amount', 'budget_amount']:
+            for unit in ['万元', '元']:
+                if unit in self._value:
+                    sp_data = self._value.split(unit)
+                    if sp_data:
+                        self._value = sp_data[0]
+                        if unit == '元':
+                            try:
+                                self._value = str(int(self._value)/10000)
+                            except Exception as e:
+                                self._value = ''
+
     def get_value(self):
         self.done_before_extract()  # 通用提取前各地区处理
         self._extract_from_text()
         self._extract_from_table()
         self.done_after_extract()  # 通用提取后各地区处理
-        self.remove_several_symbols()
+        self.clean_value()
         return self._value
 
 
 if __name__ == '__main__':
     content = """
-<div id="jyxxChangeHeight" class="article-info">
-    <h1 class="infoContentTitle">嘉兴市千秋工程咨询有限公司关于嘉兴市12345政务热线搬迁改造暖通项目的中标(成交)结果公告</h1>
-    <p class="info-sources">
-        <span style="font-size:14px;">
-            【&nbsp;信息发布时间：2021-06-23&nbsp;&nbsp;阅读次数：<span id="infoViewCount">96</span>】
-            <span style="color:black;font-size:14px">
-                【<a style="color:black;" href="javascript:window.print();">我要打印</a>】
-                【<a style="cursor:pointer;" onclick="closeFunction()">关闭</a>】
-            </span>
-        </span></p>
-    <div class="con" style="font-size: 14px;line-height: 28px;margin: 30px 30px;position: relative;">
-        <style id="fixTableStyle" type="text/css">
-            th,
-            td {
-                border: 1px solid #DDD;
-                padding: 5px 10px;
-            }
-        </style>
-        <div id="fixTableStyle" type="text/css" cdata_tag="style"
-            cdata_data="th,td {border:1px solid #DDD;padding: 5px 10px;}" _ue_custom_node_="true"></div>
-        <div>
-            <p style="line-height: 1.5em;"><strong
-                    style="font-size: 18px; font-family: SimHei, sans-serif; text-align: justify;">一、项目编号：</strong><span
-                    style="font-family: 黑体, SimHei; font-size: 18px;">&nbsp;<span
-                        class="bookmark-item uuid-1596280499822 code-00004 addWord single-line-text-input-box-cls">千秋-JXQQGK（2021）第30号</span>&nbsp;</span>&nbsp;
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-            <p
-                style="margin: 10px 0px; text-align: justify; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal; line-height: 1.5em;">
-                <span style="font-size: 18px;"><strong>二、项目名称：</strong>&nbsp;<span
-                        class="bookmark-item uuid-1591615489941 code-00003 addWord single-line-text-input-box-cls">嘉兴市12345政务热线搬迁改造暖通项目</span>&nbsp;</span>
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-            <p style="line-height: 1.5em; margin-top: 10px; margin-bottom: 10px;"><strong><span
-                        style="font-size: 18px; font-family: SimHei, sans-serif;">三、中标（成交）信息</span></strong> &nbsp;
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-            <div style=" font-size:18px;  font-family:FangSong;  line-height:20px; ">
-                <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;1.中标结果：</span>&nbsp;&nbsp;
-                </p>
-                <table class="template-bookmark uuid-1599570948000 code-AM014zbcj001 text-中标/成交结果信息"
-                    style="width: 100%; border-collapse:collapse;">
-                    <thead>
-                        <tr class="firstRow">
-                            <th style="background-color: #fff;">序号</th>
-                            <th style="background-color: #fff;">中标（成交）金额(元)</th>
-                            <th style="background-color: #fff;">中标供应商名称</th>
-                            <th style="background-color: #fff;">中标供应商地址</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="text-align: center;" width="100%">
-                            <td class="code-sectionNo">1</td>
-                            <td class="code-summaryPrice">最终报价:638000(元)</td>
-                            <td class="code-winningSupplierName">嘉兴市禾菱机电设备有限公司</td>
-                            <td class="code-winningSupplierAddr">浙江省嘉兴市中环广场1幢B408室</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p style="line-height: normal; margin-top: 5px;"><span style="font-size: 18px;"></span>&nbsp;
-                    &nbsp;2.废标结果:&nbsp;&nbsp;</p>
-                <p style="margin-bottom: 5px; line-height: normal;" class="sub">&nbsp; &nbsp;<span
-                        class="bookmark-item uuid-1589193355355 code-41007  addWord"></span></p>
-                <table class="form-panel-input-cls" width="100%">
-                    <tbody>
-                        <tr style="text-align: center;" width="100%" class="firstRow">
-                            <td width="25.0%" style="word-break:break-all;">序号</td>
-                            <td width="25.0%" style="word-break:break-all;">标项名称</td>
-                            <td width="25.0%" style="word-break:break-all;">废标理由</td>
-                            <td width="25.0%" style="word-break:break-all;" colspan="1">其他事项</td>
-                        </tr>
-                        <tr style="text-align: center;" width="100%">
-                            <td width="25.0%" style="word-break:break-all;">/</td>
-                            <td width="25.0%" style="word-break:break-all;">/</td>
-                            <td width="25.0%" style="word-break:break-all;">/</td>
-                            <td width="25.0%" style="word-break:break-all;" colspan="1">/</td>
-                        </tr>
-                    </tbody>
-                </table>&nbsp;<p></p>
-            </div>
-            <p
-                style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
-                <span style="font-size: 18px;"><strong>四、主要标的信息</strong></span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-            <div style=" font-size:18px;  font-family:FangSong;  line-height:20px;">
-                <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;1.货物类主要标的信息：</span> &nbsp;
-                    &nbsp;</p>
-                <p style="line-height: normal;" class="sub">&nbsp; &nbsp;&nbsp;<span
-                        class="bookmark-item uuid-1589437802153 code-AM014GoodsInfoTab  addWord"></span></p>
-                <table class="form-panel-input-cls" width="100%">
-                    <tbody>
-                        <tr style="text-align: center;" width="100%" class="firstRow">
-                            <td width="14.29%" style="word-break:break-all;">序号</td>
-                            <td width="14.29%" style="word-break:break-all;">标项名称</td>
-                            <td width="14.29%" style="word-break:break-all;">标的名称</td>
-                            <td width="14.29%" style="word-break:break-all;">品牌</td>
-                            <td width="14.29%" style="word-break:break-all;">数量</td>
-                            <td width="14.29%" style="word-break:break-all;">单价（元）</td>
-                            <td width="14.29%" style="word-break:break-all;" colspan="1">规格型号</td>
-                        </tr>
-                        <tr style="text-align: center;" width="100%">
-                            <td width="14.29%" style="word-break:break-all;">1</td>
-                            <td width="14.29%" style="word-break:break-all;">嘉兴市12345政务热线搬迁改造暖通项目</td>
-                            <td width="14.29%" style="word-break:break-all;">嘉兴市12345政务热线搬迁改造暖通项目</td>
-                            <td width="14.29%" style="word-break:break-all;">详见附件</td>
-                            <td width="14.29%" style="word-break:break-all;">1批</td>
-                            <td width="14.29%" style="word-break:break-all;">638000</td>
-                            <td width="14.29%" style="word-break:break-all;" colspan="1">详见附件</td>
-                        </tr>
-                    </tbody>
-                </table>&nbsp;<p></p>
-                <p style="line-height: normal;">&nbsp; &nbsp;2.工程类主要标的信息：</p>
-                <p style="line-height: normal;">&nbsp; &nbsp;&nbsp;<span
-                        class="bookmark-item uuid-1589437807972 code-AM014infoOfEngSubMatter  addWord"></span>&nbsp;&nbsp;
-                </p>
-                <p style="line-height: normal;">&nbsp; &nbsp;3.服务类主要标的信息：</p>
-                <p style="line-height: normal;">&nbsp; &nbsp;&nbsp;<span
-                        class="bookmark-item uuid-1589437811676 code-AM014infoOfServiceObject  addWord"></span>&nbsp;
-                </p>
-            </div>
-            <p
-                style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
-                <span style="font-size: 18px;"><strong>五、评审专家（单一来源采购人员）名单：</strong></span> &nbsp; &nbsp; &nbsp; &nbsp;
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-            <p><span style="font-size: 18px; font-family:FangSong;  line-height:20px; ">&nbsp; &nbsp;&nbsp;<span
-                        class="bookmark-item uuid-1589193390811 code-85005 addWord multi-line-text-input-box-cls">陈洁,郭演星,沈汉翔,蒋阳,钱晓艳</span>&nbsp;</span>
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-            <p
-                style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
-                <span style="font-size: 18px;"><strong>六、代理服务收费标准及金额：</strong></span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                &nbsp; &nbsp; &nbsp; &nbsp;</p>
-            <p><span style="font-size: 18px; font-family:FangSong;  line-height:20px; ">&nbsp; &nbsp;1.代理服务收费标准：<span
-                        class="bookmark-item uuid-1591615554332 code-AM01400039 addWord multi-line-text-input-box-cls">本项目以货物类招标收费标准的70%收取中标服务费，对于招标代理服务费不足5000元的按5000元计取招标代理服务费。</span>&nbsp;</span>
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-            <p><span style="font-size: 18px; font-family:FangSong;  line-height:20px; ">&nbsp; &nbsp;2.代理服务收费金额（元）：<span
-                        class="bookmark-item uuid-1591615558580 code-AM01400040 addWord numeric-input-box-cls readonly">6699</span>&nbsp;</span>&nbsp;
-            </p>
-            <p
-                style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
-                <span style="font-size: 18px;"><strong>七、公告期限</strong></span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                &nbsp; &nbsp; &nbsp; &nbsp;</p>
-            <p><span style="font-size: 18px; font-family:FangSong;  line-height:20px; ">&nbsp;
-                    &nbsp;自本公告发布之日起1个工作日。</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-            </p>
-            <p
-                style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-family: SimHei, sans-serif; white-space: normal;">
-                <span style="font-size: 18px;"><strong>八、其他补充事宜</strong></span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                &nbsp; &nbsp; &nbsp; &nbsp;</p>
-            <p style="line-height: 1.5em;"><span
-                    style="font-size: 18px; font-family:FangSong;  line-height:20px; ">&nbsp; &nbsp;
-                    1.各参加政府采购活动的供应商认为该中标/成交结果和采购过程等使自己的权益受到损害的，可以自本公告期限届满之日（本公告发布之日后第2个工作日）起7个工作日内，以书面形式向采购人或受其委托的采购代理机构提出质疑。质疑供应商对采购人、采购代理机构的答复不满意或者采购人、采购代理机构未在规定的时间内作出答复的，可以在答复期满后十五个工作日内向同级政府采购监督管理部门投诉。质疑函范本、投诉书范本请到浙江政府采购网下载专区下载。</span>&nbsp;
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p>
-            <p style="line-height: 1.5em;"><span
-                    style="font-size: 18px; font-family:FangSong;  line-height:20px; ">&nbsp; &nbsp; 2.其他事项：&nbsp;<span
-                        class="bookmark-item uuid-1592539159169 code-81205  addWord"></span>&nbsp;</span> &nbsp; &nbsp;
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-            <p
-                style="margin: 10px 0px; text-align: justify; line-height: 32px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
-                <span style="font-size: 18px;"><strong>九、对本次公告内容提出询问、质疑、投诉，请按以下方式联系</strong><span
-                        style="font-family: sans-serif; font-size: 16px;">　　　</span></span><span
-                    style="font-size: 18px; font-family: FangSong;">&nbsp; &nbsp;</span> &nbsp; &nbsp; &nbsp; &nbsp;</p>
-            <div style="font-family:FangSong;line-height:30px;">
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 1.采购人信息</span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                </p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 名&nbsp;&nbsp;&nbsp; 称：<span
-                            class="bookmark-item uuid-1596004663203 code-00014 editDisable interval-text-box-cls readonly">中共嘉兴市委嘉兴市人民政府信访局</span>&nbsp;&nbsp;</span>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 地&nbsp;&nbsp;&nbsp; 址：<span
-                            class="bookmark-item uuid-1596004672274 code-00018 addWord single-line-text-input-box-cls">嘉兴市行政中心广场路1号嘉兴市信访局</span>&nbsp;</span>&nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 传&nbsp; &nbsp; 真：<span
-                            class="bookmark-item uuid-1596004680354 code-00017  addWord"></span>&nbsp;</span> &nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 项目联系人（询问）：<span
-                            class="bookmark-item uuid-1596004688403 code-00015 editDisable single-line-text-input-box-cls readonly">顾泉</span>&nbsp;</span>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 项目联系方式（询问）：<span
-                            class="bookmark-item uuid-1596004695990 code-00016 editDisable single-line-text-input-box-cls readonly">15305736220</span>&nbsp;&nbsp;</span>&nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 质疑联系人：<span
-                            class="bookmark-item uuid-1596004703774 code-AM014cg001 addWord single-line-text-input-box-cls">顾泉</span>&nbsp;</span>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 质疑联系方式：<span
-                            class="bookmark-item uuid-1596004712085 code-AM014cg002 addWord single-line-text-input-box-cls">15305736220</span>&nbsp;</span>&nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp;<br>&nbsp; &nbsp;&nbsp;2.采购代理机构信息</span> &nbsp; &nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 名&nbsp;&nbsp;&nbsp; 称：<span
-                            class="bookmark-item uuid-1596004721081 code-00009 addWord interval-text-box-cls">嘉兴市千秋工程咨询有限公司</span>&nbsp;</span>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 地&nbsp;&nbsp;&nbsp; 址：<span
-                            class="bookmark-item uuid-1596004728442 code-00013 editDisable single-line-text-input-box-cls readonly">嘉兴市秀洲区新平路299号中禾广场23楼</span>&nbsp;</span>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 传&nbsp; &nbsp; 真：<span
-                            class="bookmark-item uuid-1596004736097 code-00012 addWord single-line-text-input-box-cls">/</span>&nbsp;</span>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 项目联系人（询问）：<span
-                            class="bookmark-item uuid-1596004745033 code-00010 editDisable single-line-text-input-box-cls readonly">章莉莉</span>&nbsp;&nbsp;</span>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 项目联系方式（询问）：<span
-                            class="bookmark-item uuid-1596004753055 code-00011 addWord single-line-text-input-box-cls">0573-83705015
-                            13605735186</span>&nbsp;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 质疑联系人：<span
-                            class="bookmark-item uuid-1596004761573 code-AM014cg003 addWord single-line-text-input-box-cls">项兴戟</span>&nbsp;</span>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 质疑联系方式：<span
-                            class="bookmark-item uuid-1596004769998 code-AM014cg004 addWord single-line-text-input-box-cls">0573-83705015
-                            13605738567</span>&nbsp;　　　　　　　　　　</span>&nbsp; &nbsp;<span style="font-size: 18px;">&nbsp;
-                        &nbsp;</span></p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp;<br>&nbsp; &nbsp; 3.同级政府采购监督管理部门</span> &nbsp; &nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 名&nbsp;&nbsp;&nbsp; 称：<span
-                            class="bookmark-item uuid-1596004778916 code-00019 addWord single-line-text-input-box-cls">嘉兴市财政局</span>&nbsp;</span>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 地&nbsp;&nbsp;&nbsp; 址：<span
-                            class="bookmark-item uuid-1596004787211 code-00023 addWord single-line-text-input-box-cls">/</span>&nbsp;</span>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 传&nbsp; &nbsp; 真：<span
-                            class="bookmark-item uuid-1596004796586 code-00022 addWord single-line-text-input-box-cls">/</span>&nbsp;</span>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 联系人 ：<span
-                            class="bookmark-item uuid-1596004804824 code-00020 addWord single-line-text-input-box-cls">姚先生</span>&nbsp;</span>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
-                <p><span style="font-size: 18px;">&nbsp; &nbsp; 监督投诉电话：<span
-                            class="bookmark-item uuid-1596004812886 code-00021 addWord single-line-text-input-box-cls">0573-82031217</span>&nbsp;<br>&nbsp;</span>
-                </p>
-                <blockquote style="display: none;"><span
-                        class="bookmark-item uuid-1596275077350 code-88001 addWord date-selection-cls">2021年06月01日</span>
-                </blockquote>&nbsp;&nbsp;<blockquote style="display: none;"><span
-                        class="bookmark-item uuid-1596275085740 code-94002 addWord date-selection-cls">2021年06月23日</span>
-                </blockquote>&nbsp;&nbsp;<blockquote style="display: none;"><span
-                        class="bookmark-item uuid-1596275091448 code-89002  addWord"></span></blockquote>&nbsp;&nbsp;
-                <blockquote style="display: none;"><span
-                        class="bookmark-item uuid-1596275104662 code-81204  addWord"></span></blockquote>&nbsp;<p>
-                    <br><br></p>
-            </div>
-        </div>
-        <p><br></p>
-        <p style="font-size" class="fjxx">附件信息：</p>
-        <ul class="fjxx" style="font-size: 16px;margin-left: 38px;color: #0065ef;list-style-type: none;">
-            <li>
-                <p style="display:inline-block"><a
-                        href="https://zcy-gov-open-doc.oss-cn-north-2-gov-1.aliyuncs.com/1024FPA/330411/10007415952/20216/44baa820-a92f-4e1c-88bf-92671edf2b4e">报价明细表.docx</a>
-                </p>
-                <p style="display:inline-block;margin-left:20px">181.4K</p>
-            </li>
-        </ul>
-        <script type="text/javascript">
-            function ResizeToScreen(id, pX, pY) {
-                var obj = document.getElementById(id);
-                obj.style.display = "";
-                obj.style.pixelLeft = pX;
-                obj.style.pixelTop = pY;
-                document.body.scrollTop = pY - 200;
-            }
-        </script>
-    </div>
-</div>
+    <td>
+        
+       <table width="932" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tbody><tr>
+    <td><table id="tblInfo" cellspacing="1" cellpadding="1" width="100%" align="center" border="0" runat="server">
+                    <tbody><tr>
+                      <td id="tdTitle" align="center" runat="server" height="70"><font color="" style="font-size: 25px"> <b>
+                        长兴县太湖街道南张浜综合农贸市场公寓楼家用电器供货安装及伴随服务项目成交公示
+                        </b></font>
+                      
+                        </td>
+                        </tr><tr><td height="29" align="center" bgcolor="#eeeeee">
+                        <font color="#545454" class="webfont">【信息时间：
+                        2021/4/29
+                        &nbsp;&nbsp;阅读次数：
+                        <script src="/cxweb/Upclicktimes.aspx?InfoID=b637585f-0ae7-4905-8bf5-f0d773be2838"></script>16
+                        】<a href="javascript:void(0)" onclick="window.print();"><font color="#545454" class="webfont">【我要打印】</font></a><a href="javascript:window.close()"><font color="#545454" class="webfont">【关闭】</font></a></font><font color="#000000">
+                        
+                        </font></td>
+                    </tr>
+                    <tr>
+                      <td height="10"></td>
+                    </tr>
+                    <tr>
+                      <td height="250" align="left" valign="top" class="infodetail" id="TDContent"><div>
+                          <p class="MsoNormal" style="TEXT-ALIGN: center" align="center"><b style="mso-bidi-font-weight: normal"><span style="FONT-SIZE: 16pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-ansi-font-weight: bold; mso-font-kerning: 1.0000pt"><!--?xml:namespace prefix = "o" /--><o:p></o:p></span></b></p>
+<p class="MsoNormal" style="TEXT-ALIGN: center" align="center"><b style="mso-bidi-font-weight: normal"><span style="FONT-SIZE: 15pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-ansi-font-weight: bold; mso-font-kerning: 1.0000pt"><font face="宋体">长兴县太湖街道南张浜综合农贸市场公寓楼家用电器供货安装及伴随服务项目【中标公示】</font></span></b><b style="mso-bidi-font-weight: normal"><span style="FONT-SIZE: 15pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-ansi-font-weight: bold; mso-font-kerning: 1.0000pt"><o:p></o:p></span></b></p>
+<p class="MsoNormal" style="LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; MARGIN-LEFT: 72.1pt; LINE-HEIGHT: 20pt; TEXT-INDENT: -72pt; mso-para-margin-left: 0.0100gd; mso-char-indent-count: -6.0000; mso-line-height-rule: exactly"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><o:p></o:p></span></p>
+<p class="MsoNormal" style="TEXT-ALIGN: left; LINE-HEIGHT: 20pt; TEXT-INDENT: 24pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly; mso-layout-grid-align: none"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><font face="宋体">长兴县太湖街道南张浜综合农贸市场公寓楼家用电器供货安装及伴随服务项目于</font><font face="宋体">2021年4月</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt">28</span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><font face="宋体">日上午</font><font face="宋体">9:00时在长兴县太湖街道办事处开标室（陈王路299号，太湖街道办事处停车场北侧，原老七小）</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><font face="宋体">进行公开开标。根据招标文件规定的程序和评标办法的规定，经评标委员会评定，确定中标候选人如下：</font> </span><b style="mso-bidi-font-weight: normal"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; mso-spacerun: 'yes'; mso-ansi-font-weight: bold; mso-font-kerning: 1.0000pt"><o:p></o:p></span></b></p>
+<p class="MsoNormal" style="LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 20pt; TEXT-INDENT: 24.1pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly; mso-layout-grid-align: none"><b style="mso-bidi-font-weight: normal"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-ansi-font-weight: bold; mso-font-kerning: 1.0000pt"><o:p></o:p></span></b></p>
+<p class="MsoNormal" style="LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 20pt; TEXT-INDENT: 24.1pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly; mso-layout-grid-align: none"><b style="mso-bidi-font-weight: normal"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-ansi-font-weight: bold; mso-font-kerning: 1.0000pt"><font face="宋体">中标人情况</font></span></b><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><font face="宋体">：</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><o:p></o:p></span></p>
+<p class="MsoNormal" style="LINE-HEIGHT: 20pt; TEXT-INDENT: 24pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly; mso-layout-grid-align: none"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">中标人：</font></span><b><u><span style="FONT-SIZE: 12pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; FONT-WEIGHT: bold; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt; text-underline: single"><font face="宋体">浙江兴悦机电设备有限公司</font></span></u></b><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">；</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span></p>
+<p class="MsoNormal" style="LINE-HEIGHT: 20pt; TEXT-INDENT: 24pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly; mso-layout-grid-align: none"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">中标价：</font></span><b><u><span style="FONT-SIZE: 12pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; FONT-WEIGHT: bold; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt; text-underline: single"><font face="宋体">304710</font></span></u></b><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">元；</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span></p>
+<p class="MsoNormal" style="LINE-HEIGHT: 20pt; TEXT-INDENT: 24pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly; mso-layout-grid-align: none"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">质量目标：</font></span><b><u><span style="FONT-SIZE: 12pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; FONT-WEIGHT: bold; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt; text-underline: single"><font face="宋体">合格</font></span></u></b><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">；</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span></p>
+<p class="MsoNormal" style="LINE-HEIGHT: 20pt; TEXT-INDENT: 24pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly; mso-layout-grid-align: none"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">工期：</font></span><b><u><span style="FONT-SIZE: 12pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; FONT-WEIGHT: bold; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt; text-underline: single">15</span></u></b><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">日历天。</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span></p>
+<p class="MsoNormal" style="LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 20pt; TEXT-INDENT: 24pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly; mso-layout-grid-align: none"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><o:p></o:p></span></p>
+<p class="MsoNormal" style="LINE-HEIGHT: 20pt; TEXT-INDENT: 24pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><font face="宋体">废标情况：无。</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><o:p></o:p></span></p>
+<p class="MsoNormal" style="LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 20pt; mso-line-height-rule: exactly"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span></p>
+<p class="MsoNormal" style="LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 20pt; TEXT-INDENT: 24pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">特此公示！（公示时间：</font><font face="宋体">202</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt">1</span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">年</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt">4</span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">月</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">29</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">日至</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt">5</span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">月</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt">6</span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font face="宋体">日）</font></span><span style="FONT-SIZE: 6pt; FONT-FAMILY: 宋体; BACKGROUND: rgb(255,0,0); COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt; mso-highlight: rgb(255,0,0)"><o:p></o:p></span></p>
+<p class="MsoNormal" style="LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 20pt; TEXT-INDENT: 24pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly; mso-layout-grid-align: none"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><font face="宋体">投诉监督联系电话：</font><font face="宋体">0572-6685939</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><o:p></o:p></span></p>
+<p class="MsoNormal" style="LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 20pt; TEXT-INDENT: 24pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly; mso-layout-grid-align: none"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><o:p></o:p></span></p>
+<p class="MsoNormal" style="LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 20pt; TEXT-INDENT: 24pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly; mso-layout-grid-align: none"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><o:p></o:p></span></p>
+<p class="MsoNormal" style="LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 20pt; TEXT-INDENT: 24pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly; mso-layout-grid-align: none"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><o:p></o:p></span></p>
+<p class="MsoPlainText" style="TEXT-ALIGN: right; LINE-HEIGHT: 20pt; TEXT-INDENT: 24pt; mso-char-indent-count: 2.0000; mso-line-height-rule: exactly; mso-layout-grid-align: none" align="right"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt; mso-bidi-font-family: 'Courier New'"><font face="宋体">长兴县太湖街道南张浜村股份经济合作社</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><o:p></o:p></span></p>
+<p class="MsoNormal"><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><font face="宋体"> 2021年4月</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt">28</span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"><font face="宋体">日</font></span><span style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; mso-spacerun: 'yes'; mso-font-kerning: 1.0000pt"></span></p>
+                        </div>
+                        <div>
+                          
+                        </div></td>
+                    </tr>
+                    <tr>
+                      <td align="right">
+                      
+                      <br>
+                        </td>
+                    </tr>
+                    <tr id="trAttach" runat="server">
+                      <td align="left"><table id="filedown" cellspacing="1" cellpadding="1" width="100%" border="0" runat="server">
+                          <tbody><tr>
+                            <td valign="top" style="font-size: medium;"><b>
+                               
+                              </b></td>
+                          </tr>
+                        </tbody></table></td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td height="30"></td>
+                    </tr>
+                    <!--会员或非会员按钮-->
+                    <tr>
+                      <td></td>
+                    </tr>
+                    <!--答疑变更公告-->
+                  </tbody></table></td>
+  </tr>
+</tbody></table>
+ 
+        
+        </td>
     """
 
     ke = KeywordsExtract(content, [
@@ -1615,39 +1471,39 @@ if __name__ == '__main__':
         # "中标人名称",
         # "中标单位",
         # "供应商名称",
-    ], field_name='bid_amount')
-    # ], field_name='bid_amount', area_id="3319")
+        # ], field_name='project_name')
+    ], field_name='bid_amount', area_id="3319")
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
         'project_name': [
-            r'%s[^ψ：:。，,、]*?[: ： \s]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            r'%s[^ψ：:。，,、”“"]*?[: ： \s]+?\s*?[ψ]*?([^ψ]+?)ψ',
         ],
         'project_number': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
         ],
         'budget_amount': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
         ],
         'tenderee': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
         ],
         'bidding_agency': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
         ],
         'liaison': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+            r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
         ],
         'contact_information': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+            r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
         ],
         'successful_bidder': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
         ],
         'bid_amount': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
         ],
         'tenderopen_time': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
         ],
     }
 

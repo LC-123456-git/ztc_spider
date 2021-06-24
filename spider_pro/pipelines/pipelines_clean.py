@@ -223,15 +223,15 @@ class CleanPipeline(object):
                 area_deal_dict = deal_area_data(title_name=item["title_name"], info_source=item["info_source"],
                                                 area_id=item["area_id"]) or {}
             content_str = item["content"]                                    
-            if item["is_have_file"] == "1" or item["is_have_file"] == 1:
-                self.is_have_file = True
-                content_str = item["content"]
-                msg, content_str = self.request_download(files_path=str(item["files_path"]), content=item["content"],
-                                                         is_have_file=item["is_have_file"])
-                # 请求失败 修改 is_have_file
-                # msg = 'test file request error'
-                if msg:
-                    item['is_have_file'] = "2"
+            # if item["is_have_file"] == "1" or item["is_have_file"] == 1:
+            #     self.is_have_file = True
+            #     content_str = item["content"]
+            #     msg, content_str = self.request_download(files_path=str(item["files_path"]), content=item["content"],
+            #                                              is_have_file=item["is_have_file"])
+            #     # 请求失败 修改 is_have_file
+            #     # msg = 'test file request error'
+            #     if msg:
+            #         item['is_have_file'] = "2"
 
         except Exception as e:
             self.logger.error(f"文件服务替换失败 {e} ")
@@ -336,8 +336,9 @@ class CleanPipeline(object):
             "项目名称",
             "招标工程项目",
         ]
-        project_names = self.get_keys_value_from_content(content, project_tags, area_id=area_id,
-                                                         field_name='project_name')  # √
+        project_names = self.get_keys_value_from_content(
+            content, project_tags, area_id=area_id, field_name='project_name'
+        )  # √
         if not project_names:
             project_name = re.findall('.*?项目', pre_data.get("title"))[0]
         else:
@@ -489,6 +490,7 @@ class CleanPipeline(object):
                 #                          files_path='' and classify_name ='中标预告' limit {start}, {rows}").fetchall()
                 results = conn.execute(
                     f"select * from {table_name}").fetchall()
+                    # f"select * from {table_name} where id=112").fetchall()
                 results = [dict(zip(result.keys(), result)) for result in results]
                 for item in results:
                     try:
