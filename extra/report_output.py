@@ -127,7 +127,9 @@ class ReportOutput(DBQuery):
         '71': '招财进宝',
         '78': '住宅修缮工程招投标',  # ok
         '76': 'e招冀成',
+        '77': '招必得',
         '79': '信e采招标采购电子交易平台',
+        '80': '兖矿集团电子招投标采购平台',
         '83': '旺采网',
         '85': '安装信息网',
         '114': '广咨电子招投标交易平台',
@@ -389,5 +391,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-06-14', edt='2021-06-17')
+    rpt.output(sdt='2021-06-21', edt='2021-06-24')
     # print((datetime.now() - start_time).total_seconds())
