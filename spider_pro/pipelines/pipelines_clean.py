@@ -271,6 +271,7 @@ class CleanPipeline(object):
             tenderopen_time_tags = [
                 "开标时间",
                 "开启时间",
+                "预计采购时间（填写到月）"
             ]
             tenderopen_time = get_accurate_pub_time(
                 self.get_keys_value_from_content(data, tenderopen_time_tags, area_id=area_id,
@@ -331,10 +332,12 @@ class CleanPipeline(object):
 
         # 公共提取字段 15
         project_tags = [
+            "采购项目名称",
             "招标项目",
             "工\s*程\s*名\s*称",
             "项目名称",
             "招标工程项目",
+            "工程名称",
         ]
         project_names = self.get_keys_value_from_content(
             content, project_tags, area_id=area_id, field_name='project_name'
@@ -364,6 +367,8 @@ class CleanPipeline(object):
             "采购人信息[ψ \s]*?名[\s]+称",
             "建设（招标）单位",
             "建设单位",
+            "采购单位名称",
+            "采购人信息"
         ]
         tenderees = self.get_keys_value_from_content(content, tenderee_tags, area_id=area_id, field_name='tenderee')  # √
 
@@ -380,24 +385,32 @@ class CleanPipeline(object):
             "招标代理",
             "代理单位",
             '招标代理机构（盖章）',
+            "代理公司",
+            "采购代理机构信息"
         ]
         bidding_agency = self.get_keys_value_from_content(content, bidding_agency_tags, area_id=area_id,
                                                           field_name='bidding_agency')  # √
         budget_amount_tags = [
             "项目金额",
+            "预算金额(元)",
             "预算金额（元）",
             "招标估算价",
             "中标（成交）金额（元）",
-            "预中标价"
+            "预中标价",
+            "项目金额",
+            "本期概算(万元)",
+            "采购计划金额（元）"
         ]
         budget_amount = self.get_keys_value_from_content(content, budget_amount_tags, area_id=area_id,
                                                          field_name='budget_amount')  # √
+        print(budget_amount)
         liaison_tags = [
             "联系人",
             "联\s*系\s*人",
             "项目经理",
             "项目经理（负责人）",
             "项目负责人",
+            "项目联系人",
         ]
         liaison = self.get_keys_value_from_content(content, liaison_tags, area_id=area_id, field_name='liaison')
 
@@ -405,6 +418,7 @@ class CleanPipeline(object):
             "联系电话",
             "联系方式",
             "电\s*话",
+            "项目联系电话",
         ]
         contact_informations = self.get_keys_value_from_content(content, contact_information_tags, area_id=area_id,
                                                                 field_name='contact_information')  # √
@@ -416,7 +430,7 @@ class CleanPipeline(object):
             contact_information = contact_informations
 
         email = self.get_keys_value_from_content(content, ["电子邮箱"], area_id=area_id)
-        address = self.get_keys_value_from_content(content, ["详细地址"], area_id=area_id)
+        address = self.get_keys_value_from_content(content, ["详细地址", "采购单位地址"], area_id=area_id)
         description = self.get_keys_value_from_content(content, ["招标范围", "招标方式", "招标组织形式"], area_id=area_id)
         bid_type = self.get_keys_value_from_content(content, "招标方式", area_id=area_id)
         bid_modus = self.get_keys_value_from_content(content, "招标组织形式", area_id=area_id)
