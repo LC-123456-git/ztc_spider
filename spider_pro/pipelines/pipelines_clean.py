@@ -223,15 +223,15 @@ class CleanPipeline(object):
                 area_deal_dict = deal_area_data(title_name=item["title_name"], info_source=item["info_source"],
                                                 area_id=item["area_id"]) or {}
             content_str = item["content"]                                    
-            # if item["is_have_file"] == "1" or item["is_have_file"] == 1:
-            #     self.is_have_file = True
-            #     content_str = item["content"]
-            #     msg, content_str = self.request_download(files_path=str(item["files_path"]), content=item["content"],
-            #                                              is_have_file=item["is_have_file"])
-            #     # 请求失败 修改 is_have_file
-            #     # msg = 'test file request error'
-            #     if msg:
-            #         item['is_have_file'] = "2"
+            if item["is_have_file"] == "1" or item["is_have_file"] == 1:
+                self.is_have_file = True
+                content_str = item["content"]
+                msg, content_str = self.request_download(files_path=str(item["files_path"]), content=item["content"],
+                                                         is_have_file=item["is_have_file"])
+                # 请求失败 修改 is_have_file
+                # msg = 'test file request error'
+                if msg:
+                    item['is_have_file'] = "2"
 
         except Exception as e:
             self.logger.error(f"文件服务替换失败 {e} ")
@@ -601,8 +601,10 @@ if __name__ == "__main__":
     # cp.run_clean(table_name="notices_11", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     # cp.run_clean(table_name="notices_13", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     # cp.run_clean(table_name="notices_15", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
-    cp.run_clean(table_name="notices_3319",
-                 engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4')
+    cp.run_clean(
+        table_name="notices_3319",
+        engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'
+    )
 
     # # 测试洗数据 默认测试
     # cp.run_clean_ex(table_name="notices_47", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4')
