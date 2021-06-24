@@ -1042,9 +1042,14 @@ class KeywordsExtract:
         判断tr下td数是否相同
         """
         count = 0
-        for t_data_key in t_data[0]:
-            if t_data_key in self.keysss:
-                count += 1
+        try:
+            assert t_data[0], 'TH NODE.'
+        except:
+            pass
+        else:
+            for t_data_key in t_data[0]:
+                if t_data_key in self.keysss:
+                    count += 1
         return True if count >= 2 else False
 
         # status = 1
@@ -1213,6 +1218,60 @@ class KeywordsExtract:
 
                 self._extract_from_text(with_symbol=False)
 
+        if self.area_id == '3319':  # 苍南
+            self._value = self._value if self._value else ''
+            if not self._value.strip():
+                regular_list = []
+
+                if self.field_name == 'project_name':
+                    regular_list = [
+                        # r'本招标项目([^，,]*?)[已由 , ，]',
+                        # r'项目名称：([0-9 \s \u4e00-\u9fa5]+?)三',
+                        # r'根据(.*?)（[\s \u4e00-\u9fa5]*?编号：',
+                        # r'本工程项目名称\s*([^，,]*?)\s*[。 , ，]',
+                        # r'就([0-9 \s \u4e00-\u9fa5]+?)进行招标',
+                    ]
+                if self.field_name == 'tenderee':
+                    regular_list = [
+                        r'招标人为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
+                        # r'项目业主为([\s \u4e00-\u9fa5]*?)（下称招标人）',
+                        # r'受([\s \u4e00-\u9fa5]*?)委托',
+                    ]
+                if self.field_name == 'bidding_agency':
+                    regular_list = [
+                        r'招标代理机构为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
+
+                        # r'招标代理[机构]*：([\s \u4e00-\u9fa5]*?)地',
+                        # r'委托([^，,。]*?)[进行 , ，]',
+                        # r'公告([\s \u4e00-\u9fa5]*?)受',
+                    ]
+                if self.field_name == 'project_number':
+                    regular_list = [
+                        # r'[项目代码|编号][\： \:]([0-9 A-Z a-z \-]+)\）',
+                    ]
+                if self.field_name == 'budget_amount':
+                    regular_list = [
+                        r'预算约(\d+)万元',
+
+                        # r'预算金额.*?为(\d+)万元',
+                        # r'本工程投资约(.*?)万元'
+                    ]
+                if self.field_name == 'contact_information':
+                    regular_list = [
+                        r'电\s*话[: ：]([^\u4e00-\u9fa5]+?)招',
+                        # r'电话[: ：]\s*?([0-9 \-]+?)\s*?[\u4e00-\u9fa5 \s]',
+                        # r'联系电话：([0-9 \-]+?)[, ，]',
+                    ]
+                if self.field_name == 'liaison':
+                    regular_list = [
+                        # r'联.*系.*人[: ：]\s*([\u4e00-\u9fa5]+?)[监督投诉 电]',
+                        # r'异议受理部门[: ：]\s*([\u4e00-\u9fa5]+)联',
+                        # r'联系人[: ：]\s*([\u4e00-\u9fa5]+)5',
+                    ]
+                self.reset_regular(regular_list, with_symbol=False)
+
+                self._extract_from_text(with_symbol=False)
+
     def done_after_extract(self):
         """
         通用提取后，根据地区单独提取
@@ -1246,751 +1305,261 @@ class KeywordsExtract:
 
 if __name__ == '__main__':
     content = """
-    <tr>
-    <td>
-        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-            <tr>
-                <td style="padding:10px;">
-                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                            <td height="120">
-                                <table width="100%" height="120" border="0" cellpadding="0" cellspacing="0">
-                                    <tr>
-                                        <td height="30" />
-                                    </tr>
-                                    <tr>
-                                    </tr>
-                                </table>
-                            </td>
+<div id="jyxxChangeHeight" class="article-info">
+    <h1 class="infoContentTitle">嘉兴市千秋工程咨询有限公司关于嘉兴市12345政务热线搬迁改造暖通项目的中标(成交)结果公告</h1>
+    <p class="info-sources">
+        <span style="font-size:14px;">
+            【&nbsp;信息发布时间：2021-06-23&nbsp;&nbsp;阅读次数：<span id="infoViewCount">96</span>】
+            <span style="color:black;font-size:14px">
+                【<a style="color:black;" href="javascript:window.print();">我要打印</a>】
+                【<a style="cursor:pointer;" onclick="closeFunction()">关闭</a>】
+            </span>
+        </span></p>
+    <div class="con" style="font-size: 14px;line-height: 28px;margin: 30px 30px;position: relative;">
+        <style id="fixTableStyle" type="text/css">
+            th,
+            td {
+                border: 1px solid #DDD;
+                padding: 5px 10px;
+            }
+        </style>
+        <div id="fixTableStyle" type="text/css" cdata_tag="style"
+            cdata_data="th,td {border:1px solid #DDD;padding: 5px 10px;}" _ue_custom_node_="true"></div>
+        <div>
+            <p style="line-height: 1.5em;"><strong
+                    style="font-size: 18px; font-family: SimHei, sans-serif; text-align: justify;">一、项目编号：</strong><span
+                    style="font-family: 黑体, SimHei; font-size: 18px;">&nbsp;<span
+                        class="bookmark-item uuid-1596280499822 code-00004 addWord single-line-text-input-box-cls">千秋-JXQQGK（2021）第30号</span>&nbsp;</span>&nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+            <p
+                style="margin: 10px 0px; text-align: justify; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal; line-height: 1.5em;">
+                <span style="font-size: 18px;"><strong>二、项目名称：</strong>&nbsp;<span
+                        class="bookmark-item uuid-1591615489941 code-00003 addWord single-line-text-input-box-cls">嘉兴市12345政务热线搬迁改造暖通项目</span>&nbsp;</span>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+            <p style="line-height: 1.5em; margin-top: 10px; margin-bottom: 10px;"><strong><span
+                        style="font-size: 18px; font-family: SimHei, sans-serif;">三、中标（成交）信息</span></strong> &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+            <div style=" font-size:18px;  font-family:FangSong;  line-height:20px; ">
+                <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;1.中标结果：</span>&nbsp;&nbsp;
+                </p>
+                <table class="template-bookmark uuid-1599570948000 code-AM014zbcj001 text-中标/成交结果信息"
+                    style="width: 100%; border-collapse:collapse;">
+                    <thead>
+                        <tr class="firstRow">
+                            <th style="background-color: #fff;">序号</th>
+                            <th style="background-color: #fff;">中标（成交）金额(元)</th>
+                            <th style="background-color: #fff;">中标供应商名称</th>
+                            <th style="background-color: #fff;">中标供应商地址</th>
                         </tr>
-                        <tr>
-                            <td height="500" align="left" valign="top">
-                                <table height="100%" width="100%" cellpadding="0" cellspacing="0" border="0">
-                                    <tr>
-                                        <td valign="top" class="infodetail" id="TDContent" align="left">
-                                            <div style=" padding-left:40px; padding-right:40px;">
-                                                <h1 style="MARGIN-BOTTOM: 0pt; MARGIN-TOP: 0pt; PAGE-BREAK-BEFORE: always; TEXT-ALIGN: center"
-                                                    align="center"><b><span
-                                                            style="FONT-SIZE: 22pt; FONT-FAMILY: 'Times New Roman'; FONT-WEIGHT: bold; COLOR: rgb(0,0,0)">
-                                                            <font face="宋体">招标公告</font>
-                                                        </span></b></h1>
-                                                <p style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; WORD-BREAK: break-all; TEXT-ALIGN: center; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 200%"
-                                                    align="center"><span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">编号：</font>
-                                                    </span><span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">A3303270480001356001001</font>
-                                                    </span><span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体"> </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 14pt; MARGIN-BOTTOM: 0pt; FONT-FAMILY: 'Times New Roman'; MARGIN-TOP: 0pt; PAGE-BREAK-AFTER: avoid; FONT-WEIGHT: normal; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; LINE-HEIGHT: 150%; TEXT-INDENT: 15.9pt">
-                                                    <span
-                                                        style="FONT-SIZE: 14pt; FONT-FAMILY: 'Times New Roman'; FONT-WEIGHT: normal">1.
-                                                        <font face="黑体">招标条件</font></span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt">
-                                                    <span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">　　</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">本招标项目</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">苍南县灵溪新区派出所综合楼建设项目室内装修工程</font>
-                                                        </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">已由</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">苍南县发展和改革局</font>
-                                                        </span></u><span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">以</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; LETTER-SPACING: -0.15pt; text-underline: single">
-                                                            <font face="宋体">（</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">苍发改投</font>
-                                                            <font face="宋体">[20</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">18</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">]</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">46</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; LETTER-SPACING: -0.15pt; text-underline: single">
-                                                            <font face="宋体">）</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">号</font>
-                                                        </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">批准建设</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">，项目业主为</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">苍南县城市建设投资有限公司</font>
-                                                        </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">，建设资金</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">来</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; LETTER-SPACING: -0.15pt">
-                                                        <font face="宋体">自</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; LETTER-SPACING: -0.15pt; text-underline: single">
-                                                            <font face="宋体">自筹</font>
-                                                        </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; LETTER-SPACING: -0.15pt">
-                                                        <font face="宋体">，</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; LETTER-SPACING: -0.15pt">
-                                                        <font face="宋体">项目出资比例为</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; LETTER-SPACING: -0.15pt; text-underline: single">
-                                                            <font face="Times New Roman">100%</font>
-                                                        </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; LETTER-SPACING: -0.15pt">
-                                                        <font face="宋体">，</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">招标人为</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">苍南县城市建设投资有限公司</font>
-                                                        </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">。项目已具备招标条件，现对该项目的施工进行</font>
-                                                    </span><b><span
-                                                            style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                            <font face="宋体">公开招标</font>
-                                                        </span></b><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">。</font>
-                                                    </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 14pt; MARGIN-BOTTOM: 0pt; FONT-FAMILY: 'Times New Roman'; MARGIN-TOP: 0pt; PAGE-BREAK-AFTER: avoid; FONT-WEIGHT: normal; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; LINE-HEIGHT: 21pt; TEXT-INDENT: 15.9pt">
-                                                    <span
-                                                        style="FONT-SIZE: 14pt; FONT-FAMILY: 'Times New Roman'; FONT-WEIGHT: normal; COLOR: rgb(0,0,0)">2.
-                                                        <font face="黑体">项目概况与招标范围</font></span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt">
-                                                    <span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">　　</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">苍南县灵溪新区派出所综合楼建设项目室内装修工程</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">，</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">本次</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">招标内容包括</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">
-                                                                拆除部分墙体，新砌隔墙，安装墙、地、天棚装饰面层，安装门窗，安装插座照明管线及灯具、给排水配件安装，搭设脚手架
-                                                            </font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">等</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">。具体以工程量清单及施工图纸为准。</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">本工程</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">投资约</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">620</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">万元，本工程计划工期为</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">100日历天</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">，</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; LETTER-SPACING: -0.3pt; text-underline: single">
-                                                            <font face="宋体">建设地点为苍南县县城新区。</font>
-                                                        </span></u></p>
-                                                <p
-                                                    style="FONT-SIZE: 14pt; MARGIN-BOTTOM: 0pt; FONT-FAMILY: 'Times New Roman'; MARGIN-TOP: 0pt; PAGE-BREAK-AFTER: avoid; FONT-WEIGHT: normal; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; LINE-HEIGHT: 21pt; TEXT-INDENT: 15.9pt">
-                                                    <span
-                                                        style="FONT-SIZE: 14pt; FONT-FAMILY: 'Times New Roman'; FONT-WEIGHT: normal; COLOR: rgb(0,0,0)">3.
-                                                        <font face="黑体">投标人资格要求</font></span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt; TEXT-AUTOSPACE: ; TEXT-INDENT: 21pt">
-                                                    <span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">3.1</span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)"> 
-                                                        <font face="宋体">本次招标要求投标人须具备：</font></span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">(1)</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">按住建部颁发的建市【</font>
-                                                            <font face="宋体">2014】159号《建筑业企业资质标准》要求取得</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">建筑装修装饰工程专业承包贰级及以上资质</font>
-                                                        </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">，</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">并在人员、设备、资金等方面具有相应的施工能力；</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">(2)</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">项目负责人：</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">建筑工程专业</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">二级及以上注册建造师执业资格，</font>
-                                                        </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">同时具</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">有</font>
-                                                        <font face="宋体">“三类人员”安全生产考核B类合格证，并无在建工程，且符合浙政发【2014】39号文件规定。
-                                                        </font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">(3)</font>
-                                                    </span><b><span
-                                                            style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; FONT-WEIGHT: bold; COLOR: rgb(0,0,0)">
-                                                            <font face="宋体">浙江省外投标人必须持有《省外企业进浙承接业务备案证明》且在有效期内。</font>
-                                                        </span></b></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt; TEXT-AUTOSPACE: ; TEXT-INDENT: 21pt">
-                                                    <span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">3.2
-                                                        本次招标</span><b><span
-                                                            style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; FONT-WEIGHT: bold; COLOR: rgb(0,0,0)">
-                                                            <font face="宋体">不接受</font>
-                                                        </span></b><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">联合体投标</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">，</font>
-                                                    </span><span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">应满足下列要求：</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; LETTER-SPACING: 2.4pt; text-underline: single"> 
-                                                            <font face="宋体">无</font></span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; LETTER-SPACING: 2.5pt"> 
-                                                        <font face="宋体">。</font></span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt; TEXT-AUTOSPACE: ; TEXT-INDENT: 21pt">
-                                                    <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">3.3 其他要求：①在投标截止时间前，投标人未被人民法院列入限制失信被执行人投标资格名单的企业；
-                                                        </font>
-                                                    </span><span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">②</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; LETTER-SPACING: -0.15pt">
-                                                        <font face="宋体">投标企业已录入浙江省建筑市场监管与诚信信息平台</font>
-                                                    </span><span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">。</font>
-                                                    </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 14pt; MARGIN-BOTTOM: 0pt; FONT-FAMILY: 'Times New Roman'; MARGIN-TOP: 0pt; PAGE-BREAK-AFTER: avoid; FONT-WEIGHT: normal; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; LINE-HEIGHT: 21pt; TEXT-INDENT: 15.9pt">
-                                                    <span
-                                                        style="FONT-SIZE: 14pt; FONT-FAMILY: 'Times New Roman'; FONT-WEIGHT: normal; COLOR: rgb(0,0,0)">4.
-                                                        <font face="黑体">招标文件的获取</font></span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt; TEXT-INDENT: 17.95pt">
-                                                    <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">4.1 凡有意参加投标者，</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">请予本公告发布之日起至本项目投标截止时间前直接在苍南县公共资源交</font>
-                                                    </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt">
-                                                    <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">易网上下载招标文件件及其他资料（网址为</font>
-                                                        <font face="宋体">http://ggzy.cncn.gov.cn/TPFrontNe</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">w/）。 </font>
-                                                    </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt; TEXT-INDENT: 10.5pt">
-                                                    <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">4.2</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">本工程招标文件的质疑、澄清、修改、补充等内容在温州市公共资源交易网苍南县分网（网址：
-                                                        </font>
-                                                    </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt">
-                                                    <span><a href="http://ggzy.cncn.gov.cn/TPFrontNew/"><span
-                                                                style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                                <font face="宋体">http://ggzy.cncn.gov.cn/TPFrontNew/
-                                                                </font>
-                                                            </span></a></span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">）上发布信息向所有投标人公布。</font>
-                                                    </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 14pt; MARGIN-BOTTOM: 0pt; FONT-FAMILY: 'Times New Roman'; MARGIN-TOP: 0pt; PAGE-BREAK-AFTER: avoid; FONT-WEIGHT: normal; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; LINE-HEIGHT: 21pt; TEXT-INDENT: 15.9pt">
-                                                    <span
-                                                        style="FONT-SIZE: 14pt; FONT-FAMILY: 'Times New Roman'; FONT-WEIGHT: normal; COLOR: rgb(0,0,0)">5.
-                                                        <font face="黑体">投标文件的递交</font></span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt">
-                                                    <span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">5.</span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">1</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)"> 
-                                                        <font face="宋体">投标文件递交的截止时间（投标截止时间，下同）</font></span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">为</font>
-                                                        <font face="宋体">2021年</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single"> 
-                                                            <font face="宋体">6 </font></span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">月</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single"> 
-                                                            <font face="宋体">9 </font></span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">日</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single"> </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">0</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">9</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">时</font>
-                                                        </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">:</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); text-underline: single">
-                                                            <font face="宋体">30</font>
-                                                        </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">分</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">，</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">地点（或网址）为温州市公共资源交易网苍南县分网（网址：</font>
-                                                        <font face="宋体">http://ggzy.cncn.gov.cn/TPFrontNew/）。</font>
-                                                    </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt">
-                                                    <span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">5.</span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">2</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)"> 
-                                                        <font face="宋体">逾期送达的或者未送达指定地点的投标文件，招标人不予受理。</font></span></p>
-                                                <p
-                                                    style="FONT-SIZE: 14pt; MARGIN-BOTTOM: 0pt; FONT-FAMILY: 'Times New Roman'; MARGIN-TOP: 0pt; PAGE-BREAK-AFTER: avoid; FONT-WEIGHT: normal; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; LINE-HEIGHT: 21pt; TEXT-INDENT: 15.9pt">
-                                                    <span
-                                                        style="FONT-SIZE: 14pt; FONT-FAMILY: 黑体; FONT-WEIGHT: normal; COLOR: rgb(0,0,0)">
-                                                        <font face="Times New Roman">6. </font>
-                                                        <font face="黑体">发布公告的媒介</font>
-                                                    </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt; TEXT-INDENT: 10.5pt">
-                                                    <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">本次招标公告同时在浙江省公共资源交易服务平台和温州市公共资源交易网苍南县分网（网址：
-                                                        </font>
-                                                    </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt; TEXT-INDENT: 10.5pt">
-                                                    <span><a href="http://ggzy.cncn.gov.cn/TPFrontNew/"><span
-                                                                style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                                <font face="Times New Roman">
-                                                                    http://ggzy.cncn.gov.cn/TPFrontNew/</font>
-                                                            </span></a></span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">）上发布。</font>
-                                                    </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 14pt; MARGIN-BOTTOM: 0pt; FONT-FAMILY: 'Times New Roman'; MARGIN-TOP: 0pt; PAGE-BREAK-AFTER: avoid; FONT-WEIGHT: normal; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; LINE-HEIGHT: 21pt; TEXT-INDENT: 15.9pt">
-                                                    <span
-                                                        style="FONT-SIZE: 14pt; FONT-FAMILY: 黑体; FONT-WEIGHT: normal; COLOR: rgb(0,0,0)">
-                                                        <font face="Times New Roman">7. </font>
-                                                        <font face="黑体">其他说明</font>
-                                                        <font face="Times New Roman">   </font>
-                                                    </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt">
-                                                    <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">
-                                                            7.1此项目采用电子招标投标，请登录苍南县公共资源网上交易系统填写投标信息并确认投标状态。凡有意参加此项目的投标人，必须于投标截止时间之前完成温州市建设工程招标投标交易主体信息库入库工作，否则，其投标文件将被拒绝，后果由投标人自负。
-                                                        </font>
-                                                    </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt">
-                                                    <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">7</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">.2</span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">未在温州市建设工程招标投标交易主体信息库入库的单位，请按照温州市公共资源交易网</font>
-                                                        <font face="宋体">
-                                                            --苍南分网最新公告《关于停止办理建设工程企业库入库和基本信息变更的通知》的要求到温州市公共资源交易网登记入库和信息变更（网址：https://ggzy.wzzbtb.com/wzcms/jsxmjyl/2355.htm）。
-                                                        </font>
-                                                    </span></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt">
-                                                    <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">7</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">.</span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">3</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">本项目投标保证金采用网</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">上收退系统（</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">银行保函除外</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">），详见招标文件前附表</font>
-                                                        <font face="宋体">3.4.1款。</font>
-                                                    </span></p>
-                                                <h6
-                                                    style="MARGIN-BOTTOM: 0pt; MARGIN-TOP: 7.9pt; TEXT-ALIGN: left; MARGIN-RIGHT: 0pt">
-                                                    <b><span
-                                                            style="FONT-SIZE: 12pt; FONT-FAMILY: 黑体; FONT-WEIGHT: bold; LETTER-SPACING: -0.1pt">
-                                                            <font face="黑体">8.</font>
-                                                        </span></b><b><span
-                                                            style="FONT-SIZE: 12pt; FONT-FAMILY: 黑体; FONT-WEIGHT: bold; LETTER-SPACING: -0.1pt">
-                                                            <font face="黑体">联系方式</font>
-                                                        </span></b></h6>
-                                                <p
-                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 11.6pt 0pt 0pt">
-                                                    <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">招标人：</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">苍南县城市建设投资有限公司</font>
-                                                        </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">  </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">招标代理机构</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; LETTER-SPACING: 0.2pt">
-                                                        <font face="宋体">：</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">杭州天恒投资建设管理有限公司</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; LETTER-SPACING: 1.1pt; text-underline: single"> </span></u>
-                                                </p>
-                                                <p
-                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0.35pt 0pt 0pt">
-                                                     </p>
-                                                <p
-                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 3.8pt 0pt 0pt">
-                                                    <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">地址：</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; LETTER-SPACING: -0.2pt; text-underline: single"> </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">苍南县灵溪镇</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">  </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">               </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">地址：</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">苍南县灵溪镇上江小区</font>
-                                                            <font face="宋体">28栋1单元302室</font>
-                                                        </span></u></p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; TEXT-INDENT: 21pt">
-                                                     </p>
-                                                <p
-                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 3.85pt 0pt 0pt">
-                                                    <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">联</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; LETTER-SPACING: -0.1pt"> </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">系</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; LETTER-SPACING: -0.1pt"> </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">人：</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; LETTER-SPACING: -0.1pt; text-underline: single"> </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">许先生</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single"> </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">                   </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">   </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">联</font>
-                                                        <font face="宋体">系</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; LETTER-SPACING: -0.1pt"> </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">人：</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; LETTER-SPACING: -0.05pt; text-underline: single"> </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">董女士</font>
-                                                        </span></u></p>
-                                                <p
-                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0.35pt 0pt 0pt">
-                                                     </p>
-                                                <p
-                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 3.85pt 0pt 0pt">
-                                                    <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">电话：</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; LETTER-SPACING: -0.2pt; text-underline: single"> </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">0577-59909057</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single"> </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">               </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体"> </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体"> </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">  </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">电</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">   </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">话：</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; LETTER-SPACING: -0.3pt; text-underline: single"> </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">0577-68800058  18815114195</font>
-                                                        </span></u></p>
-                                                <p
-                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0.35pt 0pt 0pt">
-                                                     </p>
-                                                <p
-                                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 3.8pt 0pt 0pt">
-                                                    <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">传真：</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single"> </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">0577-59909057</font>
-                                                        </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single"> </span></u><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">                </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">   </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">传</font>
-                                                    </span><span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体"> </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体">
-                                                        <font face="宋体">真：</font>
-                                                    </span><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; LETTER-SPACING: 0.05pt; text-underline: single"> </span></u><u><span
-                                                            style="FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; FONT-FAMILY: 宋体; text-underline: single">
-                                                            <font face="宋体">0577-64798998</font>
-                                                        </span></u></p>
-                                                <p style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: right; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt 23.75pt 0pt 0pt; LINE-HEIGHT: 150%; punctuation-trim: leading"
-                                                    align="right"> </p>
-                                                <p style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: right; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt 23.75pt 0pt 0pt; LINE-HEIGHT: 150%; punctuation-trim: leading"
-                                                    align="right"> </p>
-                                                <p
-                                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: justify; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt; TEXT-INDENT: 10.5pt">
-                                                     </p>
-                                                <p style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: right; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt 23.75pt 0pt 0pt; LINE-HEIGHT: 150%; punctuation-trim: leading"
-                                                    align="right"><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); LINE-HEIGHT: 150%"> </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); LINE-HEIGHT: 150%">
-                                                        <font face="宋体">苍南县城市建设投资有限公司</font>
-                                                    </span></p>
-                                                <p style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: right; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt 23.75pt 0pt 0pt; LINE-HEIGHT: 150%; punctuation-trim: leading"
-                                                    align="right"><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%"> </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%">
-                                                        <font face="宋体">杭州天恒投资建设管理有限公司</font>
-                                                    </span></p>
-                                                <p style="FONT-SIZE: 10.5pt; FONT-FAMILY: 'Times New Roman'; TEXT-ALIGN: center; TEXT-JUSTIFY: inter-ideograph; MARGIN: 0pt"
-                                                    align="center"><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">                                                                                                                                         
-                                                           </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">20</span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">21年</font>
-                                                    </span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)"> 
-                                                        <font face="宋体">5 </font></span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">月</font>
-                                                    </span><span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体"> <font
-                                                            face="宋体">12 </font></span><span
-                                                        style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0)">
-                                                        <font face="宋体">日</font>
-                                                    </span></p>
-                                            </div>
-                                            <div> </div>
-                                        </td>
-                                    </tr>
-                                    <tr style="display:none;">
-                                        <td align="right">
-                                            <br />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td />
-                                    </tr>
-                                    <tr>
-                                        <td height="10" />
-                                    </tr>
-                                    <tr>
-                                        <td valign="bottom"><span class="infodetailattach">附件：</span>
-                                            <table id="filedown" cellspacing="1" cellpadding="1" width="100%" border="0"
-                                                runat="server">
-                                                <tr>
-                                                    <td>1、<a href="http://122.228.139.57///TPFrontNew///AttachStorage/202105/J070/b3298c73-bca4-4292-95f8-e7a6221fd69d/%5BA3303270480001356001001%5D%E8%8B%8D%E5%8D%97%E5%8E%BF%E7%81%B5%E6%BA%AA%E6%96%B0%E5%8C%BA%E6%B4%BE%E5%87%BA%E6%89%80%E7%BB%BC%E5%90%88%E6%A5%BC%E5%BB%BA%E8%AE%BE%E9%A1%B9%E7%9B%AE%E5%AE%A4%E5%86%85%E8%A3%85%E4%BF%AE%E5%B7%A5%E7%A8%8B.ZJCNZF"
-                                                            target="_blank">
-                                                            <font class="infodetailattachfile">
-                                                                [A3303270480001356001001]苍南县灵溪新区派出所综合楼建设项目室内装修工程.ZJCNZF
-                                                            </font>
-                                                        </a></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>2、<a href="http://122.228.139.57///TPFrontNew///AttachStorage/202105/J070/b3298c73-bca4-4292-95f8-e7a6221fd69d/%5BA3303270480001356001001%5D%E8%8B%8D%E5%8D%97%E5%8E%BF%E7%81%B5%E6%BA%AA%E6%96%B0%E5%8C%BA%E6%B4%BE%E5%87%BA%E6%89%80%E7%BB%BC%E5%90%88%E6%A5%BC%E5%BB%BA%E8%AE%BE%E9%A1%B9%E7%9B%AE%E5%AE%A4%E5%86%85%E8%A3%85%E4%BF%AE%E5%B7%A5%E7%A8%8B.ZJCNZF"
-                                                            target="_blank">
-                                                            <font class="infodetailattachfile">
-                                                                [A3303270480001356001001]苍南县灵溪新区派出所综合楼建设项目室内装修工程.ZJCNZF
-                                                            </font>
-                                                        </a></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>3、<a href="http://122.228.139.57///TPFrontNew///AttachStorage/202105/J070/b3298c73-bca4-4292-95f8-e7a6221fd69d/%5BA3303270480001356001001%5D%E8%8B%8D%E5%8D%97%E5%8E%BF%E7%81%B5%E6%BA%AA%E6%96%B0%E5%8C%BA%E6%B4%BE%E5%87%BA%E6%89%80%E7%BB%BC%E5%90%88%E6%A5%BC%E5%BB%BA%E8%AE%BE%E9%A1%B9%E7%9B%AE%E5%AE%A4%E5%86%85%E8%A3%85%E4%BF%AE%E5%B7%A5%E7%A8%8B.ZJCNZF"
-                                                            target="_blank">
-                                                            <font class="infodetailattachfile">
-                                                                [A3303270480001356001001]苍南县灵溪新区派出所综合楼建设项目室内装修工程.ZJCNZF
-                                                            </font>
-                                                        </a></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>4、<a href="http://122.228.139.57///TPFrontNew///AttachStorage/202105/J070/b3298c73-bca4-4292-95f8-e7a6221fd69d/%E6%8B%9B%E6%A0%87%E6%96%87%E4%BB%B6.pdf"
-                                                            target="_blank">
-                                                            <font class="infodetailattachfile">招标文件.pdf</font>
-                                                        </a></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>5、<a href="http://122.228.139.57///TPFrontNew///AttachStorage/202105/J070/b3298c73-bca4-4292-95f8-e7a6221fd69d/%E6%8B%9B%E6%A0%87%E6%96%87%E4%BB%B6.pdf"
-                                                            target="_blank">
-                                                            <font class="infodetailattachfile">招标文件.pdf</font>
-                                                        </a></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>6、<a href="http://122.228.139.57///TPFrontNew///AttachStorage/202105/J070/b3298c73-bca4-4292-95f8-e7a6221fd69d/%E6%8B%9B%E6%A0%87%E6%96%87%E4%BB%B6.pdf"
-                                                            target="_blank">
-                                                            <font class="infodetailattachfile">招标文件.pdf</font>
-                                                        </a></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>7、<a href="http://122.228.139.57///TPFrontNew///AttachStorage/202105/ZBTuZhi/b3298c73-bca4-4292-95f8-e7a6221fd69d/ZJWJ/%E6%96%BD%E5%B7%A5%E5%9B%BE.rar"
-                                                            target="_blank">
-                                                            <font class="infodetailattachfile">施工图.rar</font>
-                                                        </a></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>8、<a href="http://122.228.139.57///TPFrontNew///AttachStorage/202105/ZBTuZhi/b3298c73-bca4-4292-95f8-e7a6221fd69d/ZJWJ/%E6%96%BD%E5%B7%A5%E5%9B%BE.rar"
-                                                            target="_blank">
-                                                            <font class="infodetailattachfile">施工图.rar</font>
-                                                        </a></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>9、<a href="http://122.228.139.57///TPFrontNew///AttachStorage/202105/ZBTuZhi/b3298c73-bca4-4292-95f8-e7a6221fd69d/ZJWJ/%E6%96%BD%E5%B7%A5%E5%9B%BE.rar"
-                                                            target="_blank">
-                                                            <font class="infodetailattachfile">施工图.rar</font>
-                                                        </a></td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td height="4" />
-                                    </tr>
-                                </table>
-                            </td>
+                    </thead>
+                    <tbody>
+                        <tr style="text-align: center;" width="100%">
+                            <td class="code-sectionNo">1</td>
+                            <td class="code-summaryPrice">最终报价:638000(元)</td>
+                            <td class="code-winningSupplierName">嘉兴市禾菱机电设备有限公司</td>
+                            <td class="code-winningSupplierAddr">浙江省嘉兴市中环广场1幢B408室</td>
                         </tr>
-                        <tr>
-                            <td height="1">
-                                <hr size="1" color="#dedede" />
-                            </td>
+                    </tbody>
+                </table>
+                <p style="line-height: normal; margin-top: 5px;"><span style="font-size: 18px;"></span>&nbsp;
+                    &nbsp;2.废标结果:&nbsp;&nbsp;</p>
+                <p style="margin-bottom: 5px; line-height: normal;" class="sub">&nbsp; &nbsp;<span
+                        class="bookmark-item uuid-1589193355355 code-41007  addWord"></span></p>
+                <table class="form-panel-input-cls" width="100%">
+                    <tbody>
+                        <tr style="text-align: center;" width="100%" class="firstRow">
+                            <td width="25.0%" style="word-break:break-all;">序号</td>
+                            <td width="25.0%" style="word-break:break-all;">标项名称</td>
+                            <td width="25.0%" style="word-break:break-all;">废标理由</td>
+                            <td width="25.0%" style="word-break:break-all;" colspan="1">其他事项</td>
                         </tr>
-                        <tr>
-                            <td height="30" align="center">
-                                <table width="200" border="0" cellspacing="0" cellpadding="0" align="center">
-                                    <tr>
-                                        <td width="25" align="center"><img
-                                                src="http://file.zhaotx.cn/view?systemUrl=webfile/20210512/jpg/420E083D9A104DAFB38626F3E6DE8269.jpg"
-                                                width="17" height="16" /></td>
-                                        <td />
-                                        <td width="25" align="center"><img
-                                                src="http://file.zhaotx.cn/view?systemUrl=webfile/20210512/jpg/263C905F07824390B2494567C5FA95F3.jpg"
-                                                width="16" height="16" /></td>
-                                        <td />
-                                    </tr>
-                                </table>
-                            </td>
+                        <tr style="text-align: center;" width="100%">
+                            <td width="25.0%" style="word-break:break-all;">/</td>
+                            <td width="25.0%" style="word-break:break-all;">/</td>
+                            <td width="25.0%" style="word-break:break-all;">/</td>
+                            <td width="25.0%" style="word-break:break-all;" colspan="1">/</td>
                         </tr>
-                        <tr>
-                            <td height="20" />
+                    </tbody>
+                </table>&nbsp;<p></p>
+            </div>
+            <p
+                style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
+                <span style="font-size: 18px;"><strong>四、主要标的信息</strong></span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+            <div style=" font-size:18px;  font-family:FangSong;  line-height:20px;">
+                <p style="line-height: normal;"><span style="font-size: 18px;">&nbsp; &nbsp;1.货物类主要标的信息：</span> &nbsp;
+                    &nbsp;</p>
+                <p style="line-height: normal;" class="sub">&nbsp; &nbsp;&nbsp;<span
+                        class="bookmark-item uuid-1589437802153 code-AM014GoodsInfoTab  addWord"></span></p>
+                <table class="form-panel-input-cls" width="100%">
+                    <tbody>
+                        <tr style="text-align: center;" width="100%" class="firstRow">
+                            <td width="14.29%" style="word-break:break-all;">序号</td>
+                            <td width="14.29%" style="word-break:break-all;">标项名称</td>
+                            <td width="14.29%" style="word-break:break-all;">标的名称</td>
+                            <td width="14.29%" style="word-break:break-all;">品牌</td>
+                            <td width="14.29%" style="word-break:break-all;">数量</td>
+                            <td width="14.29%" style="word-break:break-all;">单价（元）</td>
+                            <td width="14.29%" style="word-break:break-all;" colspan="1">规格型号</td>
                         </tr>
-                        <tr>
-                            <td> </td>
+                        <tr style="text-align: center;" width="100%">
+                            <td width="14.29%" style="word-break:break-all;">1</td>
+                            <td width="14.29%" style="word-break:break-all;">嘉兴市12345政务热线搬迁改造暖通项目</td>
+                            <td width="14.29%" style="word-break:break-all;">嘉兴市12345政务热线搬迁改造暖通项目</td>
+                            <td width="14.29%" style="word-break:break-all;">详见附件</td>
+                            <td width="14.29%" style="word-break:break-all;">1批</td>
+                            <td width="14.29%" style="word-break:break-all;">638000</td>
+                            <td width="14.29%" style="word-break:break-all;" colspan="1">详见附件</td>
                         </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </td>
-</tr>
+                    </tbody>
+                </table>&nbsp;<p></p>
+                <p style="line-height: normal;">&nbsp; &nbsp;2.工程类主要标的信息：</p>
+                <p style="line-height: normal;">&nbsp; &nbsp;&nbsp;<span
+                        class="bookmark-item uuid-1589437807972 code-AM014infoOfEngSubMatter  addWord"></span>&nbsp;&nbsp;
+                </p>
+                <p style="line-height: normal;">&nbsp; &nbsp;3.服务类主要标的信息：</p>
+                <p style="line-height: normal;">&nbsp; &nbsp;&nbsp;<span
+                        class="bookmark-item uuid-1589437811676 code-AM014infoOfServiceObject  addWord"></span>&nbsp;
+                </p>
+            </div>
+            <p
+                style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
+                <span style="font-size: 18px;"><strong>五、评审专家（单一来源采购人员）名单：</strong></span> &nbsp; &nbsp; &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+            <p><span style="font-size: 18px; font-family:FangSong;  line-height:20px; ">&nbsp; &nbsp;&nbsp;<span
+                        class="bookmark-item uuid-1589193390811 code-85005 addWord multi-line-text-input-box-cls">陈洁,郭演星,沈汉翔,蒋阳,钱晓艳</span>&nbsp;</span>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+            <p
+                style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
+                <span style="font-size: 18px;"><strong>六、代理服务收费标准及金额：</strong></span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp;</p>
+            <p><span style="font-size: 18px; font-family:FangSong;  line-height:20px; ">&nbsp; &nbsp;1.代理服务收费标准：<span
+                        class="bookmark-item uuid-1591615554332 code-AM01400039 addWord multi-line-text-input-box-cls">本项目以货物类招标收费标准的70%收取中标服务费，对于招标代理服务费不足5000元的按5000元计取招标代理服务费。</span>&nbsp;</span>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+            <p><span style="font-size: 18px; font-family:FangSong;  line-height:20px; ">&nbsp; &nbsp;2.代理服务收费金额（元）：<span
+                        class="bookmark-item uuid-1591615558580 code-AM01400040 addWord numeric-input-box-cls readonly">6699</span>&nbsp;</span>&nbsp;
+            </p>
+            <p
+                style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
+                <span style="font-size: 18px;"><strong>七、公告期限</strong></span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp;</p>
+            <p><span style="font-size: 18px; font-family:FangSong;  line-height:20px; ">&nbsp;
+                    &nbsp;自本公告发布之日起1个工作日。</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+            </p>
+            <p
+                style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-family: SimHei, sans-serif; white-space: normal;">
+                <span style="font-size: 18px;"><strong>八、其他补充事宜</strong></span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp;</p>
+            <p style="line-height: 1.5em;"><span
+                    style="font-size: 18px; font-family:FangSong;  line-height:20px; ">&nbsp; &nbsp;
+                    1.各参加政府采购活动的供应商认为该中标/成交结果和采购过程等使自己的权益受到损害的，可以自本公告期限届满之日（本公告发布之日后第2个工作日）起7个工作日内，以书面形式向采购人或受其委托的采购代理机构提出质疑。质疑供应商对采购人、采购代理机构的答复不满意或者采购人、采购代理机构未在规定的时间内作出答复的，可以在答复期满后十五个工作日内向同级政府采购监督管理部门投诉。质疑函范本、投诉书范本请到浙江政府采购网下载专区下载。</span>&nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p>
+            <p style="line-height: 1.5em;"><span
+                    style="font-size: 18px; font-family:FangSong;  line-height:20px; ">&nbsp; &nbsp; 2.其他事项：&nbsp;<span
+                        class="bookmark-item uuid-1592539159169 code-81205  addWord"></span>&nbsp;</span> &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+            <p
+                style="margin: 10px 0px; text-align: justify; line-height: 32px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
+                <span style="font-size: 18px;"><strong>九、对本次公告内容提出询问、质疑、投诉，请按以下方式联系</strong><span
+                        style="font-family: sans-serif; font-size: 16px;">　　　</span></span><span
+                    style="font-size: 18px; font-family: FangSong;">&nbsp; &nbsp;</span> &nbsp; &nbsp; &nbsp; &nbsp;</p>
+            <div style="font-family:FangSong;line-height:30px;">
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 1.采购人信息</span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                </p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 名&nbsp;&nbsp;&nbsp; 称：<span
+                            class="bookmark-item uuid-1596004663203 code-00014 editDisable interval-text-box-cls readonly">中共嘉兴市委嘉兴市人民政府信访局</span>&nbsp;&nbsp;</span>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 地&nbsp;&nbsp;&nbsp; 址：<span
+                            class="bookmark-item uuid-1596004672274 code-00018 addWord single-line-text-input-box-cls">嘉兴市行政中心广场路1号嘉兴市信访局</span>&nbsp;</span>&nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 传&nbsp; &nbsp; 真：<span
+                            class="bookmark-item uuid-1596004680354 code-00017  addWord"></span>&nbsp;</span> &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 项目联系人（询问）：<span
+                            class="bookmark-item uuid-1596004688403 code-00015 editDisable single-line-text-input-box-cls readonly">顾泉</span>&nbsp;</span>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 项目联系方式（询问）：<span
+                            class="bookmark-item uuid-1596004695990 code-00016 editDisable single-line-text-input-box-cls readonly">15305736220</span>&nbsp;&nbsp;</span>&nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 质疑联系人：<span
+                            class="bookmark-item uuid-1596004703774 code-AM014cg001 addWord single-line-text-input-box-cls">顾泉</span>&nbsp;</span>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 质疑联系方式：<span
+                            class="bookmark-item uuid-1596004712085 code-AM014cg002 addWord single-line-text-input-box-cls">15305736220</span>&nbsp;</span>&nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp;<br>&nbsp; &nbsp;&nbsp;2.采购代理机构信息</span> &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 名&nbsp;&nbsp;&nbsp; 称：<span
+                            class="bookmark-item uuid-1596004721081 code-00009 addWord interval-text-box-cls">嘉兴市千秋工程咨询有限公司</span>&nbsp;</span>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 地&nbsp;&nbsp;&nbsp; 址：<span
+                            class="bookmark-item uuid-1596004728442 code-00013 editDisable single-line-text-input-box-cls readonly">嘉兴市秀洲区新平路299号中禾广场23楼</span>&nbsp;</span>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 传&nbsp; &nbsp; 真：<span
+                            class="bookmark-item uuid-1596004736097 code-00012 addWord single-line-text-input-box-cls">/</span>&nbsp;</span>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 项目联系人（询问）：<span
+                            class="bookmark-item uuid-1596004745033 code-00010 editDisable single-line-text-input-box-cls readonly">章莉莉</span>&nbsp;&nbsp;</span>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 项目联系方式（询问）：<span
+                            class="bookmark-item uuid-1596004753055 code-00011 addWord single-line-text-input-box-cls">0573-83705015
+                            13605735186</span>&nbsp;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 质疑联系人：<span
+                            class="bookmark-item uuid-1596004761573 code-AM014cg003 addWord single-line-text-input-box-cls">项兴戟</span>&nbsp;</span>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 质疑联系方式：<span
+                            class="bookmark-item uuid-1596004769998 code-AM014cg004 addWord single-line-text-input-box-cls">0573-83705015
+                            13605738567</span>&nbsp;　　　　　　　　　　</span>&nbsp; &nbsp;<span style="font-size: 18px;">&nbsp;
+                        &nbsp;</span></p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp;<br>&nbsp; &nbsp; 3.同级政府采购监督管理部门</span> &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 名&nbsp;&nbsp;&nbsp; 称：<span
+                            class="bookmark-item uuid-1596004778916 code-00019 addWord single-line-text-input-box-cls">嘉兴市财政局</span>&nbsp;</span>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 地&nbsp;&nbsp;&nbsp; 址：<span
+                            class="bookmark-item uuid-1596004787211 code-00023 addWord single-line-text-input-box-cls">/</span>&nbsp;</span>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 传&nbsp; &nbsp; 真：<span
+                            class="bookmark-item uuid-1596004796586 code-00022 addWord single-line-text-input-box-cls">/</span>&nbsp;</span>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 联系人 ：<span
+                            class="bookmark-item uuid-1596004804824 code-00020 addWord single-line-text-input-box-cls">姚先生</span>&nbsp;</span>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
+                <p><span style="font-size: 18px;">&nbsp; &nbsp; 监督投诉电话：<span
+                            class="bookmark-item uuid-1596004812886 code-00021 addWord single-line-text-input-box-cls">0573-82031217</span>&nbsp;<br>&nbsp;</span>
+                </p>
+                <blockquote style="display: none;"><span
+                        class="bookmark-item uuid-1596275077350 code-88001 addWord date-selection-cls">2021年06月01日</span>
+                </blockquote>&nbsp;&nbsp;<blockquote style="display: none;"><span
+                        class="bookmark-item uuid-1596275085740 code-94002 addWord date-selection-cls">2021年06月23日</span>
+                </blockquote>&nbsp;&nbsp;<blockquote style="display: none;"><span
+                        class="bookmark-item uuid-1596275091448 code-89002  addWord"></span></blockquote>&nbsp;&nbsp;
+                <blockquote style="display: none;"><span
+                        class="bookmark-item uuid-1596275104662 code-81204  addWord"></span></blockquote>&nbsp;<p>
+                    <br><br></p>
+            </div>
+        </div>
+        <p><br></p>
+        <p style="font-size" class="fjxx">附件信息：</p>
+        <ul class="fjxx" style="font-size: 16px;margin-left: 38px;color: #0065ef;list-style-type: none;">
+            <li>
+                <p style="display:inline-block"><a
+                        href="https://zcy-gov-open-doc.oss-cn-north-2-gov-1.aliyuncs.com/1024FPA/330411/10007415952/20216/44baa820-a92f-4e1c-88bf-92671edf2b4e">报价明细表.docx</a>
+                </p>
+                <p style="display:inline-block;margin-left:20px">181.4K</p>
+            </li>
+        </ul>
+        <script type="text/javascript">
+            function ResizeToScreen(id, pX, pY) {
+                var obj = document.getElementById(id);
+                obj.style.display = "";
+                obj.style.pixelLeft = pX;
+                obj.style.pixelTop = pY;
+                document.body.scrollTop = pY - 200;
+            }
+        </script>
+    </div>
+</div>
     """
 
     ke = KeywordsExtract(content, [
@@ -1998,6 +1567,7 @@ if __name__ == '__main__':
         # "招标项目",
         # "工程名称",
         # "招标工程项目",
+        # "标项名称",
 
         # "中标单位",  # successful_bidder
 
@@ -2020,8 +1590,8 @@ if __name__ == '__main__':
         # "建设（招标）单位",
         # "建设单位",
 
-        "招标代理",  # bidding_agency
-        "采购代理机构信息[ψ \s]*?名[\s]+称",
+        # "招标代理",  # bidding_agency
+        # "采购代理机构信息[ψ \s]*?名[\s]+称",
 
         # "项目编号",  # project_number
         # "招标项目编号",
@@ -2029,12 +1599,12 @@ if __name__ == '__main__':
         # "编号",
         # "标段编号",
 
-        "项目金额",  # budget_amount
-        "预算金额（元）",
+        # "项目金额",  # budget_amount
+        # "预算金额（元）",
 
-        # "中标价格",  # bid_amount
-        # "中标价",
-        # "中标（成交）金额(元)",
+        "中标价格",  # bid_amount
+        "中标价",
+        "中标（成交）金额(元)",
 
         # "招标方式",
 
@@ -2045,8 +1615,8 @@ if __name__ == '__main__':
         # "中标人名称",
         # "中标单位",
         # "供应商名称",
-        # ], field_name='bidding_agency')
-    ], field_name='budget_amount', area_id="3320")
+    ], field_name='bid_amount')
+    # ], field_name='bid_amount', area_id="3319")
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
         'project_name': [
@@ -2082,28 +1652,3 @@ if __name__ == '__main__':
     }
 
     print(ke.get_value())
-
-    # def get_accurate_pub_time(pub_time):
-    #     if not pub_time:
-    #         return ""
-    #     if pub_time_str := re.search(r"\d{4}-\d{1,2}-\d{1,2} \d{1,2}:\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group(0)
-    #     elif pub_time_str := re.search(r"\d{4}-\d{1,2}-\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group(0)
-    #     elif pub_time_str := re.search(r"\d{4}\.\d{1,2}\.\d{1,2} \d{1,2}:\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group(0).replace(".", "-")
-    #     elif pub_time_str := re.search(r"\d{4}\.\d{1,2}\.\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group(0).replace(".", "-")
-    #     elif pub_time_str := re.search(r"\d{4}/\d{1,2}/\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group(0).replace("/", "-")
-    #     elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日\d{1,2}:\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group().replace("年", "-").replace("月", "-").replace("日", " ")
-    #     elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日 \d{1,2}:\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group().replace("年", "-").replace("月", "-").replace("日", " ")
-    #     elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日", pub_time):
-    #         pub_time_a = pub_time_str.group(0).replace("年", "-").replace("月", "-").replace("日", "")
-    #     else:
-    #         pub_time_a = ""
-    #     return pub_time_a
-
-    # print(get_accurate_pub_time('2021年05月10日      09:00'))
