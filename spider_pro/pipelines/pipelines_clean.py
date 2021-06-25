@@ -222,7 +222,7 @@ class CleanPipeline(object):
             else:
                 area_deal_dict = deal_area_data(title_name=item["title_name"], info_source=item["info_source"],
                                                 area_id=item["area_id"]) or {}
-            content_str = item["content"]                                    
+            # content_str = item["content"]
             if item["is_have_file"] == "1" or item["is_have_file"] == 1:
                 self.is_have_file = True
                 content_str = item["content"]
@@ -503,7 +503,7 @@ class CleanPipeline(object):
                 # results = conn.execute(f"select * from {table_name} where is_clean =1 and is_upload=0 and
                 #                          files_path='' and classify_name ='中标预告' limit {start}, {rows}").fetchall()
                 results = conn.execute(
-                    f"select * from {table_name}").fetchall()
+                    f"select * from {table_name} where id=44").fetchall()
                     # f"select * from {table_name} where id=112").fetchall()
                 results = [dict(zip(result.keys(), result)) for result in results]
                 for item in results:
@@ -540,7 +540,7 @@ class CleanPipeline(object):
                         if result.rowcount != 1:
                             print("error")
                         else:
-                            print('ID:{0}'.format(result.inserted_primary_key))
+                            print("success update.", item_id)
 
                     except Exception as e:
                         print(f"{e=} {item_id=}")
