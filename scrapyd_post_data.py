@@ -37,10 +37,18 @@ def process_data_by_type_begin_upload(data, data_type="datetime"):
     """
     if data_type == "datetime":
         try:
-            r = datetime.datetime.fromisoformat(data)
-            return r.strftime("%Y-%m-%d %H:%M:%S")
+            if r := datetime.datetime.fromisoformat(data):
+                return r.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                a = datetime.datetime.strptime(data, "%Y-%m-%d %H:%M")
+                return a
         except:
-            return ""
+            try:
+                a = datetime.datetime.strptime(data, "%Y-%m-%d %H:%M")
+                return a
+            except:
+                return ""
+
     elif data_type == "email":
         f = r'^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}$'
         if re.match(data, f):
@@ -50,6 +58,7 @@ def process_data_by_type_begin_upload(data, data_type="datetime"):
     elif data_type == "number":
         try:
             data_aft = float(data)
+            return data_aft
         except:
             return ""
     else:
@@ -277,6 +286,8 @@ class ScrapyDataPost(object):
                             # if table_name == "notices_15" or table_name == "notices_3304" or table_name == "notices_3324" or table_name == 'notices_53' or table_name == 'notices_65':
                             if table_name in [
                                 'notices_15',
+                                'notices_3301',
+                                'notices_3302',
                                 'notices_3304',
                                 'notices_3324',
                                 'notices_52',
@@ -539,7 +550,7 @@ if __name__ == "__main__":
     # ])
 
     # 测试推数据
-    cp = ScrapyDataPost(table_name="notices_77",
+    cp = ScrapyDataPost(table_name="notices_3302",
                         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
                         post_url="http://192.168.1.243:30007/feign/data/v1/notice/addGatherNotice" )
     cp.run_post()
