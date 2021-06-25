@@ -340,10 +340,13 @@ class CleanPipeline(object):
             "工程名称",
         ]
         project_names = self.get_keys_value_from_content(
-            content, project_tags, area_id=area_id, field_name='project_name'
+            content, project_tags, area_id=area_id, field_name='project_name', title=title
         )  # √
+
         if not project_names:
-            project_name = re.findall('.*?项目', pre_data.get("title"))[0]
+            project_name = re.findall('.*?项目', pre_data.get("title"))
+            if project_name:
+                project_name = project_name[0]
         else:
             project_name = project_names
         project_number_tags = [
@@ -351,7 +354,6 @@ class CleanPipeline(object):
             "招标项目编号",
             "招标编号",
             "编号",
-            "标段编号",
         ]
         project_numbers = self.get_keys_value_from_content(content, project_number_tags, area_id=area_id, field_name='project_number')  # √
         if re.findall(r'.*\/(.*)', project_numbers):
@@ -403,7 +405,6 @@ class CleanPipeline(object):
         ]
         budget_amount = self.get_keys_value_from_content(content, budget_amount_tags, area_id=area_id,
                                                          field_name='budget_amount')  # √
-        print(budget_amount)
         liaison_tags = [
             "联系人",
             "联\s*系\s*人",
@@ -483,8 +484,8 @@ class CleanPipeline(object):
                 'is_have_file': is_have_file,
                 }
 
-    def get_keys_value_from_content(self, content: str, keys, area_id="00", field_name=None):
-        value = get_keys_value_from_content_ahead(content, keys, area_id=area_id, field_name=field_name)
+    def get_keys_value_from_content(self, content: str, keys, area_id="00", field_name=None, title=None):
+        value = get_keys_value_from_content_ahead(content, keys, area_id=area_id, field_name=field_name, title=None)
         # 再次针对性清洗数据
         try:
             if ">" in value:
@@ -504,7 +505,8 @@ class CleanPipeline(object):
                 #                          files_path='' and classify_name ='中标预告' limit {start}, {rows}").fetchall()
                 results = conn.execute(
                     f"select * from {table_name}").fetchall()
-                    # f"select * from {table_name} where id=112").fetchall()
+                    # f"select * from {table_name} where id in (86, 88)").fetchall()
+                    # f"select * from {table_name} where id=16").fetchall()
                 results = [dict(zip(result.keys(), result)) for result in results]
                 for item in results:
                     try:

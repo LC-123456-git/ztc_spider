@@ -26,7 +26,7 @@ regular_plans = {
 }
 
 
-def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type="", field_name=None):
+def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type="", field_name=None, title=None):
     # keys 需要清洗字段名称  例：招标人、项目编号等
     if area_id == "00":
         try:
@@ -1277,7 +1277,7 @@ class KeywordsExtract:
         2.html文档提取；
     """
 
-    def __init__(self, content, keys, field_name, area_id=None):
+    def __init__(self, content, keys, field_name, area_id=None, title=None):
         """
         Args:
             content ([string]): [文章内容]
@@ -1289,6 +1289,7 @@ class KeywordsExtract:
         self.keys = keys if isinstance(keys, list) else [keys]
         self.area_id = area_id
         self.field_name = field_name
+        self.title = title
         self.msg = ''
         self.keysss = [
             "招标项目", "中标（成交）金额(元)", "代理机构", "中标供应商名称", "工程名称", "项目名称", "成交价格", "招标工程项目", "项目编号", "招标项目编号",
@@ -1526,6 +1527,13 @@ class KeywordsExtract:
             self.fields_regular_with_symbol.get(self.field_name, []).clear()
             self.fields_regular_with_symbol[self.field_name] = regular_list
 
+    def get_val_from_title(self):
+        if self.field_name == 'project_name':
+            for name in ['项目', '工程']:
+                if name in self.title:
+                    self._value = ''.join([self.title.split(name)[0], name])
+                    break
+
     def done_before_extract(self):
         """
         通用提取前，根据地区单独提取
@@ -1591,6 +1599,7 @@ class KeywordsExtract:
                 self._extract_from_text(with_symbol=False)
 
         if self.area_id == '3319':  # 长兴
+            self.get_val_from_title()
             self._value = self._value if self._value else ''
             if not self._value.strip():
                 regular_list = []
@@ -1935,7 +1944,8 @@ if __name__ == '__main__':
         # "中标单位",
         # "供应商名称",
     # ], field_name='project_name')
-    ], field_name='project_name', area_id="3319")
+    # ], field_name='project_name', area_id="3319")
+    ], field_name='project_name', area_id="3319", title='长兴县和平镇城南工业园区污水管道疏通与检测服务项目交易公告')
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
         'project_name': [
