@@ -1411,7 +1411,10 @@ class KeywordsExtract:
             self.msg = 'error:{0}'.format(e)
         else:
             for t_data_key in t_data:
-                t_data_key = ''.join(t_data_key.split())
+                try:
+                    t_data_key = ''.join(t_data_key.split())
+                except:
+                    t_data_key = ''
                 if t_data_key in self.keysss:
                     count += 1
         return True if count >= 2 else False
@@ -1437,7 +1440,10 @@ class KeywordsExtract:
     def get_val_from_table(result, key):
         for tr in result:
             for c_index, td in enumerate(tr):
-                td = ''.join(td.split())
+                try:
+                    td = ''.join(td.split())
+                except:
+                    td = ''
                 if td == key:
                     # next
                     next_val = KeywordsExtract.get_h_val(c_index, key, tr)
@@ -1451,38 +1457,35 @@ class KeywordsExtract:
         """
         if not self._value:
             for key in self.keys:
-                try:
-                    doc = etree.HTML(self.content)
-                    table_els = doc.xpath('//table')
+                doc = etree.HTML(self.content)
+                table_els = doc.xpath('//table')
 
-                    for table_el in table_els:
+                for table_el in table_els:
 
-                        # # 判断是否有table
-                        # if KeywordsExtract.check_has_table(table_el):
-                        #     continue
+                    # # 判断是否有table
+                    # if KeywordsExtract.check_has_table(table_el):
+                    #     continue
 
-                        table_txt = etree.tounicode(table_el, method='html')
-                        t_data = pandas.read_html(table_txt)
-                        if t_data:
-                            t_data = t_data[0]
-                            # t_dics = t_data.to_dict()
+                    table_txt = etree.tounicode(table_el, method='html')
+                    t_data = pandas.read_html(table_txt)
+                    if t_data:
+                        t_data = t_data[0]
+                        # t_dics = t_data.to_dict()
 
-                            # 判断横向|纵向
-                            # tr下td数一致     横向
-                            # tr下td数不一致    纵向
-                            key = ''.join(key.split())
-                            extractor = Extractor(table_txt.replace('\n', '').replace('\xa0', ''))
-                            extractor.parse()
-                            result = extractor.return_list()
-                            if self.is_horizon(t_data):
-                                self._value = KeywordsExtract.get_val_from_table(result, key)
-                            else:
-                                result = zip(*result)
-                                self._value = KeywordsExtract.get_val_from_table(result, key)
-                            if self._value:
-                                return
-                except Exception as e:
-                    self.msg = 'error:{0}'.format(e)
+                        # 判断横向|纵向
+                        # tr下td数一致     横向
+                        # tr下td数不一致    纵向
+                        key = ''.join(key.split())
+                        extractor = Extractor(table_txt.replace('\n', '').replace('\xa0', ''))
+                        extractor.parse()
+                        result = extractor.return_list()
+                        if self.is_horizon(t_data):
+                            self._value = KeywordsExtract.get_val_from_table(result, key)
+                        else:
+                            result = zip(*result)
+                            self._value = KeywordsExtract.get_val_from_table(result, key)
+                        if self._value:
+                            return
 
     def reset_regular(self, regular_list, with_symbol=True):
         """
