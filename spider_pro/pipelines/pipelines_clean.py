@@ -596,7 +596,7 @@ class CleanPipeline(object):
                         if result.rowcount != 1:
                             print("error")
                         else:
-                            print('ID:{0}'.format(result.inserted_primary_key))
+                            print("success update.", item_id)
 
                     except Exception as e:
                         print(f"{e=} {item_id=}")
