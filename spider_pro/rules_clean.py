@@ -1293,7 +1293,7 @@ class KeywordsExtract:
         self.keysss = [
             "招标项目", "中标（成交）金额(元)", "代理机构", "中标供应商名称", "工程名称", "项目名称", "成交价格", "招标工程项目", "项目编号", "招标项目编号",
             "招标编号", "招标人", "招 标 人", "发布时间", "招标单位", "招标代理:", "招标代理：", "招标代理机构", "项目金额", "预算金额（元）", "招标估算价",
-            "中标（成交）金额（元）", "联系人", "联 系 人", "项目经理（负责人）", "标段编号", "建设单位", "中标单位",
+            "中标（成交）金额（元）", "联系人", "联 系 人", "项目经理（负责人）", "建设单位", "中标单位",
         ]
         # 各字段对应的规则
         self.fields_regular = {
@@ -1355,6 +1355,27 @@ class KeywordsExtract:
                 break
         return val
 
+    def format_fields(self):
+        """
+        修改self._value
+        """
+        if self.field_name == 'project_name':
+            pass
+        if self.field_name == 'tenderee':
+            pass
+        if self.field_name == 'bidding_agency':
+            pass
+        if self.field_name == 'project_number':
+            pass
+        if self.field_name == 'budget_amount':
+            pass
+        if self.field_name == 'bid_amount':
+            pass
+        if self.field_name == 'contact_information':
+            pass
+        if self.field_name == 'liaison':
+            pass
+
     def _extract_from_text(self, with_symbol=True):
         """
         纯文本中提取字段值
@@ -1371,7 +1392,10 @@ class KeywordsExtract:
                     self._value = self._regular_match(text, key, with_symbol=with_symbol)
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
+
                 if self._value:
+                    # TODO 判断当前字段是否具备字段的约束条件/或者做相应的字符调整
+                    self.format_fields()
                     break
 
     @property
@@ -1573,39 +1597,25 @@ class KeywordsExtract:
 
                 if self.field_name == 'project_name':
                     regular_list = [
+                        r'概况[：:]([\u4e00-\u9fa5 \s]*?项目)[， ,]',
                         r'([\u4e00-\u9fa5 （ ）]*?工程)',
-
-                        # r'本招标项目([^，,]*?)[已由 , ，]',
-                        # r'项目名称：([0-9 \s \u4e00-\u9fa5]+?)三',
-                        # r'根据(.*?)（[\s \u4e00-\u9fa5]*?编号：',
-                        # r'本工程项目名称\s*([^，,]*?)\s*[。 , ，]',
-                        # r'就([0-9 \s \u4e00-\u9fa5]+?)进行招标',
                     ]
                 if self.field_name == 'tenderee':
                     regular_list = [
                         r'招标人为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
-                        # r'项目业主为([\s \u4e00-\u9fa5]*?)（下称招标人）',
-                        # r'受([\s \u4e00-\u9fa5]*?)委托',
                     ]
                 if self.field_name == 'bidding_agency':
                     regular_list = [
                         r'招标代理机构为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
-
-                        # r'招标代理[机构]*：([\s \u4e00-\u9fa5]*?)地',
-                        # r'委托([^，,。]*?)[进行 , ，]',
-                        # r'公告([\s \u4e00-\u9fa5]*?)受',
                     ]
                 if self.field_name == 'project_number':
                     regular_list = [
-                        # r'[项目代码|编号][\： \:]([0-9 A-Z a-z \-]+)\）',
+                        r'[项目代码|编号][\： \:]([0-9 A-Z a-z \-]+)\）',
                     ]
                 if self.field_name == 'budget_amount':
                     regular_list = [
                         r'预算约\s*(\d+\s*万元)',
                         r'预算约\s*(\d+\s*元)',
-
-                        # r'预算金额.*?为(\d+)万元',
-                        # r'本工程投资约(.*?)万元'
                     ]
                 if self.field_name == 'bid_amount':
                     regular_list = [
@@ -1614,16 +1624,13 @@ class KeywordsExtract:
                     ]
                 if self.field_name == 'contact_information':
                     regular_list = [
-                        r'电\s*话[: ：]([^\u4e00-\u9fa5]+?)[招 电话]',
-                        # r'电话[: ：]\s*?([0-9 \-]+?)\s*?[\u4e00-\u9fa5 \s]',
-                        # r'联系电话：([0-9 \-]+?)[, ，]',
+                        r'电\s*话[: ：]([^\u4e00-\u9fa5]+?)[\u4e00-\u9fa5]',
+                        r'联\s*系\s*人：[\u4e00-\u9fa5]+?\s*([0-9 \-]+?)\s*[\u4e00-\u9fa5]'
                     ]
                 if self.field_name == 'liaison':
                     regular_list = [
-                        # 联系人：孙敏丽电话：
-                        r'联\s*系\s*人[: ：]\s*([\u4e00-\u9fa5]+?)[联 电]',
-                        # r'异议受理部门[: ：]\s*([\u4e00-\u9fa5]+)联',
-                        # r'联系人[: ：]\s*([\u4e00-\u9fa5]+)5',
+                        r'联\s*系\s*人[: ：]\s*([\u4e00-\u9fa5]+?)[联 电 质]',
+                        r'项目经理：([\u4e00-\u9fa5]+?)\s*质量',
                     ]
                 self.reset_regular(regular_list, with_symbol=False)
 
@@ -1674,121 +1681,295 @@ class KeywordsExtract:
 
 
 if __name__ == '__main__':
-    content = """<style id="fixTableStyle" type="text/css">th,td {border:1px solid #DDD;padding: 5px 10px;}</style>
-<div id="fixTableStyle" type="text/css" cdata_tag="style" cdata_data="th,td {border:1px solid #DDD;padding: 5px 10px;}" _ue_custom_node_="true"></div><div><div><div><div><div style="border:2px solid"><div style="font-family:FangSong;"><p><span style="font-size: 18px;">    项目概况</span>                                                    </p><p><span style="font-size: 18px; line-height:30px; ">    <span class="bookmark-item uuid-1596015933656 code-00003 addWord single-line-text-input-box-cls">富阳区2021届中小学幼儿园新教师暑期集中培训项目</span></span><span style="font-size: 18px;">招标项目的潜在投标人应在</span><span style="font-size: 18px; text-decoration: none;"><span class="bookmark-item uuid-1594623824358 code-23007 addWord single-line-text-input-box-cls readonly">政采云平台(https://www.zcygov.cn/)</span></span><span style="font-size: 18px;">获取（下载）招标文件，并于 <span class="bookmark-item uuid-1595940588841 code-23011 addWord date-time-selection-cls">2021年07月15日 14:30</span></span><span style="font-size: 18px;">（北京时间）前递交（上传）投标文件。</span>                             </p></div></div><p style="margin: 17px 0;text-align: justify;line-height: 20px;break-after: avoid;font-size: 18px;font-family: SimHei, sans-serif;white-space: normal"><span style="font-size: 18px;"><strong>一、项目基本情况</strong></span>                                            </p><div style="font-family:FangSong;line-height:20px;"><p><span style="font-size: 18px;">    项目编号：<span class="bookmark-item uuid-1595940643756 code-00004 addWord single-line-text-input-box-cls">HCCGFY2021-019</span> </span></p><p><span style="font-size: 18px;">    项目名称：<span class="bookmark-item uuid-1596015939851 code-00003 addWord single-line-text-input-box-cls">富阳区2021届中小学幼儿园新教师暑期集中培训项目</span></span></p><p><span style="font-size: 18px;">    预算金额（元）：<span class="bookmark-item uuid-1595940673658 code-AM01400034 addWord numeric-input-box-cls">670000</span> </span> </p><p><span style="font-size: 18px;">    最高限价（元）：<span class="bookmark-item uuid-1589437289226 code-AM014priceCeiling addWord single-line-text-input-box-cls">670000</span> </span></p><p><span style="font-size: 18px;">    采购需求：</span></p><div><div style="padding: 10px" class="template-bookmark uuid-1593419700012 code-AM014230011 text-招标项目概况 object-panel-cls"><p style="line-height: 1.5em;"><span style="font-size: 18px;"><span style="font-size: 18px; display: inline-block;">    <span class="bookmark-item uuid-1595941042480 code-AM014sectionNo editDisable "></span></span><br/>     标项名称: <span class="bookmark-item uuid-1593432150293 code-AM014bidItemName editDisable single-line-text-input-box-cls">富阳区2021届中小学幼儿园新教师暑期集中培训项目</span> <br/>     数量: <span class="bookmark-item uuid-1595941076685 code-AM014bidItemCount editDisable single-line-text-input-box-cls">1</span>  <br/>     预算金额（元）: <span class="bookmark-item uuid-1593421137256 code-AM014budgetPrice editDisable single-line-text-input-box-cls">670000</span> <br/>     简要规格描述或项目基本概况介绍、用途：<span class="bookmark-item uuid-1593421202487 code-AM014briefSpecificationDesc editDisable single-line-text-input-box-cls">培训采取线下集中培训为主。根据前期需求调研，结合新教师岗前培训要求，培训内容将涵盖新时代教师的理想信念、师德师风、法制观念、课堂礼仪、课堂教学技能、师生沟通、家校沟通、身体素质训练等方面</span> <br/>     备注：<span class="bookmark-item uuid-1593432166973 code-AM014remarks editDisable "></span></span> </p></div></div><p><span style="font-size: 18px;">    合同履约期限：<span class="bookmark-item uuid-1589437299696 code-AM014ContractPerformancePeriod addWord single-line-text-input-box-cls">标项 1，本项目服务期为：8月中下旬内完成</span></span></p><p><span style="font-size: 18px;">    本项目（<span class="bookmark-item uuid-1589181188930 code-AM014cg005 addWord single-line-text-input-box-cls">否</span>）接受联合体投标。</span></p><p style="margin-bottom: 15px; margin-top: 15px;"><strong style="font-size: 18px; font-family: SimHei, sans-serif; text-align: justify;">二、申请人的资格要求：</strong><br/></p></div><div style="font-family:FangSong;line-height:20px;"><p><span style="font-size: 18px;">    1.满足《中华人民共和国政府采购法》第二十二条规定；未被“信用中国”（www.creditchina.gov.cn)、中国政府采购网（www.ccgp.gov.cn）列入失信被执行人、重大税收违法案件当事人名单、政府采购严重违法失信行为记录名单。</span></p><p><span style="font-size: 18px;">    2.落实政府采购政策需满足的资格要求：<span class="bookmark-item uuid-1595940687802 code-23021 editDisable multi-line-text-input-box-cls readonly">标项1：本项目属于专门面向中小企业采购的项目,提供服务的供应商应为中、小、微型企业或者监狱企业或者残疾人福利性单位</span> </span></p><p><span style="font-size: 18px;">    3.本项目的特定资格要求：<span class="bookmark-item uuid-1596277470067 code-23002 editDisable multi-line-text-input-box-cls readonly">无</span> </span></p></div><p style="margin: 17px 0;text-align: justify;line-height: 20px;break-after: avoid;font-size: 18px;font-family: SimHei, sans-serif;white-space: normal"><span style="font-size: 18px;"><strong>三、获取招标文件</strong></span> </p><div style="font-family:FangSong;line-height:20px;"><p style="line-height:20px;"><span style="font-size: 18px;">    </span><span style="font-size: 18px; text-decoration: none;line-height:20px;">时间：<span class="bookmark-item uuid-1587980024345 code-23003 addWord date-selection-cls">/</span>至<span class="bookmark-item uuid-1588129524349 code-23004 addWord date-selection-cls readonly">2021年07月15日</span> ，每天上午<span class="bookmark-item uuid-1594624027756 code-23005 addWord morning-time-section-selection-cls">00:00至12:00</span> ，下午<span class="bookmark-item uuid-1594624265677 code-23006 addWord afternoon-time-section-selection-cls">12:00至23:59</span>（北京时间，线上获取法定节假日均可，线下获取文件法定节假日除外）</span></p><p><span style="font-size: 18px;">    地点（网址）：<span class="bookmark-item uuid-1588129635457 code-23007 addWord single-line-text-input-box-cls readonly">政采云平台(https://www.zcygov.cn/)</span> </span></p><p><span style="font-size: 18px;">    方式：<span class="bookmark-item uuid-1595940713919 code-AM01400046 editDisable single-line-text-input-box-cls readonly">供应商登录政采云平台https://www.zcygov.cn/在线申请获取采购文件（进入“项目采购”应用，在获取采购文件菜单中选择项目，申请获取采购文件）</span> </span></p><p><span style="font-size: 18px;">    售价（元）：<span class="bookmark-item uuid-1595940727161 code-23008 addWord numeric-input-box-cls">0</span></span> </p></div><p style="margin: 17px 0;text-align: justify;line-height: 20px;break-after: avoid;font-size: 18px;font-family: SimHei, sans-serif;white-space: normal"><span style="font-size: 18px;line-height:20px;"><strong>四、提交投标文件截止时间、开标时间和地点</strong></span></p><div style="font-family:FangSong;line-height:20px;"><p><span style="font-size: 18px;">   </span><span style="font-size: 18px; text-decoration: none;"> 提交投标文件截止时间：<span class="bookmark-item uuid-1595940760210 code-23011 addWord date-time-selection-cls">2021年07月15日 14:30</span>（北京时间）</span></p><p><span style="font-size: 18px;">   </span><span style="font-size: 18px; text-decoration: none;"> 投标地点（网址）：<span style="text-decoration: none; font-size: 18px;"><span class="bookmark-item uuid-1594624424199 code-23012 addWord single-line-text-input-box-cls readonly">政采云平台(https://www.zcygov.cn/)，本项目采用全流程电子化交易，无须参加现场开标会。</span></span></span> </p><p><span style="font-size: 18px; text-decoration: none;">    开标时间：<span style="text-decoration: none; font-size: 18px;"><span class="bookmark-item uuid-1594624443488 code-23013 addWord date-time-selection-cls readonly">2021年07月15日 14:30</span></span></span> </p><p><span style="font-size: 18px; text-decoration: none;">    开标地点（网址）：<span style="text-decoration: none; font-size: 18px;"><span class="bookmark-item uuid-1588129973591 code-23015 addWord single-line-text-input-box-cls readonly">浙江华诚建设工程咨询有限公司一楼开标室（杭州市富阳区富春街道凤浦路197号）；政采云平台(https://www.zcygov.cn/)</span></span></span>  </p></div><p style="margin: 17px 0;text-align: justify;line-height: 20px;break-after: avoid;font-size: 21px;font-family: SimHei, sans-serif;white-space: normal"><span style="font-size: 18px;line-height:20px;"><strong>五、公告期限</strong></span> </p><p><span style="font-size: 18px; font-family:FangSong;">    自本公告发布之日起5个工作日。</span></p><p style="margin: 17px 0;text-align: justify;line-height: 20px;break-after: avoid;font-size: 18px;font-family: SimHei, sans-serif;white-space: normal"><span style="font-size: 18px;"><strong>六、其他补充事宜</strong></span></p><p style="line-height: 1.5em;"><span style="font-size: 18px;font-family:FangSong;line-height:20px;">    1.供应商认为采购文件使自己的权益受到损害的，可以自获取采购文件之日或者采购文件公告期限届满之日（公告期限届满后获取采购文件的，以公告期限届满之日为准）起7个工作日内，对采购文件需求的以书面形式向采购人提出质疑，对其他内容的以书面形式向采购人和采购代理机构提出质疑。质疑供应商对采购人、采购代理机构的答复不满意或者采购人、采购代理机构未在规定的时间内作出答复的，可以在答复期满后十五个工作日内向同级政府采购监督管理部门投诉。质疑函范本、投诉书范本请到浙江政府采购网下载专区下载。<br/>    2.其他事项：<span class="bookmark-item uuid-1589194982864 code-31006 addWord multi-line-text-input-box-cls">本采购项目，中标单位与采购单位签订的政府采购合同适用于杭州市富阳区政府采购贷款政策，简称“政采贷”，具体内容可参阅《富阳区“政采贷”办理指引》http://www.fuyang.gov.cn/art/2020/7/28/art_1228923243_53244233.html</span> </span><span style="font-size: 18px;font-family:FangSong;line-height:20px;"> </span></p><p style="margin: 17px 0;text-align: justify;line-height: 32px;break-after: avoid;font-size: 21px;font-family: SimHei, sans-serif;white-space: normal"><span style="font-size: 18px;"><strong>七、对本次采购提出询问、质疑、投诉，请按以下方式联系</strong></span></p><div style="font-family:FangSong;line-height:20px;"><p><span style="font-size: 18px;">    1.采购人信息</span></p><p><span style="font-size: 18px;">    名    称：<span class="bookmark-item uuid-1596004663203 code-00014 editDisable interval-text-box-cls readonly">杭州市富阳区教育发展研究中心</span> </span></p><p><span style="font-size: 18px;">    地    址：<span class="bookmark-item uuid-1596004672274 code-00018 addWord single-line-text-input-box-cls">富春街道大桥路23号</span> </span></p><p><span style="font-size: 18px;">    传    真：<span class="bookmark-item uuid-1596004680354 code-00017  addWord"></span> </span> </p><p><span style="font-size: 18px;">    项目联系人（询问）：<span class="bookmark-item uuid-1596004688403 code-00015 editDisable single-line-text-input-box-cls readonly">高浩军</span> </span> </p><p><span style="font-size: 18px;">    项目联系方式（询问）：<span class="bookmark-item uuid-1596004695990 code-00016 editDisable single-line-text-input-box-cls readonly">0571-63331702</span> </span></p><p><span style="font-size: 18px;">    质疑联系人：<span class="bookmark-item uuid-1596004703774 code-AM014cg001 addWord single-line-text-input-box-cls">周国平</span> </span>   </p><p><span style="font-size: 18px;">    质疑联系方式：<span class="bookmark-item uuid-1596004712085 code-AM014cg002 addWord single-line-text-input-box-cls">0571-63331702</span> </span></p><p><span style="font-size: 18px;">    <br/>    2.采购代理机构信息</span>            </p><p><span style="font-size: 18px;">    名    称：<span class="bookmark-item uuid-1596004721081 code-00009 addWord interval-text-box-cls">华诚工程咨询集团有限公司</span> </span>            </p><p><span style="font-size: 18px;">    地    址：<span class="bookmark-item uuid-1596004728442 code-00013 editDisable single-line-text-input-box-cls readonly">浙江华诚建设工程咨询有限公司（富阳区凤浦路197号）</span> </span>            </p><p><span style="font-size: 18px;">    传    真：<span class="bookmark-item uuid-1596004736097 code-00012 addWord single-line-text-input-box-cls">0571-61772183</span> </span>            </p><p><span style="font-size: 18px;">    项目联系人（询问）：<span class="bookmark-item uuid-1596004745033 code-00010 editDisable single-line-text-input-box-cls readonly">李霖</span>  </span>            </p><p><span style="font-size: 18px;">    项目联系方式（询问）：<span class="bookmark-item uuid-1596004753055 code-00011 addWord single-line-text-input-box-cls">0571-63340544</span> </span></p><p><span style="font-size: 18px;">    质疑联系人：<span class="bookmark-item uuid-1596004761573 code-AM014cg003 addWord single-line-text-input-box-cls">孙莉</span> </span>            </p><p><span style="font-size: 18px;">    质疑联系方式：<span class="bookmark-item uuid-1596004769998 code-AM014cg004 addWord single-line-text-input-box-cls">0571-63340544</span> 　　　　　　</span>     </p><p><span style="font-size: 18px;">    <br/>    3.同级政府采购监督管理部门</span>            </p><p><span style="font-size: 18px;">    名    称：<span class="bookmark-item uuid-1596004778916 code-00019 addWord single-line-text-input-box-cls">杭州市富阳区财政局采监科</span> </span>            </p><p><span style="font-size: 18px;">    地    址：<span class="bookmark-item uuid-1596004787211 code-00023 addWord single-line-text-input-box-cls">杭州市富阳区富春路11号</span> </span>            </p><p><span style="font-size: 18px;">    传    真：<span class="bookmark-item uuid-1596004796586 code-00022 addWord single-line-text-input-box-cls">/</span> </span>            </p><p><span style="font-size: 18px;">    联系人 ：<span class="bookmark-item uuid-1596004804824 code-00020 addWord single-line-text-input-box-cls">赵靓</span> </span>            </p><p><span style="font-size: 18px;">    监督投诉电话：<span class="bookmark-item uuid-1596004812886 code-00021 addWord single-line-text-input-box-cls">0571-61772959</span> </span>          <br/>         </p></div></div><p><br/></p><div style="font-family:FangSong;">若对项目采购电子交易系统操作有疑问，可登录政采云（https://www.zcygov.cn/），点击右侧咨询小采，获取采小蜜智能服务管家帮助，或拨打政采云服务热线400-881-7190获取热线服务帮助。       </div></div><div style="font-family:FangSong;">CA问题联系电话（人工）：汇信CA 400-888-4636；天谷CA 400-087-8198。</div><p><br/></p> <blockquote style="display: none;"><span class="bookmark-item uuid-1596269980873 code-AM014acquirePurFileDetailUrl addWord single-line-text-input-box-cls"> <a class="purInfoPublishEditAcquireDetailUrl" id="purInfoPublishEditAcquireDetailUrl" href="https://www.zcygov.cn/bidding-entrust/#/acquirepurfile/launch/5e8ee1ad0bb8e120" style="padding: 2px 15px;margin: 0;font-size: 14px;border-radius: 4px;border: 1px solid transparent;font-weight: 400;white-space: nowrap;text-align: center;background-image: none;color: #fff;background-color: #1890ff;border-color: #1890ff;text-decoration:none;display:none" target="_blank">潜在供应商</a></span></blockquote> <br/></div></div><p><br/></p><p><br/></p><p><br/></p><p style='font-size' class='fjxx'>附件信息：</p><ul class="fjxx" style="font-size: 16px;margin-left: 38px;color: #0065ef;list-style-type: none;"><li><p style="display:inline-block"><a href="http://file.zhaotx.cn/files/webfile/20210624/docx/886849BBBA284C36A418C4E4C9ABA9AA.docx">富阳区2021届中小学幼儿园新教师暑期集中培训项目招标文件（定稿）.docx</a></p><p style="display:inline-block;margin-left:20px">162.1K</p></li></ul>"""
-    aaa = get_keys_value_from_content_ahead(content, "预算金额(元)", "3302")
-    print(aaa)
-    # ke = KeywordsExtract(content, [
-    #     # "项目名称",  # project_name
-    #     # "招标项目",
-    #     # "工程名称",
-    #     # "招标工程项目",
-    #     # "标项名称",
-    #
-    #     # "中标单位",  # successful_bidder
-    #
-    #     # "联系电话",  # contact_information
-    #     # "联系方式",
-    #     # "电\s*话",
-    #
-    #     # "联系人",  # liaison
-    #     # "联\s*系\s*人",
-    #     # "项目经理",
-    #     # "项目经理（负责人）",
-    #     # "项目负责人",
-    #
-    #
-    #     # "招标人",  # tenderee
-    #     # "招&nbsp;标&nbsp;人",
-    #     # "招标单位",
-    #     # "采购人信息[ψ \s]*?名[\s]+称",
-    #     # "招标代理机构",
-    #
-    #     # "招标代理",  # bidding_agency
-    #     # "采购代理机构信息[ψ \s]*?名[\s]+称",
-    #
-    #     # "项目编号",  # project_number
-    #     # "招标项目编号",
-    #     # "招标编号",
-    #     # "编号",
-    #     # "标段编号",
-    #
-    #     # "项目金额",  # budget_amount
-    #     "预算金额（元）",
-    #
-    #     # "中标价格",  # bid_amount
-    #     # "中标价",
-    #     # "中标（成交）金额(元)",
-    #
-    #     # "招标方式",
-    #
-    #     # "开标时间",  # tenderee
-    #     # "开启时间",
-    #
-    #     # "中标人",  # successful_bidder
-    #     # "中标人名称",
-    #     # "中标单位",
-    #     # "供应商名称",
-    # ], field_name='bid_amount')
-    # # ], field_name='bid_amount', area_id="3319")
-    # # ke = KeywordsExtract(content, ["项目编号"])
-    # ke.fields_regular = {
-    #     'project_name': [
-    #         r'%s[^ψ：:。，,、]*?[: ： \s]+?\s*?[ψ]*?([^ψ]+?)ψ',
-    #     ],
-    #     'project_number': [
-    #         r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-    #     ],
-    #     'budget_amount': [
-    #         r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-    #     ],
-    #     'tenderee': [
-    #         r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-    #     ],
-    #     'bidding_agency': [
-    #         r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-    #     ],
-    #     'liaison': [
-    #         r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
-    #     ],
-    #     'contact_information': [
-    #         r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
-    #     ],
-    #     'successful_bidder': [
-    #         r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-    #     ],
-    #     'bid_amount': [
-    #         r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-    #     ],
-    #     'tenderopen_time': [
-    #         r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-    #     ],
-    # }
-    #
-    # print(ke.get_value())
+    content = """
+<table width="932" border="0" cellspacing="0" cellpadding="0" align="center">
+    <tbody>
+    <tr>
+        <td>
+            <table id="tblInfo" cellspacing="1" cellpadding="1" width="100%" align="center" border="0" runat="server">
+                <tbody>
+                <tr>
+                    <td id="tdTitle" align="center" runat="server" height="70"><font color="" style="font-size: 25px">
+                        <b>
+                            长兴县和平镇城南工业园区污水管道疏通与检测服务项目交易公告
+                        </b></font>
 
-    # def get_accurate_pub_time(pub_time):
-    #     if not pub_time:
-    #         return ""
-    #     if pub_time_str := re.search(r"\d{4}-\d{1,2}-\d{1,2} \d{1,2}:\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group(0)
-    #     elif pub_time_str := re.search(r"\d{4}-\d{1,2}-\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group(0)
-    #     elif pub_time_str := re.search(r"\d{4}\.\d{1,2}\.\d{1,2} \d{1,2}:\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group(0).replace(".", "-")
-    #     elif pub_time_str := re.search(r"\d{4}\.\d{1,2}\.\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group(0).replace(".", "-")
-    #     elif pub_time_str := re.search(r"\d{4}/\d{1,2}/\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group(0).replace("/", "-")
-    #     elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日\d{1,2}:\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group().replace("年", "-").replace("月", "-").replace("日", " ")
-    #     elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日 \d{1,2}:\d{1,2}", pub_time):
-    #         pub_time_a = pub_time_str.group().replace("年", "-").replace("月", "-").replace("日", " ")
-    #     elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日", pub_time):
-    #         pub_time_a = pub_time_str.group(0).replace("年", "-").replace("月", "-").replace("日", "")
-    #     else:
-    #         pub_time_a = ""
-    #     return pub_time_a
+                    </td>
+                </tr>
+                <tr>
+                    <td height="29" align="center" bgcolor="#eeeeee">
+                        <font color="#545454" class="webfont">【信息时间：
+                            2021/4/30
+                            &nbsp;&nbsp;阅读次数：
+                            <script src="/cxweb/Upclicktimes.aspx?InfoID=bad034ba-4744-4a9e-8de1-e028c919d22a"></script>
+                            137
+                            】<a href="javascript:void(0)" onclick="window.print();"><font color="#545454"
+                                                                                          class="webfont">【我要打印】</font></a><a
+                                    href="javascript:window.close()"><font color="#545454"
+                                                                           class="webfont">【关闭】</font></a></font><font
+                            color="#000000">
 
-    # print(get_accurate_pub_time('2021年05月10日      09:00'))
+                    </font></td>
+                </tr>
+                <tr>
+                    <td height="10"></td>
+                </tr>
+                <tr>
+                    <td height="250" align="left" valign="top" class="infodetail" id="TDContent">
+                        <div>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 5pt; MARGIN-TOP: 5pt; WORD-BREAK: break-all; TEXT-ALIGN: center; LINE-HEIGHT: 20pt; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-pagination: widow-orphan"
+                               align="center"><b><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; FONT-WEIGHT: bold; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                    face="宋体">长兴县和平镇城南工业园区污水管道疏通与检测服务项目</font></span></b><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><!--?xml:namespace prefix = "o" /--><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 5pt; MARGIN-TOP: 5pt; WORD-BREAK: break-all; TEXT-ALIGN: center; LINE-HEIGHT: 20pt; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-pagination: widow-orphan"
+                               align="center"><b><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; FONT-WEIGHT: bold; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                    face="宋体">【发包公告】</font></span></b><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
+                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                        face="宋体">本发包项目</font><font face="宋体">“长兴县和平镇城南工业园区污水管道疏通与检测服务项目”已批准实施，发包人为长兴县和平镇人民政府，资金来源：自筹，项目已具备发包条件，现对该项目进行公开发包。</font></span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
+                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                        face="宋体">1. 项目概况与发包范围：和平镇城南工业园区内20公里污水管道清淤疏通、窨井清理、封堵、抽水、CCTV检测（制作光盘及书面报告）及部分管道堵头拆除等工作内容。工程量总价低于50万元，具体内容详见发包文件。</font></span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
+                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                        face="宋体">2. 承包人资格要求：（1）具有独立承担民事责任的能力；（2）具有良好的商业信誉和今后服务；（3）具有履行合同所必需的设备和专业技术能力；（4）具有独立法人资格，具有排水管道养护资质证书，具有CCTV检测资质；（5）此项目不接受联合体投标。</font></span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
+                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                        face="宋体">3.公告及报名受理时间：</font></span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
+                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                        face="宋体">承包申请人报名者须带以下材料（复印件须盖单位公章）：</font></span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
+                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                        face="宋体">（</font><font face="宋体">1）单位介绍信（原件并注明企业联系电话及传真）；</font></span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
+                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                        face="宋体">（</font><font
+                                        face="宋体">2）企业营业执照、企业资质证书复印件（复印件加盖单位公章）；</font></span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
+                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                        face="宋体">（</font><font face="宋体">3）</font></span><b><span
+                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; FONT-WEIGHT: bold; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                    face="宋体">授权委托书，授权委托人为本公司正式员工，需提供身份证及有效社保证明（原件及复印件）。</font></span></b><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
+                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                        face="宋体">报名时间和地点：</font><font face="宋体">2021年04月30日至 2021年05月07日，每日上午8：30-11：00，下午14：00-16：30（双休日除外）截止时间后恕不受理。到湖州卓然工程管理有限公司（长兴县太湖街道中央大道2598号交通投资集团大厦A座18楼南1818室）报名（截止时间后恕不受理），报名费300元。</font></span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
+                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                        face="宋体">4.联系方式：</font></span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
+                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                        face="宋体">发包人：长兴县和平镇人民政府</font></span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
+                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                        face="宋体">发包代理机构：湖州卓然工程管理有限公司</font></span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
+                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                        face="宋体">联系人：江工</font> <font face="宋体">联系电话：</font><font
+                                        face="宋体">0572-6517626</font></span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: right; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none"
+                               align="right"><span
+                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                    face="宋体">长兴县和平镇人民政府</font> </span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: right; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none"
+                               align="right"><span
+                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                    face="宋体">湖州卓然工程管理有限公司</font> </span><span
+                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: right; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none"
+                               align="right"><span
+                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                    face="宋体">长兴县和平镇招投标中心</font></span><span
+                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                            <p class="MsoNormal"
+                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: right; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none"
+                               align="right"><span
+                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
+                                    face="宋体">2021年04月30日</font></span><span
+                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
+                            </p>
+                        </div>
+                        <div>
+                 
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+
+                        <br>
+                    </td>
+                </tr>
+                <tr id="trAttach" runat="server">
+                    <td align="left">
+                        <table id="filedown" cellspacing="1" cellpadding="1" width="100%" border="0" runat="server">
+                            <tbody>
+                            <tr>
+                                <td valign="top" style="font-size: medium;"><b>
+
+                                </b></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td height="30"></td>
+                </tr>
+                <!--会员或非会员按钮-->
+                <tr>
+                    <td></td>
+                </tr>
+                <!--答疑变更公告-->
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+    """
+    ke = KeywordsExtract(content, [
+        "项目名称",  # project_name
+        "招标项目",
+        "工程名称",
+        "招标工程项目",
+        "标项名称",
+
+        # "中标单位",  # successful_bidder
+        #
+        # "联系电话",  # contact_information
+        # "联系方式",
+        # "电\s*话",
+
+        # "联系人",  # liaison
+        # "联\s*系\s*人",
+        # "项目经理",
+        # "项目经理（负责人）",
+        # "项目负责人",
+
+
+        # "招标人",  # tenderee
+        # "招&nbsp;标&nbsp;人",
+        # "招标单位",
+        # "采购人信息[ψ \s]*?名[\s]+称",
+        # "招标代理机构",
+
+        # "招标代理",  # bidding_agency
+        # "采购代理机构信息[ψ \s]*?名[\s]+称",
+
+        # "项目编号",  # project_number
+        # "招标项目编号",
+        # "招标编号",
+        # "编号",
+
+        # "项目金额",  # budget_amount
+        # "预算金额（元）",
+
+        # "中标价格",  # bid_amount
+        # "中标价",
+        # "中标（成交）金额(元)",
+
+        # "招标方式",
+
+        # "开标时间",  # tenderee
+        # "开启时间",
+
+        # "中标人",  # successful_bidder
+        # "中标人名称",
+        # "中标单位",
+        # "供应商名称",
+    # ], field_name='project_name')
+    ], field_name='project_name', area_id="3319")
+    # ke = KeywordsExtract(content, ["项目编号"])
+    ke.fields_regular = {
+        'project_name': [
+            r'%s[^ψ：:。，,、]*?[: ： \s]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'project_number': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'budget_amount': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'tenderee': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'bidding_agency': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'liaison': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+        ],
+        'contact_information': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+        ],
+        'successful_bidder': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'bid_amount': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'tenderopen_time': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+    }
+
+    print(ke.get_value())
+
 
