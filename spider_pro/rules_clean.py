@@ -1665,9 +1665,9 @@ class KeywordsExtract:
                     sp_data = self._value.split(unit)
                     if sp_data:
                         self._value = sp_data[0]
-                        if unit == '元':
+                        if unit == '万元':
                             try:
-                                self._value = str(int(self._value)/10000)
+                                self._value = str(int(self._value)*10000)
                             except Exception as e:
                                 self._value = ''
 
