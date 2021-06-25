@@ -1,17 +1,12 @@
 # -*- coding:utf-8 -*-
-import os
-import sys
-
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-
 import math
-
-
 import re
 import pandas
-from spider_pro import utils
 import copy
 from lxml import etree
+from html_table_extractor.extractor import Extractor
+
+from spider_pro import utils
 
 regular_plans = {
     # 0: "代\s*理[,|，]名\s*称.*盖\s*章.*[)|）][,|，](?P<tenderee>.*?)[,|，].*?地.*?址[,|，](?P<address>.*?)[,|，].*?联.*?系.*?人[,|，](?P<liaison>.*?)[,|，].*?电.*?话[,|，](?P<contact_information>\d{4}-\d{8}?|\d{11}?)[,|，]",
@@ -895,7 +890,8 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
                 data_dict = {}
                 doc = etree.HTML(content)
                 # 如果是意向采购需求
-                if doc.xpath("//table[@class='template-bookmark uuid-1609312554335 code-publicNoticeOfPurchaseIntentionDetailTable text-意向公开明细']"):
+                if doc.xpath(
+                        "//table[@class='template-bookmark uuid-1609312554335 code-publicNoticeOfPurchaseIntentionDetailTable text-意向公开明细']"):
                     title_header = doc.xpath("//th//text()")
                     sectionNo_list = doc.xpath("//td[@class='code-sectionNo']//text()")
                     purchaseProjectName_list = doc.xpath("//td[@class='code-purchaseProjectName']//text()")
@@ -906,7 +902,7 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
                         p_Name = ";".join(purchaseProjectName_list)
                         p_Detail = ";".join(purchaseRequirementDetail_list)
                         p_Time = ";".join(estimatedPurchaseTime_list)
-                        Price = str(sum(list(map(int, budgetPrice_list)))/10000)
+                        Price = str(sum(list(map(int, budgetPrice_list))) / 10000)
                         data_dict[title_header[1]] = p_Name
                         data_dict[title_header[2]] = p_Detail
                         data_dict[title_header[3]] = Price
@@ -918,7 +914,7 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
                         Price = budgetPrice_list[0]
                         data_dict[title_header[1]] = p_Name
                         data_dict[title_header[2]] = p_Detail
-                        data_dict[title_header[3]] = str(int(Price)/10000)
+                        data_dict[title_header[3]] = str(int(Price) / 10000)
                         data_dict[title_header[4]] = p_Time
                     for keys in keys_str_list:
                         value = data_dict.get(keys)
@@ -960,52 +956,52 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
                     ],
                 }
                 if re.findall("金额", key):
-                    return str(int(ke.get_value())/10000)
+                    return str(int(ke.get_value()) / 10000)
                 return ke.get_value()
 
-                    # 匹配带表格标记的文本内容
-                    # if re.findall(fr"</td>", content):
-                    #     data_dict = {}
-                    #     doc = etree.HTML(content)
-                    #     content_list = doc.xpath("//div[@class='WordSection1']//tr//text()")
-                    #
-                    #     if not content_list:
-                    #         content_list = doc.xpath("//div[@class='Section0']//text()")
-                    #         content_list.remove("工程概况")
-                    #         b_list = content_list[1::2]
-                    #         c_list = content_list[0::2]
-                    #         for i, t in zip(b_list, c_list):
-                    #             data_dict[t] = i
-                    #         for keys in keys_str_list:
-                    #             value = data_dict.get(keys)
-                    #             if value:
-                    #                 return value
-                    #     else:
-                    #         # content_list.remove("工程概况")
-                    #         a_list = []
-                    #         for item in content_list:
-                    #             if re.search(("\S+"), item):
-                    #                 a_list.append(item)
-                    #                 b_list = a_list[1::2]
-                    #                 c_list = a_list[0::2]
-                    #                 for i, t in zip(b_list, c_list):
-                    #                     data_dict[t] = i
-                    #                 for keys in keys_str_list:
-                    #                     value = data_dict.get(keys)
-                    #                     if value:
-                    #                         return value
-                            # info_list = content_str.split("\n  \n \n \n  \n  ")
-                            # for keys in keys_str_list:
-                            #     for item in info_list:
-                            #         data_dict[item.split("\n  \n  \n  ")[0]] = item.split("\n  \n  \n  ")[1]
-                            #         value = data_dict.get(keys)
-                            #         if value:
-                            #             return value
-                        # return value
+                # 匹配带表格标记的文本内容
+                # if re.findall(fr"</td>", content):
+                #     data_dict = {}
+                #     doc = etree.HTML(content)
+                #     content_list = doc.xpath("//div[@class='WordSection1']//tr//text()")
+                #
+                #     if not content_list:
+                #         content_list = doc.xpath("//div[@class='Section0']//text()")
+                #         content_list.remove("工程概况")
+                #         b_list = content_list[1::2]
+                #         c_list = content_list[0::2]
+                #         for i, t in zip(b_list, c_list):
+                #             data_dict[t] = i
+                #         for keys in keys_str_list:
+                #             value = data_dict.get(keys)
+                #             if value:
+                #                 return value
+                #     else:
+                #         # content_list.remove("工程概况")
+                #         a_list = []
+                #         for item in content_list:
+                #             if re.search(("\S+"), item):
+                #                 a_list.append(item)
+                #                 b_list = a_list[1::2]
+                #                 c_list = a_list[0::2]
+                #                 for i, t in zip(b_list, c_list):
+                #                     data_dict[t] = i
+                #                 for keys in keys_str_list:
+                #                     value = data_dict.get(keys)
+                #                     if value:
+                #                         return value
+                # info_list = content_str.split("\n  \n \n \n  \n  ")
+                # for keys in keys_str_list:
+                #     for item in info_list:
+                #         data_dict[item.split("\n  \n  \n  ")[0]] = item.split("\n  \n  \n  ")[1]
+                #         value = data_dict.get(keys)
+                #         if value:
+                #             return value
+                # return value
 
-                    # data_dict = {}
-                    # doc = etree.HTML(content)
-                    # content_str = doc.xpath("//div[@class='MainList']/div[2]/div//text()")
+                # data_dict = {}
+                # doc = etree.HTML(content)
+                # content_str = doc.xpath("//div[@class='MainList']/div[2]/div//text()")
         except Exception as e:
             print("清洗出错")
             print(e)
@@ -1176,7 +1172,8 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
             print(e)
             return ""
     elif area_id in ["3309", "3320", "3319"]:
-        ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id, title=title)
+        ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id,
+                             title=title)
         ke.fields_regular = {
             'project_name': [
                 r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
@@ -1293,8 +1290,8 @@ class KeywordsExtract:
         self.msg = ''
         self.keysss = [
             "招标项目", "中标（成交）金额(元)", "代理机构", "中标供应商名称", "工程名称", "项目名称", "成交价格", "招标工程项目", "项目编号", "招标项目编号",
-            "招标编号", "招标人", "招 标 人", "发布时间", "招标单位", "招标代理:", "招标代理：", "招标代理机构", "项目金额", "预算金额（元）", "招标估算价",
-            "中标（成交）金额（元）", "联系人", "联 系 人", "项目经理（负责人）", "建设单位", "中标单位",
+            "招标编号", "招标人", "发布时间", "招标单位", "招标代理:", "招标代理：", "招标代理机构", "项目金额", "预算金额（元）", "招标估算价",
+            "中标（成交）金额（元）", "联系人", "项目经理（负责人）", "建设单位", "中标单位",
         ]
         # 各字段对应的规则
         self.fields_regular = {
@@ -1409,32 +1406,44 @@ class KeywordsExtract:
         """
         count = 0
         try:
-            assert t_data[0], 'TH NODE.'
-        except:
-            pass
+            t_data = t_data[0]
+        except Exception as e:
+            self.msg = 'error:{0}'.format(e)
         else:
-            for t_data_key in t_data[0]:
+            for t_data_key in t_data:
+                t_data_key = ''.join(t_data_key.split())
                 if t_data_key in self.keysss:
                     count += 1
         return True if count >= 2 else False
 
-        # status = 1
-        # try:
-        #     doc = etree.HTML(table_content)
-        #     tr_els = doc.xpath('//tr')
-        #     tds = []
-        #     for tr_el in tr_els:
-        #         td_els = tr_el.xpath('./td') or tr_el.xpath('./th')
-        #         tds.append(len(td_els))
-        #     if len(set(tds)) == 1:
-        #         status = 0
-        # except Exception as e:
-        #     print(e)
-        # return status
-
     @staticmethod
     def check_has_table(doc_el):
         return True if doc_el.xpath('.//table') else False
+
+    @staticmethod
+    def get_h_val(c_index, key, tr):
+        c_index += 1
+        try:
+            next_val = ''.join(tr[c_index].split())
+        except:
+            pass  # get lost
+        else:
+            if next_val == key:
+                next_val = KeywordsExtract.get_h_val(c_index, key, tr)
+
+            return next_val
+
+    @staticmethod
+    def get_val_from_table(result, key):
+        for tr in result:
+            for c_index, td in enumerate(tr):
+                td = ''.join(td.split())
+                if td == key:
+                    # next
+                    next_val = KeywordsExtract.get_h_val(c_index, key, tr)
+                    if next_val:
+                        return next_val
+        return ''
 
     def _extract_from_table(self):
         """
@@ -1456,60 +1465,22 @@ class KeywordsExtract:
                         t_data = pandas.read_html(table_txt)
                         if t_data:
                             t_data = t_data[0]
-                            t_dics = t_data.to_dict()
+                            # t_dics = t_data.to_dict()
 
                             # 判断横向|纵向
                             # tr下td数一致     横向
                             # tr下td数不一致    纵向
+                            key = ''.join(key.split())
+                            extractor = Extractor(table_txt.replace('\n', '').replace('\xa0', ''))
+                            extractor.parse()
+                            result = extractor.return_list()
                             if self.is_horizon(t_data):
-                                c_index = 1
-                                for _, t_dic in t_dics.items():
-                                    tag = c_index % 2
-                                    # 单数key  双数value
-                                    if tag:  # 单数
-                                        for t_index, td in t_dic.items():
-                                            com = re.compile(key)
-                                            ks = com.findall(td)
-                                            if ks or td == key:
-                                                c_key_dic = t_dics.get(c_index)
-                                                self._value = c_key_dic.get(t_index)
-                                                if isinstance(self._value, float):
-                                                    if math.isnan(self._value):
-                                                        self._value = ''
-                                                        continue
-                                                return
-                                    c_index += 1
+                                self._value = KeywordsExtract.get_val_from_table(result, key)
                             else:
-                                for t_key, t_dic in t_dics.items():
-                                    try:
-                                        assert isinstance(t_key, int), 'TH NODE.'
-                                    except:
-                                        com = re.compile(key)
-                                        ks = com.findall(t_key)
-                                        if ks or t_key == key:
-                                            self._value = t_dic.get(0, '')
-
-                                            if isinstance(self._value, float):
-                                                if math.isnan(self._value):
-                                                    self._value = ''
-                                                    continue
-                                            return
-                                    else:
-                                        t_dic_len = len(t_dic)
-                                        if t_dic_len > 1:
-                                            c_key = t_dic.get(0, '')
-
-                                            for t in range(1, len(t_dic)):
-                                                com = re.compile(key)
-                                                ks = com.findall(c_key)
-                                                if ks or key == c_key:
-                                                    self._value = t_dic.get(t, '')
-
-                                                    if isinstance(self._value, float):
-                                                        if math.isnan(self._value):
-                                                            self._value = ''
-                                                            continue
-                                                    return
+                                result = zip(*result)
+                                self._value = KeywordsExtract.get_val_from_table(result, key)
+                            if self._value:
+                                return
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
 
@@ -1528,7 +1499,10 @@ class KeywordsExtract:
             self.fields_regular_with_symbol[self.field_name] = regular_list
 
     def get_val_from_title(self):
-        if self.field_name == 'project_name':
+        """
+        从标题获取项目名称
+        """
+        if self.field_name == 'project_name' and self.title:
             for name in ['项目', '工程']:
                 if name in self.title:
                     self._value = ''.join([self.title.split(name)[0], name])
@@ -1607,7 +1581,6 @@ class KeywordsExtract:
                 if self.field_name == 'project_name':
                     regular_list = [
                         r'概况[：:]([\u4e00-\u9fa5 \s]*?项目)[， ,]',
-                        r'([\u4e00-\u9fa5 （ ）]*?工程)',
                     ]
                 if self.field_name == 'tenderee':
                     regular_list = [
@@ -1676,7 +1649,7 @@ class KeywordsExtract:
                         self._value = sp_data[0]
                         if unit == '万元':
                             try:
-                                self._value = str(int(self._value)*10000)
+                                self._value = str(int(self._value) * 10000)
                             except Exception as e:
                                 self._value = ''
 
@@ -1691,214 +1664,510 @@ class KeywordsExtract:
 
 if __name__ == '__main__':
     content = """
-<table width="932" border="0" cellspacing="0" cellpadding="0" align="center">
-    <tbody>
-    <tr>
-        <td>
-            <table id="tblInfo" cellspacing="1" cellpadding="1" width="100%" align="center" border="0" runat="server">
-                <tbody>
-                <tr>
-                    <td id="tdTitle" align="center" runat="server" height="70"><font color="" style="font-size: 25px">
-                        <b>
-                            长兴县和平镇城南工业园区污水管道疏通与检测服务项目交易公告
-                        </b></font>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td height="29" align="center" bgcolor="#eeeeee">
-                        <font color="#545454" class="webfont">【信息时间：
-                            2021/4/30
-                            &nbsp;&nbsp;阅读次数：
-                            <script src="/cxweb/Upclicktimes.aspx?InfoID=bad034ba-4744-4a9e-8de1-e028c919d22a"></script>
-                            137
-                            】<a href="javascript:void(0)" onclick="window.print();"><font color="#545454"
-                                                                                          class="webfont">【我要打印】</font></a><a
-                                    href="javascript:window.close()"><font color="#545454"
-                                                                           class="webfont">【关闭】</font></a></font><font
-                            color="#000000">
-
-                    </font></td>
-                </tr>
-                <tr>
-                    <td height="10"></td>
-                </tr>
-                <tr>
-                    <td height="250" align="left" valign="top" class="infodetail" id="TDContent">
-                        <div>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 5pt; MARGIN-TOP: 5pt; WORD-BREAK: break-all; TEXT-ALIGN: center; LINE-HEIGHT: 20pt; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-pagination: widow-orphan"
-                               align="center"><b><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; FONT-WEIGHT: bold; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                    face="宋体">长兴县和平镇城南工业园区污水管道疏通与检测服务项目</font></span></b><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><!--?xml:namespace prefix = "o" /--><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 5pt; MARGIN-TOP: 5pt; WORD-BREAK: break-all; TEXT-ALIGN: center; LINE-HEIGHT: 20pt; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-pagination: widow-orphan"
-                               align="center"><b><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; FONT-WEIGHT: bold; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                    face="宋体">【发包公告】</font></span></b><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
-                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                        face="宋体">本发包项目</font><font face="宋体">“长兴县和平镇城南工业园区污水管道疏通与检测服务项目”已批准实施，发包人为长兴县和平镇人民政府，资金来源：自筹，项目已具备发包条件，现对该项目进行公开发包。</font></span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
-                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                        face="宋体">1. 项目概况与发包范围：和平镇城南工业园区内20公里污水管道清淤疏通、窨井清理、封堵、抽水、CCTV检测（制作光盘及书面报告）及部分管道堵头拆除等工作内容。工程量总价低于50万元，具体内容详见发包文件。</font></span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
-                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                        face="宋体">2. 承包人资格要求：（1）具有独立承担民事责任的能力；（2）具有良好的商业信誉和今后服务；（3）具有履行合同所必需的设备和专业技术能力；（4）具有独立法人资格，具有排水管道养护资质证书，具有CCTV检测资质；（5）此项目不接受联合体投标。</font></span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
-                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                        face="宋体">3.公告及报名受理时间：</font></span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
-                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                        face="宋体">承包申请人报名者须带以下材料（复印件须盖单位公章）：</font></span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
-                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                        face="宋体">（</font><font face="宋体">1）单位介绍信（原件并注明企业联系电话及传真）；</font></span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
-                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                        face="宋体">（</font><font
-                                        face="宋体">2）企业营业执照、企业资质证书复印件（复印件加盖单位公章）；</font></span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
-                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                        face="宋体">（</font><font face="宋体">3）</font></span><b><span
-                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; FONT-WEIGHT: bold; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                    face="宋体">授权委托书，授权委托人为本公司正式员工，需提供身份证及有效社保证明（原件及复印件）。</font></span></b><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
-                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                        face="宋体">报名时间和地点：</font><font face="宋体">2021年04月30日至 2021年05月07日，每日上午8：30-11：00，下午14：00-16：30（双休日除外）截止时间后恕不受理。到湖州卓然工程管理有限公司（长兴县太湖街道中央大道2598号交通投资集团大厦A座18楼南1818室）报名（截止时间后恕不受理），报名费300元。</font></span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
-                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                        face="宋体">4.联系方式：</font></span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
-                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                        face="宋体">发包人：长兴县和平镇人民政府</font></span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
-                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                        face="宋体">发包代理机构：湖州卓然工程管理有限公司</font></span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: left; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none">
-                                <span style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                        face="宋体">联系人：江工</font> <font face="宋体">联系电话：</font><font
-                                        face="宋体">0572-6517626</font></span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: right; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none"
-                               align="right"><span
-                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                    face="宋体">长兴县和平镇人民政府</font> </span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: right; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none"
-                               align="right"><span
-                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                    face="宋体">湖州卓然工程管理有限公司</font> </span><span
-                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: right; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none"
-                               align="right"><span
-                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                    face="宋体">长兴县和平镇招投标中心</font></span><span
-                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                            <p class="MsoNormal"
-                               style="MARGIN-BOTTOM: 7.8pt; MARGIN-TOP: 7.8pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: right; LINE-HEIGHT: 150%; TEXT-INDENT: 21pt; mso-pagination: widow-orphan; mso-para-margin-top: 0.5000gd; mso-para-margin-bottom: 0.5000gd; mso-layout-grid-align: none"
-                               align="right"><span
-                                    style="FONT-SIZE: 10.5pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><font
-                                    face="宋体">2021年04月30日</font></span><span
-                                    style="FONT-SIZE: 12pt; FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); LINE-HEIGHT: 150%; mso-spacerun: 'yes'; mso-font-kerning: 0.0000pt"><o:p></o:p></span>
-                            </p>
-                        </div>
-                        <div>
-                 
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td align="right">
-
-                        <br>
-                    </td>
-                </tr>
-                <tr id="trAttach" runat="server">
-                    <td align="left">
-                        <table id="filedown" cellspacing="1" cellpadding="1" width="100%" border="0" runat="server">
-                            <tbody>
-                            <tr>
-                                <td valign="top" style="font-size: medium;"><b>
-
-                                </b></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td height="30"></td>
-                </tr>
-                <!--会员或非会员按钮-->
-                <tr>
-                    <td></td>
-                </tr>
-                <!--答疑变更公告-->
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<div id="jyxxChangeHeight" class="article-info">
+    <h1 class="infoContentTitle">发展大厦电梯采购及安装项目</h1>
+    <p class="info-sources">
+                                    <span style="font-size:14px;">
+                                    【&nbsp;信息发布时间：2021-06-22&nbsp;&nbsp;阅读次数：<span id="infoViewCount">233</span>】
+                                    <span style="color:black;font-size:14px">
+                                    【<a style="color:black;" href="javascript:window.print();">我要打印</a>】
+                                    【<a style="cursor:pointer;" onclick="closeFunction()">关闭</a>】
+                                    </span>
+                                </span></p>
+    <div class="con" style="font-size: 14px;line-height: 28px;margin: 30px 30px;position: relative;">
+        <table width="977" style="width: 732.4pt; margin-left: 0pt; border-collapse: collapse;" border="0"
+               cellspacing="0" cellpadding="0">
+            <tbody>
+            <tr style="height: 31.9pt;">
+                <td width="977" style="padding: 0cm 5.4pt; width: 732.4pt; height: 31.9pt;" colspan="6">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <b><span style="font-family: 宋体; font-size: 18pt;">嘉兴市南湖区公共资源交易中心工程信息发布表</span></b></p>
+                </td>
+            </tr>
+            <tr style="height: 20.7pt;">
+                <td width="188"
+                    style="padding: 0cm 5.4pt; border: 1pt solid windowtext; border-image: none; width: 140.7pt; height: 20.7pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">项 目 编 号</span></p>
+                </td>
+                <td width="340" nowrap=""
+                    style="border-width: 1pt 1pt 1pt medium; border-style: solid solid solid none; border-color: windowtext windowtext windowtext currentColor; padding: 0cm 5.4pt; border-image: none; width: 255.1pt; height: 20.7pt;"
+                    colspan="2">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;NH20210622002</span></p>
+                </td>
+                <td width="159"
+                    style="border-width: 1pt 1pt 1pt medium; border-style: solid solid solid none; border-color: windowtext windowtext windowtext currentColor; padding: 0cm 5.4pt; border-image: none; width: 118.95pt; height: 20.7pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">信 息 类 别</span></p>
+                </td>
+                <td width="290"
+                    style="border-width: 1pt 1pt 1pt medium; border-style: solid solid solid none; border-color: windowtext black windowtext currentColor; padding: 0cm 5.4pt; width: 217.65pt; height: 20.7pt;"
+                    colspan="2">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;</span><span
+                            style="font-family: 宋体; font-size: 10pt;">设备</span></p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">发 布 时 间</span></p>
+                </td>
+                <td width="340" nowrap=""
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 255.1pt; height: 20.15pt;"
+                    colspan="2">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">2021-6-23</span></p>
+                </td>
+                <td width="159"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 118.95pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">交 易 方 式</span></p>
+                </td>
+                <td width="290"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 217.65pt; height: 20.15pt;"
+                    colspan="2">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">公开</span></p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">工 程 名 称</span></p>
+                </td>
+                <td width="789"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
+                    colspan="5">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;</span><span
+                            style="font-family: 宋体; font-size: 10pt;">发展大厦电梯采购及安装项目</span></p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">建设单位（盖章）</span></p>
+                </td>
+                <td width="789"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
+                    colspan="5">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;</span><span
+                            style="font-family: 宋体; font-size: 10pt;">嘉兴市富华投资有限公司</span></p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">招标代理机构（盖章）</span></p>
+                </td>
+                <td width="789" nowrap=""
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
+                    colspan="5">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;</span><span
+                            style="font-family: 宋体; font-size: 10pt;">浙江华耀建设咨询有限公司</span></p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">总 投 资</span></p>
+                </td>
+                <td width="163" nowrap=""
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 122.4pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;75</span><span
+                            style="font-family: 宋体; font-size: 10pt;">万元</span></p>
+                </td>
+                <td width="177"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 132.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">投 资 性 质</span></p>
+                </td>
+                <td width="159"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 118.95pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">自筹</span></p>
+                </td>
+                <td width="152"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 114.1pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">招标部分估算价</span></p>
+                </td>
+                <td width="138"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 103.55pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;75</span><span
+                            style="font-family: 宋体; font-size: 10pt;">万元</span></p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">总 面 积</span></p>
+                </td>
+                <td width="163" nowrap=""
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 122.4pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">/</span></p>
+                </td>
+                <td width="177"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 132.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">工 程 类 别</span></p>
+                </td>
+                <td width="159"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 118.95pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">自行判定</span></p>
+                </td>
+                <td width="152" nowrap=""
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 114.1pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">结 构</span></p>
+                </td>
+                <td width="138"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 103.55pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">/</span></p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">最 大 跨 度</span></p>
+                </td>
+                <td width="163"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 122.4pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">/</span></p>
+                </td>
+                <td width="177"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 132.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">幢 数</span></p>
+                </td>
+                <td width="159"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 118.95pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">/</span></p>
+                </td>
+                <td width="152"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 114.1pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">层 数</span></p>
+                </td>
+                <td width="138"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 103.55pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">/</span></p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">工 期（日历天）</span></p>
+                </td>
+                <td width="163"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 122.4pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">详见招标文件要求</span></p>
+                </td>
+                <td width="177"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 132.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">工 程 地 点</span></p>
+                </td>
+                <td width="449"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 336.6pt; height: 20.15pt;"
+                    colspan="3">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;&nbsp;</span><span
+                            style="font-family: 宋体; font-size: 10pt;">解放街道勤俭路<span>159</span>号</span></p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">质 量 要 求</span></p>
+                </td>
+                <td width="163" nowrap=""
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 122.4pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">合格</span></p>
+                </td>
+                <td width="177" nowrap=""
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 132.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">联 系 人</span></p>
+                </td>
+                <td width="159"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 118.95pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;</span><span
+                            style="font-family: 宋体; font-size: 10pt;">吴先生</span></p>
+                </td>
+                <td width="152"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 114.1pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">联 系 电 话</span></p>
+                </td>
+                <td width="138"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 103.55pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">0573-82725567</span></p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">评 标 办 法</span></p>
+                </td>
+                <td width="163" nowrap=""
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 122.4pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">综合评分法</span></p>
+                </td>
+                <td width="177" nowrap=""
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 132.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">资格审查方式</span></p>
+                </td>
+                <td width="159"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 118.95pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">资格后审</span></p>
+                </td>
+                <td width="152"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 114.1pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">是否政府投资项目</span></p>
+                </td>
+                <td width="138"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 103.55pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">是</span></p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">联 系 地 址</span></p>
+                </td>
+                <td width="789" nowrap=""
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
+                    colspan="5">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">嘉兴市中山西路<span>299</span>号兴业大厦西<span>521</span>室</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">企业资质要求</span></p>
+                </td>
+                <td width="789"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
+                    colspan="5">
+                    <p align="left"
+                       style="margin: 0cm 0cm 0pt; text-align: left; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体;">同时具有：</span><span>1.</span><span style="font-family: 宋体;">具有独立法人资格的电梯制造商或经销商；</span><span>2.</span><span
+                            style="font-family: 宋体;">所投标电梯产品制造商须具有①、②项其中之一：①具有质检部门颁发的有效期内特种设备制造许可证乘客电梯</span><span> A </span><span
+                            style="font-family: 宋体;">级及以上等级证书、特种设备安装改造维修许可证</span><span> A </span><span
+                            style="font-family: 宋体;">级及以上等级证书。②具有国家市场监督管理总局颁发的有效期内的中华人民共和国特种设备生产许可证</span><span>-</span><span
+                            style="font-family: 宋体;">许可项目：电梯制造（含安装、修理、改造）</span><span>-</span><span
+                            style="font-family: 宋体;">许可子项目：有机房客梯，且具体产品范围型式试验证书满足本次招标电梯技术参数要求。</span><span>3</span><span
+                            style="font-family: 宋体;">、投标人若为经销商，具有制造商针对本招标项目出具的唯一产品授权委托书，且授权的电梯制造商必须满足上述对电梯制造商的要求。</span><span>4</span><span
+                            style="font-family: 宋体;">、投标品牌在嘉兴市设有完善的售后服务网点。</span><span>5</span><span
+                            style="font-family: 宋体;">、所投电梯贴牌产品（</span><span>OEM </span><span style="font-family: 宋体;">产品）不在本次招标范围。</span><span>6</span><span
+                            style="font-family: 宋体;">、本次投标不允许联合体投标。</span></p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">项目经理资质<span>/</span>负责人要求</span></p>
+                </td>
+                <td width="789"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
+                    colspan="5">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">/</span></p>
+                </td>
+            </tr>
+            <tr style="height: 21.75pt;">
+                <td width="188"
+                    style="border-width: medium 1pt; border-style: none solid; border-color: currentColor windowtext; padding: 0cm 5.4pt; width: 140.7pt; height: 21.75pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">其 它 条 件</span></p>
+                </td>
+                <td width="789"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 21.75pt;"
+                    colspan="5">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">招标文件的获取：招标文件（补充文件）请以投标人账号登录“南湖区公共资源交易中心（<span>http://www.nhggzyjy.com</span>）”自行下载</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="padding: 0cm 5.4pt; border: 1pt solid windowtext; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">报 名 地 址</span></p>
+                </td>
+                <td width="789" nowrap=""
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
+                    colspan="5">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">本工程采用网上报名（具体详见南湖区公共资源交易中心<span>http://www.nhggzyjy.com</span>）</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">报名起止时间</span></p>
+                </td>
+                <td width="789" nowrap=""
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
+                    colspan="5">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">2021</span><span
+                            style="font-family: 宋体; font-size: 10pt;">年<span>6</span>月<span>23</span>日至<span>7</span>月<span>2</span>日<span>14</span>时<span>00</span>分<span>&nbsp;&nbsp;&nbsp; </span></span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 20.15pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">开 标 时 间</span></p>
+                </td>
+                <td width="789" nowrap=""
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
+                    colspan="5">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">2021</span><span
+                            style="font-family: 宋体; font-size: 10pt;">年<span>7</span>月<span>2</span>日<span>14</span>时<span>00</span>分<span>&nbsp;&nbsp;&nbsp;
+      </span></span></p>
+                </td>
+            </tr>
+            <tr style="height: 21.25pt;">
+                <td width="188"
+                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 21.25pt;">
+                    <p align="center"
+                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;"><span
+                            style="font-family: 宋体; font-size: 10pt;">备<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </span>注</span></p>
+                </td>
+                <td width="789"
+                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 21.25pt;"
+                    colspan="5">
+                    <p align="left"
+                       style="margin: 0cm 0cm 0pt; text-align: left; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">投标保证金金额：设备类项目，投标单位按年度一次性缴纳人民币<span>20000</span>元整。</span>
+                    </p>
+                    <p align="left"
+                       style="margin: 0cm 0cm 0pt; text-align: left; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+                        <span style="font-family: 宋体; font-size: 10pt;">提交时间：投标截止时间前到账，且投标单位在保证金缴纳截止时间前须在系统“缴纳保证金”栏目中完成长期保证金支付。未能到账或未能完成长期保证金支付视为未缴纳，后果自负。</span>
+                    </p>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p style="margin: 0cm 0cm 0pt; text-align: justify; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+            <span>&nbsp;</span></p>
+        <p style="margin: 0cm 0cm 0pt; text-align: justify; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+            <span>&nbsp;</span></p></div>
+</div>
     """
     ke = KeywordsExtract(content, [
         "项目名称",  # project_name
+        "采购项目名称",
         "招标项目",
-        "工程名称",
+        "工\s*程\s*名\s*称",
         "招标工程项目",
-        "标项名称",
+        "工程名称",
 
         # "中标单位",  # successful_bidder
         #
@@ -1911,7 +2180,6 @@ if __name__ == '__main__':
         # "项目经理",
         # "项目经理（负责人）",
         # "项目负责人",
-
 
         # "招标人",  # tenderee
         # "招&nbsp;标&nbsp;人",
@@ -1926,6 +2194,7 @@ if __name__ == '__main__':
         # "招标项目编号",
         # "招标编号",
         # "编号",
+        # "工程编号",
 
         # "项目金额",  # budget_amount
         # "预算金额（元）",
@@ -1943,9 +2212,9 @@ if __name__ == '__main__':
         # "中标人名称",
         # "中标单位",
         # "供应商名称",
-    # ], field_name='project_name')
-    # ], field_name='project_name', area_id="3319")
-    ], field_name='project_name', area_id="3319", title='长兴县和平镇城南工业园区污水管道疏通与检测服务项目交易公告')
+        # ], field_name='project_name')
+    ], field_name='project_name', area_id="3319")
+    # ], field_name='project_name', area_id="3319", title='')
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
         'project_name': [
@@ -1981,5 +2250,3 @@ if __name__ == '__main__':
     }
 
     print(ke.get_value())
-
-
