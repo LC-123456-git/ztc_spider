@@ -1457,9 +1457,9 @@ class KeywordsExtract:
 
                     for table_el in table_els:
 
-                        # 判断是否有table
-                        if KeywordsExtract.check_has_table(table_el):
-                            continue
+                        # # 判断是否有table
+                        # if KeywordsExtract.check_has_table(table_el):
+                        #     continue
 
                         table_txt = etree.tounicode(table_el, method='html')
                         t_data = pandas.read_html(table_txt)
@@ -1664,502 +1664,64 @@ class KeywordsExtract:
 
 if __name__ == '__main__':
     content = """
-<div id="jyxxChangeHeight" class="article-info">
-    <h1 class="infoContentTitle">发展大厦电梯采购及安装项目</h1>
-    <p class="info-sources">
-                                    <span style="font-size:14px;">
-                                    【&nbsp;信息发布时间：2021-06-22&nbsp;&nbsp;阅读次数：<span id="infoViewCount">233</span>】
-                                    <span style="color:black;font-size:14px">
-                                    【<a style="color:black;" href="javascript:window.print();">我要打印</a>】
-                                    【<a style="cursor:pointer;" onclick="closeFunction()">关闭</a>】
-                                    </span>
-                                </span></p>
-    <div class="con" style="font-size: 14px;line-height: 28px;margin: 30px 30px;position: relative;">
-        <table width="977" style="width: 732.4pt; margin-left: 0pt; border-collapse: collapse;" border="0"
-               cellspacing="0" cellpadding="0">
-            <tbody>
-            <tr style="height: 31.9pt;">
-                <td width="977" style="padding: 0cm 5.4pt; width: 732.4pt; height: 31.9pt;" colspan="6">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <b><span style="font-family: 宋体; font-size: 18pt;">嘉兴市南湖区公共资源交易中心工程信息发布表</span></b></p>
-                </td>
-            </tr>
-            <tr style="height: 20.7pt;">
-                <td width="188"
-                    style="padding: 0cm 5.4pt; border: 1pt solid windowtext; border-image: none; width: 140.7pt; height: 20.7pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">项 目 编 号</span></p>
-                </td>
-                <td width="340" nowrap=""
-                    style="border-width: 1pt 1pt 1pt medium; border-style: solid solid solid none; border-color: windowtext windowtext windowtext currentColor; padding: 0cm 5.4pt; border-image: none; width: 255.1pt; height: 20.7pt;"
-                    colspan="2">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;NH20210622002</span></p>
-                </td>
-                <td width="159"
-                    style="border-width: 1pt 1pt 1pt medium; border-style: solid solid solid none; border-color: windowtext windowtext windowtext currentColor; padding: 0cm 5.4pt; border-image: none; width: 118.95pt; height: 20.7pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">信 息 类 别</span></p>
-                </td>
-                <td width="290"
-                    style="border-width: 1pt 1pt 1pt medium; border-style: solid solid solid none; border-color: windowtext black windowtext currentColor; padding: 0cm 5.4pt; width: 217.65pt; height: 20.7pt;"
-                    colspan="2">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;</span><span
-                            style="font-family: 宋体; font-size: 10pt;">设备</span></p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">发 布 时 间</span></p>
-                </td>
-                <td width="340" nowrap=""
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 255.1pt; height: 20.15pt;"
-                    colspan="2">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">2021-6-23</span></p>
-                </td>
-                <td width="159"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 118.95pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">交 易 方 式</span></p>
-                </td>
-                <td width="290"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 217.65pt; height: 20.15pt;"
-                    colspan="2">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">公开</span></p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">工 程 名 称</span></p>
-                </td>
-                <td width="789"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
-                    colspan="5">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;</span><span
-                            style="font-family: 宋体; font-size: 10pt;">发展大厦电梯采购及安装项目</span></p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">建设单位（盖章）</span></p>
-                </td>
-                <td width="789"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
-                    colspan="5">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;</span><span
-                            style="font-family: 宋体; font-size: 10pt;">嘉兴市富华投资有限公司</span></p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">招标代理机构（盖章）</span></p>
-                </td>
-                <td width="789" nowrap=""
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
-                    colspan="5">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;</span><span
-                            style="font-family: 宋体; font-size: 10pt;">浙江华耀建设咨询有限公司</span></p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">总 投 资</span></p>
-                </td>
-                <td width="163" nowrap=""
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 122.4pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;75</span><span
-                            style="font-family: 宋体; font-size: 10pt;">万元</span></p>
-                </td>
-                <td width="177"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 132.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">投 资 性 质</span></p>
-                </td>
-                <td width="159"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 118.95pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">自筹</span></p>
-                </td>
-                <td width="152"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 114.1pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">招标部分估算价</span></p>
-                </td>
-                <td width="138"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 103.55pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;75</span><span
-                            style="font-family: 宋体; font-size: 10pt;">万元</span></p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">总 面 积</span></p>
-                </td>
-                <td width="163" nowrap=""
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 122.4pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">/</span></p>
-                </td>
-                <td width="177"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 132.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">工 程 类 别</span></p>
-                </td>
-                <td width="159"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 118.95pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">自行判定</span></p>
-                </td>
-                <td width="152" nowrap=""
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 114.1pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">结 构</span></p>
-                </td>
-                <td width="138"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 103.55pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">/</span></p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">最 大 跨 度</span></p>
-                </td>
-                <td width="163"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 122.4pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">/</span></p>
-                </td>
-                <td width="177"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 132.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">幢 数</span></p>
-                </td>
-                <td width="159"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 118.95pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">/</span></p>
-                </td>
-                <td width="152"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 114.1pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">层 数</span></p>
-                </td>
-                <td width="138"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 103.55pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">/</span></p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">工 期（日历天）</span></p>
-                </td>
-                <td width="163"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 122.4pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">详见招标文件要求</span></p>
-                </td>
-                <td width="177"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 132.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">工 程 地 点</span></p>
-                </td>
-                <td width="449"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 336.6pt; height: 20.15pt;"
-                    colspan="3">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;&nbsp;</span><span
-                            style="font-family: 宋体; font-size: 10pt;">解放街道勤俭路<span>159</span>号</span></p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">质 量 要 求</span></p>
-                </td>
-                <td width="163" nowrap=""
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 122.4pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">合格</span></p>
-                </td>
-                <td width="177" nowrap=""
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 132.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">联 系 人</span></p>
-                </td>
-                <td width="159"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 118.95pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">&nbsp;</span><span
-                            style="font-family: 宋体; font-size: 10pt;">吴先生</span></p>
-                </td>
-                <td width="152"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 114.1pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">联 系 电 话</span></p>
-                </td>
-                <td width="138"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 103.55pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">0573-82725567</span></p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">评 标 办 法</span></p>
-                </td>
-                <td width="163" nowrap=""
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 122.4pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">综合评分法</span></p>
-                </td>
-                <td width="177" nowrap=""
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 132.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">资格审查方式</span></p>
-                </td>
-                <td width="159"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 118.95pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">资格后审</span></p>
-                </td>
-                <td width="152"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 114.1pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">是否政府投资项目</span></p>
-                </td>
-                <td width="138"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor windowtext windowtext currentColor; padding: 0cm 5.4pt; width: 103.55pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">是</span></p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">联 系 地 址</span></p>
-                </td>
-                <td width="789" nowrap=""
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
-                    colspan="5">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">嘉兴市中山西路<span>299</span>号兴业大厦西<span>521</span>室</span>
-                    </p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">企业资质要求</span></p>
-                </td>
-                <td width="789"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
-                    colspan="5">
-                    <p align="left"
-                       style="margin: 0cm 0cm 0pt; text-align: left; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体;">同时具有：</span><span>1.</span><span style="font-family: 宋体;">具有独立法人资格的电梯制造商或经销商；</span><span>2.</span><span
-                            style="font-family: 宋体;">所投标电梯产品制造商须具有①、②项其中之一：①具有质检部门颁发的有效期内特种设备制造许可证乘客电梯</span><span> A </span><span
-                            style="font-family: 宋体;">级及以上等级证书、特种设备安装改造维修许可证</span><span> A </span><span
-                            style="font-family: 宋体;">级及以上等级证书。②具有国家市场监督管理总局颁发的有效期内的中华人民共和国特种设备生产许可证</span><span>-</span><span
-                            style="font-family: 宋体;">许可项目：电梯制造（含安装、修理、改造）</span><span>-</span><span
-                            style="font-family: 宋体;">许可子项目：有机房客梯，且具体产品范围型式试验证书满足本次招标电梯技术参数要求。</span><span>3</span><span
-                            style="font-family: 宋体;">、投标人若为经销商，具有制造商针对本招标项目出具的唯一产品授权委托书，且授权的电梯制造商必须满足上述对电梯制造商的要求。</span><span>4</span><span
-                            style="font-family: 宋体;">、投标品牌在嘉兴市设有完善的售后服务网点。</span><span>5</span><span
-                            style="font-family: 宋体;">、所投电梯贴牌产品（</span><span>OEM </span><span style="font-family: 宋体;">产品）不在本次招标范围。</span><span>6</span><span
-                            style="font-family: 宋体;">、本次投标不允许联合体投标。</span></p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">项目经理资质<span>/</span>负责人要求</span></p>
-                </td>
-                <td width="789"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
-                    colspan="5">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">/</span></p>
-                </td>
-            </tr>
-            <tr style="height: 21.75pt;">
-                <td width="188"
-                    style="border-width: medium 1pt; border-style: none solid; border-color: currentColor windowtext; padding: 0cm 5.4pt; width: 140.7pt; height: 21.75pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">其 它 条 件</span></p>
-                </td>
-                <td width="789"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 21.75pt;"
-                    colspan="5">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">招标文件的获取：招标文件（补充文件）请以投标人账号登录“南湖区公共资源交易中心（<span>http://www.nhggzyjy.com</span>）”自行下载</span>
-                    </p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="padding: 0cm 5.4pt; border: 1pt solid windowtext; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">报 名 地 址</span></p>
-                </td>
-                <td width="789" nowrap=""
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
-                    colspan="5">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">本工程采用网上报名（具体详见南湖区公共资源交易中心<span>http://www.nhggzyjy.com</span>）</span>
-                    </p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">报名起止时间</span></p>
-                </td>
-                <td width="789" nowrap=""
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
-                    colspan="5">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">2021</span><span
-                            style="font-family: 宋体; font-size: 10pt;">年<span>6</span>月<span>23</span>日至<span>7</span>月<span>2</span>日<span>14</span>时<span>00</span>分<span>&nbsp;&nbsp;&nbsp; </span></span>
-                    </p>
-                </td>
-            </tr>
-            <tr style="height: 20.15pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 20.15pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">开 标 时 间</span></p>
-                </td>
-                <td width="789" nowrap=""
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 20.15pt;"
-                    colspan="5">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">2021</span><span
-                            style="font-family: 宋体; font-size: 10pt;">年<span>7</span>月<span>2</span>日<span>14</span>时<span>00</span>分<span>&nbsp;&nbsp;&nbsp;
-      </span></span></p>
-                </td>
-            </tr>
-            <tr style="height: 21.25pt;">
-                <td width="188"
-                    style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentColor windowtext windowtext; padding: 0cm 5.4pt; border-image: none; width: 140.7pt; height: 21.25pt;">
-                    <p align="center"
-                       style="margin: 0cm 0cm 0pt; text-align: center; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;"><span
-                            style="font-family: 宋体; font-size: 10pt;">备<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      </span>注</span></p>
-                </td>
-                <td width="789"
-                    style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentColor black windowtext currentColor; padding: 0cm 5.4pt; width: 591.7pt; height: 21.25pt;"
-                    colspan="5">
-                    <p align="left"
-                       style="margin: 0cm 0cm 0pt; text-align: left; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">投标保证金金额：设备类项目，投标单位按年度一次性缴纳人民币<span>20000</span>元整。</span>
-                    </p>
-                    <p align="left"
-                       style="margin: 0cm 0cm 0pt; text-align: left; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-                        <span style="font-family: 宋体; font-size: 10pt;">提交时间：投标截止时间前到账，且投标单位在保证金缴纳截止时间前须在系统“缴纳保证金”栏目中完成长期保证金支付。未能到账或未能完成长期保证金支付视为未缴纳，后果自负。</span>
-                    </p>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <p style="margin: 0cm 0cm 0pt; text-align: justify; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-            <span>&nbsp;</span></p>
-        <p style="margin: 0cm 0cm 0pt; text-align: justify; font-family: &quot;Calibri&quot;,&quot;sans-serif&quot;; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
-            <span>&nbsp;</span></p></div>
-</div>
+<table width="932" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tbody><tr>
+    <td><table id="tblInfo" cellspacing="1" cellpadding="1" width="100%" align="center" border="0" runat="server">
+                    <tbody><tr>
+                      <td id="tdTitle" align="center" runat="server" height="70"><font color="" style="font-size: 25px"> <b>
+                        金陵北路老企业宿舍区老旧小区改造-道路及C区块雨污水工程施工
+                        </b></font>
+                      
+                        </td>
+                        </tr><tr><td height="29" align="center" bgcolor="#eeeeee">
+                        <font color="#545454" class="webfont">【信息时间：
+                        2021/6/23
+                        &nbsp;&nbsp;阅读次数：
+                        <script src="/cxweb/Upclicktimes.aspx?InfoID=c62f5b0b-27ea-497b-a762-739a02956667"></script>83
+                        】<a href="javascript:void(0)" onclick="window.print();"><font color="#545454" class="webfont">【我要打印】</font></a><a href="javascript:window.close()"><font color="#545454" class="webfont">【关闭】</font></a></font><font color="#000000">
+                        
+                        </font></td>
+                    </tr>
+                    <tr>
+                      <td height="10"></td>
+                    </tr>
+                    <tr>
+                      <td height="250" align="left" valign="top" class="infodetail" id="TDContent"><div>
+                          <epointform>		<style>.A{font-family:宋体;font-size:12pt;color:#000000;background-color: #eaf3fb;border-left:#d1e6fa 1px solid;border-right:#d1e6fa 1px solid;border-top:#d1e6fa 1px solid;border-bottom:#d1e6fa 1px solid;}.B{font-family:宋体;font-size:12pt;color:#000000;background-color: #ffffff;border-left:#d1e6fa 1px solid;border-right:#d1e6fa 1px solid;border-top:#d1e6fa 1px solid;padding-left:5px;border-bottom:#d1e6fa 1px solid;}</style>	<a name="Sheet1"></a>	<table id="_Sheet1" align="center" cellpadding="0" cellspacing="0" style="table-layout: fixed;font-family:SimSun;font-size:9pt;color:#000000;border-collapse:collapse;" border="0" width="885">	<tbody><tr height="0px" style="font-size: 0px;line-height:0px;">		<td width="110px" style="border-left:#0000 0px solid;border-right:#0000  1px solid;"></td>		<td width="75px" style="border-right:#0000  1px solid;"></td>		<td width="75px" style="border-right:#0000  1px solid;"></td>		<td width="184px" style="border-right:#0000  1px solid;"></td>		<td width="123px" style="border-right:#0000  1px solid;"></td>		<td width="77px" style="border-right:#0000  1px solid;"></td>		<td width="92px" style="border-right:#0000  1px solid;"></td>		<td width="151px" style="border-right:#0000 0px solid;"></td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">工程编码</td>		<td class="B" colspan="7">CXX2021063098</td>	</tr>	<tr height="29px">		<td class="A" style="text-align:center">工程名称</td>		<td class="B" colspan="7">金陵北路老企业宿舍区老旧小区改造-道路及C区块雨污水工程</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">建设单位</td>		<td class="B" colspan="7">长兴县人民政府龙山街道办事处</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">工程类别</td>		<td class="B" colspan="3">施工		</td>		<td class="A" style="text-align:center">招标方式</td>		<td class="B" colspan="3">公开招标		</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">建设地点</td>		<td class="B" colspan="7"></td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">项目所在区域</td>		<td class="B" colspan="3">湖州市·长兴县</td>		<td class="A" style="text-align:center">建筑面积</td>		<td class="B" colspan="3"></td>	</tr>	<tr>		<td class="A" style="text-align:center">中标单位</td>		<td class="B" colspan="7"><a name="子网格"></a>	<table id="_Sheet1_6_1" cellpadding="0" cellspacing="0" style="table-layout: fixed;font-family:SimSun;font-size:9pt;color:#000000;border-collapse:collapse;" border="0" width="775">	<tbody><tr height="0px" style="font-size: 0px;line-height:0px;">		<td width="211px" style="border-left:#0000 0px solid;border-right:#0000  1px solid;"></td>		<td width="196px" style="border-right:#0000  1px solid;"></td>		<td width="125px" style="border-right:#0000  1px solid;"></td>		<td width="170px" style="border-right:#0000  1px solid;"></td>		<td width="75px" style="border-right:#0000 0px solid;"></td>	</tr>	<tr height="30px">		<td width="211px" class="A" style="text-align:center">标段名称</td>		<td class="A" style="text-align:center">中标单位</td>		<td class="A" style="text-align:center">中标价</td>		<td class="A" style="text-align:center">中标范围和内容</td>		<td class="A" style="text-align:center">项目经理</td>	</tr>	<tr>		<td width="211px" class="B">施工</td>		<td class="B">浙江长兴中创建设有限公司</td>		<td class="B"><a name="子网格"></a>	<table id="_Sheet1_1_2_6_1" cellpadding="0" cellspacing="0" style="table-layout: fixed;font-family:SimSun;font-size:9pt;color:#000000;border-collapse:collapse;" border="0" width="94">	<tbody><tr height="0px" style="font-size: 0px;line-height:0px;">		<td width="63px" style="border-left:#0000 0px solid;border-right:#0000  1px solid;"></td>		<td width="33px" style="border-right:#0000 0px solid;"></td>	</tr>	<tr height="34px">		<td width="63px" style="text-align:left;font-size:12pt;padding:2px;">160.264600</td>		<td style="text-align:left;font-size:12pt;padding:2px;"><span id="1063" style="display:inline-block;width:97%;">万元</span>		</td>	</tr>	</tbody></table>		</td>		<td class="B">城市道路;</td>		<td class="B">姚文龙浙233161607458</td>	</tr>	</tbody></table>		</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">公告开始时间</td>		<td class="B" colspan="3">2021年06月23日</td>		<td class="A" style="text-align:center">公告截止时间</td>		<td class="B" colspan="3">2021年06月28日</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">填报人</td>		<td class="B" colspan="3">徐国义</td>		<td class="A" style="text-align:center">填报日期</td>		<td class="B" colspan="3">2021年06月21日</td>	</tr>	<tr height="29px">		<td class="A" style="text-align:center">填报单位</td>		<td class="B" colspan="7">杭州建设工程造价咨询有限公司</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">备注</td>		<td class="B" colspan="7">姚文龙浙233161607458</td>	</tr>	</tbody></table></epointform>
+                        </div>
+                        <div>
+                          
+                        </div></td>
+                    </tr>
+                    <tr>
+                      <td align="right">
+                      
+                      <br>
+                        </td>
+                    </tr>
+                    <tr id="trAttach" runat="server">
+                      <td align="left"><table id="filedown" cellspacing="1" cellpadding="1" width="100%" border="0" runat="server">
+                          <tbody><tr>
+                            <td valign="top" style="font-size: medium;"><b>
+                              <span class="infodetailattach">附件：</span><table id="filedown" cellspacing="1" cellpadding="1" width="100%" border="0" runat="server"><tbody><tr><td><a href="/cxweb/ReadAttachFile.aspx?AttachID=10acdda5-12f1-4d9b-89ee-67296e1f2cfe" target="_blank"><font class="infodetailattachfile">中标公示.pdf</font></a></td></tr></tbody></table>
+                              </b></td>
+                          </tr>
+                        </tbody></table></td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td height="30"></td>
+                    </tr>
+                    <!--会员或非会员按钮-->
+                    <tr>
+                      <td></td>
+                    </tr>
+                    <!--答疑变更公告-->
+                  </tbody></table></td>
+  </tr>
+</tbody></table>
     """
     ke = KeywordsExtract(content, [
         "项目名称",  # project_name
