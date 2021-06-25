@@ -485,7 +485,7 @@ class CleanPipeline(object):
                 }
 
     def get_keys_value_from_content(self, content: str, keys, area_id="00", field_name=None, title=None):
-        value = get_keys_value_from_content_ahead(content, keys, area_id=area_id, field_name=field_name, title=None)
+        value = get_keys_value_from_content_ahead(content, keys, area_id=area_id, field_name=field_name, title=title)
         # 再次针对性清洗数据
         try:
             if ">" in value:

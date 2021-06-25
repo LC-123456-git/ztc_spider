@@ -1176,7 +1176,7 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
             print(e)
             return ""
     elif area_id in ["3309", "3320", "3319"]:
-        ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id)
+        ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id, title=title)
         ke.fields_regular = {
             'project_name': [
                 r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
