@@ -223,15 +223,15 @@ class CleanPipeline(object):
                 area_deal_dict = deal_area_data(title_name=item["title_name"], info_source=item["info_source"],
                                                 area_id=item["area_id"]) or {}
             content_str = item["content"]                                    
-            # if item["is_have_file"] == "1" or item["is_have_file"] == 1:
-            #     self.is_have_file = True
-            #     content_str = item["content"]
-            #     msg, content_str = self.request_download(files_path=str(item["files_path"]), content=item["content"],
-            #                                              is_have_file=item["is_have_file"])
-            #     # 请求失败 修改 is_have_file
-            #     # msg = 'test file request error'
-            #     if msg:
-            #         item['is_have_file'] = "2"
+            if item["is_have_file"] == "1" or item["is_have_file"] == 1:
+                self.is_have_file = True
+                content_str = item["content"]
+                msg, content_str = self.request_download(files_path=str(item["files_path"]), content=item["content"],
+                                                         is_have_file=item["is_have_file"])
+                # 请求失败 修改 is_have_file
+                # msg = 'test file request error'
+                if msg:
+                    item['is_have_file'] = "2"
 
         except Exception as e:
             self.logger.error(f"文件服务替换失败 {e} ")
