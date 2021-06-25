@@ -370,7 +370,8 @@ class CleanPipeline(object):
             "建设（招标）单位",
             "建设单位",
             "采购单位名称",
-            "采购人信息"
+            "采购人信息",
+            "建设单位",
         ]
         tenderees = self.get_keys_value_from_content(content, tenderee_tags, area_id=area_id, field_name='tenderee')  # √
 
@@ -388,7 +389,8 @@ class CleanPipeline(object):
             "代理单位",
             '招标代理机构（盖章）',
             "代理公司",
-            "采购代理机构信息"
+            "采购代理机构信息",
+            "填报单位",
         ]
         bidding_agency = self.get_keys_value_from_content(content, bidding_agency_tags, area_id=area_id,
                                                           field_name='bidding_agency')  # √
@@ -401,7 +403,7 @@ class CleanPipeline(object):
             "预中标价",
             "项目金额",
             "本期概算(万元)",
-            "采购计划金额（元）"
+            "采购计划金额（元）",
         ]
         budget_amount = self.get_keys_value_from_content(content, budget_amount_tags, area_id=area_id,
                                                          field_name='budget_amount')  # √
@@ -412,6 +414,7 @@ class CleanPipeline(object):
             "项目经理（负责人）",
             "项目负责人",
             "项目联系人",
+            "填报人",
         ]
         liaison = self.get_keys_value_from_content(content, liaison_tags, area_id=area_id, field_name='liaison')
 

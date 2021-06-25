@@ -1291,7 +1291,7 @@ class KeywordsExtract:
         self.keysss = [
             "招标项目", "中标（成交）金额(元)", "代理机构", "中标供应商名称", "工程名称", "项目名称", "成交价格", "招标工程项目", "项目编号", "招标项目编号",
             "招标编号", "招标人", "发布时间", "招标单位", "招标代理:", "招标代理：", "招标代理机构", "项目金额", "预算金额（元）", "招标估算价",
-            "中标（成交）金额（元）", "联系人", "项目经理（负责人）", "建设单位", "中标单位",
+            "中标（成交）金额（元）", "联系人", "项目经理（负责人）", "建设单位", "中标单位", "中标价",
         ]
         # 各字段对应的规则
         self.fields_regular = {
@@ -1420,16 +1420,16 @@ class KeywordsExtract:
         return True if count >= 2 else False
 
     @staticmethod
-    def check_has_table(doc_el):
-        return True if doc_el.xpath('.//table') else False
+    def get_child_tables(doc_el):
+        return doc_el.xpath('.//table')
 
     @staticmethod
     def get_h_val(c_index, key, tr):
         c_index += 1
         try:
             next_val = ''.join(tr[c_index].split())
-        except:
-            pass  # get lost
+        except Exception as e:
+            print(e)  # get lost
         else:
             if next_val == key:
                 next_val = KeywordsExtract.get_h_val(c_index, key, tr)
@@ -1451,6 +1451,44 @@ class KeywordsExtract:
                         return next_val
         return ''
 
+    def recurse_parse_table(self, table_els, key, doc):
+        c_doc = copy.deepcopy(doc)
+        for table_el in table_els:
+            c_child_tables = KeywordsExtract.get_child_tables(table_el)
+
+            # REMOVE CHILD TABLE
+            for c_child_table in c_child_tables:
+                c_child_table.getparent().remove(c_child_table)
+
+            # REMOVE TR WITHOUT HEIGHT
+            trs_without_height = table_el.xpath('.//tr[contains(@style, "line-height:0px")]')
+            for tr in trs_without_height:
+                tr.getparent().remove(tr)
+
+            table_txt = etree.tounicode(table_el, method='html')
+            t_data = pandas.read_html(table_txt)
+            if t_data:
+                t_data = t_data[0]
+
+                # 判断横向|纵向
+                # tr下td数一致     横向
+                # tr下td数不一致    纵向
+                key = ''.join(key.split())
+                extractor = Extractor(table_txt.replace('\n', ''))
+                extractor.parse()
+                result = extractor.return_list()
+                if self.is_horizon(t_data):
+                    self._value = KeywordsExtract.get_val_from_table(result, key)
+                else:
+                    result = list(zip(*result))
+                    self._value = KeywordsExtract.get_val_from_table(result, key)
+                if self._value:
+                    return True
+            child_tables = KeywordsExtract.get_child_tables(table_el)
+            if child_tables:
+                self.recurse_parse_table(child_tables, key, c_doc)
+        return False
+
     def _extract_from_table(self):
         """
         处理文章中table的信息
@@ -1460,32 +1498,8 @@ class KeywordsExtract:
                 doc = etree.HTML(self.content)
                 table_els = doc.xpath('//table')
 
-                for table_el in table_els:
-
-                    # # 判断是否有table
-                    # if KeywordsExtract.check_has_table(table_el):
-                    #     continue
-
-                    table_txt = etree.tounicode(table_el, method='html')
-                    t_data = pandas.read_html(table_txt)
-                    if t_data:
-                        t_data = t_data[0]
-                        # t_dics = t_data.to_dict()
-
-                        # 判断横向|纵向
-                        # tr下td数一致     横向
-                        # tr下td数不一致    纵向
-                        key = ''.join(key.split())
-                        extractor = Extractor(table_txt.replace('\n', '').replace('\xa0', ''))
-                        extractor.parse()
-                        result = extractor.return_list()
-                        if self.is_horizon(t_data):
-                            self._value = KeywordsExtract.get_val_from_table(result, key)
-                        else:
-                            result = zip(*result)
-                            self._value = KeywordsExtract.get_val_from_table(result, key)
-                        if self._value:
-                            return
+                if self.recurse_parse_table(table_els, key, doc):
+                    return
 
     def reset_regular(self, regular_list, with_symbol=True):
         """
@@ -1549,13 +1563,16 @@ class KeywordsExtract:
                 if self.field_name == 'budget_amount':  # 本工程预算金额约为479万元。
                     regular_list = [
                         r'预算金额.*?为\s*(\d+\s*万元)',
+                        r'预算金额.*?为\s*(\d+\.\d+?万元)',
                         r'预算金额.*?为\s*(\d+\s*元)',
-                        r'本工程投资约\s*(\d+\s*万元)'
-                        r'本工程投资约\s*(\d+\s*元)'
+                        r'本工程投资约\s*(\d+\s*万元)',
+                        r'本工程投资约\s*(\d+\.\d+?万元)',
+                        r'本工程投资约\s*(\d+\s*元)',
                     ]
                 if self.field_name == 'bid_amount':
                     regular_list = [
                         r'中标价[: ：]\s*(\d+\s*万元)',
+                        r'中标价[: ：]\s*(\d+\.\d+?万元)',
                         r'中标价[: ：]\s*(\d+\s*元)',
                     ]
                 if self.field_name == 'contact_information':
@@ -1600,11 +1617,13 @@ class KeywordsExtract:
                 if self.field_name == 'budget_amount':
                     regular_list = [
                         r'预算约\s*(\d+\s*万元)',
+                        r'预算约\s*(\d+\.\d+?万元)',
                         r'预算约\s*(\d+\s*元)',
                     ]
                 if self.field_name == 'bid_amount':
                     regular_list = [
                         r'中标价[: ：]\s*(\d+\s*万元)',
+                        r'中标价[: ：]\s*(\d+\.\d+?万元)',
                         r'中标价[: ：]\s*(\d+\s*元)',
                     ]
                 if self.field_name == 'contact_information':
@@ -1616,6 +1635,9 @@ class KeywordsExtract:
                     regular_list = [
                         r'联\s*系\s*人[: ：]\s*([\u4e00-\u9fa5]+?)[联 电 质]',
                         r'项目经理：([\u4e00-\u9fa5]+?)\s*质量',
+                    ]
+                if self.field_name == 'successful_bidder':
+                    regular_list = [
                     ]
                 self.reset_regular(regular_list, with_symbol=False)
 
@@ -1727,12 +1749,12 @@ if __name__ == '__main__':
 </tbody></table>
     """
     ke = KeywordsExtract(content, [
-        "项目名称",  # project_name
-        "采购项目名称",
-        "招标项目",
-        "工\s*程\s*名\s*称",
-        "招标工程项目",
-        "工程名称",
+        # "项目名称",  # project_name
+        # "采购项目名称",
+        # "招标项目",
+        # "工\s*程\s*名\s*称",
+        # "招标工程项目",
+        # "工程名称",
 
         # "中标单位",  # successful_bidder
         #
@@ -1745,15 +1767,29 @@ if __name__ == '__main__':
         # "项目经理",
         # "项目经理（负责人）",
         # "项目负责人",
+        # "项目联系人",
+        # "填报人",
 
         # "招标人",  # tenderee
+        # "招 标 人",
         # "招&nbsp;标&nbsp;人",
+        # "招\s*?标\s*?人：",
         # "招标单位",
         # "采购人信息[ψ \s]*?名[\s]+称",
-        # "招标代理机构",
+        # "建设（招标）单位",
+        # "建设单位",
+        # "采购单位名称",
+        # "采购人信息",
+        # "建设单位",
 
         # "招标代理",  # bidding_agency
+        # "招标代理机构",
         # "采购代理机构信息[ψ \s]*?名[\s]+称",
+        # "代理单位",
+        # '招标代理机构（盖章）',
+        # "代理公司",
+        # "采购代理机构信息",
+        # "填报单位",
 
         # "项目编号",  # project_number
         # "招标项目编号",
@@ -1770,15 +1806,15 @@ if __name__ == '__main__':
 
         # "招标方式",
 
-        # "开标时间",  # tenderee
+        # "开标时间",
         # "开启时间",
 
-        # "中标人",  # successful_bidder
-        # "中标人名称",
-        # "中标单位",
-        # "供应商名称",
+        "中标人",  # successful_bidder
+        "中标人名称",
+        "中标单位",
+        "供应商名称",
         # ], field_name='project_name')
-    ], field_name='project_name', area_id="3319")
+    ], field_name='successful_bidder', area_id="3319")
     # ], field_name='project_name', area_id="3319", title='')
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
