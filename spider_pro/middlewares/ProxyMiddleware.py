@@ -95,9 +95,6 @@ class ProxyMiddleware(RetryMiddleware):
                 self.logger.error(
                     f"抓取失败 重试次数用完: {request.url=} {spider.area_id=} {reason=}"
                 )
-                self.process_exception(request, Exception(
-                    f"抓取失败 重试次数用完: {request.url=} {spider.area_id=} {reason=}"
-                ), spider)
                 return response
             elif response.status == 404:
                 return self._retry(request, reason, spider) or response
