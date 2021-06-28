@@ -17,7 +17,9 @@ from spider_pro import rules_clean
 from lxml import etree
 import html
 import uuid
-
+headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36'
+    }
 
 def remove_element_contained(content, ele_name, attr_name, attr_value, specific_ele):
     """
@@ -901,6 +903,12 @@ def regular_match(keys, content, plan=0):
             # data['liaison'] = ret.get('liaison', '')
             status = True
     return status, data
+
+def get_url(strst_url, cid):
+    cid_url = "{}/cms/attachment_url.jspx?cid={}&n=1".format(strst_url, cid)
+    response = requests.get(url=cid_url, headers=headers).content.decode('utf-8').replace('["', '').replace('"]', '')
+
+    return response
 
 
 

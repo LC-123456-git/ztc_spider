@@ -212,46 +212,22 @@ def get_back_date_by_month(month):
 
 
 if __name__ == "__main__":
-    # scrapyd_deploy()
-    # exit(0)
-    # scrapyd_cancel(job='crawler-2021-06-13-18-6')
-    # exit(0)
-    days_before = get_back_date(10)
+
+    days_before = get_back_date(2)
     yesterday = get_back_date(1)
     today = '{0:%Y-%m-%d}'.format(datetime.datetime.now())
 
-    # miaokela
-    # ZJ_city_3320_cangnan_spider 
-    # ZJ_city_3319_changxing_spider 
-    # ZJ_city_3314_yuhang_spider 
-    # province_55_tiangong_spider 
-    # province_53_bilian_spider 
-    # province_52_pinming_spider
-
-    # error_01: twisted.internet.error.TimeoutError: User timeout caused connection failure  # 通过DOWNLOAD_DELAY解决
-    # error_02: TypeError: expected string or bytes-like object
-    # error_03: KeyError: 'NoticesItem does not support field: web_name'
-    # error_04: AttributeError: 'NoneType' object has no attribute 'replace'
-    # error_05: twisted.web._newclient.ResponseFailed: [<twisted.python.failure.Failure builtins.ValueError: Too many Content-Length headers; response is invalid>]
-    # error_06: (1366, "Incorrect integer value: '宸ヤ綔鍔ㄦ€�' for column 'notice_type' at row 1")
-    # error_07: ERROR: Gave up retrying <POST https://www.shggzy.com/queryContent_31-jyxx.jspx> (failed 4 times): 403 Forbidden
-    # error_08: TypeError: argument of type 'NoneType' is not iterable
-    # error_09: IndexError: string index out of range
-    # error_10: 404
-    # error_11:  Crawled 1218 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
-    # error_12: TypeError: to_bytes must receive a str or bytes object, got NoneType
-    # 需要运行的spiders
     spider_list = [
         # "province_00_quanguo_spider",  # error_12
         # "province_02_beijing_spider",  # ok
-        "province_03_tianjin_spider",  # ok
+        # "province_03_tianjin_spider",  # ok
         # "province_04_hebei_spider",  # error_04
         # "province_05_shanxi_spider",
         # "province_08_jilin_spider",  # ok + error_06
         # "province_10_heilongjiang_spider",  # error
         # "province_11_shanghai_spider",  # ok
         # "province_13_jiangsu_spider",  # error_07 + error_01
-        # "province_14_zhejiang_spider",  # error
+        "province_14_zhejiang_spider",  # error
         # "province_15_zhejiang_spider",  # ok
         # "province_16_anhui_spider",  # ok + error_02
         # "province_18_fujian_spider",  # ok + error_05
@@ -260,21 +236,29 @@ if __name__ == "__main__":
         # "province_23_henan_spider",  # error_11
         # "province_26_hubei_spider",  # ok
         # "province_30_guangdong_spider",  # error_01
+        # "province_39_chongqing_spider",  # error_01
         # "province_40_sichuan_spider",  # error
         # "province_41_guizhou_spider",
         # "province_44_xizang_spider",  # error_01
+        # "province_45_shanxi_spider",  # error_01
         # "province_49_ningxia_spider",  # error_03
         # "province_50_xinjiang_spider",  # ok + 附件没采
         # "province_52_pinming_spider",  # ok
         # "province_53_bilian_spider",  # ok
         # "province_54_Egongxiang_spider",  # ok + error_09
         # "province_55_tiangong_spider",  # ok
+        # "province_56_hebeijiantou_spider",  # ok
         # "province_57_jingcaizongheng_spider",  # error_01
+        # "province_59_xinzhi_spider",
+        # "province_62_xindian_spider",  # error_01
+        # "province_68_qilu_spider",
+        # "province_71_zhaocaijingbao_spider",  # error_04
+        # "province_79_xinEcai_spider",
         # 'province_65_guoepingtai_spider',
         # "province_71_zhaocaijingbao_spider",  # error_04
         # "province_78_zhuzhaixiushan_spider",  # error_04
-        "province_83_wangcai_spider",
-        "province_85_anzhuangxinxi_spider"
+        # "province_83_wangcai_spider",
+        # "province_85_anzhuangxinxi_spider"
         # "ZJ_city_3302_zjcaigou_spider"
         # "ZJ_enterprise_3303_zhenengjituan_spider",  # ok
         # "ZJ_enterprise_3304_shuiliting_spider",  # ok
@@ -292,6 +276,7 @@ if __name__ == "__main__":
         # "ZJ_city_3321_linhai_spider",
         # "ZJ_city_3322_anji_spider",
         # "ZJ_city_3323_xiaoshan_spider",
+        # "ZJ_city_3324_nanxun_spider",
         # "ZJ_city_3326_longyou_spider",
         # "qcc_crawler",
         # "ZJ_city_3327_pingyang_spider",
@@ -307,7 +292,8 @@ if __name__ == "__main__":
         scrapyd_deploy()  # 打包上传 TODO 如果是定时脚本则不需要上传
         pending_list = []
         running_list = []
-        # print(scrapyd_cancel(project="spider_pro", job="85-2021-06-15-8-46"))
+
+    # print(scrapyd_cancel(project="spider_pro", job="62-2021-06-09-16-44"))
         for item in r_text.get("pending"):
             pending_list.append(item.get("spider"))
         for item in r_text.get("running"):
@@ -324,85 +310,13 @@ if __name__ == "__main__":
                 arg_choices = {
                     'sdt': days_before,
                     'edt': today,
-                    # 'day': 30
+                    # 'day': 10
                 }
 
-                if_incr = False
-                # if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
-                #     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
-                # if item == "province_57_jingcaizongheng_spider":
-                #     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_TIMEOUT": 15, 'ROBOTSTXT_OBEY': False}
-                if item == "province_02_beijing_spider":
-                    if_incr = True
-                    # CONCURRENT_REQUESTS_PER_IP
-                    info = {
-                        # "ENABLE_PROXY_USE": False,
-                        # 'CONCURRENT_REQUESTS_PER_IP': 20,
-                        # "DOWNLOAD_TIMEOUT": 0.5,
-                        # 'CONCURRENT_REQUESTS': 10,
-                        'ENABLE_PROXY_USE': True,
-                    }
-
-                    arg_choices = {
-                        'day': 3
-                    }
-                if item == "province_03_tianjin_spider":
-                    if_incr = True
-                    # CONCURRENT_REQUESTS_PER_IP
-                    info = {
-                        'ENABLE_PROXY_USE': True,
-                    }
-
-                    arg_choices = {
-                        'sdt': days_before,
-                        'edt': today,
-                    }
-                if item == "province_21_shandong_spider":
-                    if_incr = True
-                    # CONCURRENT_REQUESTS_PER_IP
-                    info = {
-                        # "ENABLE_PROXY_USE": False,
-                        # 'CONCURRENT_REQUESTS_PER_IP': 20,
-                        "DOWNLOAD_TIMEOUT": 0.5,
-                        'CONCURRENT_REQUESTS': 10,
-                        'RANDOMIZE_DOWNLOAD_DELAY': True,
-                    }
-
-                    arg_choices = {
-                        'day': 3
-                    }
-                if item == "ZJ_city_3326_longyou_spider":
-                    info = {"DOWNLOAD_TIMEOUT": 30}
-                if item == "province_00_quanguo_spider":  # 特殊处理,根据需求
-                    if_incr = True
-
-                    info = {
-                        "ENABLE_PROXY_USE": False,
-                        "DOWNLOAD_DELAY": 0,
-                        "DOWNLOAD_TIMEOUT": 20,
-                        "CONCURRENT_REQUESTS_PER_IP": 20,
-                        "CONCURRENT_REQUESTS": 5,
-                    }  # province_00_quanguo_spider
-                if item == "ZJ_city_3314_yuhang_spider":  # 特殊处理,根据需求
-                    info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
-
-                if item == "ZJ_city_3309_wenzhou_spider":
-                    info = {"ENABLE_PROXY_USE": False}
-                    # info = {"DOWNLOAD_TIMEOUT": 60}
-                    # info = {"DOWNLOAD_DELAY": 0.5, "DOWNLOAD_TIMEOUT": 20, 'RANDOMIZE_DOWNLOAD_DELAY': True}
-                if item == "province_44_xizang_spider":
-                    info = {"ENABLE_PROXY_USE": False, "CONCURRENT_REQUESTS": 5, "DOWNLOAD_TIMEOUT": 60}
-                # if item == "province_11_shanghai_spider":
-                #     info = {
-                #         "DOWNLOAD_TIMEOUT": 0,
-                #         'RANDOMIZE_DOWNLOAD_DELAY': True,
-                #         'DOWNLOAD_DELAY': 1,
-                #         'RETRY_ENABLED': False,
-                #     }
-                if item == "ZJ_city_3323_xiaoshan_spider":
-                    if_incr = True
-                    info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_TIMEOUT": 40}
+                if_incr = True            # 增量
+                # if_incr = False         # 全量
                 resp = exec_each_schedule(item, area_id, arg_choices=arg_choices, if_incr=if_incr, **info)
 
                 if resp:
                     print('运行{0}成功!'.format(item))
+

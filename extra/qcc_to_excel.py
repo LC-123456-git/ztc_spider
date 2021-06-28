@@ -84,7 +84,7 @@ class QCCToExcel(object):
 
         file_name = '企业基本信息{0:%Y-%m-%d}.xlsx'.format(datetime.now())
 
-        qcc_data = self.fetchall(qcc_sql)
+        qcc_data = self.fetchall(qcc_sql) #((1,),(2,))
 
         # DATA CUSTOM
         qcc_data = [

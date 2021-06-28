@@ -23,6 +23,7 @@ DEFAULT_REQUEST_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate',
     'Accept-Language': 'zh-CN,zh;q=0.9',
+    'Content-Type': 'application/x-www-form-urlencoded',
 }
 
 # download middleware
@@ -121,7 +122,8 @@ FILES_STORE = FILES_STORE_PATH
 IMAGES_STORE = FILES_STORE_PATH
 
 # download timeout
-DOWNLOAD_TIMEOUT = 10
+DOWNLOAD_TIMEOUT = 30
+# DOWNLOAD_TIMEOUT = 10
 
 # retry setting
 RETRY_TIMES = 3
@@ -208,7 +210,8 @@ ENABLE_UPLOAD_ALL_WHEN_START = False  # 异常自动恢复上传功能
 ENABLE_PROXY_INFINITE = False
 NAME_PROXY_INFINITE = "proxy_infinite"
 
-ENABLE_PROXY_USE = False  # 启用代理
+# ENABLE_PROXY_USE = True  # 启用代理
+ENABLE_PROXY_USE = False  # 不启用代理
 ENABLE_URL_DUP_REMOVE_USE = False
 
 DEPTH_PRIORITY = 1

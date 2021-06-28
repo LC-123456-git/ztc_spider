@@ -125,8 +125,10 @@ class MySpider(CrawlSpider):
                         if num >= len(li_list):
                             pn += 1
                             info_url = response.url + '?Paging={}'
-                            yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info,
-                                                 meta={'noticn': response.meta['noticn'],
+                            yield scrapy.Request(url=info_url.format(pn), callback=self.parse_data_info,
+                                                 meta={'notice': response.meta['noticn'],
+                                                       'pub_time': pub_time,
+                                                       'title_name': title_name,
                                                        'category_name': response.meta['category_name']})
                 else:
                     pages = re.findall('\/(\d+)', response.xpath('//div[@class="pagemargin"]/div/table/tr/td[@class="huifont"]/text()').get())[0]
@@ -227,7 +229,7 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3313_zhoushan_spider".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3313_zhoushan_spider -a sdt=2015-02-01 -a edt=2021-03-10".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3313_zhoushan_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3313_zhoushan_spider -a sdt=2021-02-01 -a edt=2021-06-23".split(" "))
 
 

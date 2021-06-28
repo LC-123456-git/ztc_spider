@@ -254,7 +254,7 @@ class ScrapyDataPost(object):
                 """
                 results = conn.execute(
                     # f"-- select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 1 and pub_time >= '{d_time}' and pub_time < '{e_time}'limit {err_start},{rows} ").fetchall()
-                    f"select * from {table_name} where is_clean = 1 and is_have_file = 0 and is_upload = 0 and pub_time > '{d_time}' and pub_time <= '{e_time}'limit {err_start},{rows} "
+                    f"select * from {table_name} where is_clean = 1 and is_have_file = 0 and is_upload = 0 and id='21' and pub_time > '{d_time}' and pub_time <= '{e_time}'limit {err_start},{rows} "
                 ).fetchall()
                 if len(results) != 0:
                     area_id = results[0]['area_id']
@@ -266,9 +266,7 @@ class ScrapyDataPost(object):
                         item_id = item_dict.get("id")
                         if item_dict['is_have_file'] != 0:
                             if_push, item_dict['content'] = ScrapyDataPost.reset_file_url(
-                                item_dict['content'], item_dict['files_path']
-                            )
-
+                                item_dict['content'], item_dict['files_path'])
                             if not if_push:
                                 continue
 
@@ -286,8 +284,6 @@ class ScrapyDataPost(object):
                             # if table_name == "notices_15" or table_name == "notices_3304" or table_name == "notices_3324" or table_name == 'notices_53' or table_name == 'notices_65':
                             if table_name in [
                                 'notices_15',
-                                'notices_3301',
-                                'notices_3302',
                                 'notices_3304',
                                 'notices_3324',
                                 'notices_52',
@@ -299,6 +295,8 @@ class ScrapyDataPost(object):
                                 'notices_85',
                             ]:
                                 keys = ["title", "content", "classifyName", "area", "publishTime", "sourceUrl"]
+                            elif table_name in ['notices_79', 'notices_82']:   #  目前不需要 传后台 数据中心
+                                keys = ["title", "content", "classifyName", "publishTime", "sourceUrl"]
                             else:
                                 keys = ["title", "content", "projectType", "classifyName", "area", "publishTime",
                                         "sourceUrl"]
@@ -348,7 +346,7 @@ class ScrapyDataPost(object):
                                 pass
                         else:
                             err_start += 1
-                            print("不执行更新操作")
+                            print(item_id, "不执行更新操作")
 
                     count = itme_num
                     result = conn.execute(f"select * from statistical where area_id={area_id} and push_day={push_day}").fetchall()
@@ -550,9 +548,9 @@ if __name__ == "__main__":
     # ])
 
     # 测试推数据
-    cp = ScrapyDataPost(table_name="notices_3302",
+    cp = ScrapyDataPost(table_name="notices_3306",
                         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
-                        post_url="http://192.168.1.243:30007/feign/data/v1/notice/addGatherNotice" )
+                        post_url="http://192.168.1.243:30007/feign/data/v1/notice/addGatherNotice")
     cp.run_post()
     # # 测试多线程推数据
     # cp.run_multi_thead_prepare(st='2018-10-08', et='2018-12-31')

@@ -7,15 +7,20 @@
 import re
 import math
 import json
+
+import requests
 import scrapy
 import random
 import datetime
 from urllib import parse
+
+from lxml import etree
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
-from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_time_in_interval
+from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_time_in_interval, \
+    remove_specific_element, get_files, get_url
 
 
 class MySpider(CrawlSpider):
@@ -50,6 +55,8 @@ class MySpider(CrawlSpider):
             self.edt_time = kwargs.get("edt")
         else:
             self.enable_incr = False
+
+
 
     def start_requests(self):
         yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
@@ -102,7 +109,7 @@ class MySpider(CrawlSpider):
                         self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
                         yield scrapy.Request(url=all_info_url, callback=self.parse_item,
                                              meta={'notice': response.meta['notice'], 'pub_time': pub_time,
-                                                   'title_name': title_name, 'category': response.meta['category']})
+                                                   'title_name': title_name, 'category': category})
 
 
                     info_url = response.url[:response.url.rindex('/') + 1] + 'index_{}.jhtml'
@@ -148,44 +155,52 @@ class MySpider(CrawlSpider):
             if not pub_time:
                 pub_time = "null"
             pub_time = get_accurate_pub_time(pub_time)
-            contents = response.xpath("//div[@style='width: 100%; overflow: auto']").get()
-            if re.search(r'变更| 更正| 澄清', title_name):
+            if re.search(r'变更|更正|澄清', title_name):
                 notice_type = const.TYPE_ZB_ALTERATION
             elif re.search(r'候选人', title_name):
                 notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-            elif re.search(r'中标结果| 中选公示', title_name):
+            elif re.search(r'中标结果|中选公示', title_name):
                 notice_type = const.TYPE_WIN_NOTICE
-            elif re.search(r'终止| 中止 | 终结', title_name):
+            elif re.search(r'终止|中止|终结', title_name):
                 notice_type = const.TYPE_ZB_ABNORMAL
-            elif re.search(r'预公示| 预告', title_name):
+            elif re.search(r'预公示|预告', title_name):
                 notice_type = const.TYPE_ZB_ADVANCE_NOTICE
             else:
                 notice_type = response.meta['notice']
+            content = response.xpath("//div[@class='frameNews']").get()
+            # 去除title
+            pattern = re.compile(r'<h4>(.*?)</h4>', re.S)
+            content = content.replace(''.join(re.findall(pattern, content)), '')
+            # 去除info
+            _, content = remove_specific_element(content, 'div', 'class', 'source')
+            # 去除 button
+            _, content = remove_specific_element(content, 'div', 'type', 'width:300px;margin:0 auto;')
+
+            _, content = remove_specific_element(content, 'div', 'class', 'operationBtnDiv')
+            _, contents = remove_specific_element(content, 'script', 'type', 'text/javascript')
 
             files_path = {}
-            if response.xpath('//div[@style="width: 100%; overflow: auto"]//img/@src'):
-                conet_list = response.xpath('//div[@style="width: 100%; overflow: auto"]//img')
+            html = etree.HTML(contents)
+            cid = re.findall('\d+', response.url)[0]
+            if html.xpath('//img/@src'):
+                conet_list = html.xpath('//img')
                 for con in conet_list:
-                    if 'http' in con.xpath('./@src').get():
-                        value = con.xpath('./@src').get()
+                    if 'http' in con.xpath('./@src')[0]:
+                        value = con.xpath('./@src')[0]
                     else:
-                        value = self.domain_url + con.xpath('./@src').get()
-                    if con.xpath('./@alt').get():
-                        keys = con.xpath('./@alt').get()
+                        value = self.domain_url + con.xpath('./@src')[0]
+                    if con.xpath('./@alt'):
+                        keys = con.xpath('./@alt')[0] + '.jpg'
                     else:
-                        keys = 'img/pdf/doc/xls'
+                        keys = 'img/pdf/doc/xls.jpg'
                     files_path[keys] = value
-            else:
-                files_path = ''
-            if response.xpath('//div[@style="width:300px;margin:0 auto;"]/a') or response.xpath('//div[@style="width: 100%; overflow: auto"]//a/@href'):
-                conet_list = response.xpath('//div[@style="width:300px;margin:0 auto;"]//a') or response.xpath('//div[@style="width: 100%; overflow: auto"]//a/@href')
+            if html.xpath('//div[@class="Main-p"]//td[@align="center"]/a'):
+                conet_list = html.xpath('//div[@class="Main-p"]//td[@align="center"]/a')
                 for con in conet_list:
-                    if 'http' in con.xpath('./@href').get():
-                        value = con.xpath('./@href').get()
-                    else:
-                        value = self.domain_url + con.xpath('./@href').get()
-                    keys = con.xpath('./b/text()').get() or con.xpath('./span/text()').get()
+                    value = "{}/cms/attachment.jspx?cid={}&i=0".format(self.domain_url, cid) + get_url(self.domain_url, cid)
+                    keys = con.xpath('./text()')[0] + '.pdf'
                     files_path[keys] = value
+                    content = ''.join(contents).replace('<a id="attach0" title="文件下载">', '<a id="attach0"  title="文件下载" href={}>'.format(value))
             notice_item = NoticesItem()
             notice_item["origin"] = origin
             notice_item["title_name"] = title_name
@@ -194,7 +209,7 @@ class MySpider(CrawlSpider):
             notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
             notice_item["files_path"] = "" if not files_path else files_path
             notice_item["notice_type"] = notice_type
-            notice_item["content"] = contents
+            notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = category
             # print(notice_item)
@@ -203,6 +218,6 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3305_ningbo_spider".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3305_ningbo_spider -a sdt=2015-02-01 -a edt=2021-03-10".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3305_ningbo_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3305_ningbo_spider -a sdt=2020-02-01 -a edt=2021-06-25".split(" "))
 

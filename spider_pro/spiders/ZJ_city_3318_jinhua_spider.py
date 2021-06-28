@@ -18,7 +18,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
-from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_time_in_interval
+from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_time_in_interval, get_url
 
 
 class MySpider(CrawlSpider):
@@ -62,13 +62,6 @@ class MySpider(CrawlSpider):
             self.edt_time = kwargs.get("edt")
         else:
             self.enable_incr = False
-
-
-    def get_url(self, cid):
-        cid_url = "http://ggzyjy.jinhua.gov.cn/cms/attachment_url.jspx?cid={}&n=1".format(cid)
-        response = requests.get(url=cid_url, headers=self.headers).content.decode('utf-8').replace('["', '').replace('"]', '')
-        return response
-
 
     def start_requests(self):
         for url in self.url_list:
@@ -217,7 +210,7 @@ class MySpider(CrawlSpider):
 
             files_path = {}
             cid = re.findall('\d+', response.url)[0]
-            values = self.get_url(cid)
+            values = get_url(self.domain_url, cid)
             html = etree.HTML(content)
             if html.xpath('//table/tr[2]//a/@title'):
                 str_content = html.xpath('//table/tr[2]/td[1]/a')

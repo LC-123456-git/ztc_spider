@@ -6,6 +6,21 @@
 
 import scrapy
 
+class QGDLItem(scrapy.Item):
+    """
+    统一社会信用代码    机构名称  联系人    联系电话     注册地址    登记日期      登记地点
+    """
+    table_name = "qgdl"
+    table_desc = "xinxi"
+    society_code = scrapy.Field({'idx': 1, 'comment': '统一社会信用代码'})
+    agency = scrapy.Field({'idx': 2, 'comment': '机构名称'})
+    liaison = scrapy.Field({'idx': 3, 'comment': '联系人'})
+    contact_information = scrapy.Field({'idx': 4, 'comment': '联系电话'})
+    address = scrapy.Field({'idx': 5, 'comment': '注册地址'})
+    pub_time = scrapy.Field({'idx': 6, 'comment': '登记日期'})
+    city = scrapy.Field({'idx': 7, 'comment': '登记地点'})
+
+
 
 class QCCItem(scrapy.Item):
     """

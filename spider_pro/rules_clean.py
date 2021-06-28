@@ -158,71 +158,72 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
 
     elif area_id == '52':
         utils.match_key_words(content, regular_plans)
-    elif area_id == '3305':
-        if isinstance(keys, str):
-            keys_str_list = [keys]
-        elif isinstance(keys, list):
-            keys_str_list = keys
-        else:
-            return ""
-
-        for key in keys_str_list:
-            # print({key}, ': ')
-            # 先判断content中 是否包含key的文本
-            if len(key) == 0 or not content or not key:
-                continue
-            if re.search(fr"{key}", content):
-                # 匹配带冒号开始的文本内容
-                all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                if all_results:
-                    for item in all_results:
-                        value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                        if value.strip():
-                            return value.strip()
-                        tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                        if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                            value = value_str.group().split(">")[-2].split("</")[0]
-                            if value.strip():
-                                return value.strip()
-
-                # 匹配带空格开始的文本内容
-                all_results = re.findall(fr"{key}\s+?<", content)
-                if all_results:
-                    for item in all_results:
-                        value_list = item.split(" ")
-                        for v_item in value_list:
-                            if v_item.strip():
-                                return v_item.strip()
-
-                # 匹配不带任何开始标记的文本内容
-                all_results = re.findall(fr"{key}</.*?>", content)
-                if all_results:
-                    for item in all_results:
-                        tag = item.split("</")[-1].split(">")[0]
-                        if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                            value = value_str.group().split(">")[-2].split("</")[0]
-                            if value.strip():
-                                return value.strip()
-
-                # 匹配table里面有前后两个td的文本内容
-                all_results = re.findall(fr"{key}</.*?>(.*?)</.*>", content)
-                if all_results:
-                    for item in all_results:
-                        value = item.split(">")[-1].split(">")[0]
-                        if value.strip():
-                            return value.strip()
-
-            # if key == '项目名称' or key == '招标项目':
-            #     regular_plan = {
-            #         1: '招\s*标\s*项\s*目\s*[,|，](?P<{}>.*?)[,|，]'.format(keys),
-            #         2: '工\s*程\s*名\s*称\s*(?P<{}>.*[u4e00-u9fa5].*?)[,|，]'.format(keys),
-            #         3: '项\s*目\s*名\s*称[:|：]\s*[,|，](?P<{}>.*?)[,|，]'.format(keys),
-            #     }
-            # else:
-            #     regular_plan = ''
-            # utils.match_key_re(content, regular_plan, keys)
-            #
-            # return ""
+    # elif area_id == '3305':
+    #     if isinstance(keys, str):
+    #         keys_str_list = [keys]
+    #     elif isinstance(keys, list):
+    #         keys_str_list = keys
+    #     else:
+    #         return ""
+    #
+    #     for key in keys_str_list:
+    #         # print({key}, ': ')
+    #         # 先判断content中 是否包含key的文本
+    #         if len(key) == 0 or not content or not key:
+    #             continue
+    #         if re.search(fr"{key}", content):
+    #             # 匹配带冒号开始的文本内容
+    #             all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
+    #             if all_results:
+    #                 for item in all_results:
+    #                     value = item.split(":")[-1].split("：")[-1].split("<")[0]
+    #                     if value.strip():
+    #                         return value.strip()
+    #                     tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
+    #                     if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
+    #                         value = value_str.group().split(">")[-2].split("</")[0]
+    #                         if value.strip():
+    #                             return value.strip()
+    #
+    #             # 匹配带空格开始的文本内容
+    #             all_results = re.findall(fr"{key}\s+?<", content)
+    #             if all_results:
+    #                 for item in all_results:
+    #                     value_list = item.split(" ")
+    #                     for v_item in value_list:
+    #                         if v_item.strip():
+    #                             return v_item.strip()
+    #
+    #             # 匹配不带任何开始标记的文本内容
+    #             all_results = re.findall(fr"{key}</.*?>", content)
+    #             if all_results:
+    #                 for item in all_results:
+    #                     tag = item.split("</")[-1].split(">")[0]
+    #                     if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
+    #                         value = value_str.group().split(">")[-2].split("</")[0]
+    #                         if value.strip():
+    #                             return value.strip()
+    #
+    #             # 匹配table里面有前后两个td的文本内容
+    #             all_results = re.findall(fr"{key}</.*?>(.*?)</.*>", content)
+    #             if all_results:
+    #                 for item in all_results:
+    #                     value = item.split(">")[-1].split(">")[0]
+    #                     if value.strip():
+    #                         return value.strip()
+    #
+    #
+    #         # if key == '项目名称' or key == '招标项目':
+    #         #     regular_plan = {
+    #         #         1: '招\s*标\s*项\s*目\s*[,|，](?P<{}>.*?)[,|，]'.format(keys),
+    #         #         2: '工\s*程\s*名\s*称\s*(?P<{}>.*[u4e00-u9fa5].*?)[,|，]'.format(keys),
+    #         #         3: '项\s*目\s*名\s*称[:|：]\s*[,|，](?P<{}>.*?)[,|，]'.format(keys),
+    #         #     }
+    #         # else:
+    #         #     regular_plan = ''
+    #         # utils.match_key_re(content, regular_plan, keys)
+    #         #
+    #         # return ""
     elif area_id == "02":
         # TODO 还需优化
         try:
@@ -1297,35 +1298,35 @@ class KeywordsExtract:
         # 各字段对应的规则
         self.fields_regular = {
             'project_name': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-            ],
-            'project_number': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-            ],
-            'budget_amount': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-            ],
-            'tenderee': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-            ],
-            'bidding_agency': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-            ],
-            'liaison': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
-            ],
-            'contact_information': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
-            ],
-            'successful_bidder': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-            ],
-            'bid_amount': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-            ],
-            'tenderopen_time': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-            ],
+            r'%s[^ψ：:。，,、]*?[: ： \s]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'project_number': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'budget_amount': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'tenderee': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'bidding_agency': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'liaison': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+        ],
+        'contact_information': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+        ],
+        'successful_bidder': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'bid_amount': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'tenderopen_time': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ]
         }
         self.fields_regular_with_symbol = copy.deepcopy(self.fields_regular)
         self._value = ''
@@ -1349,7 +1350,7 @@ class KeywordsExtract:
             com = re.compile(re_string)
             result = com.findall(text)
             if result:
-                val = result[0]
+                val = ''.join(result[0]).replace('业主：', '')
             if val:
                 break
         return val
@@ -1420,6 +1421,18 @@ class KeywordsExtract:
                     count += 1
         return True if count >= 2 else False
 
+    def is_vertical(self, t_data):
+        """
+        判断 tr下只有一个 td 或者 th
+        """
+        try:
+            count = 0
+            for i in t_data[:1]:
+                if t_data[:1][i][0] in self.keysss:
+                    count += 1
+            return True if count >= 2 else False
+        except Exception as e:
+            print(e)
     @staticmethod
     def get_child_tables(doc_el):
         return doc_el.xpath('.//table')
@@ -1644,6 +1657,85 @@ class KeywordsExtract:
 
                 self._extract_from_text(with_symbol=False)
 
+        if self.area_id == '3306':
+            self._value = self._value if self._value else ''
+            if not self._value.strip():
+                regular_list = []
+                if self.field_name == 'bidding_agency':                             # 招标代理
+                    regular_list = [
+                        r'代理机构\s*[: ：](.*?)联系人',
+                        r'采购代理机构信息名 称\s*[: ：](.*?)地\s*址',
+                        r'代理机构联系方式\s*[: ：](.*?)联系人',
+                        r'报名.*?发售地点\s*[: ：](.*?)[( （]',
+                        r'招标代理\s*[: ：](.*?)地'
+                    ]
+                elif self.field_name == 'project_number':                           # 项目编号
+                    regular_list = [
+                        r'项目编号\s*[: ：](.*?)[\u4e00-\u9fa5]'
+                        r'项目编号\s*[: ：](.*?)二'
+                    ]
+                elif self.field_name == "project_name":                             # 项目名称
+                    regular_list = [
+                        r'项目名称\s*[: ：](.*?)三',
+                        r'项目名称\s*[: ：](.*?)[\u4e00-\u9fa5]',
+
+                    ]
+                elif self.field_name == "tenderee":                                  # 招标人
+                    regular_list = [
+                        r'招标人联系方式\s*[: ：](.*?)联系人',
+                        r'招标方联系方式\s*[: ：](.*?)联系人',
+                        r'招标人\s*[: ：](.*?)联',
+                        r'招标人(.*)工程规模',
+                        r'联系人[: ：](.*?)联'
+                    ]
+                elif self.field_name == "liaison":                                   # 联系人
+                    regular_list = [
+                        r'联系人\s*（.*?）[: ：](.*?)项目',
+                        r'联系人\s*[: ：](.*?)[联系电话 , ， 电话]',
+                        # r'联系人\s*[: ：](.*?)[, ，]',
+                        # r'联系人\s*[: ：](.*?)联系电话',
+                    ]
+                elif self.field_name == "bid_amount":                                # 中标金额
+                    regular_list = [
+                        r'项目估算金额\s*[: ：](.*?)。'
+                    ]
+                elif self.field_name == 'contact_information':                       # 联系方式
+                    regular_list = [
+                        r'电话([0-9 \- \s*]+?)[\u4e00-\u9fa5]',
+                        r'电话[: ：]([0-9 \-]+?)[\u4e00-\u9fa5]',
+                        r'联系人.*?联系电话\s*[: ：](.*?)传',
+                        r'联系电话\s*[: ：](.*?)[, ，]',
+                        r'联系电话\s*[: ：](.*?)[\u4e00-\u9fa5]',
+
+                    ]
+                self.reset_regular(regular_list, with_symbol=False)
+
+                self._extract_from_text(with_symbol=False)
+
+        if self.area_id == "3305":
+            self._value = self._value if self._value else ''
+            if not self._value.strip():
+                regular_list = []
+                if self.field_name == 'project_number':  # 项目编号
+                    regular_list = [
+                        r'公示编号(.*?)土地',
+                    ]
+                elif self.field_name == "project_name":  # 项目名称
+                    regular_list = [
+                        r"项目名称(.*?)宗",
+                    ]
+                elif self.field_name == "bid_amount":  # 中标金额
+                    regular_list = [
+                        r'成交价格(.*?)[\u4e00-\u9fa5]'
+                    ]
+                elif self.field_name == "successful_bidder":                                # 中标方
+                    regular_list = [
+                        r'受让人名称(.*?)成交'
+                    ]
+                self.reset_regular(regular_list, with_symbol=False)
+
+                self._extract_from_text(with_symbol=False)
+
     def done_after_extract(self):
         """
         通用提取后，根据地区单独提取
@@ -1696,288 +1788,64 @@ class KeywordsExtract:
 
 if __name__ == '__main__':
     content = """
-<table id="tblInfo" cellspacing="1" cellpadding="1" width="100%" align="center" border="0" runat="server">
-    <tbody>
-        <tr>
-            <td id="tdTitle" align="center" runat="server">
-                <font color="" style="font-size:25px"><b>
-                        浙江信望工程咨询有限公司关于长兴县体育中心全民健身维修改造工程的中标(成交)结果公告
-                    </b></font> <br>
-                <br>
-
-                <hr size="1">
-                <font color="#888888" class="webfont">【信息时间：
-                    2021/5/17
-                    &nbsp;&nbsp;阅读次数：
-                    <script src="/cxweb/Upclicktimes.aspx?InfoID=28d20013-99b5-4edd-b3d0-5f427c0a5be8"></script>164
-                    】<a href="javascript:void(0)" onclick="window.print();">
-                        <font color="#000000" class="webfont">【我要打印】</font>
-                    </a><a href="javascript:window.close()">
-                        <font color="#000000" class="webfont">【关闭】</font>
-                    </a></font>
-                <font color="#000000">
-
-                </font>
-            </td>
-        </tr>
-        <tr>
-            <td height="10"></td>
-        </tr>
-        <tr>
-            <td height="250" align="left" valign="top" class="infodetail" id="TDContent">
-                <!--EpointContent-->
-                <style id="fixTableStyle" type="text/css">
-                    th,
-                    td {
-                        border: 1px solid #DDD;
-                        padding: 5px 10px;
-                    }
-                </style>
-                <div id="fixTableStyle" type="text/css" cdata_tag="style"
-                    cdata_data="th,td {border:1px solid #DDD;padding: 5px 10px;}" _ue_custom_node_="true"></div>
-                <div>
-                    <p style="line-height: 1.5em;"><strong
-                            style="font-size: 18px; font-family: SimHei, sans-serif; text-align: justify;">一、项目编号：</strong><span
-                            style="font-family: 黑体, SimHei; font-size: 18px;"><span
-                                class="bookmark-item uuid-1596280499822 code-00004 addWord single-line-text-input-box-cls">ZJXWCX-2021-018</span></span>
-                    </p>
-                    <p
-                        style="margin: 10px 0px; text-align: justify; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal; line-height: 1.5em;">
-                        <span style="font-size: 18px;"><strong>二、项目名称：</strong><span
-                                class="bookmark-item uuid-1591615489941 code-00003 addWord single-line-text-input-box-cls">长兴县体育中心全民健身维修改造工程</span></span>
-                    </p>
-                    <p style="line-height: 1.5em; margin-top: 10px; margin-bottom: 10px;"><strong><span
-                                style="font-size: 18px; font-family: SimHei, sans-serif;">三、中标（成交）信息</span></strong>
-                    </p>
-                    <div style=" font-size:18px;  font-family:FangSong;  line-height:20px; ">
-                        <p style="line-height: normal;"><span style="font-size: 18px;"> 1.中标结果：</span></p>
-                        <table class="template-bookmark uuid-1599570948000 code-AM014zbcj001 text-中标/成交结果信息"
-                            style="width: 100%; border-collapse:collapse;">
-                            <thead>
-                                <tr class="firstRow">
-                                    <th style="background-color: #fff;">序号</th>
-                                    <th style="background-color: #fff;">中标（成交）金额(元)</th>
-                                    <th style="background-color: #fff;">中标供应商名称</th>
-                                    <th style="background-color: #fff;">中标供应商地址</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style="text-align: center;" width="100%">
-                                    <td class="code-sectionNo">1</td>
-                                    <td class="code-summaryPrice">最终报价:1728800.00(元)</td>
-                                    <td class="code-winningSupplierName">浙江长兴市政建设有限公司</td>
-                                    <td class="code-winningSupplierAddr">浙江省湖州市长兴县画溪街道城南路1号</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <p style="line-height: normal; margin-top: 5px;"><span style="font-size: 18px;"></span> 2.废标结果:
-                        </p>
-                        <p style="margin-bottom: 5px; line-height: normal;" class="sub"> <span
-                                class="bookmark-item uuid-1589193355355 code-41007  addWord"></span></p>
-                        <table class="form-panel-input-cls" width="100%">
-                            <tbody>
-                                <tr style="text-align: center;" width="100%" class="firstRow">
-                                    <td width="25.0%" style="word-break:break-all;">序号</td>
-                                    <td width="25.0%" style="word-break:break-all;">标项名称</td>
-                                    <td width="25.0%" style="word-break:break-all;">废标理由</td>
-                                    <td width="25.0%" style="word-break:break-all;" colspan="1">其他事项</td>
-                                </tr>
-                                <tr style="text-align: center;" width="100%">
-                                    <td width="25.0%" style="word-break:break-all;">/</td>
-                                    <td width="25.0%" style="word-break:break-all;">/</td>
-                                    <td width="25.0%" style="word-break:break-all;">/</td>
-                                    <td width="25.0%" style="word-break:break-all;" colspan="1">/</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <p></p>
-                    </div>
-                    <p
-                        style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
-                        <span style="font-size: 18px;"><strong>四、主要标的信息</strong></span> </p>
-                    <div style=" font-size:18px;  font-family:FangSong;  line-height:20px;">
-                        <p style="line-height: normal;"><span style="font-size: 18px;"> 1.货物类主要标的信息：</span> </p>
-                        <p style="line-height: normal;"> <span
-                                class="bookmark-item uuid-1589437802153 code-AM014GoodsInfoTab  addWord"></span></p>
-                        <p style="line-height: normal;"> 2.工程类主要标的信息：</p>
-                        <p style="line-height: normal;" class="sub"> <span
-                                class="bookmark-item uuid-1589437807972 code-AM014infoOfEngSubMatter  addWord"></span>
-                        </p>
-                        <table class="form-panel-input-cls" width="100%">
-                            <tbody>
-                                <tr style="text-align: center;" width="100%" class="firstRow">
-                                    <td width="14.29%" style="word-break:break-all;">序号</td>
-                                    <td width="14.29%" style="word-break:break-all;">标项名称</td>
-                                    <td width="14.29%" style="word-break:break-all;">标的名称</td>
-                                    <td width="14.29%" style="word-break:break-all;">施工范围</td>
-                                    <td width="14.29%" style="word-break:break-all;">施工工期</td>
-                                    <td width="14.29%" style="word-break:break-all;">项目经理</td>
-                                    <td width="14.29%" style="word-break:break-all;" colspan="1">执业证书信息</td>
-                                </tr>
-                                <tr style="text-align: center;" width="100%">
-                                    <td width="14.29%" style="word-break:break-all;">1</td>
-                                    <td width="14.29%" style="word-break:break-all;">长兴县体育中心全民健身维修改造工程</td>
-                                    <td width="14.29%" style="word-break:break-all;">长兴县体育中心全民健身维修改造工程</td>
-                                    <td width="14.29%" style="word-break:break-all;">具体详见竞争性磋商文件</td>
-                                    <td width="14.29%" style="word-break:break-all;">具体详见竞争性磋商文件</td>
-                                    <td width="14.29%" style="word-break:break-all;">具体详见竞争性磋商文件</td>
-                                    <td width="14.29%" style="word-break:break-all;" colspan="1">具体详见竞争性磋商文件</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <p></p>
-                        <p style="line-height: normal;"> 3.服务类主要标的信息：</p>
-                        <p style="line-height: normal;"> <span
-                                class="bookmark-item uuid-1589437811676 code-AM014infoOfServiceObject  addWord"></span>
-                        </p>
-                    </div>
-                    <p
-                        style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
-                        <span style="font-size: 18px;"><strong>五、评审专家（单一来源采购人员）名单：</strong></span> </p>
-                    <p><span style="font-size: 18px; font-family:FangSong;  line-height:20px; "> <span
-                                class="bookmark-item uuid-1589193390811 code-85005 addWord multi-line-text-input-box-cls">葛建琴,王莹,张亮</span></span>
-                    </p>
-                    <p
-                        style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
-                        <span style="font-size: 18px;"><strong>六、代理服务收费标准及金额：</strong></span> </p>
-                    <p><span style="font-size: 18px; font-family:FangSong;  line-height:20px; "> 1.代理服务收费标准：<span
-                                class="bookmark-item uuid-1591615554332 code-AM01400039 addWord multi-line-text-input-box-cls">根据国家计委关于印发《招标代理服务收费管理暂行办法》的通知（计价格[2002]1980号）规定的折扣计入</span></span>
-                    </p>
-                    <p><span style="font-size: 18px; font-family:FangSong;  line-height:20px; "> 2.代理服务收费金额（元）：<span
-                                class="bookmark-item uuid-1591615558580 code-AM01400040 addWord numeric-input-box-cls readonly">20000</span></span>
-                    </p>
-                    <p
-                        style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
-                        <span style="font-size: 18px;"><strong>七、公告期限</strong></span> </p>
-                    <p><span style="font-size: 18px; font-family:FangSong;  line-height:20px; "> 自本公告发布之日起1个工作日。</span>
-                    </p>
-                    <p
-                        style="margin: 10px 0px; text-align: justify; line-height: 30px; break-after: avoid; font-family: SimHei, sans-serif; white-space: normal;">
-                        <span style="font-size: 18px;"><strong>八、其他补充事宜</strong></span> </p>
-                    <p style="line-height: 1.5em;"><span
-                            style="font-size: 18px; font-family:FangSong;  line-height:20px; ">
-                            1.各参加政府采购活动的供应商认为该中标/成交结果和采购过程等使自己的权益受到损害的，可以自本公告期限届满之日（本公告发布之日后第2个工作日）起7个工作日内，以书面形式向采购人或受其委托的采购代理机构提出质疑。质疑供应商对采购人、采购代理机构的答复不满意或者采购人、采购代理机构未在规定的时间内作出答复的，可以在答复期满后十五个工作日内向同级政府采购监督管理部门投诉。质疑函范本、投诉书范本请到浙江政府采购网下载专区下载。</span>
-                    </p>
-                    <p style="line-height: 1.5em;"><span
-                            style="font-size: 18px; font-family:FangSong;  line-height:20px; "> 2.其他事项：<span
-                                class="bookmark-item uuid-1592539159169 code-81205  addWord"></span></span> </p>
-                    <p
-                        style="margin: 10px 0px; text-align: justify; line-height: 32px; break-after: avoid; font-size: 18px; font-family: SimHei, sans-serif; white-space: normal;">
-                        <span style="font-size: 18px;"><strong>九、对本次公告内容提出询问、质疑、投诉，请按以下方式联系</strong><span
-                                style="font-family: sans-serif; font-size: 16px;">　　　</span></span><span
-                            style="font-size: 18px; font-family: FangSong;"> </span> </p>
-                    <div style="font-family:FangSong;line-height:30px;">
-                        <p><span style="font-size: 18px;"> 1.采购人信息</span> </p>
-                        <p><span style="font-size: 18px;"> 名 称：<span
-                                    class="bookmark-item uuid-1596004663203 code-00014 editDisable interval-text-box-cls readonly">长兴县体育中心（长兴县少年儿童业余体校）</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> 地 址：<span
-                                    class="bookmark-item uuid-1596004672274 code-00018 addWord single-line-text-input-box-cls">太湖中路170号</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> 传 真：<span
-                                    class="bookmark-item uuid-1596004680354 code-00017  addWord"></span></span> </p>
-                        <p><span style="font-size: 18px;"> 项目联系人（询问）：<span
-                                    class="bookmark-item uuid-1596004688403 code-00015 editDisable single-line-text-input-box-cls readonly">张亮</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> 项目联系方式（询问）：<span
-                                    class="bookmark-item uuid-1596004695990 code-00016 editDisable single-line-text-input-box-cls readonly">(0572)
-                                    685-3107?</span></span> </p>
-                        <p><span style="font-size: 18px;"> 质疑联系人：<span
-                                    class="bookmark-item uuid-1596004703774 code-AM014cg001 addWord single-line-text-input-box-cls">张亮</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> 质疑联系方式：<span
-                                    class="bookmark-item uuid-1596004712085 code-AM014cg002 addWord single-line-text-input-box-cls">13615727444</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> <br> 2.采购代理机构信息</span> </p>
-                        <p><span style="font-size: 18px;"> 名 称：<span
-                                    class="bookmark-item uuid-1596004721081 code-00009 addWord interval-text-box-cls">浙江信望工程咨询有限公司</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> 地 址：<span
-                                    class="bookmark-item uuid-1596004728442 code-00013 editDisable single-line-text-input-box-cls readonly">长兴县明珠商务大厦7层708室</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> 传 真：<span
-                                    class="bookmark-item uuid-1596004736097 code-00012  addWord"></span></span> </p>
-                        <p><span style="font-size: 18px;"> 项目联系人（询问）：<span
-                                    class="bookmark-item uuid-1596004745033 code-00010 editDisable single-line-text-input-box-cls readonly">陈工</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> 项目联系方式（询问）：<span
-                                    class="bookmark-item uuid-1596004753055 code-00011 addWord single-line-text-input-box-cls">0572-6032988</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> 质疑联系人：<span
-                                    class="bookmark-item uuid-1596004761573 code-AM014cg003 addWord single-line-text-input-box-cls">徐黄莹</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> 质疑联系方式：<span
-                                    class="bookmark-item uuid-1596004769998 code-AM014cg004 addWord single-line-text-input-box-cls">0572-6032988</span>　　　　　　　　　　</span>
-                            <span style="font-size: 18px;"> </span></p>
-                        <p><span style="font-size: 18px;"> <br> 3.同级政府采购监督管理部门</span> </p>
-                        <p><span style="font-size: 18px;"> 名 称：<span
-                                    class="bookmark-item uuid-1596004778916 code-00019 addWord single-line-text-input-box-cls">长兴县财政局政府采购监督管理科</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> 地 址：<span
-                                    class="bookmark-item uuid-1596004787211 code-00023 addWord single-line-text-input-box-cls">/</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> 传 真：<span
-                                    class="bookmark-item uuid-1596004796586 code-00022 addWord single-line-text-input-box-cls">/</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> 联系人 ：<span
-                                    class="bookmark-item uuid-1596004804824 code-00020 addWord single-line-text-input-box-cls">佘科长</span></span>
-                        </p>
-                        <p><span style="font-size: 18px;"> 监督投诉电话：<span
-                                    class="bookmark-item uuid-1596004812886 code-00021 addWord single-line-text-input-box-cls">0572-6027789
-                                </span><br></span></p>
-                        <blockquote style="display: none;"><span
-                                class="bookmark-item uuid-1596275077350 code-88001 addWord date-selection-cls">2021年05月06日</span>
-                        </blockquote>
-                        <blockquote style="display: none;"><span
-                                class="bookmark-item uuid-1596275085740 code-94002 addWord date-selection-cls">2021年05月17日</span>
-                        </blockquote>
-                        <blockquote style="display: none;"><span
-                                class="bookmark-item uuid-1596275091448 code-89002  addWord"></span></blockquote>
-                        <blockquote style="display: none;"><span
-                                class="bookmark-item uuid-1596275104662 code-81204  addWord"></span></blockquote>
-                        <p><br><br></p>
-                    </div>
-                </div>
-                <p><br></p>
-                <!--EpointContent-->
-            </td>
-        </tr>
-        <tr>
-            <td align="right">
-                <br>
-            </td>
-        </tr>
-        <tr id="trAttach" runat="server">
-            <td align="left">
-                <table id="filedown" cellspacing="1" cellpadding="1" width="100%" border="0" runat="server">
-                    <tbody>
-                        <tr>
-                            <td valign="top"> </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-        </tr>
-        <tr>
-            <td height="10"></td>
-        </tr>
-        <tr>
-            <td></td>
-        </tr>
-        <tr>
-            <td>
-                <!--<iframe frameborder="0" height="100%" width="100%" scrolling="no" src='../InfoMis/Pages/BaoMingInfo/ZBGGDetail.aspx'>
-                        </iframe>-->
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-        </tr>
-    </tbody>
-</table>
+<table width="932" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tbody><tr>
+    <td><table id="tblInfo" cellspacing="1" cellpadding="1" width="100%" align="center" border="0" runat="server">
+                    <tbody><tr>
+                      <td id="tdTitle" align="center" runat="server" height="70"><font color="" style="font-size: 25px"> <b>
+                        金陵北路老企业宿舍区老旧小区改造-道路及C区块雨污水工程施工
+                        </b></font>
+                      
+                        </td>
+                        </tr><tr><td height="29" align="center" bgcolor="#eeeeee">
+                        <font color="#545454" class="webfont">【信息时间：
+                        2021/6/23
+                        &nbsp;&nbsp;阅读次数：
+                        <script src="/cxweb/Upclicktimes.aspx?InfoID=c62f5b0b-27ea-497b-a762-739a02956667"></script>83
+                        】<a href="javascript:void(0)" onclick="window.print();"><font color="#545454" class="webfont">【我要打印】</font></a><a href="javascript:window.close()"><font color="#545454" class="webfont">【关闭】</font></a></font><font color="#000000">
+                        
+                        </font></td>
+                    </tr>
+                    <tr>
+                      <td height="10"></td>
+                    </tr>
+                    <tr>
+                      <td height="250" align="left" valign="top" class="infodetail" id="TDContent"><div>
+                          <epointform>		<style>.A{font-family:宋体;font-size:12pt;color:#000000;background-color: #eaf3fb;border-left:#d1e6fa 1px solid;border-right:#d1e6fa 1px solid;border-top:#d1e6fa 1px solid;border-bottom:#d1e6fa 1px solid;}.B{font-family:宋体;font-size:12pt;color:#000000;background-color: #ffffff;border-left:#d1e6fa 1px solid;border-right:#d1e6fa 1px solid;border-top:#d1e6fa 1px solid;padding-left:5px;border-bottom:#d1e6fa 1px solid;}</style>	<a name="Sheet1"></a>	<table id="_Sheet1" align="center" cellpadding="0" cellspacing="0" style="table-layout: fixed;font-family:SimSun;font-size:9pt;color:#000000;border-collapse:collapse;" border="0" width="885">	<tbody><tr height="0px" style="font-size: 0px;line-height:0px;">		<td width="110px" style="border-left:#0000 0px solid;border-right:#0000  1px solid;"></td>		<td width="75px" style="border-right:#0000  1px solid;"></td>		<td width="75px" style="border-right:#0000  1px solid;"></td>		<td width="184px" style="border-right:#0000  1px solid;"></td>		<td width="123px" style="border-right:#0000  1px solid;"></td>		<td width="77px" style="border-right:#0000  1px solid;"></td>		<td width="92px" style="border-right:#0000  1px solid;"></td>		<td width="151px" style="border-right:#0000 0px solid;"></td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">工程编码</td>		<td class="B" colspan="7">CXX2021063098</td>	</tr>	<tr height="29px">		<td class="A" style="text-align:center">工程名称</td>		<td class="B" colspan="7">金陵北路老企业宿舍区老旧小区改造-道路及C区块雨污水工程</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">建设单位</td>		<td class="B" colspan="7">长兴县人民政府龙山街道办事处</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">工程类别</td>		<td class="B" colspan="3">施工		</td>		<td class="A" style="text-align:center">招标方式</td>		<td class="B" colspan="3">公开招标		</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">建设地点</td>		<td class="B" colspan="7"></td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">项目所在区域</td>		<td class="B" colspan="3">湖州市·长兴县</td>		<td class="A" style="text-align:center">建筑面积</td>		<td class="B" colspan="3"></td>	</tr>	<tr>		<td class="A" style="text-align:center">中标单位</td>		<td class="B" colspan="7"><a name="子网格"></a>	<table id="_Sheet1_6_1" cellpadding="0" cellspacing="0" style="table-layout: fixed;font-family:SimSun;font-size:9pt;color:#000000;border-collapse:collapse;" border="0" width="775">	<tbody><tr height="0px" style="font-size: 0px;line-height:0px;">		<td width="211px" style="border-left:#0000 0px solid;border-right:#0000  1px solid;"></td>		<td width="196px" style="border-right:#0000  1px solid;"></td>		<td width="125px" style="border-right:#0000  1px solid;"></td>		<td width="170px" style="border-right:#0000  1px solid;"></td>		<td width="75px" style="border-right:#0000 0px solid;"></td>	</tr>	<tr height="30px">		<td width="211px" class="A" style="text-align:center">标段名称</td>		<td class="A" style="text-align:center">中标单位</td>		<td class="A" style="text-align:center">中标价</td>		<td class="A" style="text-align:center">中标范围和内容</td>		<td class="A" style="text-align:center">项目经理</td>	</tr>	<tr>		<td width="211px" class="B">施工</td>		<td class="B">浙江长兴中创建设有限公司</td>		<td class="B"><a name="子网格"></a>	<table id="_Sheet1_1_2_6_1" cellpadding="0" cellspacing="0" style="table-layout: fixed;font-family:SimSun;font-size:9pt;color:#000000;border-collapse:collapse;" border="0" width="94">	<tbody><tr height="0px" style="font-size: 0px;line-height:0px;">		<td width="63px" style="border-left:#0000 0px solid;border-right:#0000  1px solid;"></td>		<td width="33px" style="border-right:#0000 0px solid;"></td>	</tr>	<tr height="34px">		<td width="63px" style="text-align:left;font-size:12pt;padding:2px;">160.264600</td>		<td style="text-align:left;font-size:12pt;padding:2px;"><span id="1063" style="display:inline-block;width:97%;">万元</span>		</td>	</tr>	</tbody></table>		</td>		<td class="B">城市道路;</td>		<td class="B">姚文龙浙233161607458</td>	</tr>	</tbody></table>		</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">公告开始时间</td>		<td class="B" colspan="3">2021年06月23日</td>		<td class="A" style="text-align:center">公告截止时间</td>		<td class="B" colspan="3">2021年06月28日</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">填报人</td>		<td class="B" colspan="3">徐国义</td>		<td class="A" style="text-align:center">填报日期</td>		<td class="B" colspan="3">2021年06月21日</td>	</tr>	<tr height="29px">		<td class="A" style="text-align:center">填报单位</td>		<td class="B" colspan="7">杭州建设工程造价咨询有限公司</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">备注</td>		<td class="B" colspan="7">姚文龙浙233161607458</td>	</tr>	</tbody></table></epointform>
+                        </div>
+                        <div>
+                          
+                        </div></td>
+                    </tr>
+                    <tr>
+                      <td align="right">
+                      
+                      <br>
+                        </td>
+                    </tr>
+                    <tr id="trAttach" runat="server">
+                      <td align="left"><table id="filedown" cellspacing="1" cellpadding="1" width="100%" border="0" runat="server">
+                          <tbody><tr>
+                            <td valign="top" style="font-size: medium;"><b>
+                              <span class="infodetailattach">附件：</span><table id="filedown" cellspacing="1" cellpadding="1" width="100%" border="0" runat="server"><tbody><tr><td><a href="/cxweb/ReadAttachFile.aspx?AttachID=10acdda5-12f1-4d9b-89ee-67296e1f2cfe" target="_blank"><font class="infodetailattachfile">中标公示.pdf</font></a></td></tr></tbody></table>
+                              </b></td>
+                          </tr>
+                        </tbody></table></td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td height="30"></td>
+                    </tr>
+                    <!--会员或非会员按钮-->
+                    <tr>
+                      <td></td>
+                    </tr>
+                    <!--答疑变更公告-->
+                  </tbody></table></td>
+  </tr>
+</tbody></table>
     """
     ke = KeywordsExtract(content, [
         # "项目名称",  # project_name
@@ -2031,21 +1899,21 @@ if __name__ == '__main__':
         # "项目金额",  # budget_amount
         # "预算金额（元）",
 
-        "中标价格",  # bid_amount
-        "中标价",
-        "中标（成交）金额(元)",
+        # "中标价格",  # bid_amount
+        # "中标价",
+        # "中标（成交）金额(元)",
 
         # "招标方式",
 
         # "开标时间",
         # "开启时间",
 
-        # "中标人",  # successful_bidder
-        # "中标人名称",
-        # "中标单位",
-        # "供应商名称",
+        "中标人",  # successful_bidder
+        "中标人名称",
+        "中标单位",
+        "供应商名称",
         # ], field_name='project_name')
-    ], field_name='bid_amount', area_id="3319")
+    ], field_name='successful_bidder', area_id="3319")
     # ], field_name='project_name', area_id="3319", title='')
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {

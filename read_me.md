@@ -155,6 +155,10 @@
 - [] 1101 北京市海淀区人民政府  http://www.bjhd.gov.cn/
 - [] 1102 北京市政府采购网  http://www.ccgp.gov.cn/
 
+# 上海地区
+- [] 3101 上海市政府采购网  http://www.ccgp-shanghai.gov.cn/
+
+# 浙江地区
 - [] 3301 杭州公共资源交易网  https://www.hzctc.cn/
 - [] 3302 浙江政府采购网  https://zfcg.czt.zj.gov.cn/
 - [] 3303 浙江省能源集团电子招投标平台  https://www.zeec.cn/
