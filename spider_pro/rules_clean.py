@@ -1172,7 +1172,7 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
         except Exception as e:
             print(e)
             return ""
-    elif area_id in ["3309", "3320", "3319"]:
+    elif area_id in ["3309", "3320", "3319", "3326"]:
         ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id,
                              title=title)
         ke.fields_regular = {
@@ -1292,7 +1292,7 @@ class KeywordsExtract:
         self.keysss = [
             "招标项目", "中标（成交）金额(元)", "代理机构", "中标供应商名称", "工程名称", "项目名称", "成交价格", "招标工程项目", "项目编号", "招标项目编号",
             "招标编号", "招标人", "发布时间", "招标单位", "招标代理:", "招标代理：", "招标代理机构", "项目金额", "预算金额（元）", "招标估算价",
-            "中标（成交）金额（元）", "联系人", "项目经理（负责人）", "建设单位", "中标单位", "中标价",
+            "中标（成交）金额（元）", "联系人", "项目经理（负责人）", "建设单位", "中标单位", "中标价", "退付类型",
         ]
         # 各字段对应的规则
         self.fields_regular = {
@@ -1467,10 +1467,11 @@ class KeywordsExtract:
                 tr.getparent().remove(tr)
 
             table_txt = etree.tounicode(table_el, method='html')
-            t_data = pandas.read_html(table_txt)
-            if t_data:
-                t_data = t_data[0]
-
+            try:
+                t_data = pandas.read_html(table_txt)[0]
+            except Exception as e:
+                self.msg = 'error:{0}'.format(e)
+            else:
                 # 判断横向|纵向
                 # tr下td数一致     横向
                 # tr下td数不一致    纵向
@@ -1521,7 +1522,8 @@ class KeywordsExtract:
         从标题获取项目名称
         """
         if self.field_name == 'project_name' and self.title:
-            for name in ['项目', '工程']:
+            project_priority = ['转让', '出租', '转租', '拍卖', '出让', '公告', '公示', '项目', '工程']
+            for name in project_priority:
                 if name in self.title:
                     self._value = ''.join([self.title.split(name)[0], name])
                     break
@@ -1532,7 +1534,37 @@ class KeywordsExtract:
         :param val:
         :return:
         """
+        if self.area_id == '3309':  # 温州
+            self.get_val_from_title()
+            self._value = self._value if self._value else ''
+            if not self._value.strip():
+                regular_list = []
+                if self.field_name == 'budget_amount':  # 本工程预算金额约为479万元。
+                    regular_list = [
+                        r'投资金额约\s*(\d+\s*万元)',
+                        r'预算金额.*?为\s*(\d+\s*万元)',
+                        r'预算金额.*?为\s*(\d+\.\d+?万元)',
+                        r'预算金额.*?为\s*(\d+\s*元)',
+                        r'本工程投资约\s*(\d+\s*万元)',
+                        r'本工程投资约\s*(\d+\.\d+?万元)',
+                        r'本工程投资约\s*(\d+\s*元)',
+                    ]
+                if self.field_name == 'bid_amount':
+                    regular_list = [
+                        r'中标价[: ：]\s*(\d+\s*万元)',
+                        r'中标价[: ：]\s*(\d+\.\d+?万元)',
+                        r'中标价[: ：]\s*(\d+\s*元)',
+                    ]
+                if self.field_name == 'liaison':
+                    regular_list = [
+                        r'联.*?系.*?人[: ：]\s*([\u4e00-\u9fa5]+?)\s*联系',
+                    ]
+                self.reset_regular(regular_list, with_symbol=False)
+
+                self._extract_from_text(with_symbol=False)
+
         if self.area_id == '3320':  # 苍南
+            self.get_val_from_title()
             self._value = self._value if self._value else ''
             if not self._value.strip():
                 regular_list = []
@@ -1548,6 +1580,7 @@ class KeywordsExtract:
                 if self.field_name == 'tenderee':
                     regular_list = [
                         r'招标人为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
+                        r'招标人([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
                         r'项目业主为([\s \u4e00-\u9fa5]*?)（下称招标人）',
                         r'受([\s \u4e00-\u9fa5]*?)委托',
                     ]
@@ -1563,6 +1596,7 @@ class KeywordsExtract:
                     ]
                 if self.field_name == 'budget_amount':  # 本工程预算金额约为479万元。
                     regular_list = [
+                        r'投资金额约\s*(\d+\s*万元)',
                         r'预算金额.*?为\s*(\d+\s*万元)',
                         r'预算金额.*?为\s*(\d+\.\d+?万元)',
                         r'预算金额.*?为\s*(\d+\s*元)',
@@ -1646,6 +1680,59 @@ class KeywordsExtract:
 
                 self._extract_from_text(with_symbol=False)
 
+        if self.area_id == '3326':
+            self.get_val_from_title()
+            self._value = self._value if self._value else ''
+            if not self._value.strip():
+                regular_list = []
+
+                if self.field_name == 'project_name':
+                    regular_list = [
+                        r'本招标项目([^，,]*?)[已由 , ，]',
+                        # 本招标项目龙游县礼贤小区安居工程无负压给水设备采购及安装已由龙发改中[2019]114号批准建设
+                    ]
+                if self.field_name == 'tenderee':
+                    regular_list = [
+                        r'招标人为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
+                    ]
+                if self.field_name == 'bidding_agency':
+                    regular_list = [
+                        r'招标代理机构为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
+                    ]
+                if self.field_name == 'project_number':
+                    regular_list = [
+                        r'项目代码[: ： \s]*([0-9 \-]*?)[^\d+-]'
+                        # r'[项目代码|编号][\： \:]([0-9 A-Z a-z \-]+)\）',
+                    ]
+                if self.field_name == 'budget_amount':
+                    regular_list = [
+                        r'投资限额约\s*(\d+\s*万元)',
+                        # r'预算约\s*(\d+\s*万元)',
+                        # r'预算约\s*(\d+\.\d+?万元)',
+                        # r'预算约\s*(\d+\s*元)',
+                    ]
+                if self.field_name == 'bid_amount':
+                    regular_list = [
+                        # r'中标价[: ：]\s*(\d+\s*万元)',
+                        # r'中标价[: ：]\s*(\d+\.\d+?万元)',
+                        # r'中标价[: ：]\s*(\d+\s*元)',
+                    ]
+                if self.field_name == 'contact_information':
+                    regular_list = [
+                        r'电\s*话[: ：]([^\u4e00-\u9fa5]+?)[\u4e00-\u9fa5 。 ， ,]',
+                    ]
+                if self.field_name == 'liaison':
+                    regular_list = [
+                        r'联\s*系\s*人[: ：]\s*([\u4e00-\u9fa5]+?)[联 电 质]',
+                    ]
+                if self.field_name == 'successful_bidder':
+                    regular_list = [
+                        # r'中标人[: ：]\s*([\u4e00-\u9fa5]+)\s*中标价',
+                    ]
+                self.reset_regular(regular_list, with_symbol=False)
+
+                self._extract_from_text(with_symbol=False)
+
     def done_after_extract(self):
         """
         通用提取后，根据地区单独提取
@@ -1670,7 +1757,6 @@ class KeywordsExtract:
             self.msg = 'error:{0}'.format(e)
 
         if self.field_name in ['bid_amount', 'budget_amount']:
-            # 最终报价: 1728800.00(元)
             com = re.compile(r'([0-9 .]+)')
             if re.search('万元', self._value):
                 try:
@@ -1686,6 +1772,12 @@ class KeywordsExtract:
                     self.msg = 'error:{0}'.format(e)
             else:
                 pass
+        if self.field_name == 'project_name':
+            com = re.compile('([\[【][\u4e00-\u9fa5]+?[】 \]])')
+            suffix_trash = com.findall(self._value)
+            if suffix_trash:
+                suffix_trash = suffix_trash[0]
+                self._value = ''.join(self._value.split(suffix_trash))
 
     def get_value(self):
         self.done_before_extract()  # 通用提取前各地区处理
@@ -1698,83 +1790,99 @@ class KeywordsExtract:
 
 if __name__ == '__main__':
     content = """
-<table width="932" border="0" cellspacing="0" cellpadding="0" align="center">
-  <tbody><tr>
-    <td><table id="tblInfo" cellspacing="1" cellpadding="1" width="100%" align="center" border="0" runat="server">
-                    <tbody><tr>
-                      <td id="tdTitle" align="center" runat="server" height="70"><font color="" style="font-size: 25px"> <b>
-                        吕山乡雁陶村雁荡片美丽宜居示范村景观提升工程成交公示
-                        </b></font>
-                      
-                        </td>
-                        </tr><tr><td height="29" align="center" bgcolor="#eeeeee">
-                        <font color="#545454" class="webfont">【信息时间：
-                        2021/4/8
-                        &nbsp;&nbsp;阅读次数：
-                        <script src="/cxweb/Upclicktimes.aspx?InfoID=a5839140-2e73-4443-b872-74dd2e3414c8"></script>95
-                        】<a href="javascript:void(0)" onclick="window.print();"><font color="#545454" class="webfont">【我要打印】</font></a><a href="javascript:window.close()"><font color="#545454" class="webfont">【关闭】</font></a></font><font color="#000000">
-                        
-                        </font></td>
-                    </tr>
-                    <tr>
-                      <td height="10"></td>
-                    </tr>
-                    <tr>
-                      <td height="250" align="left" valign="top" class="infodetail" id="TDContent"><div>
-                          <p>中 标 公 示 <br>
-<br>
-工程名称：吕山乡雁陶村雁荡片美丽宜居示范村景观提升工程 <br>
-开标时间：2021年04月07日 <br>
-开标地点：吕山乡招投标中心（吕山乡老港航管理站） <br>
-<br>
-中标人情况： <br>
-中标人：长兴宇诚建设有限公司 中标价：597912元 <br>
-工期：90日历天 <br>
-<br>
-废标情况： <br>
-无 <br>
-<br>
-公示开始时间：2021年04月08日 公示结束时间：2021年04月12日 <br>
-投诉受理联系电话：0572- 6651551 <br>
-监督管理联系电话：0572- 6651551 联系人：沈主任 <br>
-<br>
-<br>
- 长兴县吕山乡人民政府招投标中心 <br>
-2021年4月8日 </p>
+<div class="Content-Main FloatL">
+                <span class="Bold" id="title">温州市核心片区葡萄棚单元A-14b地块</span>
+                <div class="Content-news">
+                    <em> &nbsp; 发布时间：2021-05-06 17:50:04 &nbsp;来源： 本站原创</em>
+                    <div class="share">
+                        <div id="share-2" class="share-component social-share">
+                            <div class="pic"></div>
+                            <a class="social-share-icon icon-weibo" target="_blank" onclick="shareTo('sina')"></a>
+                            <a class="social-share-icon icon-wechat" tabindex="-1" onclick="shareTo('wechat')"></a>
+                            <a class="social-share-icon icon-qzone" onclick="shareTo('qzone')">
+                            </a>
                         </div>
-                        <div>
-                          
-                        </div></td>
+                    </div>
+                </div>
+
+
+                <div class="Main-p" id="imgPic">
+                    <p align="center"><strong>温州市国有建设用地使用权挂牌出让</strong><strong>结果公布</strong></p>
+<p align="center"><strong>温</strong><strong>政务</strong><strong>中心土</strong><strong>公布</strong><strong>字〔20</strong><strong>2</strong><strong>1</strong><strong>〕</strong><strong>23</strong><strong>号</strong></p>
+<p>根据《土地管理法》、《城市房地产管理法》、《城镇国有土地使用权出让和转让暂行条例》和《招标拍卖挂牌出让国有建设用地使用权规定》等法律法规，遵循公开、公平、公正的原则，温州市自然资源和规划局委托温州市政务服务管理中心于2021年4月19日至2021年4月29日挂牌出让温州市核心片区葡萄棚单元A-14b地块土地使用权。现将有关情况公布如下：</p>
+<p>一、地块基本情况：</p>
+<table align="center" border="1" cellspacing="0">
+	<tbody>
+		<tr>
+			<td style="width:103px;">
+				<p align="center"><strong>地块编号</strong></p>
+			</td>
+			<td style="width:130px;">
+				<p align="center"><strong>土地面积(平方米)</strong></p>
+			</td>
+			<td style="width:176px;">
+				<p align="center"><strong>土地用途</strong></p>
+			</td>
+			<td style="width:92px;">
+				<p align="center"><strong>出让年限</strong></p>
+				<p align="center"><strong>(年)</strong></p>
+			</td>
+			<td style="width:70px;">
+				<p align="center"><strong>成交价</strong></p>
+				<p align="center"><strong>(万元)</strong></p>
+			</td>
+			<td style="width:118px;">
+				<p align="center"><strong>受让单位</strong></p>
+			</td>
+		</tr>
+		<tr>
+			<td style="width:103px;">
+				<p align="center">温州市核心片区葡萄棚单元A-14b地块</p>
+			</td>
+			<td style="width:130px;">
+				<p align="center">17960.29</p>
+			</td>
+			<td style="width:176px;">
+				<p align="center">城镇住宅用地、零售商业用地、餐饮用地</p>
+			</td>
+			<td style="width:92px;">
+				<p align="center">城镇住宅用地70年，零售商业用地、餐饮用地40年</p>
+			</td>
+			<td style="width:70px;">
+				<p align="center">43000</p>
+			</td>
+			<td style="width:118px;">
+				<p align="center">中铁建设集团（温州）发展有限公司</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<div style="clear:both;">&nbsp;</div>
+<p>二、该宗地块已签订成交确认书，将在约定日期内签订出让合同，相关事宜在合同中约定。</p>
+<p>三、联系方式</p>
+<p>联系单位：温州市政务服务管理中心</p>
+<p>单位地址：温州市鹿城区会展路1268号&nbsp;&nbsp;(温州市民中心A幢4楼)</p>
+<p>联 系 人：金女士 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;联系电话：0577-88926365</p>
+<p align="right">温州市政务服务管理中心</p>
+<p align="right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2021年5月6日</p>
+
+                </div>
+                <div class="pagebar"></div>
+
+
+
+
+
+
+                <table>
+                    <tbody><tr>
+                        <td><h4></h4><strong>上一篇：</strong><a href="/wzcms/tdjycrjg/71318.htm">温州市仰双片区前后京单元B-3地块</a></td>
+                        <td><h4></h4>下一篇：<a href="/wzcms/tdjycrjg/70283.htm">温州市仰双片区黄龙单元垟田村C-02-C地块</a></td>
                     </tr>
-                    <tr>
-                      <td align="right">
-                      
-                      <br>
-                        </td>
-                    </tr>
-                    <tr id="trAttach" runat="server">
-                      <td align="left"><table id="filedown" cellspacing="1" cellpadding="1" width="100%" border="0" runat="server">
-                          <tbody><tr>
-                            <td valign="top" style="font-size: medium;"><b>
-                               
-                              </b></td>
-                          </tr>
-                        </tbody></table></td>
-                    </tr>
-                    <tr>
-                      <td></td>
-                    </tr>
-                    <tr>
-                      <td height="30"></td>
-                    </tr>
-                    <!--会员或非会员按钮-->
-                    <tr>
-                      <td></td>
-                    </tr>
-                    <!--答疑变更公告-->
-                  </tbody></table></td>
-  </tr>
-</tbody></table>
+                </tbody></table>
+
+
+            </div>
     """
     ke = KeywordsExtract(content, [
         # "项目名称",  # project_name
@@ -1790,13 +1898,13 @@ if __name__ == '__main__':
         # "联系方式",
         # "电\s*话",
 
-        # "联系人",  # liaison
-        # "联\s*系\s*人",
-        # "项目经理",
-        # "项目经理（负责人）",
-        # "项目负责人",
-        # "项目联系人",
-        # "填报人",
+        "联系人",  # liaison
+        "联\s*系\s*人",
+        "项目经理",
+        "项目经理（负责人）",
+        "项目负责人",
+        "项目联系人",
+        "填报人",
 
         # "招标人",  # tenderee
         # "招 标 人",
@@ -1824,25 +1932,29 @@ if __name__ == '__main__':
         # "招标编号",
         # "编号",
         # "工程编号",
+        # "项目代码",
 
         # "项目金额",  # budget_amount
         # "预算金额（元）",
+        # "本期概算(万元)",
 
         # "中标价格",  # bid_amount
         # "中标价",
         # "中标（成交）金额(元)",
+        # "报价（元）",
+        # "中标价（元）",
 
         # "招标方式",
 
         # "开标时间",
         # "开启时间",
 
-        "中标人",  # successful_bidder
-        "中标人名称",
-        "中标单位",
-        "供应商名称",
+        # "中标人",  # successful_bidder
+        # "中标人名称",
+        # "中标单位",
+        # "供应商名称",
         # ], field_name='project_name')
-    ], field_name='successful_bidder', area_id="3319")
+    ], field_name='liaison', area_id="3309")
     # ], field_name='project_name', area_id="3319", title='')
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
