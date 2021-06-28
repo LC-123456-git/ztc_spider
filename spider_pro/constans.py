@@ -90,6 +90,7 @@ FALSE_LIST = ["False", False, "FALSE"]  # 假集合
 DEFAULT_PUB_TIME = "1970-01-01"
 
 FILE_SERVER = 'http://file.zhaotx.cn/sapi/webfile/addWebFileTask'
+TEST_FILE_SERVER = 'http://tfile.zhaotx.cn/sapi/webfile/addWebFileTask'
 FAIL_TASK_SERVER = 'http://file.zhaotx.cn/sapi/webfile/getFailTask'
 # FILE_SERVER = 'http://192.168.1.220:8002/sapi/webfile/addWebFileTask'
 # FAIL_TASK_SERVER = 'http://192.168.1.220:8002/sapi/webfile/getFailTask'

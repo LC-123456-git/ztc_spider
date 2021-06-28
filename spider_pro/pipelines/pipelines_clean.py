@@ -29,6 +29,7 @@ class CleanPipeline(object):
         self.area_id = area_id
         self.logger = logger
         self.is_have_file = False
+        self.test_file = True
         self.clean_all_enable = True if kwargs.get("ENABLE_CLEAN_ALL_WHEN_START") in const.TRUE_LIST else False
         self.enable = True if kwargs.get("ENABLE_AUTO_CLEAN") in const.TRUE_LIST else False
         self.clean_filed_list = ['title', "content", 'project_number', 'project_name', 'tenderee', 'bidding_agency',
@@ -47,6 +48,10 @@ class CleanPipeline(object):
         else:
             self.engine = None
             self.table_name = None
+        if kwargs.get("DEBUG_MODE"):
+            self.test_file = True
+        else:
+            self.test_file = False
 
         self.clean_all_count = 0
         if self.clean_all_enable and self.engine.dialect.has_table(self.engine, self.table_name):
@@ -136,7 +141,10 @@ class CleanPipeline(object):
             files_path = str(files_path)
         elif is_have_file == 1:
             files_path = literal_eval(files_path)
-        ret = requests.post(url=const.FILE_SERVER, data={"jsonString": files_path})
+        if self.test_file:
+            ret = requests.post(url=const.TEST_FILE_SERVER, data={"jsonString": files_path}, timeout=3)
+        else:
+            ret = requests.post(url=const.FILE_SERVER, data={"jsonString": files_path}, timeout=3)
         cur_files_path = literal_eval(files_path)
         """
         [{"name":"成交公示内容.pdf","systemUrl":"http://192.168.1.220:8002/sapi/webfile/getWebFilesBySystemUrl?systemUrl=webf
@@ -291,7 +299,7 @@ class CleanPipeline(object):
             aberrant_type = self.get_keys_value_from_content(data, ["异常类型"], area_id=area_id)
         elif pre_data.get("classify_id") == const.TYPE_WIN_ADVANCE_NOTICE:
             notice_start_time = get_accurate_pub_time(
-                self.get_keys_value_from_content(data, ["公告开始时间"], area_id=area_id))
+                self.get_keys_value_from_content(data, ["公告开始时间", "采购公告发布日期"], area_id=area_id))
             notice_end_time = get_accurate_pub_time(
                 self.get_keys_value_from_content(data, ["公告结束时间"], area_id=area_id))
         elif pre_data.get("classify_id") == const.TYPE_WIN_NOTICE:
@@ -403,11 +411,12 @@ class CleanPipeline(object):
             "预中标价",
             "项目金额",
             "本期概算(万元)",
-            "采购计划金额（元）",
+            "采购计划金额（元）"
         ]
         budget_amount = self.get_keys_value_from_content(content, budget_amount_tags, area_id=area_id,
                                                          field_name='budget_amount')  # √
         liaison_tags = [
+            "招标联系人",
             "联系人",
             "联\s*系\s*人",
             "项目经理",
@@ -419,6 +428,7 @@ class CleanPipeline(object):
         liaison = self.get_keys_value_from_content(content, liaison_tags, area_id=area_id, field_name='liaison')
 
         contact_information_tags = [
+            "招标联系电话",
             "联系电话",
             "联系方式",
             "电\s*话",
