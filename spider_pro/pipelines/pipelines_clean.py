@@ -282,8 +282,13 @@ class CleanPipeline(object):
                 "预计采购时间（填写到月）",
                 "备\s*注"
             ]
-            tenderopen_times = get_accurate_pub_time(self.get_keys_value_from_content(data, tenderopen_time_tags,
-                                                      area_id=area_id, field_name='tenderopen_time')) # √
+            tenderopen_times = get_accurate_pub_time(
+                self.get_keys_value_from_content(
+                    data, tenderopen_time_tags,
+                    area_id=area_id,
+                    field_name='tenderopen_time'
+                )
+            )  # √
 
             # 特殊处理 未获取到值则使用开标时间
             if not notice_end_time:
@@ -313,12 +318,16 @@ class CleanPipeline(object):
                 "中标单位",
                 "供应商名称",
                 "受让人名称",
+                "受让单位",
             ]
             successful_bidder = self.get_keys_value_from_content(data, successful_bidder_tags, area_id=area_id, field_name='successful_bidder')  # √
             bid_amount_tags = [
                 "中标价格",
                 "中标价",
                 "中标（成交）金额(元)",
+                "报价（元）",
+                "中标价（元）",
+                "成交价(万元)"
                 "预中标价",
                 "成交价格"
             ]
@@ -356,7 +365,7 @@ class CleanPipeline(object):
             "标段名称"
         ]
         project_names = self.get_keys_value_from_content(
-            content, project_tags, area_id=area_id, field_name='project_name'
+            content, project_tags, area_id=area_id, field_name='project_name', title=title
         )  # √
         if project_names:
             project_name = project_names
@@ -369,10 +378,13 @@ class CleanPipeline(object):
             "项目编号",
             "招标项目编号",
             "招标编号",
+            "编号",
+            "工程编号",
+            "项目代码",
             "公示编号",
             "标段编号",
             "交易登记号",
-
+            "招标序号",
         ]
         project_numbers = self.get_keys_value_from_content(content, project_number_tags, area_id=area_id, field_name='project_number')  # √
         if re.findall(r'.*\/(.*)', project_numbers):
@@ -404,6 +416,7 @@ class CleanPipeline(object):
             "代理公司",
             "采购代理机构信息",
             "填报单位",
+            "受理单位",
         ]
         bidding_agency = self.get_keys_value_from_content(content, bidding_agency_tags, area_id=area_id,
                                                           field_name='bidding_agency')  # √
@@ -417,6 +430,8 @@ class CleanPipeline(object):
             "项目金额",
             "本期概算(万元)",
             "采购计划金额（元）",
+            "预算价",
+            "预算",
         ]
         budget_amount = self.get_keys_value_from_content(content, budget_amount_tags, area_id=area_id,
                                                          field_name='budget_amount')  # √
@@ -518,10 +533,13 @@ class CleanPipeline(object):
         start = 0
         with self.engine.connect() as conn:
             while True:
-                results = conn.execute(f"select * from {table_name} where is_clean =1 and is_upload=0 and \
-                                                        files_path='' and classify_name='中标公告' limit {start}, {rows}").fetchall()
-                # results = conn.execute(
-                #     f"select * from {table_name} where flies_path = 1").fetchall()
+                # results = conn.execute(f"select * from {table_name} where is_clean =1 and is_upload=0 and
+                #                          files_path='' and classify_name ='中标预告' limit {start}, {rows}").fetchall()
+                results = conn.execute(
+                    f"select * from {table_name}").fetchall()
+                    # f"select * from {table_name} where id in (261, 262)").fetchall()
+                    # f"select * from {table_name} where id between 517 and 518").fetchall()
+                    # f"select * from {table_name} where id=1059").fetchall()
                 results = [dict(zip(result.keys(), result)) for result in results]
                 for item in results:
                     try:
@@ -634,10 +652,10 @@ if __name__ == "__main__":
     # cp.run_clean(table_name="notices_11", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     # cp.run_clean(table_name="notices_13", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     # cp.run_clean(table_name="notices_15", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
-    cp.run_clean(table_name="notices_3305",
-                 # engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'   # 清洗测试库
-                 engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4'           # 清洗正试库
-                 )
+    cp.run_clean(
+        table_name="notices_3326",
+        engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'
+    )
 
     # # 测试洗数据 默认测试
     # cp.run_clean_ex(table_name="notices_47", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4')

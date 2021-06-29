@@ -1916,10 +1916,22 @@ class KeywordsExtract:
 
             # 预算造价约3.9994亿元
             com = re.compile(r'([0-9 .]+)')
-            if re.search('万元', self._value):
+            if re.search('万元|万', self._value):
                 try:
                     values = com.findall(self._value)
                     self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 10000))
+                except Exception as e:
+                    self.msg = 'error:{0}'.format(e)
+            if re.search('百万元|百万', self._value):
+                try:
+                    values = com.findall(self._value)
+                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 1000000))
+                except Exception as e:
+                    self.msg = 'error:{0}'.format(e)
+            if re.search('千万元|千万', self._value):
+                try:
+                    values = com.findall(self._value)
+                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 10000000))
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
             elif re.search('亿元|亿', self._value):
