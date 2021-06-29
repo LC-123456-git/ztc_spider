@@ -80,7 +80,7 @@ class ProxyPool:
             retry_times += 1
         if _type == 1:
             # 套餐
-            r = requests.get(url=f"http://webapi.http.zhimacangku.com/getip?num={num}&type={data_type}&pro=&city=0&yys={yys}&port={port}&pack=143415&ts={ts}&ys=0&cs=0&lb=1&sb=0&pb=4&mr={mr}&regions="
+            r = requests.get(url=f"http://webapi.http.zhimacangku.com/getip?num={num}&type={data_type}&pro=&city=0&yys={yys}&port={port}&pack=159988&ts={ts}&ys=0&cs=0&lb=1&sb=0&pb=4&mr={mr}&regions="
                              )
             # 单次
             # r = requests.get(

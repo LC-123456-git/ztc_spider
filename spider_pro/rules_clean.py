@@ -1173,7 +1173,7 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
         except Exception as e:
             print(e)
             return ""
-    elif area_id in ["3309", "3320", "3319"]:
+    elif area_id in ["3309", "3320", "3319", "3326"]:
         ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id,
                              title=title)
         ke.fields_regular = {
@@ -1293,7 +1293,7 @@ class KeywordsExtract:
         self.keysss = [
             "招标项目", "中标（成交）金额(元)", "代理机构", "中标供应商名称", "工程名称", "项目名称", "成交价格", "招标工程项目", "项目编号", "招标项目编号",
             "招标编号", "招标人", "发布时间", "招标单位", "招标代理:", "招标代理：", "招标代理机构", "项目金额", "预算金额（元）", "招标估算价",
-            "中标（成交）金额（元）", "联系人", "项目经理（负责人）", "建设单位", "中标单位", "中标价",
+            "中标（成交）金额（元）", "联系人", "项目经理（负责人）", "建设单位", "中标单位", "中标价", "退付类型",
         ]
         # 各字段对应的规则
         self.fields_regular = {
@@ -1480,10 +1480,11 @@ class KeywordsExtract:
                 tr.getparent().remove(tr)
 
             table_txt = etree.tounicode(table_el, method='html')
-            t_data = pandas.read_html(table_txt)
-            if t_data:
-                t_data = t_data[0]
-
+            try:
+                t_data = pandas.read_html(table_txt)[0]
+            except Exception as e:
+                self.msg = 'error:{0}'.format(e)
+            else:
                 # 判断横向|纵向
                 # tr下td数一致     横向
                 # tr下td数不一致    纵向
@@ -1534,7 +1535,8 @@ class KeywordsExtract:
         从标题获取项目名称
         """
         if self.field_name == 'project_name' and self.title:
-            for name in ['项目', '工程']:
+            project_priority = ['转让', '出租', '转租', '拍卖', '出让', '公告', '公示', '项目', '工程']
+            for name in project_priority:
                 if name in self.title:
                     self._value = ''.join([self.title.split(name)[0], name])
                     break
@@ -1545,7 +1547,37 @@ class KeywordsExtract:
         :param val:
         :return:
         """
+        if self.area_id == '3309':  # 温州
+            self.get_val_from_title()
+            self._value = self._value if self._value else ''
+            if not self._value.strip():
+                regular_list = []
+                if self.field_name == 'budget_amount':  # 本工程预算金额约为479万元。
+                    regular_list = [
+                        r'投资金额约\s*(\d+\s*万元)',
+                        r'预算金额.*?为\s*(\d+\s*万元)',
+                        r'预算金额.*?为\s*(\d+\.\d+?万元)',
+                        r'预算金额.*?为\s*(\d+\s*元)',
+                        r'本工程投资约\s*(\d+\s*万元)',
+                        r'本工程投资约\s*(\d+\.\d+?万元)',
+                        r'本工程投资约\s*(\d+\s*元)',
+                    ]
+                if self.field_name == 'bid_amount':
+                    regular_list = [
+                        r'中标价[: ：]\s*(\d+\s*万元)',
+                        r'中标价[: ：]\s*(\d+\.\d+?万元)',
+                        r'中标价[: ：]\s*(\d+\s*元)',
+                    ]
+                if self.field_name == 'liaison':
+                    regular_list = [
+                        r'联.*?系.*?人[: ：]\s*([\u4e00-\u9fa5]+?)\s*联系',
+                    ]
+                self.reset_regular(regular_list, with_symbol=False)
+
+                self._extract_from_text(with_symbol=False)
+
         if self.area_id == '3320':  # 苍南
+            self.get_val_from_title()
             self._value = self._value if self._value else ''
             if not self._value.strip():
                 regular_list = []
@@ -1561,6 +1593,7 @@ class KeywordsExtract:
                 if self.field_name == 'tenderee':
                     regular_list = [
                         r'招标人为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
+                        r'招标人([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
                         r'项目业主为([\s \u4e00-\u9fa5]*?)（下称招标人）',
                         r'受([\s \u4e00-\u9fa5]*?)委托',
                     ]
@@ -1576,6 +1609,7 @@ class KeywordsExtract:
                     ]
                 if self.field_name == 'budget_amount':  # 本工程预算金额约为479万元。
                     regular_list = [
+                        r'投资金额约\s*(\d+\s*万元)',
                         r'预算金额.*?为\s*(\d+\s*万元)',
                         r'预算金额.*?为\s*(\d+\.\d+?万元)',
                         r'预算金额.*?为\s*(\d+\s*元)',
@@ -1651,7 +1685,62 @@ class KeywordsExtract:
                         r'项目经理：([\u4e00-\u9fa5]+?)\s*质量',
                     ]
                 if self.field_name == 'successful_bidder':
+                    # 中标人：长兴宇诚建设有限公司 中标价：597912元 工期
                     regular_list = [
+                        r'中标人[: ：]\s*([\u4e00-\u9fa5]+)\s*中标价',
+                    ]
+                self.reset_regular(regular_list, with_symbol=False)
+
+                self._extract_from_text(with_symbol=False)
+
+        if self.area_id == '3326':
+            self.get_val_from_title()
+            self._value = self._value if self._value else ''
+            if not self._value.strip():
+                regular_list = []
+
+                if self.field_name == 'project_name':
+                    regular_list = [
+                        r'本招标项目([^，,]*?)[已由 , ，]',
+                        # 本招标项目龙游县礼贤小区安居工程无负压给水设备采购及安装已由龙发改中[2019]114号批准建设
+                    ]
+                if self.field_name == 'tenderee':
+                    regular_list = [
+                        r'招标人为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
+                    ]
+                if self.field_name == 'bidding_agency':
+                    regular_list = [
+                        r'招标代理机构为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
+                    ]
+                if self.field_name == 'project_number':
+                    regular_list = [
+                        r'项目代码[: ： \s]*([0-9 \-]*?)[^\d+-]'
+                        # r'[项目代码|编号][\： \:]([0-9 A-Z a-z \-]+)\）',
+                    ]
+                if self.field_name == 'budget_amount':
+                    regular_list = [
+                        r'投资限额约\s*(\d+\s*万元)',
+                        # r'预算约\s*(\d+\s*万元)',
+                        # r'预算约\s*(\d+\.\d+?万元)',
+                        # r'预算约\s*(\d+\s*元)',
+                    ]
+                if self.field_name == 'bid_amount':
+                    regular_list = [
+                        # r'中标价[: ：]\s*(\d+\s*万元)',
+                        # r'中标价[: ：]\s*(\d+\.\d+?万元)',
+                        # r'中标价[: ：]\s*(\d+\s*元)',
+                    ]
+                if self.field_name == 'contact_information':
+                    regular_list = [
+                        r'电\s*话[: ：]([^\u4e00-\u9fa5]+?)[\u4e00-\u9fa5 。 ， ,]',
+                    ]
+                if self.field_name == 'liaison':
+                    regular_list = [
+                        r'联\s*系\s*人[: ：]\s*([\u4e00-\u9fa5]+?)[联 电 质]',
+                    ]
+                if self.field_name == 'successful_bidder':
+                    regular_list = [
+                        # r'中标人[: ：]\s*([\u4e00-\u9fa5]+)\s*中标价',
                     ]
                 self.reset_regular(regular_list, with_symbol=False)
 
@@ -1760,7 +1849,6 @@ class KeywordsExtract:
             self.msg = 'error:{0}'.format(e)
 
         if self.field_name in ['bid_amount', 'budget_amount']:
-            # 最终报价: 1728800.00(元)
             com = re.compile(r'([0-9 .]+)')
             if re.search('万元', self._value):
                 try:
@@ -1775,7 +1863,13 @@ class KeywordsExtract:
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
             else:
-                self._value = ''
+                pass
+        if self.field_name == 'project_name':
+            com = re.compile('([\[【][\u4e00-\u9fa5]+?[】 \]])')
+            suffix_trash = com.findall(self._value)
+            if suffix_trash:
+                suffix_trash = suffix_trash[0]
+                self._value = ''.join(self._value.split(suffix_trash))
 
     def get_value(self):
         self.done_before_extract()  # 通用提取前各地区处理
@@ -1902,6 +1996,8 @@ if __name__ == '__main__':
         # "中标价格",  # bid_amount
         # "中标价",
         # "中标（成交）金额(元)",
+        # "报价（元）",
+        # "中标价（元）",
 
         # "招标方式",
 
@@ -1913,7 +2009,7 @@ if __name__ == '__main__':
         "中标单位",
         "供应商名称",
         # ], field_name='project_name')
-    ], field_name='successful_bidder', area_id="3319")
+    ], field_name='bid_amount', area_id="3319")
     # ], field_name='project_name', area_id="3319", title='')
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {

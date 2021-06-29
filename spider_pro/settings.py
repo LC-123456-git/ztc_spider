@@ -130,8 +130,8 @@ RETRY_TIMES = 3
 RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 400, 403, 404]
 
 # concurrent
-CONCURRENT_REQUESTS = 32  # 32 理论上可以支持 每小时10w数据 调式环境设置为1
-CONCURRENT_REQUESTS_PER_IP = 30     # 1
+CONCURRENT_REQUESTS = 1  # 32 理论上可以支持 每小时10w数据 调式环境设置为1
+CONCURRENT_REQUESTS_PER_IP = 1     # 1
 REACTOR_THREADPOOL_MAXSIZE = 20
 
 # download delay   延时下载
@@ -178,14 +178,14 @@ DEFAULT_ERROR_RATE = 0.0001
 DEFAULT_CAPACITY = 100000
 
 # Redis Proxy setting
-CURRENT_HTTP_PROXY_MAX = 10  # redis http 最大数量
-CURRENT_HTTPS_PROXY_MAX = 10  # redis https 最大数量
+CURRENT_HTTP_PROXY_MAX = 3  # redis http 最大数量
+CURRENT_HTTPS_PROXY_MAX = 3  # redis https 最大数量
 TIME_WAIT_PROXY_SLEEP = 10
 TIME_MAINTAIN_PROXY_POOL_AGAIN = 10
 TIME_EXIT_WHEN_LOCAL_PROXY_SET_EMPTY = 300  # 允许300s内未获得新的ip就退出spider
 
 LOCAL_PROXY_RETRY_TIMES_DICT = {}  # 本地代理池 代理重试次数记录
-LOCAL_PROXY_RETRY_MAX_TIMES = 2  # 每个ip只能重试10次，只有10次失败的机会 否则移除代理池
+LOCAL_PROXY_RETRY_MAX_TIMES = 10  # 每个ip只能重试10次，只有10次失败的机会 否则移除代理池
 
 NAME_HTTP_PROXY = "http_proxy"  # redis http代理池
 NAME_HTTPS_PROXY = "https_proxy"  # redis https代理池
@@ -210,8 +210,7 @@ ENABLE_UPLOAD_ALL_WHEN_START = False  # 异常自动恢复上传功能
 ENABLE_PROXY_INFINITE = False
 NAME_PROXY_INFINITE = "proxy_infinite"
 
-# ENABLE_PROXY_USE = True  # 启用代理
-ENABLE_PROXY_USE = False  # 不启用代理
+ENABLE_PROXY_USE = False  # 启用代理
 ENABLE_URL_DUP_REMOVE_USE = False
 
 DEPTH_PRIORITY = 1

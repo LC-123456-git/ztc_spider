@@ -29,6 +29,7 @@ class CleanPipeline(object):
         self.area_id = area_id
         self.logger = logger
         self.is_have_file = False
+        self.test_file = True
         self.clean_all_enable = True if kwargs.get("ENABLE_CLEAN_ALL_WHEN_START") in const.TRUE_LIST else False
         self.enable = True if kwargs.get("ENABLE_AUTO_CLEAN") in const.TRUE_LIST else False
         self.clean_filed_list = ['title', "content", 'project_number', 'project_name', 'tenderee', 'bidding_agency',
@@ -47,6 +48,10 @@ class CleanPipeline(object):
         else:
             self.engine = None
             self.table_name = None
+        if kwargs.get("DEBUG_MODE"):
+            self.test_file = True
+        else:
+            self.test_file = False
 
         self.clean_all_count = 0
         if self.clean_all_enable and self.engine.dialect.has_table(self.engine, self.table_name):
@@ -136,7 +141,10 @@ class CleanPipeline(object):
             files_path = str(files_path)
         elif is_have_file == 1:
             files_path = literal_eval(files_path)
-        ret = requests.post(url=const.FILE_SERVER, data={"jsonString": files_path})
+        if self.test_file:
+            ret = requests.post(url=const.TEST_FILE_SERVER, data={"jsonString": files_path}, timeout=3)
+        else:
+            ret = requests.post(url=const.FILE_SERVER, data={"jsonString": files_path}, timeout=3)
         cur_files_path = literal_eval(files_path)
         """
         [{"name":"成交公示内容.pdf","systemUrl":"http://192.168.1.220:8002/sapi/webfile/getWebFilesBySystemUrl?systemUrl=webf
@@ -249,250 +257,252 @@ class CleanPipeline(object):
             "is_have_file": item['is_have_file'],
         }
 
-    def extract_data(self, item_id, pre_data, area_id="00"):
-        # if item_id == '36':
-            data = pre_data.get("content")
-            # 提取特有字段 11
-            notice_nature = bid_file = bid_file_start_time = bid_file_end_time = apply_end_time = bid_amount = ""
-            notice_start_time = notice_end_time = aberrant_type = tenderopen_time = successful_bidder = ""
-            if pre_data.get("classify_id") == const.TYPE_ZB_NOTICE:
-                notice_nature = "正常公告"
-                bid_file = self.get_keys_value_from_content(data, "招标文件", area_id=area_id)
-                notice_start_time = get_accurate_pub_time(
-                    self.get_keys_value_from_content(data, "公告开始时间", area_id=area_id))
-                notice_end_time = get_accurate_pub_time(
-                    self.get_keys_value_from_content(data, "公告结束时间", area_id=area_id))
-                bid_file_start_time = get_accurate_pub_time(
-                    self.get_keys_value_from_content(data, "招标文件获取开始时间", area_id=area_id))
-                bid_file_end_time = get_accurate_pub_time(
-                    self.get_keys_value_from_content(data, "招标文件获取截止时间", area_id=area_id))
-                apply_end_time = get_accurate_pub_time(
-                    self.get_keys_value_from_content(data, "报名截止时间", area_id=area_id))
+    def extract_data(self, pre_data, area_id="00"):
+        data = pre_data.get("content")
+        # 提取特有字段 11
+        notice_nature = bid_file = bid_file_start_time = bid_file_end_time = apply_end_time = bid_amount = ""
+        notice_start_time = notice_end_time = aberrant_type = tenderopen_time = successful_bidder = ""
+        if pre_data.get("classify_id") == const.TYPE_ZB_NOTICE:
+            notice_nature = "正常公告"
+            bid_file = self.get_keys_value_from_content(data, "招标文件", area_id=area_id)
+            notice_start_time = get_accurate_pub_time(
+                self.get_keys_value_from_content(data, "公告开始时间", area_id=area_id))
+            notice_end_time = get_accurate_pub_time(
+                self.get_keys_value_from_content(data, "公告结束时间", area_id=area_id))
+            bid_file_start_time = get_accurate_pub_time(
+                self.get_keys_value_from_content(data, "招标文件获取开始时间", area_id=area_id))
+            bid_file_end_time = get_accurate_pub_time(
+                self.get_keys_value_from_content(data, "招标文件获取截止时间", area_id=area_id))
+            apply_end_time = get_accurate_pub_time(
+                self.get_keys_value_from_content(data, "报名截止时间", area_id=area_id))
 
-                tenderopen_time_tags = [
-                    "开标时间",
-                    "开启时间",
-                    "预计采购时间（填写到月）",
-                    "备\s*注"
-                ]
-                tenderopen_times = get_accurate_pub_time(self.get_keys_value_from_content(data, tenderopen_time_tags,
-                                                          area_id=area_id, field_name='tenderopen_time')) # √
-
-                # 特殊处理 未获取到值则使用开标时间
-                if not notice_end_time:
-                    notice_end_time = tenderopen_times
-                if not apply_end_time:
-                    apply_end_time = tenderopen_times
-                if re.findall('.*(\d{4}.*\d{1,2}.*\d{1,2}.*\d{2}[: ：]\d{2}).*', tenderopen_times):
-                    tenderopen_time = re.findall('.*(\d{4}.*\d{1,2}.*\d{1,2}.*\d{2}[: ：]\d{2}).*', tenderopen_times)[0]
-                else:
-                    tenderopen_time = tenderopen_times
-
-            elif pre_data.get("classify_id") == const.TYPE_ZB_ADVANCE_NOTICE:
-                notice_nature = "正常公告"
-            elif pre_data.get("classify_id") == const.TYPE_ZB_ALTERATION:
-                notice_nature = "正常公告"
-            elif pre_data.get("classify_id") == const.TYPE_ZB_ABNORMAL:
-                aberrant_type = self.get_keys_value_from_content(data, ["异常类型"], area_id=area_id)
-            elif pre_data.get("classify_id") == const.TYPE_WIN_ADVANCE_NOTICE:
-                notice_start_time = get_accurate_pub_time(
-                    self.get_keys_value_from_content(data, ["公告开始时间"], area_id=area_id))
-                notice_end_time = get_accurate_pub_time(
-                    self.get_keys_value_from_content(data, ["公告结束时间"], area_id=area_id))
-            elif pre_data.get("classify_id") == const.TYPE_WIN_NOTICE:
-                successful_bidder_tags = [
-                    "中标人",
-                    "中标人名称",
-                    "中标单位",
-                    "供应商名称",
-                    "受让人名称",
-                ]
-                successful_bidder = self.get_keys_value_from_content(data, successful_bidder_tags, area_id=area_id, field_name='successful_bidder')  # √
-                bid_amount_tags = [
-                    "中标价格",
-                    "中标价",
-                    "中标（成交）金额(元)",
-                    "预中标价",
-                    "成交价格"
-                ]
-                bid_amount = self.get_keys_value_from_content(data, bid_amount_tags, area_id=area_id, field_name='bid_amount')  # √
-            elif pre_data.get("classify_id") == const.TYPE_QUALIFICATION_ADVANCE_NOTICE:
-                pass
-            elif pre_data.get("classify_id") == const.TYPE_OTHERS_NOTICE:
-                pass
-
-            # 采集自有字段 9
-            title = pre_data.get("title")  # 公告标题
-            source = pre_data.get("source")  # 来源(采集的公告就填写采集网站、用户和平台发布就用用户名)
-            source_url = pre_data.get("source_url")  # 采集发布来源网站URL
-            publish_time = get_accurate_pub_time(pre_data.get("publish_time"))  # 发布时间
-            classify_id = pre_data.get("classify_id")  # 公告分类id
-            classify_name = pre_data.get("classify_name")  # 公告分类名称
-            area_code = pre_data.get("area_code")  # 区县编号
-            area = pre_data.get("area")  # 地区
-            content = pre_data.get("content")  # 公告内容
-            project_type = pre_data.get("project_type")  # 类型
-            is_have_file = pre_data.get("is_have_file")  # 修改是否含有文件
-
-            # 默认字段 2
-            state = const.TYPE_UPLOAD_NOTICES_STATE_WAIT  # 状态0-待发布1-已发布2-已下架3-待审核4-审核拒绝
-            sign_type = const.TYPE_UPLOAD_NOTICES_SIGN_COLLECT  # 标讯类型 0-平台发布1-用户发布2-采集发布
-
-            # 公共提取字段 15
-            project_tags = [
-                "采购项目名称",
-                "招标项目",
-                "工\s*程\s*名\s*称",
-                "项目名称",
-                "招标工程项目",
-                "工程名称",
-                "标段名称"
+            tenderopen_time_tags = [
+                "开标时间",
+                "开启时间",
+                "预计采购时间（填写到月）",
+                "备\s*注"
             ]
-            project_names = self.get_keys_value_from_content(
-                content, project_tags, area_id=area_id, field_name='project_name'
-            )  # √
-            if project_names:
+            tenderopen_times = get_accurate_pub_time(self.get_keys_value_from_content(data, tenderopen_time_tags,
+                                                      area_id=area_id, field_name='tenderopen_time')) # √
+
+            # 特殊处理 未获取到值则使用开标时间
+            if not notice_end_time:
+                notice_end_time = tenderopen_times
+            if not apply_end_time:
+                apply_end_time = tenderopen_times
+            if re.findall('.*(\d{4}.*\d{1,2}.*\d{1,2}.*\d{2}[: ：]\d{2}).*', tenderopen_times):
+                tenderopen_time = re.findall('.*(\d{4}.*\d{1,2}.*\d{1,2}.*\d{2}[: ：]\d{2}).*', tenderopen_times)[0]
+            else:
+                tenderopen_time = tenderopen_times
+
+        elif pre_data.get("classify_id") == const.TYPE_ZB_ADVANCE_NOTICE:
+            notice_nature = "正常公告"
+        elif pre_data.get("classify_id") == const.TYPE_ZB_ALTERATION:
+            notice_nature = "正常公告"
+        elif pre_data.get("classify_id") == const.TYPE_ZB_ABNORMAL:
+            aberrant_type = self.get_keys_value_from_content(data, ["异常类型"], area_id=area_id)
+        elif pre_data.get("classify_id") == const.TYPE_WIN_ADVANCE_NOTICE:
+            notice_start_time = get_accurate_pub_time(
+                self.get_keys_value_from_content(data, ["公告开始时间"], area_id=area_id))
+            notice_end_time = get_accurate_pub_time(
+                self.get_keys_value_from_content(data, ["公告结束时间"], area_id=area_id))
+        elif pre_data.get("classify_id") == const.TYPE_WIN_NOTICE:
+            successful_bidder_tags = [
+                "中标人",
+                "中标人名称",
+                "中标单位",
+                "供应商名称",
+                "受让人名称",
+            ]
+            successful_bidder = self.get_keys_value_from_content(data, successful_bidder_tags, area_id=area_id, field_name='successful_bidder')  # √
+            bid_amount_tags = [
+                "中标价格",
+                "中标价",
+                "中标（成交）金额(元)",
+                "预中标价",
+                "成交价格"
+            ]
+            bid_amount = self.get_keys_value_from_content(data, bid_amount_tags, area_id=area_id, field_name='bid_amount')  # √
+        elif pre_data.get("classify_id") == const.TYPE_QUALIFICATION_ADVANCE_NOTICE:
+            pass
+        elif pre_data.get("classify_id") == const.TYPE_OTHERS_NOTICE:
+            pass
+
+        # 采集自有字段 9
+        title = pre_data.get("title")  # 公告标题
+        source = pre_data.get("source")  # 来源(采集的公告就填写采集网站、用户和平台发布就用用户名)
+        source_url = pre_data.get("source_url")  # 采集发布来源网站URL
+        publish_time = get_accurate_pub_time(pre_data.get("publish_time"))  # 发布时间
+        classify_id = pre_data.get("classify_id")  # 公告分类id
+        classify_name = pre_data.get("classify_name")  # 公告分类名称
+        area_code = pre_data.get("area_code")  # 区县编号
+        area = pre_data.get("area")  # 地区
+        content = pre_data.get("content")  # 公告内容
+        project_type = pre_data.get("project_type")  # 类型
+        is_have_file = pre_data.get("is_have_file")  # 修改是否含有文件
+
+        # 默认字段 2
+        state = const.TYPE_UPLOAD_NOTICES_STATE_WAIT  # 状态0-待发布1-已发布2-已下架3-待审核4-审核拒绝
+        sign_type = const.TYPE_UPLOAD_NOTICES_SIGN_COLLECT  # 标讯类型 0-平台发布1-用户发布2-采集发布
+
+        # 公共提取字段 15
+        project_tags = [
+            "采购项目名称",
+            "招标项目",
+            "工\s*程\s*名\s*称",
+            "项目名称",
+            "招标工程项目",
+            "工程名称",
+            "标段名称"
+        ]
+        project_names = self.get_keys_value_from_content(
+            content, project_tags, area_id=area_id, field_name='project_name'
+        )  # √
+        if project_names:
+            project_name = project_names
+        else:
+            if re.findall('.*?[项目|转租|转让|出租|拍卖|出让]', pre_data.get("title")):
+                project_name = re.findall('.*?[项目|转租|转让|出租|拍卖|出让]', pre_data.get("title"))[0]
+            else:
                 project_name = project_names
-            else:
-                if re.findall('.*?[项目|转租|转让|出租|拍卖|出让]', pre_data.get("title")):
-                    project_name = re.findall('.*?[项目|转租|转让|出租|拍卖|出让]', pre_data.get("title"))[0]
-                else:
-                    project_name = project_names
-            project_number_tags = [
-                "项目编号",
-                "招标项目编号",
-                "招标编号",
-                "公示编号",
-                "标段编号",
-                "交易登记号",
+        project_number_tags = [
+            "项目编号",
+            "招标项目编号",
+            "招标编号",
+            "公示编号",
+            "标段编号",
+            "交易登记号",
 
-            ]
-            project_numbers = self.get_keys_value_from_content(content, project_number_tags, area_id=area_id, field_name='project_number')  # √
-            if re.findall(r'.*\/(.*)', project_numbers):
-                project_number = project_numbers
-            else:
-                project_number = project_numbers
-            tenderee_tags = [
-                "招标人",
-                "招 标 人",
-                "招&nbsp;标&nbsp;人",
-                "招\s*?标\s*?人：",
-                "招标单位",
-                "采购人信息[ψ \s]*?名[\s]+称",
-                "建设[（ (]招标[）)]单位",
-                "建设单位",
-                "采购单位名称",
-                "采购人信息"
-            ]
-            tenderee = self.get_keys_value_from_content(content, tenderee_tags, area_id=area_id, field_name='tenderee')  # √
-            if len(tenderee) < 2:
-                tenderee = ''
+        ]
+        project_numbers = self.get_keys_value_from_content(content, project_number_tags, area_id=area_id, field_name='project_number')  # √
+        if re.findall(r'.*\/(.*)', project_numbers):
+            project_number = project_numbers
+        else:
+            project_number = project_numbers
+        tenderee_tags = [
+            "招标人",
+            "招 标 人",
+            "招&nbsp;标&nbsp;人",
+            "招\s*?标\s*?人：",
+            "招标单位",
+            "采购人信息[ψ \s]*?名[\s]+称",
+            "建设[（ (]招标[）)]单位",
+            "建设单位",
+            "采购单位名称",
+            "采购人信息"
+        ]
+        tenderee = self.get_keys_value_from_content(content, tenderee_tags, area_id=area_id, field_name='tenderee')  # √
+        if len(tenderee) < 2:
+            tenderee = ''
 
-            bidding_agency_tags = [
-                "招标代理机构",
-                "采购代理机构信息[ψ \s]*?名[\s]+称",
-                "招标代理",
-                "代理单位",
-                '招标代理机构（盖章）',
-                "代理公司",
-                "采购代理机构信息"
-            ]
-            bidding_agency = self.get_keys_value_from_content(content, bidding_agency_tags, area_id=area_id,
-                                                              field_name='bidding_agency')  # √
-            liaison_tags = [
-                "联系人",
-                "联\s*系\s*人",
-                # "项目经理",
-                "项目经理（负责人）",
-                "项目负责人",
-                "项目负责人姓名",
-                "项目联系人",
-            ]
-            liaison = self.get_keys_value_from_content(content, liaison_tags, area_id=area_id, field_name='liaison') # √
-            budget_amount_tags = [
-                "项目金额",
-                "预算金额(元)",
-                "预算金额（元）",
-                "招标估算价",
+        bidding_agency_tags = [
+            "招标代理机构",
+            "采购代理机构信息[ψ \s]*?名[\s]+称",
+            "招标代理",
+            "代理单位",
+            '招标代理机构（盖章）',
+            "代理公司",
+            "采购代理机构信息",
+            "填报单位",
+        ]
+        bidding_agency = self.get_keys_value_from_content(content, bidding_agency_tags, area_id=area_id,
+                                                          field_name='bidding_agency')  # √
+        budget_amount_tags = [
+            "项目金额",
+            "预算金额(元)",
+            "预算金额（元）",
+            "招标估算价",
+            "中标（成交）金额（元）",
+            "预中标价",
+            "项目金额",
+            "本期概算(万元)",
+            "采购计划金额（元）",
+        ]
+        budget_amount = self.get_keys_value_from_content(content, budget_amount_tags, area_id=area_id,
+                                                         field_name='budget_amount')  # √
+        liaison_tags = [
+            "联系人",
+            "联\s*系\s*人",
+            "项目经理",
+            "项目经理（负责人）",
+            "项目负责人",
+            "项目负责人姓名",
+            "项目联系人",
+            "填报人",
+        ]
+        liaison = self.get_keys_value_from_content(content, liaison_tags, area_id=area_id, field_name='liaison')
 
-                "项目金额",
-                "本期概算(万元)",
-                "采购计划金额（元）"
-                "概算造价"
-            ]
-            budget_amount = self.get_keys_value_from_content(content, budget_amount_tags, area_id=area_id,
-                                                             field_name='budget_amount')  # √
-            contact_information_tags = [
-                "联系电话",
-                "联系方式",
-                "电\s*话",
-                "项目联系电话",
-            ]
-            contact_informations = self.get_keys_value_from_content(content, contact_information_tags, area_id=area_id,
-                                                                    field_name='contact_information')  # √
-            if re.findall('(^\d{11}).*', contact_informations):
-                contact_information = re.findall('(^\d{11}).*', contact_informations)[0]
-            elif re.findall('(\d{3,4}\-\d{7,8}).*', contact_informations):
-                contact_information = re.findall('(\d{3,4}\-\d{7,8}).*', contact_informations)[0]
-            else:
-                contact_information = contact_informations
+        contact_information_tags = [
+            "联系电话",
+            "联系方式",
+            "电\s*话",
+            "项目联系电话",
+        ]
+        contact_informations = self.get_keys_value_from_content(content, contact_information_tags, area_id=area_id,
+                                                                field_name='contact_information')  # √
+        if re.findall('(^\d{11}).*', contact_informations):
+            contact_information = re.findall('(^\d{11}).*', contact_informations)[0]
+        elif re.findall('(\d{3,4}\-\d{7,8}).*', contact_informations):
+            contact_information = re.findall('(\d{3,4}\-\d{7,8}).*', contact_informations)[0]
+        else:
+            contact_information = contact_informations
 
-            email = self.get_keys_value_from_content(content, ["电子邮箱"], area_id=area_id)
-            address = self.get_keys_value_from_content(content, ["详细地址", "采购单位地址"], area_id=area_id)
-            description = self.get_keys_value_from_content(content, ["招标范围", "招标方式", "招标组织形式"], area_id=area_id)
-            bid_type = self.get_keys_value_from_content(content, "招标方式", area_id=area_id)
-            bid_modus = self.get_keys_value_from_content(content, "招标组织形式", area_id=area_id)
-            inspect_dept = self.get_keys_value_from_content(content, "监督部门", area_id=area_id)
-            review_dept = self.get_keys_value_from_content(content, "审核部门", area_id=area_id)
-            company_type = self.get_keys_value_from_content(content, "单位类型", area_id=area_id)
+        email = self.get_keys_value_from_content(content, ["电子邮箱"], area_id=area_id)
+        address = self.get_keys_value_from_content(content, ["详细地址", "采购单位地址"], area_id=area_id)
+        description = self.get_keys_value_from_content(content, ["招标范围", "招标方式", "招标组织形式"], area_id=area_id)
+        bid_type = self.get_keys_value_from_content(content, "招标方式", area_id=area_id)
+        bid_modus = self.get_keys_value_from_content(content, "招标组织形式", area_id=area_id)
+        inspect_dept = self.get_keys_value_from_content(content, "监督部门", area_id=area_id)
+        review_dept = self.get_keys_value_from_content(content, "审核部门", area_id=area_id)
+        company_type = self.get_keys_value_from_content(content, "单位类型", area_id=area_id)
 
-            # 暂未使用字段
-            file_ids = ""
+        # 暂未使用字段
+        file_ids = ""
 
-            return {'title': title,
-                    'project_number': project_number,
-                    'project_name': project_name,
-                    'tenderee': tenderee,
-                    'bidding_agency': bidding_agency,
-                    'area_code': area_code,
-                    'area': area,
-                    'address': address,
-                    'email': email,
-                    'description': description,
-                    'bid_type': bid_type,
-                    'bid_modus': bid_modus,
-                    'inspect_dept': inspect_dept,
-                    'review_dept': review_dept,
-                    'notice_nature': notice_nature,
-                    'bid_file': bid_file,
-                    'bid_file_start_time': bid_file_start_time,
-                    'bid_file_end_time': bid_file_end_time,
-                    'apply_end_time': apply_end_time,
-                    'notice_start_time': notice_start_time,
-                    'notice_end_time': notice_end_time,
-                    'aberrant_type': aberrant_type,
-                    'budget_amount': budget_amount,
-                    'tenderopen_time': tenderopen_time,
-                    'publish_time': publish_time,
-                    'liaison': liaison,
-                    'contact_information': contact_information,
-                    'content': content,
-                    'classify_id': classify_id,
-                    'classify_name': classify_name,
-                    'project_type': project_type,
-                    'state': state,
-                    'file_ids': file_ids,
-                    'company_type': company_type,
-                    'successful_bidder': successful_bidder,
-                    'bid_amount': bid_amount,
-                    'sign_type': sign_type,
-                    'source': source,
-                    'source_url': source_url,
-                    'is_have_file': is_have_file,
-                    }
+        return {'title': title,
+                'project_number': project_number,
+                'project_name': project_name,
+                'tenderee': tenderee,
+                'bidding_agency': bidding_agency,
+                'area_code': area_code,
+                'area': area,
+                'address': address,
+                'email': email,
+                'description': description,
+                'bid_type': bid_type,
+                'bid_modus': bid_modus,
+                'inspect_dept': inspect_dept,
+                'review_dept': review_dept,
+                'notice_nature': notice_nature,
+                'bid_file': bid_file,
+                'bid_file_start_time': bid_file_start_time,
+                'bid_file_end_time': bid_file_end_time,
+                'apply_end_time': apply_end_time,
+                'notice_start_time': notice_start_time,
+                'notice_end_time': notice_end_time,
+                'aberrant_type': aberrant_type,
+                'budget_amount': budget_amount,
+                'tenderopen_time': tenderopen_time,
+                'publish_time': publish_time,
+                'liaison': liaison,
+                'contact_information': contact_information,
+                'content': content,
+                'classify_id': classify_id,
+                'classify_name': classify_name,
+                'project_type': project_type,
+                'state': state,
+                'file_ids': file_ids,
+                'company_type': company_type,
+                'successful_bidder': successful_bidder,
+                'bid_amount': bid_amount,
+                'sign_type': sign_type,
+                'source': source,
+                'source_url': source_url,
+                'is_have_file': is_have_file,
+                }
 
-    def get_keys_value_from_content(self, content: str, keys, area_id="00", field_name=None):
-        value = get_keys_value_from_content_ahead(content, keys, area_id=area_id, field_name=field_name)
+    def get_keys_value_from_content(self, content: str, keys, area_id="00", field_name=None, title=None):
+        value = get_keys_value_from_content_ahead(content, keys, area_id=area_id, field_name=field_name, title=title)
         # 再次针对性清洗数据
         try:
             if ">" in value:
@@ -509,7 +519,7 @@ class CleanPipeline(object):
         with self.engine.connect() as conn:
             while True:
                 results = conn.execute(f"select * from {table_name} where is_clean =1 and is_upload=0 and \
-                                         files_path='' and classify_name='中标公告' limit {start}, {rows}").fetchall()
+                                                        files_path='' and classify_name='中标公告' limit {start}, {rows}").fetchall()
                 # results = conn.execute(
                 #     f"select * from {table_name} where flies_path = 1").fetchall()
                 results = [dict(zip(result.keys(), result)) for result in results]
@@ -519,9 +529,8 @@ class CleanPipeline(object):
                             continue
                         item_id = str(item["id"])
                         self.is_have_file = False
-                        # if item_id == '36':
                         pre_process_dict = self.get_pre_process_data(item)
-                        deal_data = self.extract_data(item_id, pre_data=pre_process_dict, area_id=area_id)
+                        deal_data = self.extract_data(pre_data=pre_process_dict, area_id=area_id)
                         deal_data = deal_base_notices_data(deal_data, is_hump=False)
 
                         # 指定需要更新的字段
@@ -578,7 +587,7 @@ class CleanPipeline(object):
                         item_id = str(item["id"])
                         self.is_have_file = False
                         pre_process_dict = self.get_pre_process_data(item)
-                        deal_data = self.extract_data(item_id, pre_data=pre_process_dict, area_id=area_id)
+                        deal_data = self.extract_data(pre_data=pre_process_dict, area_id=area_id)
                         deal_data = deal_base_notices_data(deal_data, is_hump=False)
                         # 指定需要更新的字段
                         update_fields = [
