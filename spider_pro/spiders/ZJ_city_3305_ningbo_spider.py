@@ -200,7 +200,7 @@ class MySpider(CrawlSpider):
                     value = "{}/cms/attachment.jspx?cid={}&i=0".format(self.domain_url, cid) + get_url(self.domain_url, cid)
                     keys = con.xpath('./text()')[0] + '.pdf'
                     files_path[keys] = value
-                    content = ''.join(contents).replace('<a id="attach0" title="文件下载">', '<a id="attach0"  title="文件下载" href={}>'.format(value))
+                    contents = ''.join(contents).replace('<a id="attach0" title="文件下载">', '<a id="attach0"  title="文件下载" href={}>'.format(value))
             notice_item = NoticesItem()
             notice_item["origin"] = origin
             notice_item["title_name"] = title_name
@@ -209,15 +209,14 @@ class MySpider(CrawlSpider):
             notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
             notice_item["files_path"] = "" if not files_path else files_path
             notice_item["notice_type"] = notice_type
-            notice_item["content"] = content
+            notice_item["content"] = contents
             notice_item["area_id"] = self.area_id
             notice_item["category"] = category
-            # print(notice_item)
             yield notice_item
 
 
 if __name__ == "__main__":
     from scrapy import cmdline
     # cmdline.execute("scrapy crawl ZJ_city_3305_ningbo_spider".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3305_ningbo_spider -a sdt=2020-02-01 -a edt=2021-06-25".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3305_ningbo_spider -a sdt=2020-02-01 -a edt=2021-06-28".split(" "))
 
