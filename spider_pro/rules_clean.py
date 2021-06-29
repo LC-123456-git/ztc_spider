@@ -1360,8 +1360,12 @@ class KeywordsExtract:
 
     def format_fields(self):
         """
-        修改self._value
+        - 符合条件的格式化结果
+        - 不符合条件的置空
         """
+        if re.search('[:：]', self._value):
+            self._value = ''
+
         if self.field_name == 'project_name':
             pass
         if self.field_name == 'tenderee':
@@ -1724,7 +1728,9 @@ class KeywordsExtract:
                         r'本招标项目([^，,]*?)[已由 , ，]',
                     ]
                 if self.field_name == 'tenderee':
+                    # 招 标 人：龙游县双江水利开发有限公司 招标
                     regular_list = [
+                        r'招\s*标\s*人[:：]([\u4e00-\u9fa5 （ ）]+?)招标'
                         r'招标人为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
                     ]
                 if self.field_name == 'bidding_agency':
@@ -1732,23 +1738,25 @@ class KeywordsExtract:
                         r'招标代理机构为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
                     ]
                 if self.field_name == 'project_number':
-                    # 项目编号: 项目名称
+                    # 项目编号：LYSYZD-2021-001 社阳
                     regular_list = [
-                        r'项目代码[: ： \s]*([0-9 \-]*?)[^\d+-]',
-                        r'招标编号[： :]([0-9 A-Z a-z \- \s]+)\）',
-                        r'项目编号[： :]([0-9 A-Z a-z \- \s]*?)项目名称',
+                        r'项目代码[: ：\s]*([0-9 \-]*?)[^\d+-]',
+                        r'招标编号[：:]([0-9 A-Z a-z \- \s]+?)1\. 招标',
+                        r'编号[：:]([0-9 A-Z a-z \- \s]+?)[\)\(（）]',
+                        r'项目编号[：:]([0-9 A-Z a-z \- \s]*?)[\u4e00-\u9fa5]{1}',
                     ]
                 if self.field_name == 'budget_amount':
                     regular_list = [
                         r'投资限额约\s*(\d+\s*万元)',
                         r'预算造价约\s*([0-9 \.]+?\s*亿元)',
+                        r'预算价：审定价\s*([0-9 \.]+?\s*元)',
                         # r'预算约\s*(\d+\s*万元)',
                         # r'预算约\s*(\d+\.\d+?万元)',
                         # r'预算约\s*(\d+\s*元)',
                     ]
                 if self.field_name == 'bid_amount':
                     regular_list = [
-                        # r'中标价[: ：]\s*(\d+\s*万元)',
+                        r'暂定\s*(\d+\s*元)',
                         # r'中标价[: ：]\s*(\d+\.\d+?万元)',
                         # r'中标价[: ：]\s*(\d+\s*元)',
                     ]
@@ -1757,8 +1765,9 @@ class KeywordsExtract:
                         r'电\s*话[:：]([^\u4e00-\u9fa5]+?)[\u4e00-\u9fa5。，,]',
                     ]
                 if self.field_name == 'liaison':
+                    # 联系人：叶工　 联系电话
                     regular_list = [
-                        r'联\s*系\s*人[: ：]\s*([\u4e00-\u9fa5]+?)[联 电 质]',
+                        r'联\s*系\s*人[: ：]\s*([\u4e00-\u9fa5 \s]+?)[联 电 质]',
                     ]
                 if self.field_name == 'successful_bidder':
                     regular_list = [
@@ -1885,7 +1894,7 @@ class KeywordsExtract:
                     self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 10000))
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
-            if re.search('亿元', self._value):
+            elif re.search('亿元|亿', self._value):
                 try:
                     values = com.findall(self._value)
                     self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 100000000))
@@ -1917,103 +1926,329 @@ class KeywordsExtract:
 
 if __name__ == '__main__':
     content = """
-<div class="details-panel" id="printPanel">
-    <style>
-        @media print {
-
-            #TabTitle,
-            #TabTitle * {
-                display: none !important;
-            }
-
-            h2 {
-                text-align: center;
-            }
-
-            h3 {
-                font-size: 14px;
-                color: #ccc;
-                text-align: center;
-            }
-        }
-    </style>
-    <div id="app" style="display: block;">
-        <div>
-            <h2 style="text-align: center;">（自行采购）龙游县国土整治和征收储备中心基本户、龙游县国土整治和征收储备中心统一征地调节资金专户、龙游县国土整治和征收储备中心储备项目专户开设账户项目
-            </h2>
-            <!---->
-            <h3 class="time">发布时间：2021-01-22&nbsp;&nbsp;&nbsp;&nbsp;阅读次数：611&nbsp;&nbsp;&nbsp;&nbsp;<span>【打印】</span>
-                分享：
-                <i title="分享到微信" class="weiIcon"></i> <i title="分享到微博" class="boIcon"></i></h3>
-            <div class="qrCodeBox" style="display: none;">
-                <div class="qrCode">
-                    <div class="title">
-                        <h4>分享到微信朋友圈</h4> <span class="closeQR">x</span>
-                    </div>
-                    <div id="qrcode"></div>
-                    <p>打开微信，点击底部的“发现”，</p>
-                    <p>使用“扫一扫”即可将网页分享至朋友圈。</p>
-                </div>
-            </div>
-            <!---->
-            <!---->
-            <div class="detContent">
-                <p style="text-indent: 2em; line-height: 32px; text-align: left;">
-                    根据《财政部关于进一步加强财政部门和预算单位资金存放管理的指导意见》(财库〔2017〕76号)、龙财预执[2018]66号《龙游县财政局关于进一步规范县级行政事业单位公款竞争性存放管理的通知》、《衢州市市级财政专户资金和行政事业单位公款存放管理实施办法》(衢财预执﹝2019﹞4号)等规定,龙游县自然资源和规划局就龙游县国土整治和征收储备中心基本户、龙游县国土整治和征收储备中心统一征地调节资金专户、龙游县国土整治和征收储备中心储备项目专户,开设进行公开招标,欢迎<span
-                        style="background:white">符合条件的银行机构</span>前来投标。</p>
-                <p style="margin-left: 0px; text-indent: 2em; line-height: 32px; text-align: left;"><span
-                        style="color: blue;">一 </span>、项目编号:</p>
-                <p style="margin-left: 7px; text-indent: 2em; line-height: 32px; text-align: left;">项目名称:
-                    龙游县国土整治和征收储备中心基本户、龙游县国土整治和征收储备中心统一征地调节资金专户、龙游县国土整治和征收储备中心储备项目专户。</p>
-                <p style="margin-left: 25px; line-height: 32px; text-indent: 2em; text-align: left;">招标项目概况:</p>
-                <p style="margin-left: 7px; text-indent: 2em; line-height: 32px; text-align: left;">
-                    龙游县国土整治和征收储备中心基本户、龙游县国土整治和征收储备中心统一征地调节资金专户、龙游县国土整治和征收储备中心储备项目专户账户开设。</p>
-                <p style="text-indent: 2em; line-height: 31px; text-align: left;">详细技术要求见招标文件第三章。</p>
-                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">二 、投标人资格要求:</p>
-                <p style="text-indent: 2em; line-height: 31px; text-align: left;">
-                    在龙游县设立机构(或分支机构)的国有商业银行、股份制银行、农村信用合作联社、同时具备以下条件:</p>
-                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">1.
-                    已开通国库集中支付系统并办理相关业务;</p>
-                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">2.
-                    依法开展经营活动,近3年内在经营活动中无重大违法违规记录,未发生金融风险及重大违约事件。</p>
-                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">3. 本项目谢绝联合体投标。</p>
-                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">4.
-                    金融、保险、通讯等特定行业的全国性企业所设立的区域性分支机构,以及个体工商户、个人独资企业、合伙企业,如果已经依法办理了工商、税务和社保登记手续,并且获得总公司(总机构)授权或能够提供房产权证或其他有效财产证明材料,证明其具备实际承担责任的能力和法定的缔结合同能力,可以允许其独立参加政府采购活动。
-                </p>
-                <p style="text-indent: 2em; line-height: 31px; text-align: left;">
-                    上述单位参加政府采购活动时,应提供该单位负责人签署的相关文件材料(合伙企业由全体合伙人签署相关材料,但合伙协议约定或者全体合伙人决定委托一名或数名合伙人执行合伙企业事务的,由执行合伙企业事务的全体合伙人签署相关文件材料),与其他法人单位法定代表人签署的文件材料具有同等效力。
-                </p>
-                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">三 、报名及获取招标文件方式</p>
-                <p style="text-indent: 2em; line-height: 31px; text-align: left;">
-                    本项目无需报名,招标文件由投标人在浙江政府采购网(zfcg.czt.zj.gov.cn)或龙游县公共资源交易网(<a
-                        href="http://www.qzggzy.com/">ztb.longyou.gov.cn</a>)免费下载。</p>
-                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">四
-                    、投标文件递交截止时间:2021年2月2日9:00:00(北京时间)</p>
-                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">五 、开标时间:2021年2月2
-                    日9:00:00(北京时间)</p>
-                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">六 、开标地点:
-                    衢州市公共资源交易龙游县分中心2楼3号开标室(龙游县龙翔路综合执法局西侧道路进100米)</p>
-                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">七 、投标保证金</p>
-                <p style="text-indent: 2em; line-height: 31px; text-align: left;"><strong><span
-                            style="color: red;">本项目不收取投标保证金。</span></strong></p>
-                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">八 、联系方式</p>
-                <p style="text-indent: 2em; line-height: 31px; text-align: left;">招标人:龙游县自然资源和规划局</p>
-                <p style="text-indent: 2em; line-height: 27px; text-align: left;">联系人:来先生&nbsp;&nbsp;&nbsp; 联系电话:0570-
-                    7024402</p>
-                <p style="text-indent: 2em; line-height: 27px; text-align: left;">地点:龙游县龙州街道幸福路148号3楼</p>
-                <p><br></p>
-                <p></p>
-                <p style="line-height: 16px;"><img src="/plugins/editor/dialogs/attachment/fileTypeImages/icon_doc.gif">
-                    <a target="_blank" style="font-size:12px; color:#0066cc;"
-                        href="/public/b31738642e4d453e98635cd28eaf7306/pm_longyou_bidcontent/202101/1611285913577003.docx"
-                        title="龙游县国土整治和征收储备中心开户招标修改版.docx">龙游县国土整治和征收储备中心开户招标修改版.docx</a></p>
-            </div>
-            <!---->
-            <!---->
-            <!---->
-            <!---->
-        </div>
-    </div>
+<div class="detContent">
+    <p>&nbsp;&nbsp;<span
+            style="letter-spacing: -1px; font-family: 宋体; font-size: 19px; -ms-layout-grid-mode: line;"><strong>LYSG2021-069-048</strong></span>
+    </p>
+    <p>　　1. 招标条件</p>
+    <p>　　龙游县庙下溪(西源)重点山洪沟防洪治理工程已由浙水灾防[2021]10号批准建设，建设资金来源为财政拨款。项目法人为龙游县双江水利开发有限公司，招标代理机构为浙江中际工程项目管理有限公司。项目已具备招标条件，现对本项目的施工标进行公开招标。
+    </p>
+    <p>　　2.项目概况与招标范围</p>
+    <p>　　2.1项目概况：龙游县庙下溪(西源)重点山洪沟防洪治理工程治理范围为龙游县庙下乡严村村、梅林村附近河道。本工程共计治理河道长1.63km，共涉及2个行政村;工程实施后，直接保护人口2200人，保护农田465亩。通过岸坡整治，提高岸坡抗冲能力，稳定岸线。工程任务以防洪为主，通过护坡整治等措施，提高河道的防冲能力，降低洪涝灾害对周围居民的危害。
+    </p>
+    <p>　　2.2本次招标范围：治理河道长1.63km，共新建护岸2.008km，其中左岸1.012km，右岸0.996km，新建下河台阶5座，新建排水涵管8处等，具体以施工图纸及工程量清单为准，财政审定预算造价为9561327元(其中暂列金450000元)。
+    </p>
+    <p>　　3.投标人资格要求</p>
+    <p>　　3.1本次招标要求投标人具备水利水电工程施工总承包叁级及以上资质。</p>
+    <p>　　3.2项目负责人具有水利水电工程二级及以上建造师注册证书，B证，无在建工程。</p>
+    <p>　　3.3其他条件详见附表。</p>
+    <p>　　3.4本次招标不接受联合体投标。</p>
+    <p>　　4.招标文件的获取</p>
+    <p>　　4.1凡有意参加投标者，应当在龙游县公共资源电子交易平台进行企业注册(网址：http://47.114.123.93:8480/login)，然后方可登陆该系统参与下载招标文件等业务操作，未登录电子交易系统的业务操作行为一律无效。
+    </p>
+    <p>　　4.2完成企业注册后，请及时通过互联网使用账号登录“龙游县公共资源电子交易平台”，明确所投标段并下载招标文件、工程量清单文件(若有)、施工图纸(若有)。</p>
+    <p>　　4.3根据国家相关法律法规的要求，龙游县公共资源电子交易系统不再单独设立网上投标报名操作，投标人下载标书、缴纳投标保证金后即视为已确认参与项目投标。</p>
+    <p>　　4.4龙游县公共资源电子交易系统操作手册请各投标人自行前往龙游县公共资源交易中心门户网站(网站地址：http://ztb.longyou.gov.cn/)下载查阅。</p>
+    <p>　　4.5招标文件400元/份，开标现场缴纳，售后不退。</p>
+    <p>　　4.6本工程水利工程商务报价实行电子辅助评标，龙游县公共资源交易中心电子评标辅助系统采用杭州品茗公司软件，评标软件技术服务费200元/套，技术支持联系电话：18268884008 程之童，开标现场缴纳，售后不退。</p>
+    <p>　　5.投标保证金</p>
+    <p>　　5.1本工程投标保证金金额为壹拾陆万元，投标保证金支付必须登陆龙游县公共资源电子交易平台获取投标保证金缴纳说明，并严格按照该说明的信息进行保证金的缴纳;未登录电子交易平台获取保证金缴纳说明的投标企业，评标专家委员会可认为该企业未按照招标文件要求正确缴纳投标保证金，并否决其投标。
+    </p>
+    <p>　　5.2投标保证金的缴纳方式：</p>
+    <p>　　①转账(电汇或网银)请不要使用“支付宝”等第三方支付平台)，并通过“龙游县公共资源电子交易平台”取得相应的银行账号后支付，具体详见龙游县公共资源交易中心网站“龙游县公共资源电子交易平台网上缴纳保证金操作示意卡”。</p>
+    <p>　　②保函(具体详见龙游县公共资源交易中心网站“关于电子交易平台电子保函(保单)的通知”)，咨询电话：4006-613-069。</p>
+    <p>　　5.3投标保证金缴纳必须使用“龙游县公共资源电子交易平台”，并在投标保证金缴纳截止时间前到账(因各银行系统到账时间不同，请尽量提前缴纳)。</p>
+    <p>　　5.4投标单位汇出账号必须是“龙游县公共资源电子交易平台”中注册登记的银行基本账户账号。</p>
+    <p>　　5.5因投标人未规范操作引起的保证金递交无效或系统验证匹配失败的，其投标文件不予接收。</p>
+    <p>　　温馨提醒：以下情形可能造成投标保证金未及时到账或被系统验证匹配失败：</p>
+    <p>　　⑴投标保证金以收款人的银行到账时间为准，在途资金无效，视为未按时缴纳。</p>
+    <p>　　⑵账号根据不同工程(标段)由系统随机生成，此虚拟账号只在本工程(标段)中使用有效，请注意核对。账号漏填、混填或错填均视为未按时缴纳保证金。</p>
+    <p>　　(3)保证金要求单笔付款，并且与“缴纳订单”中的金额一致。</p>
+    <p>　　(4)为确保保证金及时到账，建议使用电汇加急或网银加急方式进行汇款(人民银行系统开放时间为周一至周五9:00至17:00，若周一为投标截止期的，请在上周五确保资金到账)。</p>
+    <p>　　⑸投标人已获取或未获取虚拟账号，而使用其他企业的虚拟账号进行转账的，应认定为串通投标行为，其投标作无效标处理。</p>
+    <p>　　出现提醒未尽情况，请咨询品茗公司技术服务人员：蒋文瑞 15068085526。</p>
+    <p>　　5.6本项目投标保证金缴纳截止时间为：2021年6月8日15时00分00秒;请投标人在截止时间前完成投标保证金缴纳并确认成功入账。</p>
+    <p>　　6.投标文件的递交</p>
+    <p>　　6.1投标文件递交的截止时间(投标截止时间，下同)： 2021 年 6 月 9 日 9 时 30 分整;地点：龙游县公共资源交易中心 2 楼 1 号开标室(龙游县龙翔路378号，原香溢市场西侧)。</p>
+    <p>　　6.2逾期送达的或者未送达指定地点的或不按照招标文件要求密封的投标文件，招标人将予以拒收。</p>
+    <p>　　7.开标现场相关注意事项</p>
+    <p>　　7.1根据疫情防控需要限定参与人数要求，每家投标企业只委托一名人员参与现场投标。参与现场投标人员应当携带身份证等户籍证明原件，必须具有浙江省健康码(绿码)，并对健康码(绿码)真实性负责，因投标人员未能提供浙江省健康码(绿码)或体温不正常(发烧)等现象的，投标文件将拒绝接收。现场投标人员全程佩戴口罩，做好自身防护措施。进入门岗出示健康码，配合做好体温测量方可进入，进开标室如实做好登记。
+    </p>
+    <p>　　7.2因本次项目投标现场需测量体温等相关事宜，请各投标人合理安排时间，尽量提早到场。</p>
+    <p>　　8. 发布公告的媒介</p>
+    <p>　　本次招标公告同时在浙江省公共资源交易服务平台、龙游县公共资源交易中心网上发布。</p>
+    <p>　　9. 联系方式</p>
+    <p>　　招 标 人：龙游县双江水利开发有限公司</p>
+    <p>　　招标代理人：浙江中际工程项目管理有限公司</p>
+    <p>　　联 系 人：许先生</p>
+    <p>　　联 系 电 话：13957027071(687071)</p>
+    <p>　　2021年5月18日</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </p>
+    <p style="margin: 8px 0px; text-align: center;"><strong><span
+                style="font-family: 宋体; -ms-layout-grid-mode: line;">投标人资格条件要求附表</span></strong></p>
+    <table cellspacing="0" cellpadding="0">
+        <tbody>
+            <tr class="firstRow" style="height: 40px;">
+                <td width="49" height="40"
+                    style="padding: 0px 7px; border: 1px solid windowtext; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><strong><span
+                                style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">序号</span></strong>
+                    </p>
+                </td>
+                <td width="569" height="40"
+                    style="border-width: 1px 1px 1px 0px; border-style: solid solid solid none; border-color: windowtext windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; -ms-word-break: break-all; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><strong><span
+                                style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">资
+                                格 条 件 内 容</span></strong></p>
+                </td>
+            </tr>
+            <tr style="height: 30px;">
+                <td width="49" height="30"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><strong><span
+                                style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">一</span></strong>
+                    </p>
+                </td>
+                <td width="569" height="30"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; -ms-word-break: break-all; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><strong><span
+                                style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">企业</span></strong>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 42px;">
+                <td width="49" height="42"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">1</span>
+                    </p>
+                </td>
+                <td width="569" height="42"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; -ms-word-break: break-all; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">应具备水利水电工程施工总承包叁级及以上资质，具有有效的营业执照和安全生产许可证。</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 37px;">
+                <td width="49" height="37"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">2</span>
+                    </p>
+                </td>
+                <td width="569" height="37"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; -ms-word-break: break-all; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">应未被项目所在地区（县级或市级或省级）水利建设市场限制投标。</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 37px;">
+                <td width="49" height="37"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">3</span>
+                    </p>
+                </td>
+                <td width="569" height="37"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">投标人被列为失信被执行人的，因串通投标等行为被立案调查的，谢绝参与投标。</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 47px;">
+                <td width="49" height="47"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><strong><span
+                                style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">二</span></strong>
+                    </p>
+                </td>
+                <td width="569" height="47"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">拟派项目组主要人员</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 47px;">
+                <td width="49" height="47"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">1</span>
+                    </p>
+                </td>
+                <td width="569" height="47"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">项目负责人应持有水利水电工程二级及以上建造师注册证书，并在投标截止日不得在其他任何在建合同工程中担任项目负责人（符合浙政发【2021】5号文件规定）。其他在建合同工程的开始时间为合同工程中标通知书发出之日（不通过招标方式的，开始时间为合同签订之日），结束时间为该合同工程通过验收或合同解除之日。</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 34px;">
+                <td width="49" height="34"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">2</span>
+                    </p>
+                </td>
+                <td width="569" height="34"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">项目负责人应未被项目所在地区（县级或市级或省级）水利建设市场限制投标。</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 47px;">
+                <td width="49" height="47"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">3</span>
+                    </p>
+                </td>
+                <td width="569" height="47"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">项目技术负责人应具有水利中级及以上职称证书。</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 47px;">
+                <td width="49" height="47"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">4</span>
+                    </p>
+                </td>
+                <td width="569" height="47"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; background-color: transparent;">
+                    <p style="line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">项目安全员、质检员和施工员必须持有省级及以上水行政主管部门颁发或认可的上岗证。</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 47px;">
+                <td width="49" height="47"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><strong><span
+                                style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">三</span></strong>
+                    </p>
+                </td>
+                <td width="569" height="47"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">其它</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 47px;">
+                <td width="49" height="47"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">1</span>
+                    </p>
+                </td>
+                <td width="569" height="47"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; -ms-word-break: break-all; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">申请人的“三类人员”（企业主要负责人、项目负责人、专职安全生产管理人员）必须持有省级及以上水行政主管部门颁发的安全生产考核合格证书（A、B、C证），其中企业技术负责人、总经理、分管安全生产的副总经理应有任命文件；专职安全生产管理人员不少于1人。
+                        </span></p>
+                </td>
+            </tr>
+            <tr style="height: 84px;">
+                <td width="49" height="84"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">2</span>
+                    </p>
+                </td>
+                <td width="569" height="84"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; -ms-word-break: break-all; background-color: transparent;">
+                    <p style="-ms-layout-grid-mode: char;"><span
+                            style="font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">拟派项目组主要人员（指项目负责人、项目技术负责人、专职安全生产管理人员、安全员、质检员、施工员，下同）必须已在
+                            “浙江省水利建设市场信息平台”上公示，外地进浙施工企业的委托代理人必须是在“浙江省水利建设市场信息平台”上已经公示的授权委托人。</span></p>
+                </td>
+            </tr>
+            <tr style="height: 93px;">
+                <td width="49" height="93"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">3</span>
+                    </p>
+                </td>
+                <td width="569" height="93"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; -ms-word-break: break-all; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">投标人及其拟派项目负责人近三年（2018年1月1日以来）无行贿犯罪记录。招标人在定标前将通过中国裁判文书网（http://wenshu.court.gov.cn/）按照招标文件约定对拟中标单位及其拟派项目负责人的行贿犯罪记录进行查询，查询结果以网站页面显示内容为准。</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 74px;">
+                <td width="49" height="74"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">4</span>
+                    </p>
+                </td>
+                <td width="569" height="74"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; -ms-word-break: break-all; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">项目负责人、项目技术负责人、施工员、质检员、安全员、专职安全生产管理人员应为不同的人员担任</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 57px;">
+                <td width="49" height="57"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">5</span>
+                    </p>
+                </td>
+                <td width="569" height="57"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; -ms-word-break: break-all; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">投标人及其法人控股其他公司，不得参加同一标段或未划分标段的同一招标项目投标，否则按否决投标处理。</span>
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 74px;">
+                <td width="49" height="74"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">6</span>
+                    </p>
+                </td>
+                <td width="569" height="74"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; -ms-word-break: break-all; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">根据《浙江省水利厅关于全面启用水利水电施工企业“三类人员”电子证书的公告》（浙水监督[2020]1
+                            号）规定，由浙江省水利厅颁发的企业主要负责人、项目负责人、专职安全生产管理人员的安全生产考核合格证书（A、B、C
+                            证），以浙江省水利厅颁发的电子证书为准，原浙江省水利厅颁发的纸质证书不予认可。 &nbsp; </span></p>
+                </td>
+            </tr>
+            <tr style="height: 74px;">
+                <td width="49" height="74"
+                    style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; background-color: transparent;">
+                    <p style="text-align: center; line-height: 125%;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">7</span>
+                    </p>
+                </td>
+                <td width="569" height="74"
+                    style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; -ms-word-break: break-all; background-color: transparent;">
+                    <p style="line-height: 125%; -ms-layout-grid-mode: char;"><span
+                            style="line-height: 125%; font-family: 宋体; font-size: 14px; -ms-layout-grid-mode: line;">涉及投标人资质延续相关事宜，依据住房与城乡建设部发布的《住房和城乡建设部办公厅关于建设工程企业资质延续有关事项的通知》建办市函〔2020〕334
+                            号文件执行。</span></p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+    <p></p>
+    <p style="line-height: 16px;"><img src="/plugins/editor/dialogs/attachment/fileTypeImages/icon_pdf.gif"> <a
+            target="_blank" style="font-size:12px; color:#0066cc;" href="/public/gateway/202105/16213301811260.pdf"
+            title="招标公告附件.pdf">招标公告附件.pdf</a></p>
 </div>
     """
     ke = KeywordsExtract(content, [
@@ -2038,17 +2273,17 @@ if __name__ == '__main__':
         # "项目联系人",
         # "填报人",
 
-        # "招标人",  # tenderee
-        # "招 标 人",
-        # "招&nbsp;标&nbsp;人",
-        # "招\s*?标\s*?人：",
-        # "招标单位",
-        # "采购人信息[ψ \s]*?名[\s]+称",
-        # "建设（招标）单位",
-        # "建设单位",
-        # "采购单位名称",
-        # "采购人信息",
-        # "建设单位",
+        "招标人",  # tenderee
+        "招 标 人",
+        "招&nbsp;标&nbsp;人",
+        "招\s*?标\s*?人：",
+        "招标单位",
+        "采购人信息[ψ \s]*?名[\s]+称",
+        "建设（招标）单位",
+        "建设单位",
+        "采购单位名称",
+        "采购人信息",
+        "建设单位",
 
         # "招标代理",  # bidding_agency
         # "招标代理机构",
@@ -2059,11 +2294,11 @@ if __name__ == '__main__':
         # "采购代理机构信息",
         # "填报单位",
 
-        "项目编号",  # project_number
-        "招标项目编号",
-        "招标编号",
-        "编号",
-        "工程编号",
+        # "项目编号",  # project_number
+        # "招标项目编号",
+        # "招标编号",
+        # "编号",
+        # "工程编号",
 
         # "项目金额",  # budget_amount
         # "预算金额（元）",
@@ -2084,7 +2319,7 @@ if __name__ == '__main__':
         # "中标单位",
         # "供应商名称",
         # ], field_name='project_name')
-    ], field_name='project_number', area_id="3326")
+    ], field_name='tenderee', area_id="3326")
     # ], field_name='project_name', area_id="3319", title='')
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
