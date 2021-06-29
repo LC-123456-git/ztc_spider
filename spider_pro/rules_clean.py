@@ -1349,8 +1349,11 @@ class KeywordsExtract:
             re_string = rl % key if with_symbol else rl
             com = re.compile(re_string)
             result = com.findall(text)
-            if result:
-                val = ''.join(result[0]).replace('业主：', '')
+            if result:  # 处理一个例外：匹配的就是一个空字符串，而不是没匹配到
+                if result[0].strip():
+                    val = ''.join(result[0]).replace('业主：', '')
+                else:
+                    val = ' '
             if val:
                 break
         return val
@@ -1433,6 +1436,7 @@ class KeywordsExtract:
             return True if count >= 2 else False
         except Exception as e:
             print(e)
+
     @staticmethod
     def get_child_tables(doc_el):
         return doc_el.xpath('.//table')
@@ -1718,7 +1722,6 @@ class KeywordsExtract:
                 if self.field_name == 'project_name':
                     regular_list = [
                         r'本招标项目([^，,]*?)[已由 , ，]',
-                        # 本招标项目龙游县礼贤小区安居工程无负压给水设备采购及安装已由龙发改中[2019]114号批准建设
                     ]
                 if self.field_name == 'tenderee':
                     regular_list = [
@@ -1729,14 +1732,16 @@ class KeywordsExtract:
                         r'招标代理机构为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
                     ]
                 if self.field_name == 'project_number':
-                    # 招标编号：LYFW2021 - 027 - 07），
+                    # 项目编号: 项目名称
                     regular_list = [
                         r'项目代码[: ： \s]*([0-9 \-]*?)[^\d+-]',
                         r'招标编号[： :]([0-9 A-Z a-z \- \s]+)\）',
+                        r'项目编号[： :]([0-9 A-Z a-z \- \s]*?)项目名称',
                     ]
                 if self.field_name == 'budget_amount':
                     regular_list = [
                         r'投资限额约\s*(\d+\s*万元)',
+                        r'预算造价约\s*([0-9 \.]+?\s*亿元)',
                         # r'预算约\s*(\d+\s*万元)',
                         # r'预算约\s*(\d+\.\d+?万元)',
                         # r'预算约\s*(\d+\s*元)',
@@ -1749,7 +1754,7 @@ class KeywordsExtract:
                     ]
                 if self.field_name == 'contact_information':
                     regular_list = [
-                        r'电\s*话[: ：]([^\u4e00-\u9fa5]+?)[\u4e00-\u9fa5 。 ， ,]',
+                        r'电\s*话[:：]([^\u4e00-\u9fa5]+?)[\u4e00-\u9fa5。，,]',
                     ]
                 if self.field_name == 'liaison':
                     regular_list = [
@@ -1760,6 +1765,7 @@ class KeywordsExtract:
                         r'中标单位[: ：]\s*([\u4e00-\u9fa5]+)\s*项目',
                         # r'中标人[: ：]\s*([\u4e00-\u9fa5]+)\s*中标价',
                     ]
+
                 self.reset_regular(regular_list, with_symbol=False)
 
                 self._extract_from_text(with_symbol=False)
@@ -1768,7 +1774,7 @@ class KeywordsExtract:
             self._value = self._value if self._value else ''
             if not self._value.strip():
                 regular_list = []
-                if self.field_name == 'bidding_agency':                             # 招标代理
+                if self.field_name == 'bidding_agency':  # 招标代理
                     regular_list = [
                         r'代理机构\s*[: ：](.*?)联系人',
                         r'采购代理机构信息名 称\s*[: ：](.*?)地\s*址',
@@ -1776,18 +1782,18 @@ class KeywordsExtract:
                         r'报名.*?发售地点\s*[: ：](.*?)[( （]',
                         r'招标代理\s*[: ：](.*?)地'
                     ]
-                elif self.field_name == 'project_number':                           # 项目编号
+                elif self.field_name == 'project_number':  # 项目编号
                     regular_list = [
                         r'项目编号\s*[: ：](.*?)[\u4e00-\u9fa5]'
                         r'项目编号\s*[: ：](.*?)二'
                     ]
-                elif self.field_name == "project_name":                             # 项目名称
+                elif self.field_name == "project_name":  # 项目名称
                     regular_list = [
                         r'项目名称\s*[: ：](.*?)三',
                         r'项目名称\s*[: ：](.*?)[\u4e00-\u9fa5]',
 
                     ]
-                elif self.field_name == "tenderee":                                  # 招标人
+                elif self.field_name == "tenderee":  # 招标人
                     regular_list = [
                         r'招标人联系方式\s*[: ：](.*?)联系人',
                         r'招标方联系方式\s*[: ：](.*?)联系人',
@@ -1795,18 +1801,18 @@ class KeywordsExtract:
                         r'招标人(.*)工程规模',
                         r'联系人[: ：](.*?)联'
                     ]
-                elif self.field_name == "liaison":                                   # 联系人
+                elif self.field_name == "liaison":  # 联系人
                     regular_list = [
                         r'联系人\s*（.*?）[: ：](.*?)项目',
                         r'联系人\s*[: ：](.*?)[联系电话 , ， 电话]',
                         # r'联系人\s*[: ：](.*?)[, ，]',
                         # r'联系人\s*[: ：](.*?)联系电话',
                     ]
-                elif self.field_name == "bid_amount":                                # 中标金额
+                elif self.field_name == "bid_amount":  # 中标金额
                     regular_list = [
                         r'项目估算金额\s*[: ：](.*?)。'
                     ]
-                elif self.field_name == 'contact_information':                       # 联系方式
+                elif self.field_name == 'contact_information':  # 联系方式
                     regular_list = [
                         r'电话([0-9 \- \s*]+?)[\u4e00-\u9fa5]',
                         r'电话[: ：]([0-9 \-]+?)[\u4e00-\u9fa5]',
@@ -1835,7 +1841,7 @@ class KeywordsExtract:
                     regular_list = [
                         r'成交价格(.*?)[\u4e00-\u9fa5]'
                     ]
-                elif self.field_name == "successful_bidder":                                # 中标方
+                elif self.field_name == "successful_bidder":  # 中标方
                     regular_list = [
                         r'受让人名称(.*?)成交'
                     ]
@@ -1852,6 +1858,10 @@ class KeywordsExtract:
         if self.area_id == '3320':  # 苍南
             pass
 
+    @staticmethod
+    def remove_rest_zero(decimal_obj):
+        return decimal_obj.to_integral() if decimal_obj == decimal_obj.to_integral() else decimal_obj.normalize()
+
     def clean_value(self):
         """
         - 去除符号/替换空格为一个
@@ -1867,17 +1877,24 @@ class KeywordsExtract:
             self.msg = 'error:{0}'.format(e)
 
         if self.field_name in ['bid_amount', 'budget_amount']:
+            # 预算造价约3.9994亿元
             com = re.compile(r'([0-9 .]+)')
             if re.search('万元', self._value):
                 try:
                     values = com.findall(self._value)
-                    self._value = str(Decimal(values[0]) * 10000)
+                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 10000))
+                except Exception as e:
+                    self.msg = 'error:{0}'.format(e)
+            if re.search('亿元', self._value):
+                try:
+                    values = com.findall(self._value)
+                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 100000000))
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
             elif re.search('元', self._value):
                 try:
                     values = com.findall(self._value)
-                    self._value = str(Decimal(values[0]))
+                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0])))
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
             else:
@@ -1900,64 +1917,104 @@ class KeywordsExtract:
 
 if __name__ == '__main__':
     content = """
-<table width="932" border="0" cellspacing="0" cellpadding="0" align="center">
-  <tbody><tr>
-    <td><table id="tblInfo" cellspacing="1" cellpadding="1" width="100%" align="center" border="0" runat="server">
-                    <tbody><tr>
-                      <td id="tdTitle" align="center" runat="server" height="70"><font color="" style="font-size: 25px"> <b>
-                        金陵北路老企业宿舍区老旧小区改造-道路及C区块雨污水工程施工
-                        </b></font>
-                      
-                        </td>
-                        </tr><tr><td height="29" align="center" bgcolor="#eeeeee">
-                        <font color="#545454" class="webfont">【信息时间：
-                        2021/6/23
-                        &nbsp;&nbsp;阅读次数：
-                        <script src="/cxweb/Upclicktimes.aspx?InfoID=c62f5b0b-27ea-497b-a762-739a02956667"></script>83
-                        】<a href="javascript:void(0)" onclick="window.print();"><font color="#545454" class="webfont">【我要打印】</font></a><a href="javascript:window.close()"><font color="#545454" class="webfont">【关闭】</font></a></font><font color="#000000">
-                        
-                        </font></td>
-                    </tr>
-                    <tr>
-                      <td height="10"></td>
-                    </tr>
-                    <tr>
-                      <td height="250" align="left" valign="top" class="infodetail" id="TDContent"><div>
-                          <epointform>		<style>.A{font-family:宋体;font-size:12pt;color:#000000;background-color: #eaf3fb;border-left:#d1e6fa 1px solid;border-right:#d1e6fa 1px solid;border-top:#d1e6fa 1px solid;border-bottom:#d1e6fa 1px solid;}.B{font-family:宋体;font-size:12pt;color:#000000;background-color: #ffffff;border-left:#d1e6fa 1px solid;border-right:#d1e6fa 1px solid;border-top:#d1e6fa 1px solid;padding-left:5px;border-bottom:#d1e6fa 1px solid;}</style>	<a name="Sheet1"></a>	<table id="_Sheet1" align="center" cellpadding="0" cellspacing="0" style="table-layout: fixed;font-family:SimSun;font-size:9pt;color:#000000;border-collapse:collapse;" border="0" width="885">	<tbody><tr height="0px" style="font-size: 0px;line-height:0px;">		<td width="110px" style="border-left:#0000 0px solid;border-right:#0000  1px solid;"></td>		<td width="75px" style="border-right:#0000  1px solid;"></td>		<td width="75px" style="border-right:#0000  1px solid;"></td>		<td width="184px" style="border-right:#0000  1px solid;"></td>		<td width="123px" style="border-right:#0000  1px solid;"></td>		<td width="77px" style="border-right:#0000  1px solid;"></td>		<td width="92px" style="border-right:#0000  1px solid;"></td>		<td width="151px" style="border-right:#0000 0px solid;"></td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">工程编码</td>		<td class="B" colspan="7">CXX2021063098</td>	</tr>	<tr height="29px">		<td class="A" style="text-align:center">工程名称</td>		<td class="B" colspan="7">金陵北路老企业宿舍区老旧小区改造-道路及C区块雨污水工程</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">建设单位</td>		<td class="B" colspan="7">长兴县人民政府龙山街道办事处</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">工程类别</td>		<td class="B" colspan="3">施工		</td>		<td class="A" style="text-align:center">招标方式</td>		<td class="B" colspan="3">公开招标		</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">建设地点</td>		<td class="B" colspan="7"></td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">项目所在区域</td>		<td class="B" colspan="3">湖州市·长兴县</td>		<td class="A" style="text-align:center">建筑面积</td>		<td class="B" colspan="3"></td>	</tr>	<tr>		<td class="A" style="text-align:center">中标单位</td>		<td class="B" colspan="7"><a name="子网格"></a>	<table id="_Sheet1_6_1" cellpadding="0" cellspacing="0" style="table-layout: fixed;font-family:SimSun;font-size:9pt;color:#000000;border-collapse:collapse;" border="0" width="775">	<tbody><tr height="0px" style="font-size: 0px;line-height:0px;">		<td width="211px" style="border-left:#0000 0px solid;border-right:#0000  1px solid;"></td>		<td width="196px" style="border-right:#0000  1px solid;"></td>		<td width="125px" style="border-right:#0000  1px solid;"></td>		<td width="170px" style="border-right:#0000  1px solid;"></td>		<td width="75px" style="border-right:#0000 0px solid;"></td>	</tr>	<tr height="30px">		<td width="211px" class="A" style="text-align:center">标段名称</td>		<td class="A" style="text-align:center">中标单位</td>		<td class="A" style="text-align:center">中标价</td>		<td class="A" style="text-align:center">中标范围和内容</td>		<td class="A" style="text-align:center">项目经理</td>	</tr>	<tr>		<td width="211px" class="B">施工</td>		<td class="B">浙江长兴中创建设有限公司</td>		<td class="B"><a name="子网格"></a>	<table id="_Sheet1_1_2_6_1" cellpadding="0" cellspacing="0" style="table-layout: fixed;font-family:SimSun;font-size:9pt;color:#000000;border-collapse:collapse;" border="0" width="94">	<tbody><tr height="0px" style="font-size: 0px;line-height:0px;">		<td width="63px" style="border-left:#0000 0px solid;border-right:#0000  1px solid;"></td>		<td width="33px" style="border-right:#0000 0px solid;"></td>	</tr>	<tr height="34px">		<td width="63px" style="text-align:left;font-size:12pt;padding:2px;">160.264600</td>		<td style="text-align:left;font-size:12pt;padding:2px;"><span id="1063" style="display:inline-block;width:97%;">万元</span>		</td>	</tr>	</tbody></table>		</td>		<td class="B">城市道路;</td>		<td class="B">姚文龙浙233161607458</td>	</tr>	</tbody></table>		</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">公告开始时间</td>		<td class="B" colspan="3">2021年06月23日</td>		<td class="A" style="text-align:center">公告截止时间</td>		<td class="B" colspan="3">2021年06月28日</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">填报人</td>		<td class="B" colspan="3">徐国义</td>		<td class="A" style="text-align:center">填报日期</td>		<td class="B" colspan="3">2021年06月21日</td>	</tr>	<tr height="29px">		<td class="A" style="text-align:center">填报单位</td>		<td class="B" colspan="7">杭州建设工程造价咨询有限公司</td>	</tr>	<tr height="25px">		<td class="A" style="text-align:center">备注</td>		<td class="B" colspan="7">姚文龙浙233161607458</td>	</tr>	</tbody></table></epointform>
-                        </div>
-                        <div>
-                          
-                        </div></td>
-                    </tr>
-                    <tr>
-                      <td align="right">
-                      
-                      <br>
-                        </td>
-                    </tr>
-                    <tr id="trAttach" runat="server">
-                      <td align="left"><table id="filedown" cellspacing="1" cellpadding="1" width="100%" border="0" runat="server">
-                          <tbody><tr>
-                            <td valign="top" style="font-size: medium;"><b>
-                              <span class="infodetailattach">附件：</span><table id="filedown" cellspacing="1" cellpadding="1" width="100%" border="0" runat="server"><tbody><tr><td><a href="/cxweb/ReadAttachFile.aspx?AttachID=10acdda5-12f1-4d9b-89ee-67296e1f2cfe" target="_blank"><font class="infodetailattachfile">中标公示.pdf</font></a></td></tr></tbody></table>
-                              </b></td>
-                          </tr>
-                        </tbody></table></td>
-                    </tr>
-                    <tr>
-                      <td></td>
-                    </tr>
-                    <tr>
-                      <td height="30"></td>
-                    </tr>
-                    <!--会员或非会员按钮-->
-                    <tr>
-                      <td></td>
-                    </tr>
-                    <!--答疑变更公告-->
-                  </tbody></table></td>
-  </tr>
-</tbody></table>
+<div class="details-panel" id="printPanel">
+    <style>
+        @media print {
+
+            #TabTitle,
+            #TabTitle * {
+                display: none !important;
+            }
+
+            h2 {
+                text-align: center;
+            }
+
+            h3 {
+                font-size: 14px;
+                color: #ccc;
+                text-align: center;
+            }
+        }
+    </style>
+    <div id="app" style="display: block;">
+        <div>
+            <h2 style="text-align: center;">（自行采购）龙游县国土整治和征收储备中心基本户、龙游县国土整治和征收储备中心统一征地调节资金专户、龙游县国土整治和征收储备中心储备项目专户开设账户项目
+            </h2>
+            <!---->
+            <h3 class="time">发布时间：2021-01-22&nbsp;&nbsp;&nbsp;&nbsp;阅读次数：611&nbsp;&nbsp;&nbsp;&nbsp;<span>【打印】</span>
+                分享：
+                <i title="分享到微信" class="weiIcon"></i> <i title="分享到微博" class="boIcon"></i></h3>
+            <div class="qrCodeBox" style="display: none;">
+                <div class="qrCode">
+                    <div class="title">
+                        <h4>分享到微信朋友圈</h4> <span class="closeQR">x</span>
+                    </div>
+                    <div id="qrcode"></div>
+                    <p>打开微信，点击底部的“发现”，</p>
+                    <p>使用“扫一扫”即可将网页分享至朋友圈。</p>
+                </div>
+            </div>
+            <!---->
+            <!---->
+            <div class="detContent">
+                <p style="text-indent: 2em; line-height: 32px; text-align: left;">
+                    根据《财政部关于进一步加强财政部门和预算单位资金存放管理的指导意见》(财库〔2017〕76号)、龙财预执[2018]66号《龙游县财政局关于进一步规范县级行政事业单位公款竞争性存放管理的通知》、《衢州市市级财政专户资金和行政事业单位公款存放管理实施办法》(衢财预执﹝2019﹞4号)等规定,龙游县自然资源和规划局就龙游县国土整治和征收储备中心基本户、龙游县国土整治和征收储备中心统一征地调节资金专户、龙游县国土整治和征收储备中心储备项目专户,开设进行公开招标,欢迎<span
+                        style="background:white">符合条件的银行机构</span>前来投标。</p>
+                <p style="margin-left: 0px; text-indent: 2em; line-height: 32px; text-align: left;"><span
+                        style="color: blue;">一 </span>、项目编号:</p>
+                <p style="margin-left: 7px; text-indent: 2em; line-height: 32px; text-align: left;">项目名称:
+                    龙游县国土整治和征收储备中心基本户、龙游县国土整治和征收储备中心统一征地调节资金专户、龙游县国土整治和征收储备中心储备项目专户。</p>
+                <p style="margin-left: 25px; line-height: 32px; text-indent: 2em; text-align: left;">招标项目概况:</p>
+                <p style="margin-left: 7px; text-indent: 2em; line-height: 32px; text-align: left;">
+                    龙游县国土整治和征收储备中心基本户、龙游县国土整治和征收储备中心统一征地调节资金专户、龙游县国土整治和征收储备中心储备项目专户账户开设。</p>
+                <p style="text-indent: 2em; line-height: 31px; text-align: left;">详细技术要求见招标文件第三章。</p>
+                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">二 、投标人资格要求:</p>
+                <p style="text-indent: 2em; line-height: 31px; text-align: left;">
+                    在龙游县设立机构(或分支机构)的国有商业银行、股份制银行、农村信用合作联社、同时具备以下条件:</p>
+                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">1.
+                    已开通国库集中支付系统并办理相关业务;</p>
+                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">2.
+                    依法开展经营活动,近3年内在经营活动中无重大违法违规记录,未发生金融风险及重大违约事件。</p>
+                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">3. 本项目谢绝联合体投标。</p>
+                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">4.
+                    金融、保险、通讯等特定行业的全国性企业所设立的区域性分支机构,以及个体工商户、个人独资企业、合伙企业,如果已经依法办理了工商、税务和社保登记手续,并且获得总公司(总机构)授权或能够提供房产权证或其他有效财产证明材料,证明其具备实际承担责任的能力和法定的缔结合同能力,可以允许其独立参加政府采购活动。
+                </p>
+                <p style="text-indent: 2em; line-height: 31px; text-align: left;">
+                    上述单位参加政府采购活动时,应提供该单位负责人签署的相关文件材料(合伙企业由全体合伙人签署相关材料,但合伙协议约定或者全体合伙人决定委托一名或数名合伙人执行合伙企业事务的,由执行合伙企业事务的全体合伙人签署相关文件材料),与其他法人单位法定代表人签署的文件材料具有同等效力。
+                </p>
+                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">三 、报名及获取招标文件方式</p>
+                <p style="text-indent: 2em; line-height: 31px; text-align: left;">
+                    本项目无需报名,招标文件由投标人在浙江政府采购网(zfcg.czt.zj.gov.cn)或龙游县公共资源交易网(<a
+                        href="http://www.qzggzy.com/">ztb.longyou.gov.cn</a>)免费下载。</p>
+                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">四
+                    、投标文件递交截止时间:2021年2月2日9:00:00(北京时间)</p>
+                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">五 、开标时间:2021年2月2
+                    日9:00:00(北京时间)</p>
+                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">六 、开标地点:
+                    衢州市公共资源交易龙游县分中心2楼3号开标室(龙游县龙翔路综合执法局西侧道路进100米)</p>
+                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">七 、投标保证金</p>
+                <p style="text-indent: 2em; line-height: 31px; text-align: left;"><strong><span
+                            style="color: red;">本项目不收取投标保证金。</span></strong></p>
+                <p style="margin-left: 0px; text-indent: 2em; line-height: 31px; text-align: left;">八 、联系方式</p>
+                <p style="text-indent: 2em; line-height: 31px; text-align: left;">招标人:龙游县自然资源和规划局</p>
+                <p style="text-indent: 2em; line-height: 27px; text-align: left;">联系人:来先生&nbsp;&nbsp;&nbsp; 联系电话:0570-
+                    7024402</p>
+                <p style="text-indent: 2em; line-height: 27px; text-align: left;">地点:龙游县龙州街道幸福路148号3楼</p>
+                <p><br></p>
+                <p></p>
+                <p style="line-height: 16px;"><img src="/plugins/editor/dialogs/attachment/fileTypeImages/icon_doc.gif">
+                    <a target="_blank" style="font-size:12px; color:#0066cc;"
+                        href="/public/b31738642e4d453e98635cd28eaf7306/pm_longyou_bidcontent/202101/1611285913577003.docx"
+                        title="龙游县国土整治和征收储备中心开户招标修改版.docx">龙游县国土整治和征收储备中心开户招标修改版.docx</a></p>
+            </div>
+            <!---->
+            <!---->
+            <!---->
+            <!---->
+        </div>
+    </div>
+</div>
     """
     ke = KeywordsExtract(content, [
         # "项目名称",  # project_name
@@ -2002,11 +2059,11 @@ if __name__ == '__main__':
         # "采购代理机构信息",
         # "填报单位",
 
-        # "项目编号",  # project_number
-        # "招标项目编号",
-        # "招标编号",
-        # "编号",
-        # "工程编号",
+        "项目编号",  # project_number
+        "招标项目编号",
+        "招标编号",
+        "编号",
+        "工程编号",
 
         # "项目金额",  # budget_amount
         # "预算金额（元）",
@@ -2022,12 +2079,12 @@ if __name__ == '__main__':
         # "开标时间",
         # "开启时间",
 
-        "中标人",  # successful_bidder
-        "中标人名称",
-        "中标单位",
-        "供应商名称",
+        # "中标人",  # successful_bidder
+        # "中标人名称",
+        # "中标单位",
+        # "供应商名称",
         # ], field_name='project_name')
-    ], field_name='bid_amount', area_id="3319")
+    ], field_name='project_number', area_id="3326")
     # ], field_name='project_name', area_id="3319", title='')
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
