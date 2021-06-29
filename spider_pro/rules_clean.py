@@ -1530,6 +1530,19 @@ class KeywordsExtract:
             self.fields_regular_with_symbol.get(self.field_name, []).clear()
             self.fields_regular_with_symbol[self.field_name] = regular_list
 
+    def brackets_contained(self, name):
+        """
+        判断 name 是否仅出现一次，且在括号里出现
+        :param name:
+        :return:
+        """
+        c_regular = r'[\[ \( （ 【]\s*[\u4e00-\u9fa5]*?{name}[\u4e00-\u9fa5]*?\s*[\] \) ） 】]'.format(
+            name=name,
+        )
+        if re.search(c_regular, self.title) and len(re.findall(name, self.title)) == 1:
+            return True
+        return False
+
     def get_val_from_title(self):
         """
         从标题获取项目名称
@@ -1538,6 +1551,9 @@ class KeywordsExtract:
             project_priority = ['转让', '出租', '转租', '拍卖', '出让', '公告', '公示', '项目', '工程']
             for name in project_priority:
                 if name in self.title:
+                    # 判断项目关键字是否在（）【】 [] 内
+                    if self.brackets_contained(name):
+                        continue
                     self._value = ''.join([self.title.split(name)[0], name])
                     break
 
@@ -1570,7 +1586,7 @@ class KeywordsExtract:
                     ]
                 if self.field_name == 'liaison':
                     regular_list = [
-                        r'联.*?系.*?人[: ：]\s*([\u4e00-\u9fa5]+?)\s*联系',
+                        r'联\s*系\s*人[: ：]\s*([\u4e00-\u9fa5]+?)\s*[联 电 质]',
                     ]
                 self.reset_regular(regular_list, with_symbol=False)
 
