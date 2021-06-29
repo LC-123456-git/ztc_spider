@@ -1298,35 +1298,35 @@ class KeywordsExtract:
         # 各字段对应的规则
         self.fields_regular = {
             'project_name': [
-            r'%s[^ψ：:。，,、]*?[: ： \s]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'project_number': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'budget_amount': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'tenderee': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'bidding_agency': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'liaison': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
-        ],
-        'contact_information': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
-        ],
-        'successful_bidder': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'bid_amount': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'tenderopen_time': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ]
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            ],
+            'project_number': [
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            ],
+            'budget_amount': [
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            ],
+            'tenderee': [
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            ],
+            'bidding_agency': [
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            ],
+            'liaison': [
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+            ],
+            'contact_information': [
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+            ],
+            'successful_bidder': [
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            ],
+            'bid_amount': [
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            ],
+            'tenderopen_time': [
+                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+            ],
         }
         self.fields_regular_with_symbol = copy.deepcopy(self.fields_regular)
         self._value = ''
@@ -1729,9 +1729,10 @@ class KeywordsExtract:
                         r'招标代理机构为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
                     ]
                 if self.field_name == 'project_number':
+                    # 招标编号：LYFW2021 - 027 - 07），
                     regular_list = [
-                        r'项目代码[: ： \s]*([0-9 \-]*?)[^\d+-]'
-                        # r'[项目代码|编号][\： \:]([0-9 A-Z a-z \-]+)\）',
+                        r'项目代码[: ： \s]*([0-9 \-]*?)[^\d+-]',
+                        r'招标编号[： :]([0-9 A-Z a-z \- \s]+)\）',
                     ]
                 if self.field_name == 'budget_amount':
                     regular_list = [
@@ -1756,6 +1757,7 @@ class KeywordsExtract:
                     ]
                 if self.field_name == 'successful_bidder':
                     regular_list = [
+                        r'中标单位[: ：]\s*([\u4e00-\u9fa5]+)\s*项目',
                         # r'中标人[: ：]\s*([\u4e00-\u9fa5]+)\s*中标价',
                     ]
                 self.reset_regular(regular_list, with_symbol=False)
@@ -1881,7 +1883,7 @@ class KeywordsExtract:
             else:
                 pass
         if self.field_name == 'project_name':
-            com = re.compile('([\[【][\u4e00-\u9fa5]+?[】 \]])')
+            com = re.compile(r'([\[【][\u4e00-\u9fa5]+?[】 \]])')
             suffix_trash = com.findall(self._value)
             if suffix_trash:
                 suffix_trash = suffix_trash[0]
