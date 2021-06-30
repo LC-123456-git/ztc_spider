@@ -402,7 +402,8 @@ class CleanPipeline(object):
             "建设[（ (]招标[）)]单位",
             "建设单位",
             "采购单位名称",
-            "采购人信息"
+            "采购人信息",
+            "监督部门",
         ]
         tenderee = self.get_keys_value_from_content(content, tenderee_tags, area_id=area_id, field_name='tenderee')  # √
         if len(tenderee) < 2:
@@ -418,6 +419,7 @@ class CleanPipeline(object):
             "采购代理机构信息",
             "填报单位",
             "受理单位",
+            "发包人名称",
         ]
         bidding_agency = self.get_keys_value_from_content(content, bidding_agency_tags, area_id=area_id,
                                                           field_name='bidding_agency')  # √
@@ -538,9 +540,8 @@ class CleanPipeline(object):
                 #                          files_path='' and classify_name ='中标预告' limit {start}, {rows}").fetchall()
                 results = conn.execute(
                     f"select * from {table_name}").fetchall()
-                    # f"select * from {table_name} where id in (261, 262)").fetchall()
-                    # f"select * from {table_name} where id between 517 and 518").fetchall()
-                    # f"select * from {table_name} where id=1059").fetchall()
+                    # f"select * from {table_name} where id in (1312)").fetchall()
+                    # f"select * from {table_name} where id between 1369 and 1383").fetchall()
 
                 results = [dict(zip(result.keys(), result)) for result in results]
                 for item in results:
