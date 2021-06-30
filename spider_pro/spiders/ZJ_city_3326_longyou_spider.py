@@ -256,5 +256,5 @@ class ZjCity3326LongyouSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3326_longyou_spider -a sdt=2021-01-01 -a edt=2021-05-17".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3326_longyou_spider -a sdt=2021-05-17 -a edt=2021-06-28".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3326_longyou_spider".split(" "))
