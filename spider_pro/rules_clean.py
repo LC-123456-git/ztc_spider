@@ -1747,6 +1747,7 @@ class KeywordsExtract:
                         r'投资限额约\s*(\d+\s*万元)',
                         r'预算造价约\s*([0-9 \.]+?\s*亿元)',
                         r'预算价：审定价\s*([0-9 \.]+?\s*元)',
+                        r'预算价\s*([0-9 \.]+?\s*元)',
                         # r'预算约\s*(\d+\s*万元)',
                         # r'预算约\s*(\d+\.\d+?万元)',
                         # r'预算约\s*(\d+\s*元)',
@@ -1919,38 +1920,38 @@ class KeywordsExtract:
             if re.search('万元|万', self._value):
                 try:
                     values = com.findall(self._value)
-                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 10000))
+                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0].strip()) * 10000))
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
             elif re.search('百万元|百万', self._value):
                 try:
                     values = com.findall(self._value)
-                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 1000000))
+                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0].strip()) * 1000000))
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
             elif re.search('千万元|千万', self._value):
                 try:
                     values = com.findall(self._value)
-                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 10000000))
+                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0].strip()) * 10000000))
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
             elif re.search('亿元|亿', self._value):
                 try:
                     values = com.findall(self._value)
-                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 100000000))
+                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0].strip()) * 100000000))
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
             elif re.search('元', self._value):
                 try:
                     values = com.findall(self._value)
-                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0])))
+                    self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0].strip())))
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
             else:
                 pass
 
             # 匹配不到任何数值的内容置空
-            if re.search('\d+', self._value):
+            if not re.search(r'\d+', self._value):
                 self._value = ''
         if self.field_name == 'project_name':
             com = re.compile(r'([\[【][\u4e00-\u9fa5]+?[】 \]])')
@@ -1972,63 +1973,23 @@ class KeywordsExtract:
 
 if __name__ == '__main__':
     content = """
-<div id="app" style="display: block;">
-    <div>
-        <h2 style="text-align: center;">龙游县人民医院文化东路地段营业用房招租</h2>
-        <!---->
-        <h3 class="time">发布时间：2021-03-22&nbsp;&nbsp;&nbsp;&nbsp;阅读次数：17&nbsp;&nbsp;&nbsp;&nbsp;<span>【打印】</span> 分享：
-            <i title="分享到微信" class="weiIcon"></i> <i title="分享到微博" class="boIcon"></i></h3>
-        <div class="qrCodeBox" style="display: none;">
-            <div class="qrCode">
-                <div class="title">
-                    <h4>分享到微信朋友圈</h4> <span class="closeQR">x</span>
-                </div>
-                <div id="qrcode"></div>
-                <p>打开微信，点击底部的“发现”，</p>
-                <p>使用“扫一扫”即可将网页分享至朋友圈。</p>
-            </div>
-        </div>
-        <!---->
-        <!---->
-        <div class="detContent">
-            <p style="text-align: left; text-indent: 2em;">
-                根据《龙游县人民政府办公室关于印发龙游县国有资产管理试行办法的通知》和《关于印发规范行政事业单位经营性资产招租实施意见的通知》有关规定,现将位于龙游县人民医院文化东路地段营业用房招租,7个标的,共8间营业用房。现指定龙游县公共资源交易网为本次网上竞价平台,依照《衢州市公共资源交易龙游县分中心网上竞价规则》组织竞价。
-            </p>
-            <p style="text-align: left; text-indent: 2em;">一、竞价标的:详见附件清单。</p>
-            <p style="text-align: left; text-indent: 2em;">二、招租方式:采用网上多轮次竞价方式,最高报价人为竞得人。</p>
-            <p style="text-align: left; text-indent: 2em;">三、报名条件:中华人民共和国境内合法注册和有效存续的法人、其他组织或具有完全民事行为能力的自然人。</p>
-            <p style="text-align: left; text-indent: 2em;">四、报名及保证金截止时间:</p>
-            <p style="text-align: left; text-indent: 2em;">1、自本公告发布之日起至2021年 3 月 29 日 8:50
-                分止,竞价人须按规定在产权交易平台注册办理报名手续,并以注册用户本人名义支付竞价保证金。</p>
-            <p style="text-align: left; text-indent: 2em;">
-                2、保证金缴纳方式:网上转账或直接银行柜台转账等方式(不接受现金或支付宝、微信等第三方支付方式),保证金必须单次足额缴纳,并在报名截止前到账(以网站载明的银行到账时间为准)。</p>
-            <p style="text-align: left; text-indent: 2em;">五、竞价开始时间:2021年 3 月 29 日09:00时</p>
-            <p style="text-align: left; text-indent: 2em;">
-                六、竞价人参与网上竞价,应认真阅读和充分了解《衢州市公共资源交易龙游县分中心网上竞价规则》及《房屋招租网上竞价须知》的内容。</p>
-            <p style="text-align: left; text-indent: 2em;">特此公告</p>
-            <p style="text-align: left; text-indent: 2em;">联系人: 孙先生&nbsp; 联系电话: 7023931</p>
-            <p style="text-align: left; text-indent: 2em;">(手机:17858219303&nbsp; 短号:540115)</p>
-            <p style="text-align: left; text-indent: 2em;">竞价操作手册:http://ztb.longyou.gov.cn/help</p>
-            <p style="text-align: left; text-indent: 2em;">龙游县安周物业管理有限公司</p>
-            <p style="text-align: left; text-indent: 2em;">&nbsp; 2021年 3 月 22 日</p>
-            <p></p>
-            <p style="line-height: 16px;"><img src="/plugins/editor/dialogs/attachment/fileTypeImages/icon_rar.gif"> <a
-                    target="_blank" style="font-size:12px; color:#0066cc;"
-                    href="/upload/GYCQ/b_buy_project_notice/202103/1616380422318.rar"
-                    title="竞买人下载资料.rar">竞买人下载资料.rar</a></p>
-            <p style="line-height: 16px;"><img src="/plugins/editor/dialogs/attachment/fileTypeImages/icon_jpg.gif"> <a
-                    target="_blank" style="font-size:12px; color:#0066cc;"
-                    href="/upload/GYCQ/b_buy_project_notice/202103/1616380418098.jpg"
-                    title="关于租赁资产权属的证明.jpg">关于租赁资产权属的证明.jpg</a></p>
-            <p style="line-height: 16px;"><img src="/plugins/editor/dialogs/attachment/fileTypeImages/icon_rar.gif"> <a
-                    target="_blank" style="font-size:12px; color:#0066cc;"
-                    href="/upload/GYCQ/b_buy_project_notice/202103/1616380409114.rar" title="委托协议.rar">委托协议.rar</a></p>
-        </div>
-        <!---->
-        <!---->
-        <!---->
-        <!---->
-    </div>
+<div class="detContent">
+    <p>&nbsp;</p>
+    <p>　　招标序号：LYDH-2021-007<br>　　1、招标条件<br>　　东华街道童家村便民服务中心改造工程已经有关部门批准建设。项目业主为龙游县东华街道童家村股份经济合作社，村集体资金自筹100%。为了公开、公平、公正、择优的选定承包队伍，现决定将该工程的施工进行公开招标。<br>　　2、工程概况：<br>　　⑴工程地点：龙游县东华街道童家村<br>　　⑵质量要求：一次性验收合格<br>　　⑶工程内容：原有单层泥坯墙拆除清理及便民服务中心土建、水电安装工程施工。(具体详见施工图纸和工程量清单)<br>　　⑷下浮区间值：8%-14%(8%、14%)
+        审核预算价125143 元<br>　　⑸
+        计划工期：45日历天。<br>　　3、报名条件：<br>　　3.1企业注册地在龙游县范围内《龙游县建筑业企业信用评价》为三类及以上的企业，具备建设行政主管部门颁发的建筑工程施工总承包叁级及以上资质，且为独立法人资格，具有有效的安全生产许可证;<br>　　3.2项目负责人具备建筑工程专业二级及以上注册建造师资格，具备有效的安全生产考核合格证书(B证);<br>　　3.3企业及项目负责人无正在公示的不良行为(不良行为指被各级行政主管部门记录并公示的违反法律法规和政策规定的行为，未被记录不良行为的上述行为不作为认定依据)。<br>　　3.4投标人被列为失信被执行人的、因串通投标等行为被立案调查的，谢绝参与投标。<br>　　4、本工程实行小额工程全流程电子交易，不见面开标方式。<br>　　4.1凡有意参加投标者，应当在龙游县公共资源电子交易平台进行企业注册，并前往龙游县公共资源交易中心网站通知公告中《关于CA数字证书办理的通知》中的办理流程办理CA锁，然后方可登陆该系统参与下载招标文件等业务操作，未登录电子交易系统的业务操作行为一律无效。招标人发布的澄清、修改、补遗书(若有)及工程量清单、工程量清单预算及调整系数等资料同时发布在上述网站，请各投标单位关注并及时获取，招标人也不再要求投标人以书面形式回函确认已获取该信息。衢州地区所办理联CA和天谷CA在龙游县可直接使用，不需重复办理。<br>　　4.2完成企业注册后，请及时通过互联网使用CA数字证书登录“龙游县公共资源电子交易平台”，明确所投标段并下载招标文件、工程量清单文件、施工图纸。<br>　　4.3根据国家相关法律法规的要求，龙游县公共资源电子交易系统不再单独设立网上投标报名操作，投标人下载标书并上传投标文件、确认缴纳保证金后即视为已确认参与项目投标。<br>　　4.4龙游县公共资源电子交易系统操作手册请各投标人自行前往龙游县公共资源交易中心门户网站(网站地址：<a
+            href="http://ztb.longyou.gov.cn">http://ztb.longyou.gov.cn</a>)下载查阅。<br>　　5、投标保证金<br>　　投标申请人在龙游县公共资源交易中心网《龙游县小额工程招投标诚信企业名录》内的企业，并已签署《诚信投标承诺书》的免交投标保证金。<br>　　未签署《诚信投标承诺书》的企业请及时办理，详见龙游县公共资源交易门户网站“关于取消小额工程年度投标保证金的通知”，下载附件“退还申请表和承诺书”，及时持《诚信投标承诺书》2份到交易科(309室)办理。<br>　　6、本工程适用《龙游县小额工程建设项目施工招投标操作办法》。<br>　　7、投标文件上传截止时间及开标时间：
+        2021年 4 月 26 日 16:00
+        时。<br>　　8、投标人通过龙游县工程建设电子交易平台递交的电子投标文件为评标依据。开标当日，所有投标人不必抵达开标现场，可在本企业电脑上登录交易平台进入不见面开标大厅参加开标会议。投标人如来开标现场参加开标会议的，招标方和交易中心不提供上网终端设备和不保证网络通畅。<br>　　联系人：叶工　
+        联系电话：0570-7018388(代理机构)<br>　　龙游县东华街道童家村股份经济合作社<br>　　浙江宇正工程管理咨询有限公司<br>　　2021年4月22日</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </p>
+    <p></p>
+    <p style="line-height: 16px;"><img src="/plugins/editor/dialogs/attachment/fileTypeImages/icon_pdf.gif"> <a
+            target="_blank" style="font-size:12px; color:#0066cc;" href="/public/gateway/202104/16190730338610.pdf"
+            title="招标公告附件.pdf">招标公告附件.pdf</a></p>
 </div>
     """
     ke = KeywordsExtract(content, [
@@ -2041,9 +2002,9 @@ if __name__ == '__main__':
 
         # "中标单位",  # successful_bidder
 
-        "联系电话",  # contact_information
-        "联系方式",
-        "电\s*话",
+        # "联系电话",  # contact_information
+        # "联系方式",
+        # "电\s*话",
 
         # "联系人",  # liaison
         # "联\s*系\s*人",
@@ -2080,8 +2041,8 @@ if __name__ == '__main__':
         # "编号",
         # "工程编号",
 
-        # "项目金额",  # budget_amount
-        # "预算金额（元）",
+        "项目金额",  # budget_amount
+        "预算金额（元）",
 
         # "中标价格",  # bid_amount
         # "中标价",
@@ -2099,7 +2060,7 @@ if __name__ == '__main__':
         # "中标单位",
         # "供应商名称",
         # ], field_name='project_name')
-    ], field_name='contact_information', area_id="3326")
+    ], field_name='budget_amount', area_id="3326")
     # ], field_name='project_name', area_id="3319", title='')
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
