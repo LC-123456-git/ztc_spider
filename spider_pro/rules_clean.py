@@ -1471,7 +1471,7 @@ class KeywordsExtract:
         从标题获取项目名称
         """
         if self.field_name == 'project_name' and self.title:
-            project_priority = ['转让', '出租', '转租', '拍卖', '出让', '公告', '公示', '项目', '工程']
+            project_priority = ['项目', '工程', '转让', '出租', '转租', '拍卖', '出让', '公告', '公示']
             for name in project_priority:
                 if name in self.title:
                     # 判断项目关键字是否在（）【】 [] 内
@@ -1499,28 +1499,7 @@ class KeywordsExtract:
                         r'预算金额.*?为\s*(\d+\s*元)',
                         r'本工程投资约\s*(\d+\s*万元)',
                         r'本工程投资约\s*(\d+\.\d+?万元)',
-                        r'本工程投资约\s*(\d+\s*元)',]
-                if self.field_name == 'project_name':
-                    regular_list = [
-                        r'本招标项目[：:]([\u4e00-\u9fa5 \s]*?\（以下简称“本项目”\）)[， ,]',
-                    ]
-                if self.field_name == 'tenderee':
-                    regular_list = [
-                        r'招标人为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
-                    ]
-                if self.field_name == 'bidding_agency':
-                    regular_list = [
-                        r'招标代理机构为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
-                    ]
-                if self.field_name == 'project_number':
-                    regular_list = [
-                        r'[项目代码|编号][\： \:]([0-9 A-Z a-z \-]+)\）',
-                    ]
-                if self.field_name == 'budget_amount':
-                    regular_list = [
-                        r'预算约\s*(\d+\s*万元)',
-                        r'预算约\s*(\d+\.\d+?万元)',
-                        r'预算约\s*(\d+\s*元)',
+                        r'本工程投资约\s*(\d+\s*元)',
                     ]
                 if self.field_name == 'bid_amount':
                     regular_list = [
@@ -1530,20 +1509,7 @@ class KeywordsExtract:
                     ]
                 if self.field_name == 'liaison':
                     regular_list = [
-                        r'联\s*系\s*人[: ：]\s*([\u4e00-\u9fa5]+?)\s*[联 电 质]',]
-
-                if self.field_name == 'contact_information':
-                    regular_list = [
-                        r'电\s*话[: ：]([^\u4e00-\u9fa5]+?)[\u4e00-\u9fa5]',
-                        r'联\s*系\s*人：[\u4e00-\u9fa5]+?\s*([0-9 \-]+?)\s*[\u4e00-\u9fa5]'
-                    ]
-                if self.field_name == 'liaison':
-                    regular_list = [
-                        r'联\s*系\s*人[: ：]\s*([\u4e00-\u9fa5]+?)[联 电 质]',
-                        r'项目经理：([\u4e00-\u9fa5]+?)\s*质量',
-                    ]
-                if self.field_name == 'successful_bidder':
-                    regular_list = [
+                        r'联\s*系\s*人[: ：]\s*([\u4e00-\u9fa5]+?)\s*[联 电 质]',
                     ]
                 self.reset_regular(regular_list, with_symbol=False)
 
@@ -1622,6 +1588,8 @@ class KeywordsExtract:
                 if self.field_name == 'project_name':
                     regular_list = [
                         r'概况[：:]([\u4e00-\u9fa5 \s]*?项目)[， ,]',
+                        r'([\u4e00-\u9fa5（）、]+?)经批准同意建设，',
+                        r'项目名称[：:]([0-9\u4e00-\u9fa5\(（]+?）)'
                     ]
                 if self.field_name == 'tenderee':
                     regular_list = [
@@ -1629,17 +1597,24 @@ class KeywordsExtract:
                     ]
                 if self.field_name == 'bidding_agency':
                     regular_list = [
-                        r'招标代理机构为([\u4e00-\u9fa5 （ ）]+?)[, ， 。]',
+                        r'招标代理机构为([\u4e00-\u9fa5]+?)[, ， 。]',
                     ]
                 if self.field_name == 'project_number':
                     regular_list = [
                         r'[项目代码|编号][\： \:]([0-9 A-Z a-z \-]+)\）',
                     ]
                 if self.field_name == 'budget_amount':
+                    # 概算总造价约326万元
                     regular_list = [
                         r'预算约\s*(\d+\s*万元)',
                         r'预算约\s*(\d+\.\d+?万元)',
                         r'预算约\s*(\d+\s*元)',
+                        r'投资估算约\s*(\d+\s*万元)',
+                        r'投资估算约\s*(\d+\.\d+?万元)',
+                        r'投资估算约\s*(\d+\s*元)',
+                        r'概算总造价约\s*(\d+\s*万元)',
+                        r'概算总造价约\s*(\d+\.\d+?万元)',
+                        r'概算总造价约\s*(\d+\s*元)',
                     ]
                 if self.field_name == 'bid_amount':
                     regular_list = [
@@ -1649,16 +1624,22 @@ class KeywordsExtract:
                     ]
                 if self.field_name == 'contact_information':
                     regular_list = [
+                        r'电话[: ：]([^\u4e00-\u9fa5]+?)2021年5月12日',
+                        r'电话[: ：]([^\u4e00-\u9fa5]+?)9.3监督机构',
                         r'电\s*话[: ：]([^\u4e00-\u9fa5]+?)[\u4e00-\u9fa5]',
-                        r'联\s*系\s*人：[\u4e00-\u9fa5]+?\s*([0-9 \-]+?)\s*[\u4e00-\u9fa5]'
+                        r'联\s*系\s*人：[\u4e00-\u9fa5]+?\s*([0-9 \-]+?)\s*[\u4e00-\u9fa5]',
+                        r'咨询[:：][\u4e00-\u9fa5]*?([\- 0-9 \s]+?)标的',
                     ]
                 if self.field_name == 'liaison':
                     regular_list = [
                         r'联\s*系\s*人[: ：]\s*([\u4e00-\u9fa5]+?)[联 电 质]',
                         r'项目经理：([\u4e00-\u9fa5]+?)\s*质量',
+                        r'咨询[:：]([\u4e00-\u9fa5]*?)\d+',
                     ]
                 if self.field_name == 'successful_bidder':
+                    # 中标人：长兴宇诚建设有限公司 中标价：597912元 工期
                     regular_list = [
+                        r'中标人[: ：]\s*([\u4e00-\u9fa5]+)\s*中标价',
                     ]
                 self.reset_regular(regular_list, with_symbol=False)
 
@@ -1710,8 +1691,8 @@ class KeywordsExtract:
                         # r'中标价[: ：]\s*(\d+\s*元)',
                     ]
                 if self.field_name == 'contact_information':
-                    # 联系电话: 7023931 (手机:1785821930
                     regular_list = [
+                        r'联系电话：([0-9 \- \s]+)（代理机构）',
                         r'联系电话：[0-9 \- \s]+（县监管办督查科）([0-9 \- \s]+)（代理机构）',
                         r'电\s*话[:：]([^\u4e00-\u9fa5]+?)[\u4e00-\u9fa5。，,\(（]',
                     ]
@@ -1899,9 +1880,8 @@ class KeywordsExtract:
                     self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0].strip())))
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
-
             else:
-                self._value = ''
+                pass
 
             # 匹配不到任何数值的内容置空
             if not re.search(r'\d+', self._value):
@@ -1925,7 +1905,563 @@ class KeywordsExtract:
 
 
 if __name__ == '__main__':
-    content = """"""
+    content = """
+<table id="tblInfo" cellspacing="1" cellpadding="1" width="100%" align="center" border="0" runat="server">
+    <tbody>
+        <tr>
+            <td id="tdTitle" align="center" runat="server" height="70">
+                <font color="" style="font-size: 25px"> <b>
+                        长兴县和平镇城山路道路工程施工[抽签法]
+                    </b></font>
+
+            </td>
+        </tr>
+        <tr>
+            <td height="29" align="center" bgcolor="#eeeeee">
+                <font color="#545454" class="webfont">【信息时间：
+                    2021/5/11
+                    &nbsp;&nbsp;阅读次数：
+                    <script src="/cxweb/Upclicktimes.aspx?InfoID=273ce4eb-32e7-4ad3-a59c-2c066caea1db"></script>422
+                    】<a href="javascript:void(0)" onclick="window.print();">
+                        <font color="#545454" class="webfont">【我要打印】</font>
+                    </a><a href="javascript:window.close()">
+                        <font color="#545454" class="webfont">【关闭】</font>
+                    </a></font>
+                <font color="#000000">
+
+                </font>
+            </td>
+        </tr>
+        <tr>
+            <td height="10"></td>
+        </tr>
+        <tr>
+            <td height="250" align="left" valign="top" class="infodetail" id="TDContent">
+                <div>
+                    <p></p>
+                    <h1 style="TEXT-ALIGN: center; LINE-HEIGHT: 30pt; MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; mso-line-height-rule: exactly; mso-list: l0 level1 lfo1"
+                        align="center"><b style="mso-bidi-font-weight: normal"><span
+                                style="FONT-FAMILY: 宋体; FONT-SIZE: 18pt; mso-bidi-font-family: 'Times New Roman'; mso-ansi-font-weight: bold; mso-font-kerning: 22.0000pt; mso-spacerun: 'yes'">
+                                <font face="宋体">长兴县和平镇城山路道路工程</font>
+                            </span></b><b style="mso-bidi-font-weight: normal"><span
+                                style="FONT-FAMILY: 宋体; FONT-SIZE: 18pt; mso-bidi-font-family: 'Times New Roman'; mso-ansi-font-weight: bold; mso-font-kerning: 22.0000pt; mso-spacerun: 'yes'">
+                                <!--?xml:namespace prefix = o /-->
+                                <o:p></o:p>
+                            </span></b></h1>
+                    <h1 style="TEXT-ALIGN: center; LINE-HEIGHT: 30pt; MARGIN-TOP: 0pt; MARGIN-BOTTOM: 0pt; mso-line-height-rule: exactly"
+                        align="center"><b style="mso-bidi-font-weight: normal"><span
+                                style="FONT-FAMILY: 宋体; FONT-SIZE: 18pt; mso-bidi-font-family: 'Times New Roman'; mso-ansi-font-weight: bold; mso-font-kerning: 22.0000pt; mso-spacerun: 'yes'">
+                                <font face="宋体">发包公告</font>
+                            </span></b><b style="mso-bidi-font-weight: normal"><span
+                                style="FONT-FAMILY: 宋体; FONT-SIZE: 18pt; mso-bidi-font-family: 'Times New Roman'; mso-ansi-font-weight: bold; mso-font-kerning: 22.0000pt; mso-spacerun: 'yes'">
+                                <o:p></o:p>
+                            </span></b></h1>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">长兴县和平镇城山路道路工程</font>
+                            </span></u><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">经主管部门同意建设。建设地址位于</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)"></span></u><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">长兴县和平镇</font>
+                            </span></u><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)"></span></u><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">。项目</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">业主</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">为</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)"></span></u><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">长兴县和平镇人民政府</font>
+                            </span></u><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)"></span></u><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">，资金来源为</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)"></span></u><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">财政</font>
+                            </span></u><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)"></span></u><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">，出资比例为</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">100% </font>
+                            </span></u><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">。项目已具备发包条件，发包人为</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)"></span></u><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">长兴县和平镇人民政府</font>
+                            </span></u><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)"></span></u><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">，（发包</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">代理机构为</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">浙江建询工程管理咨询有限公司</font>
+                            </span></u><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">）</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">，</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">现对该项目的</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single">
+                                <font face="宋体">施工</font>
+                            </span></u><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">进行公开发包。</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan" class="p">
+                        <b style="mso-bidi-font-weight: normal"><span
+                                style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-ansi-font-weight: bold; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                                <font face="宋体">一、本次发包范围：</font>
+                            </span></b><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">1.1</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">长兴县和平镇城山路道路工程</font>
+                            </span></u><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">
+                                ，本次招标范围为设计图纸内的新建道路及雨污水管网工程，包括场地平整、土方开挖、路基填筑、水稳基层、沥青面层摊铺、雨污水管道铺设、雨污水井砌筑等工作内容，具体详见招标文件所附工程量清单及设计施工图纸（电子版）。
+                            </font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-highlight: rgb(255,255,0)">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="MsoNormal"><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">1.2本工程采用工程量清单计价、随机抽签方式发包；</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="MsoNormal"><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">1.3本工程招标控制价为</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">2578474</font>
+                            </span></u><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">元，发包价为</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">2405861</font>
+                            </span></u><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">元（详见附件工程量清单），计划工期</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)"></span></u><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">200</font>
+                            </span></u><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)"></span></u><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">日历天。质量要求</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">合格</font>
+                            </span></u><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">。</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="MsoNormal"><b style="mso-bidi-font-weight: normal"><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-ansi-font-weight: bold; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">二、承包人条件、要求：</font>
+                            </span></b><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="MsoNormal"><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">2.1承包人必须为长兴县工程建设项目优秀承包商名录内企业（市政专业），具有</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; text-underline: single; mso-shading: rgb(255,255,255)">
+                                <font face="宋体">市政公用工程施工总承包叁级及以上资质的</font>
+                            </span></u><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">独立法人。</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="MsoNormal"><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">2.2承包人及其法定代表人控股的其他公司，不得同时参与同一标段抽签。否则，均按无效处理。</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; BACKGROUND: rgb(255,255,255); COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; mso-shading: rgb(255,255,255)">
+                            <font face="宋体">2.3拟派项目负责人：具有</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">注册在投标人单位的</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single">
+                                <font face="宋体">市政公用工程</font>
+                            </span></u><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">专业</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single">
+                                <font face="宋体">贰级（含）以上</font>
+                            </span></u><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">注册建造师执业资格，并具有</font>
+                            <font face="宋体">“三类人员”B类证书，且为本单位正式在职员工。</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">2.4已在县公共资源交易中心交纳年度保证金的。</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">
+                                2.5在抽签时间截止日存在在其他任何在建合同工程上担任项目负责人的，不得以拟派项目负责人的身份参加本次公开交易活动。在建合同工程的开始时间为合同工程中标通知书发出日期（不通过招标、发包方式的，开始时间为合同签订日期），结束时间为该合同工程通过验收或合同解除日期，已被其他项目推荐为第一中标候选人且已公示的项目负责人视为有在建工程。
+                            </font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan" class="p">
+                        <b style="mso-bidi-font-weight: normal"><span
+                                style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-ansi-font-weight: bold; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                                <font face="宋体">三、报名：</font>
+                            </span></b><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">有意参加本项目发包抽签的长兴县工程建设项目优秀承包商名录内企业于抽签前登录长兴县公共资源交易网（小额项目）下载相关交易资料进行报名。</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="MsoNormal"><b style="mso-bidi-font-weight: normal"><span
+                                style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-ansi-font-weight: bold; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                                <font face="宋体">四、抽签方式、时间和地点</font>
+                            </span></b><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">
+                                4.1抽签方式：由公证人员对抽签设备及号码球进行检查，确定无异议后，按抽签当日签到的顺序，由每个承包人代表公开抽取代表该承包人的号码球，经签名确认后当场公布；承包人代表抽取的号码球全部收回后，由发包人代表在其中公开随机抽取一个号码球，号码球与之相同的承包人即为签约承包人，并由发包人、签约承包人及监督人员共同签字确认成交结果。本次成交结果在长兴县公共资源交易网上发布成交公告，告知所有参加抽签的承包人。
+                            </font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">4.2抽</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">签时间</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">：</font>
+                            <font face="宋体">2021年</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">5</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">月</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">18</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">日</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">15</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">时</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">00</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">分</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">4.3抽签地点：长兴县公共资源交易中心4楼</font>
+                        </span><u><span
+                                style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; TEXT-DECORATION: underline; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'; text-underline: single">
+                                <font face="宋体">本项目开标室（具体见开标日交易大厅显示屏安排）。</font>
+                            </span></u><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan" class="p">
+                        <b style="mso-bidi-font-weight: normal"><span
+                                style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-ansi-font-weight: bold; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                                <font face="宋体">五、交易保证金：</font>
+                            </span></b><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-bidi-font-weight: bold; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">本项目交易保证金为发包价的</font>
+                            <font face="宋体">2%（已在县公共资源交易中心交纳年度保证金的无需缴纳交易保证金）。</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-bidi-font-weight: bold; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan" class="p">
+                        <b style="mso-bidi-font-weight: normal"><span
+                                style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-ansi-font-weight: bold; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                                <font face="宋体">六、履约保证金：</font>
+                            </span></b><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">发包价的</font>
+                            <font face="宋体">2%，由签约承包人在签订书面合同前提交至发包人账户。</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan" class="p">
+                        <b style="mso-bidi-font-weight: normal"><span
+                                style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-ansi-font-weight: bold; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                                <font face="宋体">七、农民工工资保证金：</font>
+                            </span></b><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">按县有关文件执行，由签约承包人在签订书面合同前提交至县农民工工资保证金专户。</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan" class="p">
+                        <b style="mso-bidi-font-weight: normal"><span
+                                style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-ansi-font-weight: bold; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                                <font face="宋体">八、其他</font>
+                            </span></b><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">
+                                已标价工程量清单、项目专项合同、施工图纸（电子版）、承包申请函（格式）及法定代表人身份证明或授权委托书（格式）在长兴县公共资源交易网（小额项目）自行下载查看。</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan" class="p">
+                        <b style="mso-bidi-font-weight: normal"><span
+                                style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-ansi-font-weight: bold; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                                <font face="宋体">九、联系方式</font>
+                            </span></b><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">9.1发包人：</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">长兴县和平镇人民政府</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 42pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">联系人：</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">徐工</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'"></span><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 42pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">电话：</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">/</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">9.2代理机构：</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">浙江建询工程管理咨询有限公司</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 42pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">联系人：</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">宋工</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 42pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="p"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">电话：</font>
+                            <font face="宋体">0572-</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">6789955</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 0.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 21pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan; mso-char-indent-count: 2.0000"
+                        class="MsoNormal"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">9.3监督机构：长兴县公共资源交易管理办公室 </font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="LINE-HEIGHT: 21pt; TEXT-INDENT: 42pt; mso-line-height-rule: exactly; mso-pagination: widow-orphan; mso-char-indent-count: 4.0000"
+                        class="MsoNormal"><span
+                            style="FONT-FAMILY: 宋体; COLOR: rgb(0,0,0); FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">电话：</font>
+                            <font face="宋体">0572-6044639</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <o:p></o:p>
+                        </span></p>
+                    <p style="TEXT-ALIGN: right; LINE-HEIGHT: 21pt; WORD-BREAK: break-all; mso-line-height-rule: exactly; mso-pagination: widow-orphan"
+                        class="MsoNormal" align="right"><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">2021年</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">5</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">月</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">11</font>
+                        </span><span
+                            style="FONT-FAMILY: 宋体; FONT-SIZE: 10.5pt; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'">
+                            <font face="宋体">日</font>
+                        </span><span
+                            style="FONT-FAMILY: Calibri; FONT-SIZE: 10.5pt; mso-bidi-font-family: 'Times New Roman'; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; mso-fareast-font-family: 宋体">
+                            <o:p></o:p>
+                        </span></p>
+                    <p class="MsoNormal"><span
+                            style="FONT-FAMILY: Calibri; BACKGROUND: rgb(255,255,255); FONT-SIZE: 10.5pt; mso-bidi-font-family: 'Times New Roman'; mso-font-kerning: 1.0000pt; mso-spacerun: 'yes'; mso-highlight: rgb(255,255,255); mso-fareast-font-family: 宋体">
+                            <o:p></o:p>
+                        </span></p>
+                </div>
+                <div>
+
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td align="right">
+
+                <br>
+            </td>
+        </tr>
+        <tr id="trAttach" runat="server">
+            <td align="left">
+                <table id="filedown" cellspacing="1" cellpadding="1" width="100%" border="0" runat="server">
+                    <tbody>
+                        <tr>
+                            <td valign="top" style="font-size: medium;"><b>
+
+                                </b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+        </tr>
+        <tr>
+            <td height="30"></td>
+        </tr>
+        <!--会员或非会员按钮-->
+        <tr>
+            <td></td>
+        </tr>
+        <!--答疑变更公告-->
+    </tbody>
+</table>
+    """
     ke = KeywordsExtract(content, [
         # "项目名称",  # project_name
         # "采购项目名称",
@@ -1936,9 +2472,9 @@ if __name__ == '__main__':
 
         # "中标单位",  # successful_bidder
 
-        # "联系电话",  # contact_information
-        # "联系方式",
-        # "电\s*话",
+        "联系电话",  # contact_information
+        "联系方式",
+        "电\s*话",
 
         # "联系人",  # liaison
         # "联\s*系\s*人",
@@ -1986,15 +2522,15 @@ if __name__ == '__main__':
 
         # "招标方式",
 
-        "开标时间",  # tenderopen_time
-        "开启时间",
+        # "开标时间",  # tenderopen_time
+        # "开启时间",
 
         # "中标人",  # successful_bidder
         # "中标人名称",
         # "中标单位",
         # "供应商名称",
         # ], field_name='project_name')
-    ], field_name='tenderopen_time', area_id="3326")
+    ], field_name='contact_information', area_id="3319")
     # ], field_name='project_name', area_id="3319", title='')
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
@@ -2031,4 +2567,3 @@ if __name__ == '__main__':
     }
 
     print(ke.get_value())
-
