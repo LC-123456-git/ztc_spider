@@ -1950,7 +1950,8 @@ class KeywordsExtract:
                 pass
 
             # 匹配不到任何数值的内容置空
-            self._value = ''
+            if re.search('\d+', self._value):
+                self._value = ''
         if self.field_name == 'project_name':
             com = re.compile(r'([\[【][\u4e00-\u9fa5]+?[】 \]])')
             suffix_trash = com.findall(self._value)
