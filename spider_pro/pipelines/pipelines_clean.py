@@ -375,6 +375,7 @@ class CleanPipeline(object):
             else:
                 project_name = project_names
         project_number_tags = [
+            "采购项目编号",
             "项目编号",
             "招标项目编号",
             "招标编号",
@@ -540,6 +541,7 @@ class CleanPipeline(object):
                     # f"select * from {table_name} where id in (261, 262)").fetchall()
                     # f"select * from {table_name} where id between 517 and 518").fetchall()
                     # f"select * from {table_name} where id=1059").fetchall()
+
                 results = [dict(zip(result.keys(), result)) for result in results]
                 for item in results:
                     try:
