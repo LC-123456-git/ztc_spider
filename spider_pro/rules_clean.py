@@ -1266,13 +1266,6 @@ class KeywordsExtract:
                     val = ''.join(result[0]).replace('业主：', '')
                 else:
                     val = ' '
-            if result:
-                val = result[0]
-                if not re.search("元", val):
-                    if unit := re.search("元|万元", key):
-                        val_unit = val + unit.group()
-                        return val_unit
-                    return val
             if val:
                 break
         return val
