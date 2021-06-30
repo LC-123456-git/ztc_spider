@@ -1738,7 +1738,7 @@ class KeywordsExtract:
                     # 招标编号：LYXHZZ2021-056 1. 招标条件
                     regular_list = [
                         r'项目代码[: ：\s]*([0-9 \-]*?)[^\d+-]',
-                        r'招标编号[：:]([0-9 A-Z a-z \- \s \u4e00-\u9fa5]+?)1[.,、]\s*招标',
+                        r'招标[序编]号[：:]([0-9 A-Z a-z \- \s \u4e00-\u9fa5]+?)1[\.,、]\s*招标',
                         r'编号[：:]([0-9 A-Z a-z \- \s]+?)[\)\(（）]',
                         r'项目编号[：:]([0-9 A-Z a-z \- \s]*?)[\u4e00-\u9fa5]{1}',
                     ]
@@ -1758,10 +1758,10 @@ class KeywordsExtract:
                         # r'中标价[: ：]\s*(\d+\s*元)',
                     ]
                 if self.field_name == 'contact_information':
-                    # 联系电话：0570-7888290（县监管办督查科）18757033272  723272（代理机构）
+                    # 联系电话: 7023931 (手机:1785821930
                     regular_list = [
                         r'联系电话：[0-9 \- \s]+（县监管办督查科）([0-9 \- \s]+)（代理机构）',
-                        r'电\s*话[:：]([^\u4e00-\u9fa5]+?)[\u4e00-\u9fa5。，,]',
+                        r'电\s*话[:：]([^\u4e00-\u9fa5]+?)[\u4e00-\u9fa5。，,\(（]',
                     ]
                 if self.field_name == 'liaison':
                     # 联系人：叶工　 联系电话
@@ -1922,13 +1922,13 @@ class KeywordsExtract:
                     self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 10000))
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
-            if re.search('百万元|百万', self._value):
+            elif re.search('百万元|百万', self._value):
                 try:
                     values = com.findall(self._value)
                     self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 1000000))
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
-            if re.search('千万元|千万', self._value):
+            elif re.search('千万元|千万', self._value):
                 try:
                     values = com.findall(self._value)
                     self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0]) * 10000000))
@@ -1948,6 +1948,9 @@ class KeywordsExtract:
                     self.msg = 'error:{0}'.format(e)
             else:
                 pass
+
+            # 匹配不到任何数值的内容置空
+            self._value = ''
         if self.field_name == 'project_name':
             com = re.compile(r'([\[【][\u4e00-\u9fa5]+?[】 \]])')
             suffix_trash = com.findall(self._value)
@@ -1968,161 +1971,63 @@ class KeywordsExtract:
 
 if __name__ == '__main__':
     content = """
-<div class="detContent">
-
-
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-
-
-    <p style="font-size:20px;font-weight:bold;text-align:center;padding:10px 0px;">
-        龙游县礼贤小区安居工程无负压给水设备采购及安装（龙游县礼贤小区安居工程无负压给水设备采购及安装）开标记录表
-    </p>
-    <p>
-        <span style="float:left;">开标时间：2021-05-19 09:30:00</span>
-    </p>
-    <p>（一）唱标记录</p>
-    <p>
-        <table style="width:100%;line-height:30px;boder:0px;" border="1px" cellspacing="0" cellpadding="0">
-            <tbody>
-                <tr>
-                    <th>
-                        序号
-                    </th>
-                    <th>
-                        投标人名称
-                    </th>
-                    <th>
-                        密封情况
-                    </th>
-                    <th>
-                        投标保证金
-                    </th>
-                    <th>
-                        投标报价(元)
-                    </th>
-                    <th>
-                        工期（日历天）
-                    </th>
-                    <th>
-                        质量目标
-                    </th>
-                    <th>
-                        项目经理
-                    </th>
-                </tr>
-
-
-                <tr>
-                    <td>
-                        1
-                    </td>
-                    <td>
-                        山东华立供水设备有限公司
-                    </td>
-                    <td>
-
-                    </td>
-                    <td>
-                        20000
-                    </td>
-                    <td>
-                        955000
-                    </td>
-                    <td>
-                        60
-                    </td>
-                    <td>
-                        符合国家相关验收合格标准和图纸要求，一次性验收合格。
-                    </td>
-                    <td>
-                        /
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        2
-                    </td>
-                    <td>
-                        杭州浩水科技有限公司
-                    </td>
-                    <td>
-
-                    </td>
-                    <td>
-                        20000
-                    </td>
-                    <td>
-                        1020800
-                    </td>
-                    <td>
-                        60
-                    </td>
-                    <td>
-                        符合国家相关验收合格标准和图纸要求，一次性验收合格。
-                    </td>
-                    <td>
-                        /
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        3
-                    </td>
-                    <td>
-                        埃梯梯智慧水务科技有限公司
-                    </td>
-                    <td>
-
-                    </td>
-                    <td>
-                        20000
-                    </td>
-                    <td>
-                        953310
-                    </td>
-                    <td>
-                        60
-                    </td>
-                    <td>
-                        符合国家相关验收合格标准和图纸要求，一次性验收合格。
-                    </td>
-                    <td>
-                        /
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        4
-                    </td>
-                    <td>
-                        杭州泓道科技有限公司
-                    </td>
-                    <td>
-
-                    </td>
-                    <td>
-                        20000
-                    </td>
-                    <td>
-                        988000
-                    </td>
-                    <td>
-                        60
-                    </td>
-                    <td>
-                        符合国家相关验收合格标准和图纸要求，一次性验收合格。
-                    </td>
-                    <td>
-                        /
-                    </td>
-                </tr>
-
-
-            </tbody>
-        </table>
-    </p>
-
-
+<div id="app" style="display: block;">
+    <div>
+        <h2 style="text-align: center;">龙游县人民医院文化东路地段营业用房招租</h2>
+        <!---->
+        <h3 class="time">发布时间：2021-03-22&nbsp;&nbsp;&nbsp;&nbsp;阅读次数：17&nbsp;&nbsp;&nbsp;&nbsp;<span>【打印】</span> 分享：
+            <i title="分享到微信" class="weiIcon"></i> <i title="分享到微博" class="boIcon"></i></h3>
+        <div class="qrCodeBox" style="display: none;">
+            <div class="qrCode">
+                <div class="title">
+                    <h4>分享到微信朋友圈</h4> <span class="closeQR">x</span>
+                </div>
+                <div id="qrcode"></div>
+                <p>打开微信，点击底部的“发现”，</p>
+                <p>使用“扫一扫”即可将网页分享至朋友圈。</p>
+            </div>
+        </div>
+        <!---->
+        <!---->
+        <div class="detContent">
+            <p style="text-align: left; text-indent: 2em;">
+                根据《龙游县人民政府办公室关于印发龙游县国有资产管理试行办法的通知》和《关于印发规范行政事业单位经营性资产招租实施意见的通知》有关规定,现将位于龙游县人民医院文化东路地段营业用房招租,7个标的,共8间营业用房。现指定龙游县公共资源交易网为本次网上竞价平台,依照《衢州市公共资源交易龙游县分中心网上竞价规则》组织竞价。
+            </p>
+            <p style="text-align: left; text-indent: 2em;">一、竞价标的:详见附件清单。</p>
+            <p style="text-align: left; text-indent: 2em;">二、招租方式:采用网上多轮次竞价方式,最高报价人为竞得人。</p>
+            <p style="text-align: left; text-indent: 2em;">三、报名条件:中华人民共和国境内合法注册和有效存续的法人、其他组织或具有完全民事行为能力的自然人。</p>
+            <p style="text-align: left; text-indent: 2em;">四、报名及保证金截止时间:</p>
+            <p style="text-align: left; text-indent: 2em;">1、自本公告发布之日起至2021年 3 月 29 日 8:50
+                分止,竞价人须按规定在产权交易平台注册办理报名手续,并以注册用户本人名义支付竞价保证金。</p>
+            <p style="text-align: left; text-indent: 2em;">
+                2、保证金缴纳方式:网上转账或直接银行柜台转账等方式(不接受现金或支付宝、微信等第三方支付方式),保证金必须单次足额缴纳,并在报名截止前到账(以网站载明的银行到账时间为准)。</p>
+            <p style="text-align: left; text-indent: 2em;">五、竞价开始时间:2021年 3 月 29 日09:00时</p>
+            <p style="text-align: left; text-indent: 2em;">
+                六、竞价人参与网上竞价,应认真阅读和充分了解《衢州市公共资源交易龙游县分中心网上竞价规则》及《房屋招租网上竞价须知》的内容。</p>
+            <p style="text-align: left; text-indent: 2em;">特此公告</p>
+            <p style="text-align: left; text-indent: 2em;">联系人: 孙先生&nbsp; 联系电话: 7023931</p>
+            <p style="text-align: left; text-indent: 2em;">(手机:17858219303&nbsp; 短号:540115)</p>
+            <p style="text-align: left; text-indent: 2em;">竞价操作手册:http://ztb.longyou.gov.cn/help</p>
+            <p style="text-align: left; text-indent: 2em;">龙游县安周物业管理有限公司</p>
+            <p style="text-align: left; text-indent: 2em;">&nbsp; 2021年 3 月 22 日</p>
+            <p></p>
+            <p style="line-height: 16px;"><img src="/plugins/editor/dialogs/attachment/fileTypeImages/icon_rar.gif"> <a
+                    target="_blank" style="font-size:12px; color:#0066cc;"
+                    href="/upload/GYCQ/b_buy_project_notice/202103/1616380422318.rar"
+                    title="竞买人下载资料.rar">竞买人下载资料.rar</a></p>
+            <p style="line-height: 16px;"><img src="/plugins/editor/dialogs/attachment/fileTypeImages/icon_jpg.gif"> <a
+                    target="_blank" style="font-size:12px; color:#0066cc;"
+                    href="/upload/GYCQ/b_buy_project_notice/202103/1616380418098.jpg"
+                    title="关于租赁资产权属的证明.jpg">关于租赁资产权属的证明.jpg</a></p>
+            <p style="line-height: 16px;"><img src="/plugins/editor/dialogs/attachment/fileTypeImages/icon_rar.gif"> <a
+                    target="_blank" style="font-size:12px; color:#0066cc;"
+                    href="/upload/GYCQ/b_buy_project_notice/202103/1616380409114.rar" title="委托协议.rar">委托协议.rar</a></p>
+        </div>
+        <!---->
+        <!---->
+        <!---->
+        <!---->
+    </div>
 </div>
     """
     ke = KeywordsExtract(content, [
@@ -2134,18 +2039,18 @@ if __name__ == '__main__':
         # "工程名称",
 
         # "中标单位",  # successful_bidder
-        #
-        # "联系电话",  # contact_information
-        # "联系方式",
-        # "电\s*话",
 
-        "联系人",  # liaison
-        "联\s*系\s*人",
-        "项目经理",
-        "项目经理（负责人）",
-        "项目负责人",
-        "项目联系人",
-        "填报人",
+        "联系电话",  # contact_information
+        "联系方式",
+        "电\s*话",
+
+        # "联系人",  # liaison
+        # "联\s*系\s*人",
+        # "项目经理",
+        # "项目经理（负责人）",
+        # "项目负责人",
+        # "项目联系人",
+        # "填报人",
 
         # "招标人",  # tenderee
         # "招 标 人",
@@ -2193,7 +2098,7 @@ if __name__ == '__main__':
         # "中标单位",
         # "供应商名称",
         # ], field_name='project_name')
-    ], field_name='liaison', area_id="3326")
+    ], field_name='contact_information', area_id="3326")
     # ], field_name='project_name', area_id="3319", title='')
     # ke = KeywordsExtract(content, ["项目编号"])
     ke.fields_regular = {
