@@ -420,6 +420,7 @@ class CleanPipeline(object):
             "填报单位",
             "受理单位",
             "发包人名称",
+            "招标代理人名称",
         ]
         bidding_agency = self.get_keys_value_from_content(content, bidding_agency_tags, area_id=area_id,
                                                           field_name='bidding_agency')  # √
@@ -438,6 +439,7 @@ class CleanPipeline(object):
         ]
         budget_amount = self.get_keys_value_from_content(content, budget_amount_tags, area_id=area_id,
                                                          field_name='budget_amount')  # √
+        print(budget_amount)
         liaison_tags = [
             "联系人",
             "联\s*系\s*人",
@@ -656,7 +658,7 @@ if __name__ == "__main__":
     # cp.run_clean(table_name="notices_13", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     # cp.run_clean(table_name="notices_15", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     cp.run_clean(
-        table_name="notices_3326",
+        table_name="notices_3301",
         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'
     )
 
