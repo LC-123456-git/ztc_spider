@@ -188,7 +188,7 @@
 - [] 3327 平阳县公共资源交易中心  http://www.zjpy.gov.cn/
 - [] 3328 常山县公共资源交易网  http://qzcs.zjzwfw.gov.cn/
 - [] 3329 拱墅区公共资源交易中心  http://www.gongshu.gov.cn/
-- [] 3330 江干区公共资源交易中心  http://www.jianggan.gov.cn
+- [] 3330 江干区公共资源交易中心  http://www.jianggan.gov.cn/
 - [] 3331 富阳区公共资源交易中心  http://www.fuyang.gov.cn/
 - [] 3332 淳安县公共资源交易中心  http://www.qdh.gov.cn/
 - [] 3333 浙江交通运输厅  http://jtyst.zj.gov.cn/
