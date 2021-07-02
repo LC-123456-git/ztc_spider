@@ -189,9 +189,10 @@
 - [] 3328 常山县公共资源交易网  http://qzcs.zjzwfw.gov.cn/
 - [] 3329 拱墅区公共资源交易中心  http://www.gongshu.gov.cn/
 - [] 3330 江干区公共资源交易中心  http://www.jianggan.gov.cn/
-- [] 3331 富阳区公共资源交易中心  http://www.fuyang.gov.cn/
-- [] 3332 淳安县公共资源交易中心  http://www.qdh.gov.cn/
+- [x] 3331 富阳区公共资源交易中心  http://www.fuyang.gov.cn/
+- [x] 3332 淳安县公共资源交易中心  http://www.qdh.gov.cn/
 - [] 3333 浙江交通运输厅  http://jtyst.zj.gov.cn/
+
 - [] 3334 建德市公共资源交易中心  http://www.jiande.gov.cn/
 - [] 3335 温州市鹿城区公共资源交易中心 http://spgg.lucheng.gov.cn/
 - [] 3336 温州市乐清市公共资源交易中心 http://ggzy.yueqing.gov.cn/
@@ -205,6 +206,7 @@
 - [] 3344 绍兴市越城区公共资源交易中心 http://www.sxyc.gov.cn/
 - [] 3345 绍兴市嵊州市公共资源交易中心 http://www.szzj.gov.cn/
 - [] 3346 湖州市吴兴区公共资源交易中心 http://www.wl.gov.cn/
+
 - [] 3347 台州市温岭市公共资源交易中心 http://www.wl.gov.cn/
 - [] 3348 台州市三门县公共资源交易中心 http://jyzx.sanmen.gov.cn/
 - [] 3349 台州市天台县公共资源交易中心 http://www.zjtt.gov.cn/ 
