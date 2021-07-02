@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # @Author: lc
-# @Date: 2021-07-02
-# @Describe: 淳安县公共资源交易平台 - 全量/增量脚本
+# @Date: 2021-07-05
+# @Describe: 杭州市公共资源交易中心建德分中心 - 全量/增量脚本
 
 import re
 import math
@@ -25,26 +25,26 @@ from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, 
 
 
 class MySpider(CrawlSpider):
-    name = 'ZJ_city_3332_chunan_spider'
-    area_id = "3332"
-    domain_url = "http://www.qdh.gov.cn"
-    query_url = "http://www.qdh.gov.cn/ggzyjyw/index.html"
-    base_url = 'http://www.qdh.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=40'
-    allowed_domains = ['qdh.gov.cn']
-    area_province = '浙江省淳安县公共资源交易平台'
+    name = 'ZJ_city_3334_jiande_spider'
+    area_id = "3334"
+    domain_url = "http://www.jiande.gov.cn"
+    query_url = "http://www.jiande.gov.cn/col/col1229346101/index.html"
+    base_url = 'http://www.jiande.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=40'
+    allowed_domains = ['jiande.gov.cn']
+    area_province = '浙江省杭州市建德市公共资源交易中心'
 
     # 招标预告
     list_tender_notice_num = []
     # 招标公告
-    list_notice_category_name = ['招标公告', '采购公告']
+    list_notice_category_name = ['招标公告', '产权公告']
     # 招标变更
-    list_zb_abnormal_name = []
+    list_zb_abnormal_name = ["通知答疑"]
     # 中标预告
-    list_win_advance_notice_name = ['中标公示', '中标前公示']
+    list_win_advance_notice_name = []
     # 中标公告
-    list_win_notice_category_name = ['成交结果公告', '中标结果']
+    list_win_notice_category_name = ['中标公示', '成交公示']
     # 招标异常
-    list_alteration_category_name = []
+    list_alteration_category_name = ['废标公告']
     # 资格预审
     list_qualifiction_advance_num = []
     # 其他
@@ -52,12 +52,12 @@ class MySpider(CrawlSpider):
     r_dict = {
         'col': '1',
         'appid': '1',
-        'webid': '2241',
+        'webid': '2210',
         'path': '/',
         'columnid': '1229429570',
         'sourceContentType': '1',
         'unitid': '6717153',
-        'webname': '淳安县政府门户网站',
+        'webname': '建德市政府',
         'permissiontype': '0'
     }
 
@@ -75,28 +75,26 @@ class MySpider(CrawlSpider):
 
     def parse_urls(self, response):
         try:
-            li_list = response.xpath('//div[@class="ewb-do-hd l"]/ul/li')
+            li_list = response.xpath('//td[@bgcolor="2496D4"]/a')[2:]
             for li in li_list:
-                li_url = self.domain_url + li.xpath('./a/@href').get()
-                category = li.xpath('./a/text()').get()
-                yield scrapy.Request(url=li_url, callback=self.parse_data_url,
+                li_url = self.domain_url + li.xpath('./@href').get()
+                category = li.xpath('./text()').get()
+                yield scrapy.Request(url=li_url, callback=self.parse_data_url, dont_filter=True,
                                      meta={'category': category}, priority=100)
         except Exception as e:
             self.logger.error(f"发起数据请求失败parse {e} {response.url=}")
 
     def parse_data_url(self, response):
         try:
-            li_list = response.xpath('//ul[@class="ewb-pan-items"]/li')
+            li_list = response.xpath('//td[@class="mtjj_mb3"]/div/ul/li')
             for li in li_list:
                 li_url = self.domain_url + li.xpath('./a/@href').get()
-                notice_name = li.xpath('./a/@title').get()
+                notice_name = li.xpath('./a/text()').get()
 
                 if notice_name in self.list_notice_category_name:       # 招标公告
                     notice = const.TYPE_ZB_NOTICE
-                elif notice_name in self.list_zb_abnormal_name:         # 变更公告
+                elif notice_name in self.list_zb_abnormal_name:         # 招标变更
                     notice = const.TYPE_ZB_ALTERATION
-                elif notice_name in self.list_win_advance_notice_name:  # 中标预告
-                    notice = const.TYPE_WIN_ADVANCE_NOTICE
                 elif notice_name in self.list_win_notice_category_name:  # 中标公告
                     notice = const.TYPE_WIN_NOTICE
                 elif notice_name in self.list_alteration_category_name:  # 招标异常
@@ -112,7 +110,7 @@ class MySpider(CrawlSpider):
 
     def parse_data(self, response):
         try:
-            unitid = response.xpath('//div[@class="ewb-colu-bd"]/div/@id').get()
+            unitid = response.xpath('//table[@width="759"]/tr[2]/td/div/@id').get()
             columnid = re.findall('(\d+)', response.url)[0]
             data_dict = self.r_dict | {'columnid': columnid} | {'unitid': unitid}
             yield scrapy.FormRequest(url=self.base_url.format(1, 121), callback=self.parse_data_info,
@@ -131,30 +129,29 @@ class MySpider(CrawlSpider):
                 num = 0
                 startrecord = 1
                 endrecord = 120
-                if jsonstr:
-                    for info in jsonstr:
-                        info_url = self.domain_url + ''.join(re.findall('<a .*? href=(.*?) .*?>', info)).replace("\'", '')
-                        pub_time = re.findall('<span .*?>(.*)</span>', info)[0]
-                        pub_time = get_accurate_pub_time(pub_time)
-                        x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
-                        if x:
-                            num += 1
-                            total = int(len(jsonstr))
-                            if total == None:
-                                return
-                            self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                            yield scrapy.Request(url=info_url, callback=self.parse_item,
+                for info in jsonstr:
+                    info_url = ''.join(re.findall('<a href=(.*?) .*?>', info)).replace('"', '')
+                    pub_time = '20' + re.findall('<td .* class="xxlb_xhx">(.*?)</td>', info)[0]
+                    pub_time = get_accurate_pub_time(pub_time)
+                    x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
+                    if x:
+                        num += 1
+                        total = int(len(jsonstr))
+                        if total == None:
+                            return
+                        self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                        yield scrapy.Request(url=info_url, callback=self.parse_item,
+                                             meta={'category': response.meta['category'],
+                                                   'notice': response.meta['notice'],
+                                                   'pub_time': pub_time})
+                    if num >= int(len(jsonstr)):
+                        startrecord += 120
+                        endrecord += 120
+                        yield scrapy.FormRequest(url=self.base_url.format(startrecord, endrecord),
+                                                 callback=self.parse_data_info,
+                                                 formdata=response.meta['data_dict'], dont_filter=True,
                                                  meta={'category': response.meta['category'],
-                                                       'notice': response.meta['notice'],
-                                                       'pub_time': pub_time})
-                        if num >= int(len(jsonstr)):
-                            startrecord += 120
-                            endrecord += 120
-                            yield scrapy.FormRequest(url=self.base_url.format(startrecord, endrecord),
-                                                     callback=self.parse_data_info,
-                                                     formdata=response.meta['data_dict'], dont_filter=True,
-                                                     meta={'category': response.meta['category'],
-                                                           'notice': response.meta['notice']})
+                                                       'notice': response.meta['notice']})
 
             else:
                 total = response.xpath('//datastore/totalrecord/text()').get()
@@ -181,14 +178,13 @@ class MySpider(CrawlSpider):
         try:
             xmlparse = xmltodict.parse(response.text)
             jsonstr = json.loads(json.dumps(xmlparse))['datastore']['recordset']['record']
-            if jsonstr:
-                for info in jsonstr:
-                    info_url = self.domain_url + ''.join(re.findall('<a .*? href=(.*?) .*?>', info)).replace("\'", '')
-                    pub_time = re.findall('<span .*?>(.*)</span>', info)[0]
-                    yield scrapy.Request(url=info_url, callback=self.parse_item,
-                                         meta={'category': response.meta['category'],
-                                               'notice': response.meta['notice'],
-                                               'pub_time': pub_time})
+            for info in jsonstr:
+                info_url = ''.join(re.findall('<a href=(.*?) .*?>', info)).replace('"', '')
+                pub_time = '20' + re.findall('<td .* class="xxlb_xhx">(.*?)</td>', info)[0]
+                yield scrapy.Request(url=info_url, callback=self.parse_item,
+                                     meta={'category': response.meta['category'],
+                                           'notice': response.meta['notice'],
+                                           'pub_time': pub_time})
         except Exception as e:
             self.logger.error(f"初始总页数提取错误parse_data_info {response.meta=} {e} {response.url=}")
 
@@ -197,7 +193,7 @@ class MySpider(CrawlSpider):
             origin = response.url
             category = response.meta['category']
             info_source = self.area_province
-            title_name = ''.join(response.xpath('//div[@class="ewb-article"]/h3/text()').get()).strip()
+            title_name = ''.join(response.xpath('//div[@id="ivs_title"]/text()').get()).strip()
             pub_time = response.meta['pub_time']
             pub_time = get_accurate_pub_time(pub_time)
             if '测试' not in title_name:
@@ -214,14 +210,14 @@ class MySpider(CrawlSpider):
                 else:
                     notice_type = response.meta['notice']
                 if notice_type:
-                    content = response.xpath('//div[@class="ewb-article"]').get()
-                    # 去除导航栏
-                    _, content = remove_specific_element(content, 'div', 'class', 'ewb-loca')
-                    # 去除 info_sources
-                    _, content = remove_specific_element(content, 'div', 'class', 'ewb-article-sources')
+                    content = response.xpath('//div[@class="col-md-20 top20 border-infodetail"]').get()
                     # 去除 title
-                    pattern = re.compile('(<h3>.*?</h3>)', re.S)
-                    content = content.replace(re.findall(pattern, content)[0], '')
+                    _, content = remove_specific_element(content, 'div', 'class', 'infotitle top10')
+                    # 去除 info_sources
+                    _, content = remove_specific_element(content, 'div', 'class', 'infosecond')
+                    # 去除 横线
+                    _, content = remove_specific_element(content, 'div', 'class', 'infoline')
+
 
                     files_path = {}
                     # _, files_path = catch_files(content, self.domain_url)
@@ -267,7 +263,7 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3332_chunan_spider".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3332_chunan_spider -a sdt=2021-05-01 -a edt=2021-07-01".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3334_jiande_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3334_jiande_spider -a sdt=2021-05-01 -a edt=2021-07-02".split(" "))
 
 
