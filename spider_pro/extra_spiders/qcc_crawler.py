@@ -620,7 +620,7 @@ class QccCrawlerSpider(scrapy.Spider):
     def parse_item(self, resp):   
         content = resp.text
         
-        _, content = QccCrawlerSpider.remove_specific_element(resp, 'span', 'class', 'headimg')
+        _, content = QccCrawlerSpider.remove_specific_element(content, 'span', 'class', 'headimg')
            
         c_doc = etree.HTML(content)
 
