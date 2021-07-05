@@ -46,7 +46,7 @@ class QccCrawlerSpider(scrapy.Spider):
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
     # start_url = 'https://www.qcc.com/industry_A'
-    basic_url = 'http://www.qcc.com'
+    basic_url = 'https://www.qcc.com'
     basic_info_re = '统一社会信用代码,(?P<统一社会信用代码>.*?),企业名称,(?P<企业名称>.*?),法定代表人,(?P<法定代表人>.*?),' \
                     '登记状态,(?P<登记状态>.*?),成立日期,(?P<成立日期>.*?),注册资本,(?P<注册资本>.*?),' + \
                     '实缴资本,(?P<实缴资本>.*?),核准日期,(?P<核准日期>.*?),组织机构代码,(?P<组织机构代码>.*?),' \
@@ -555,7 +555,7 @@ class QccCrawlerSpider(scrapy.Spider):
             error = 'ERROR: 缺少key_no.'
         return error, {k: v if v else '' for k, v in invoice_info_dict.items()}
 
-    def parse_item(self, resp):
+    def parse_item(self, resp):      
         c_doc = etree.HTML(resp.text)
 
         c_els = c_doc.xpath('//section[@id="cominfo"]//table//td')
