@@ -282,6 +282,68 @@ class QccCrawlerSpider(scrapy.Spider):
     ]
 
     @staticmethod
+    def remove_specific_element(content, ele_name, attr_name, attr_value, if_child=False, index=1, text='', **kwargs):
+        """
+        remove specific html element attribute from content
+        params:
+            @content: html文档
+            @ele_name: 元素名称
+            @attr_name: 元素属性名
+            @attr_value: 元素属性值
+            @index: 指定元素索引删除
+            @text: 指定包含文本的子节点删除
+            @kwargs: if_child 移除的是否子元素
+                    child_attr 子元素名称
+        """
+        msg = ''
+        try:
+            doc = etree.HTML(content)
+            els = doc.xpath('//{ele_name}'.format(**{
+                'ele_name': ele_name,
+            }))
+
+            if attr_name:
+                same = 1
+                for el in els:
+                    if attr_value in el.get(attr_name, ''):
+                        if if_child:
+                            child_attr = kwargs.get('child_attr')
+
+                            # if not text:
+                            child_els = el.xpath(
+                                './/{child_attr}'.format(**{'child_attr': child_attr}))
+
+                            if not text:
+                                for n, child_el in enumerate(child_els):
+                                    if n == index - 1:
+                                        child_el.getparent().remove(child_el)
+                                        break
+                            else:
+                                for child_el in child_els:
+                                    child_el_text = ','.join(
+                                        child_el.xpath('.//text()'))
+                                    if text in child_el_text:
+                                        child_el.getparent().remove(child_el)
+                                        break
+                        else:
+                            if index:
+                                if same == index:
+                                    el.getparent().remove(el)
+                                    break
+                                same += 1
+                            else:  # index = 0 删除所有匹配节点
+                                el.getparent().remove(el)
+                content = etree.tounicode(doc)
+            else:  # 无属性元素 指定索引删除
+                for n, el in enumerate(els):
+                    if n + 1 == index:
+                        el.getparent().remove(el)
+        except Exception as e:
+            msg = e
+
+        return msg, content.replace('<html><body>', '').replace('</body></html>', '')
+
+    @staticmethod
     def get_headers(resp):
         default_headers = resp.request.headers
         headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
@@ -555,8 +617,12 @@ class QccCrawlerSpider(scrapy.Spider):
             error = 'ERROR: 缺少key_no.'
         return error, {k: v if v else '' for k, v in invoice_info_dict.items()}
 
-    def parse_item(self, resp):      
-        c_doc = etree.HTML(resp.text)
+    def parse_item(self, resp):   
+        content = resp.text
+        
+        _, content = QccCrawlerSpider.remove_specific_element(resp, 'span', 'class', 'headimg')
+           
+        c_doc = etree.HTML(content)
 
         c_els = c_doc.xpath('//section[@id="cominfo"]//table//td')
         t = []
