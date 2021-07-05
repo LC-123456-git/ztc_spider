@@ -253,34 +253,67 @@ def add_to_16(s):
         s += (16 - len(s) % 16) * chr(16 - len(s) % 16)
     return str.encode(s)  # 返回bytes
 
-def get_files(domain_url, content):
+def get_files(domain_url, origin, files_text, keys_list=None):
     files_path = {}
-    value_suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##']
-    key_suffix_list = ['pdf', 'doc', 'docx', 'xlsx', 'png', 'jpg', 'jepg', 'xls', 'zip', 'rar', 'word']
-    files_text = etree.HTML(content)
+    key_name = 'pdf/img/doc'
+    suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##', 'cn:8080/', 'htm']
+    keys_list = keys_list
     if files_text.xpath('//a/@href'):
         files_list = files_text.xpath('//a')
         for cont in files_list:
             if cont.xpath('./@href'):
                 values = cont.xpath('./@href')[0]
-                if ''.join(values).split('.')[-1] not in value_suffix_list:
-                    if 'http:' not in values:
-                        value = domain_url + values
+                if ''.join(values).split('.')[-1] not in suffix_list:
+                    if 'http' not in values:
+                        value = domain_url + ''.join(values).replace('./', origin[:origin.rindex('/') + 1])
                     else:
                         value = values
-                    if cont.xpath('.//text()'):
-                        keys = ''.join(cont.xpath('.//text()')).strip()
-                        if '.' in values:
-                            if ''.join(values).split('.')[-1] not in keys:
-                                if ''.join(values).split('.')[-1] not in key_suffix_list:
-                                    key = keys + '.' + ''.join(values).split('.')[-1]
+                    if cont.xpath('./text()'):
+                        keys = ''.join(cont.xpath('./text()')[0]).strip()
+                        if '.' in keys:
+                            suffix_keys = keys[keys.rindex('.') + 1:]
+                            if suffix_keys not in keys_list:
+                                if ''.join(values).split('.')[-1] not in keys:
+                                    key = keys + '.' + ''.join(values).split('.')[-1].split('&')[0]
                                 else:
                                     key = keys
-                                files_path[key] = value
+                            else:
+                                key = keys
+                        elif ''.join(values).split('.')[-1] in keys_list:
+                            key = ''.join(values).split('.')[-1]
                         else:
-                            key = keys
+                            key = ''
+                        if key:
                             files_path[key] = value
+    if files_text.xpath('//img/@src'):
+        files_list = files_text.xpath('//img')
+        for con in files_list:
+            values = con.xpath('./@src')[0]
+            if 'http:' not in values:
+                value = domain_url + values
+            else:
+                value = values
+            if value[value.rindex('.') + 1:] in keys_list:
+                key = key_name + value[value.rindex('.'):]
+            else:
+                key = key_name + '.jpg'
+            files_path[key] = value
     return files_path
+
+def get_notice_type(title_name, notice):
+    if re.search(r'变更|更正|澄清|补充|取消|延期', title_name):         # 招标变更
+        notice_type = const.TYPE_ZB_ALTERATION
+    elif re.search(r'终止|中止|废标|流标', title_name):                # 招标异常
+        notice_type = const.TYPE_ZB_ABNORMAL
+    elif re.search(r'候选人', title_name):                             # 中标预告
+        notice_type = const.TYPE_WIN_ADVANCE_NOTICE
+    elif re.search(r'采购意向|需求公示', title_name):                   # 招标预告
+        notice_type = const.TYPE_ZB_ADVANCE_NOTICE
+    elif re.search(r'单一来源|询价|竞争性谈判|竞争性磋商', title_name):  # 招标公告
+        notice_type = const.TYPE_ZB_NOTICE
+    else:
+        notice_type = notice
+    return notice_type
 
 def get_secret_url(text, key='qnbyzzwmdgghmcnm'):
     aes = AES.new(str.encode(key), AES.MODE_ECB)
