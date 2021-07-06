@@ -16,7 +16,7 @@ import datetime
 
 import xmltodict
 from lxml import etree
-from spider_pro.utils import get_real_url
+from spider_pro.utils import get_real_url, get_files, get_notice_type
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from spider_pro.items import NoticesItem, FileItem
@@ -79,8 +79,6 @@ class MySpider(CrawlSpider):
             self.enable_incr = False
 
     def start_requests(self):
-        # url = 'http://www.fuyang.gov.cn/art/2019/1/10/art_1229429570_59081844.html'
-        # yield scrapy.Request(url=url, callback=self.parse_item)
         yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
 
     def parse_urls(self, response):
@@ -210,18 +208,7 @@ class MySpider(CrawlSpider):
             pub_time = response.meta['pub_time']
             pub_time = get_accurate_pub_time(pub_time)
             if '测试' not in title_name:
-                if re.search(r'变更|更正|澄清|补充|取消|延期', title_name):        # 招标变更
-                    notice_type = const.TYPE_ZB_ALTERATION
-                elif re.search(r'终止|中止|废标|流标', title_name):                # 招标异常
-                    notice_type = const.TYPE_ZB_ABNORMAL
-                elif re.search(r'候选人', title_name):                            # 中标预告
-                    notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-                elif re.search(r'采购意向|需求公示', title_name):                   # 招标预告
-                    notice_type = const.TYPE_ZB_ADVANCE_NOTICE
-                elif re.search(r'单一来源|询价|竞争性谈判|竞争性磋商', title_name):   # 招标公告
-                    notice_type = const.TYPE_ZB_NOTICE
-                else:
-                    notice_type = response.meta['notice']
+                notice_type = get_notice_type(title_name, response.meta['notice'])
                 if notice_type:
                     # 去除 content里面多余的html body标签
                     content = ''.join(response.text).replace('</html>', '').replace('</body>', '')
@@ -233,30 +220,11 @@ class MySpider(CrawlSpider):
                     _, content = remove_specific_element(content, 'div', 'class', 'AfficheTitle')
                     # 去除 尾部 字样
                     _, content = remove_specific_element(content, 'div', 'class', 'PDFViewArea')
-
-
-                    files_path = {}
-                    suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##', 'cn:8080/']
-                    keys_list = ['前往报名']
                     files_text = etree.HTML(content)
-                    if files_text.xpath('//a/@href'):
-                        files_list = files_text.xpath('//a')
-                        for cont in files_list:
-                            if cont.xpath('./@href'):
-                                values = cont.xpath('./@href')[0]
-                                if ''.join(values).split('.')[-1] not in suffix_list:
-                                    if 'http:' not in values:
-                                        value = ''.join(values).replace('./', response.url[:response.url.rindex('/') + 1])
-                                    else:
-                                        value = values
-                                    if cont.xpath('./text()'):
-                                        key = ''.join(cont.xpath('./text()')[0]).strip()
-                                        if key not in keys_list:
-                                        # if ''.join(values).split('.')[-1] in keys:
-                                        #     key = keys + '.' + ''.join(values).split('.')[-1]
-                                        # else:
-                                        #     key = keys
-                                            files_path[key] = value
+                    keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
+                                 'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
+                                 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX']
+                    files_path = get_files(self.domain_url, origin, files_text, keys_list=keys_list)
 
                     notice_item = NoticesItem()
                     notice_item["origin"] = origin
@@ -278,6 +246,6 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
     cmdline.execute("scrapy crawl ZJ_city_3331_fuyang_spider".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3331_fuyang_spider -a sdt=2021-05-01 -a edt=2021-07-01".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3331_fuyang_spider -a sdt=2021-05-01 -a edt=2021-07-06".split(" "))
 
 
