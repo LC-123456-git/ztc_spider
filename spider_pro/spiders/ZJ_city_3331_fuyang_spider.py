@@ -221,10 +221,8 @@ class MySpider(CrawlSpider):
                     # 去除 尾部 字样
                     _, content = remove_specific_element(content, 'div', 'class', 'PDFViewArea')
                     files_text = etree.HTML(content)
-                    keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
-                                 'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
-                                 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX']
-                    files_path = get_files(self.domain_url, origin, files_text, keys_list=keys_list)
+                    keys_a = []
+                    files_path = get_files(self.domain_url, origin, files_text, keys_a=keys_a)
 
                     notice_item = NoticesItem()
                     notice_item["origin"] = origin
@@ -239,7 +237,7 @@ class MySpider(CrawlSpider):
                     notice_item["category"] = category
 
                     yield notice_item
-                    # print(notice_item)
+
 
 
 

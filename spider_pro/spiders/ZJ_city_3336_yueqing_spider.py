@@ -57,9 +57,9 @@ class MySpider(CrawlSpider):
             self.enable_incr = False
 
     def start_requests(self):
-        # url = 'http://ggzy.yueqing.gov.cn/yqwebnew/InfoDetail/?InfoID=9087a294-cc9b-4979-9e44-152904c4a21e&categoryNum=001009001'
-        # yield scrapy.Request(url=url, callback=self.parse_item)
-        yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
+        url = 'http://ggzy.yueqing.gov.cn/yqwebnew/InfoDetail/?InfoID=9087a294-cc9b-4979-9e44-152904c4a21e&categoryNum=001009001'
+        yield scrapy.Request(url=url, callback=self.parse_item)
+        # yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
 
     def parse_urls(self, response):
         try:
@@ -85,7 +85,7 @@ class MySpider(CrawlSpider):
                     else:
                         notice = ''
                     if notice:
-                        li_url = self.base_url + CategoryNum + '&Eptr3=&Paging=1'
+                        li_url = self.base_url + 'CategoryNum=' + CategoryNum + '&Eptr3=&Paging=1'
                         yield scrapy.Request(url=li_url, callback=self.parse_data_info,
                                              meta={'category': category,
                                                    'notice': notice}, priority=100)
@@ -135,11 +135,11 @@ class MySpider(CrawlSpider):
 
     def parse_data_check(self, response):
         try:
-            li_list = response.xpath('//div[@class="List-Li FloatL"]/ul/li')
+            li_list = response.xpath('//table[@id="DDLInfo"]/tr/td/li')
             for info in li_list:
                 info_url = ''.join(info.xpath('./div/a/@href').get()).replace('..', self.domain_url)
                 pub_time = ''.join(info.xpath('./span/text()').get()).strip()
-                yield scrapy.Request(url=info_url, callback=self.parse_item,
+                yield scrapy.Request(url=info_url, callback=self.parse_item, priority=200,
                                      meta={'category': response.meta['category'],
                                            'notice': response.meta['notice'],
                                            'pub_time': pub_time})
@@ -148,15 +148,15 @@ class MySpider(CrawlSpider):
 
     def parse_item(self, response):
         if response.status == 200:
-            origin = response.url
-            category = response.meta['category']
-            info_source = self.area_province
-            title_name = ''.join(response.xpath('//div[@class="article-block"]/h2/text()').extract()).replace('[', '').replace(']', '')
-            pub_time = response.meta['pub_time']
-            pub_time = get_accurate_pub_time(pub_time)
-            if '测试' not in title_name:
-                notice_type = get_notice_type(title_name, response.meta['notice'])
-                if notice_type:
+            # origin = response.url
+            # category = response.meta['category']
+            # info_source = self.area_province
+            # title_name = ''.join(response.xpath('//div[@class="article-block"]/h2/text()').extract()).replace('[', '').replace(']', '')
+            # pub_time = response.meta['pub_time']
+            # pub_time = get_accurate_pub_time(pub_time)
+            # if '测试' not in title_name:
+            #     notice_type = get_notice_type(title_name, response.meta['notice'])
+            #     if notice_type:
                     content = response.xpath('//div[@class="article-block"]').get()
                     # 去除 title
                     _, content = remove_specific_element(content, 'h2', 'class', 'article-title')
@@ -171,11 +171,9 @@ class MySpider(CrawlSpider):
                     # pattern = re.compile('(<table>.*</table>)', re.S)
                     # content = content.replace(re.findall(pattern, content)[0], '')
                     files_text = etree.HTML(content)
+                    keys_a = []
                     origin = response.url
-                    keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
-                                 'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
-                                 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX']
-                    files_path = get_files(self.domain_url, origin, files_text, keys_list=keys_list)
+                    files_path = get_files(self.domain_url, origin, files_text, keys_a=keys_a)
 
                     notice_item = NoticesItem()
                     notice_item["origin"] = origin

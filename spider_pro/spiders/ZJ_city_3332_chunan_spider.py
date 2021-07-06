@@ -214,10 +214,8 @@ class MySpider(CrawlSpider):
 
                     # _, files_path = catch_files(content, self.domain_url)
                     files_text = etree.HTML(content)
-                    keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
-                                 'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
-                                 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX']
-                    files_path = get_files(self.domain_url, origin, files_text, keys_list=keys_list)
+                    keys_a = []
+                    files_path = get_files(self.domain_url, origin, files_text, keys_a=keys_a)
 
 
                     notice_item = NoticesItem()
