@@ -37,12 +37,12 @@ class QccCrawlerSpider(scrapy.Spider):
             # 'spider_pro.middlewares.RefererMiddleware.RefererMiddleware': 400,
         },
         'DOWNLOAD_DELAY': 2,
-        'CONCURREN_REQUESTS': 8,
-        'CONCURRENT_RTEQUESTS_PER_IP': 8,
+        'CONCURREN_REQUESTS': 1,
+        'CONCURRENT_RTEQUESTS_PER_IP': 1,
         "ENABLE_PROXY_USE": True,
         # "ENABLE_PROXY_USE": False,
         "COOKIES_ENABLED": False,  # 禁用cookie 避免cookie反扒
-        'RETRY_TIMES': 5,
+        'RETRY_TIMES': 1,
     }
     query_url = 'https://www.qcc.com/gongsi_industry?industryCode={industryCode}&subIndustryCode={subIndustryCode}&p={page}'
     # start_url = 'https://www.qcc.com/industry_A'
@@ -521,8 +521,8 @@ class QccCrawlerSpider(scrapy.Spider):
             self.logger.info('error:{e}'.format(e=e))
         else:
             # for page in range(1, 2):
-            if max_page > 10:  # 只抓10 页
-                max_page = 10
+            if max_page > 5:  # 只抓10 页
+                max_page = 5
 
             for page in range(1, max_page + 1):
                 list_url = self.query_url.format(**{
@@ -556,6 +556,7 @@ class QccCrawlerSpider(scrapy.Spider):
                 'industry_category_name': resp.meta.get('industry_category_name', ''),
 
                 'tag': resp.meta.get('tag', ''),
+                'pre_priority': len(detail_urls) - n,
             }, priority=len(detail_urls) - n)
 
     @classmethod
@@ -617,11 +618,37 @@ class QccCrawlerSpider(scrapy.Spider):
             error = 'ERROR: 缺少key_no.'
         return error, {k: v if v else '' for k, v in invoice_info_dict.items()}
 
-    def parse_item(self, resp):   
+    def get_basic_info_url(self, resp):
+        """
+        获取基础信息的链接
+        :param resp:
+        :return:
+        """
+        nav_heads = resp.xpath('//div[@class="nav-head"]/a')
+        for nav_head in nav_heads:
+            try:
+                nav_head_txt = nav_head.xpath('./h2/text()').get().strip()
+                nax_head_url = nav_head.xpath('./@href').get()
+                nax_head_url = ''.join([self.basic_url, nax_head_url])
+                if nav_head_txt == '基本信息':
+                    yield scrapy.Request(url=nax_head_url, callback=self.parse_item, meta={
+                        'category': resp.meta.get('category', ''),
+                        'industry_category': resp.meta.get('industry_category', ''),
+
+                        'category_name': resp.meta.get('category_name', ''),
+                        'industry_category_name': resp.meta.get('industry_category_name', ''),
+
+                        'tag': resp.meta.get('tag', ''),
+                    }, priority=resp.meta.get('pre_priority', 0) + 1)
+                    break
+            except Exception as e:
+                self.logger.info('error:{0}'.format(e))
+
+    def parse_item(self, resp):
         content = resp.text
-        
+
         _, content = QccCrawlerSpider.remove_specific_element(content, 'span', 'class', 'headimg')
-           
+
         c_doc = etree.HTML(content)
 
         c_els = c_doc.xpath('//section[@id="cominfo"]//table//td')
