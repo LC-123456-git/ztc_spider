@@ -193,11 +193,11 @@
 - [x] 3332 淳安县公共资源交易中心  http://www.qdh.gov.cn/
 - [] 3333 浙江交通运输厅  http://jtyst.zj.gov.cn/
 
-- [] 3334 建德市公共资源交易中心  http://www.jiande.gov.cn/
-- [] 3335 温州市鹿城区公共资源交易中心 http://spgg.lucheng.gov.cn/
-- [] 3336 温州市乐清市公共资源交易中心 http://ggzy.yueqing.gov.cn/
+- [x] 3334 建德市公共资源交易中心  http://www.jiande.gov.cn/
+- [x] 3335 温州市鹿城区公共资源交易中心 http://spgg.lucheng.gov.cn/
+- [x] 3336 温州市乐清市公共资源交易中心 http://ggzy.yueqing.gov.cn/
 - [] 3337 温州市瑞安市公共资源交易中心 http://ggzy.ruian.gov.cn/
-- [] 3338 温州市永嘉县公共资源交易中心 http://ggzy.yj.gov.cn/
+- [x] 3338 温州市永嘉县公共资源交易中心 http://ggzy.yj.gov.cn/
 - [] 3339 温州市洞头区公共资源交易中心 http://www.dongtou.gov.cn/
 - [] 3340 温州市文成县公共资源交易中心 http://ggjy.wencheng.gov.cn/
 - [] 3341 温州市泰顺县公共资源交易中心 http://www.ts.gov.cn/

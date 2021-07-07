@@ -57,9 +57,7 @@ class MySpider(CrawlSpider):
             self.enable_incr = False
 
     def start_requests(self):
-        url = 'http://ggzy.yueqing.gov.cn/yqwebnew/InfoDetail/?InfoID=9087a294-cc9b-4979-9e44-152904c4a21e&categoryNum=001009001'
-        yield scrapy.Request(url=url, callback=self.parse_item)
-        # yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
+        yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
 
     def parse_urls(self, response):
         try:
@@ -148,15 +146,15 @@ class MySpider(CrawlSpider):
 
     def parse_item(self, response):
         if response.status == 200:
-            # origin = response.url
-            # category = response.meta['category']
-            # info_source = self.area_province
-            # title_name = ''.join(response.xpath('//div[@class="article-block"]/h2/text()').extract()).replace('[', '').replace(']', '')
-            # pub_time = response.meta['pub_time']
-            # pub_time = get_accurate_pub_time(pub_time)
-            # if '测试' not in title_name:
-            #     notice_type = get_notice_type(title_name, response.meta['notice'])
-            #     if notice_type:
+            origin = response.url
+            category = response.meta['category']
+            info_source = self.area_province
+            title_name = ''.join(response.xpath('//div[@class="article-block"]/h2/text()').extract()).replace('[', '').replace(']', '')
+            pub_time = response.meta['pub_time']
+            pub_time = get_accurate_pub_time(pub_time)
+            if '测试' not in title_name:
+                notice_type = get_notice_type(title_name, response.meta['notice'])
+                if notice_type:
                     content = response.xpath('//div[@class="article-block"]').get()
                     # 去除 title
                     _, content = remove_specific_element(content, 'h2', 'class', 'article-title')
@@ -172,7 +170,6 @@ class MySpider(CrawlSpider):
                     # content = content.replace(re.findall(pattern, content)[0], '')
                     files_text = etree.HTML(content)
                     keys_a = []
-                    origin = response.url
                     files_path = get_files(self.domain_url, origin, files_text, keys_a=keys_a)
 
                     notice_item = NoticesItem()

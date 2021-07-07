@@ -273,21 +273,42 @@ def get_files(domain_url, origin, files_text, keys_a=None):
                         value = values
                     if cont.xpath('./text()'):
                         keys = ''.join(cont.xpath('./text()')[0]).strip()
-                        if '.' in keys:
-                            suffix_keys = keys[keys.rindex('.') + 1:]
-                            if suffix_keys not in keys_list:
-                                if ''.join(values).split('.')[-1] not in keys:
-                                    key = keys + '.' + ''.join(values).split('.')[-1].split('&')[0]
+                        # 先判断 value 有没有 后缀
+                        if value[value.rindex('.') + 1:] in keys_list:          # value 的后缀在 列表中
+                            if '.' in keys:    # 在判断 keys 有后缀 点
+                                suffix_keys = keys[keys.rindex('.') + 1:]
+                                if suffix_keys not in keys_list:      # 判断 keys后缀在不在 列表中
+                                    key = keys + value[value.rindex('.'):]
                                 else:
                                     key = keys
                             else:
-                                key = keys
-                        elif ''.join(values).split('.')[-1] in keys_list:
-                            key = ''.join(values).split('.')[-1]
-                        else:
-                            key = ''
-                        if key:
+                                key = keys + value[value.rindex('.'):]
                             files_path[key] = value
+                        else:          # value 的后缀不在 列表中
+                            if '.' in keys:    # 在判断 keys 有后缀 点
+                                suffix_keys = keys[keys.rindex('.') + 1:]
+                                if suffix_keys in keys_list:  # 判断 keys后缀在不在 列表中
+                                    key = keys
+                                else:
+                                    key = ''
+                                if key:
+                                    files_path[key] = value
+
+                        # if '.' in keys:
+                        #     suffix_keys = keys[keys.rindex('.') + 1:]
+                        #     if suffix_keys not in keys_list:
+                        #         if ''.join(values).split('.')[-1] not in keys:
+                        #             key = keys + '.' + ''.join(values).split('.')[-1].split('&')[0]
+                        #         else:
+                        #             key = keys
+                        #     else:
+                        #         key = keys
+                        # elif ''.join(values).split('.')[-1] in keys_list:
+                        #     key = keys + '.' + ''.join(values).split('.')[-1]
+                        # else:
+                        #     key = ''
+                        # if key:
+                        #     files_path[key] = value
     if files_text.xpath('//img/@src'):
         files_list = files_text.xpath('//img')
         for con in files_list:
@@ -314,6 +335,8 @@ def get_notice_type(title_name, notice):
         notice_type = const.TYPE_ZB_ADVANCE_NOTICE
     elif re.search(r'单一来源|询价|竞争性谈判|竞争性磋商', title_name):  # 招标公告
         notice_type = const.TYPE_ZB_NOTICE
+    elif re.search(r'预审', title_name):                               # 资格预审公告
+        notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
     else:
         notice_type = notice
     return notice_type

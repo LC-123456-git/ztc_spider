@@ -40,9 +40,9 @@ class MySpider(CrawlSpider):
     # 招标变更
     list_zb_abnormal_name = ["通知答疑"]
     # 中标预告
-    list_win_advance_notice_name = []
+    list_win_advance_notice_name = ['中标公示']
     # 中标公告
-    list_win_notice_category_name = ['中标公示', '成交公示']
+    list_win_notice_category_name = ['成交公示']
     # 招标异常
     list_alteration_category_name = ['废标公告']
     # 资格预审
@@ -99,6 +99,8 @@ class MySpider(CrawlSpider):
                     notice = const.TYPE_WIN_NOTICE
                 elif notice_name in self.list_alteration_category_name:  # 招标异常
                     notice = const.TYPE_ZB_ABNORMAL
+                elif notice_name in self.list_win_advance_notice_name:   # 中标预告
+                    notice = const.TYPE_WIN_ADVANCE_NOTICE
                 else:
                     notice = ''
                 if notice:
@@ -140,6 +142,10 @@ class MySpider(CrawlSpider):
                         if total == None:
                             return
                         self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                        if 'http' in info_url:
+                            info_url = info_url
+                        else:
+                            info_url = self.domain_url + info_url
                         yield scrapy.Request(url=info_url, callback=self.parse_item,
                                              meta={'category': response.meta['category'],
                                                    'notice': response.meta['notice'],
@@ -231,6 +237,6 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
     # cmdline.execute("scrapy crawl ZJ_city_3334_jiande_spider".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3334_jiande_spider -a sdt=2021-05-01 -a edt=2021-07-02".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3334_jiande_spider -a sdt=2021-05-01 -a edt=2021-07-07".split(" "))
 
 
