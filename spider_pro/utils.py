@@ -52,7 +52,7 @@ def remove_element_contained(content, ele_name, attr_name, attr_value, specific_
     return msg, content.replace('<html><body>', '').replace('</body></html>', '')
 
 
-def remove_specific_element(content, ele_name, attr_name, attr_value, if_child=False, index=1, text='', **kwargs):
+def remove_specific_element(content, ele_name, attr_name=None, attr_value=None, if_child=False, index=1, text='', **kwargs):
     """
     remove specific html element attribute from content
     params:
@@ -101,11 +101,13 @@ def remove_specific_element(content, ele_name, attr_name, attr_value, if_child=F
                             same += 1
                         else:  # 删除所有匹配节点
                             el.getparent().remove(el)
-            content = etree.tounicode(doc, method='html')
+
         else:  # 无属性元素 指定索引删除
             for n, el in enumerate(els):
                 if n + 1 == index:
                     el.getparent().remove(el)
+        content = etree.tounicode(doc, method='html')
+
     except Exception as e:
         msg = e
 
@@ -259,7 +261,7 @@ def get_files(domain_url, origin, files_text, keys_a=None):
     suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##', 'cn:8080/', 'htm']
     keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
                  'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
-                 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX']
+                 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX', 'bmp']
     [keys_list.append(k_a) for k_a in keys_a]
     if files_text.xpath('//a/@href'):
         files_list = files_text.xpath('//a')
@@ -271,8 +273,8 @@ def get_files(domain_url, origin, files_text, keys_a=None):
                         value = domain_url + ''.join(values).replace('./', origin[:origin.rindex('/') + 1])
                     else:
                         value = values
-                    if cont.xpath('./text()'):
-                        keys = ''.join(cont.xpath('./text()')[0]).strip()
+                    if cont.xpath('.//text()'):
+                        keys = ''.join(cont.xpath('.//text()')[0]).strip()
                         # 先判断 value 有没有 后缀
                         if value[value.rindex('.') + 1:] in keys_list:          # value 的后缀在 列表中
                             if '.' in keys:    # 在判断 keys 有后缀 点
@@ -293,22 +295,6 @@ def get_files(domain_url, origin, files_text, keys_a=None):
                                     key = ''
                                 if key:
                                     files_path[key] = value
-
-                        # if '.' in keys:
-                        #     suffix_keys = keys[keys.rindex('.') + 1:]
-                        #     if suffix_keys not in keys_list:
-                        #         if ''.join(values).split('.')[-1] not in keys:
-                        #             key = keys + '.' + ''.join(values).split('.')[-1].split('&')[0]
-                        #         else:
-                        #             key = keys
-                        #     else:
-                        #         key = keys
-                        # elif ''.join(values).split('.')[-1] in keys_list:
-                        #     key = keys + '.' + ''.join(values).split('.')[-1]
-                        # else:
-                        #     key = ''
-                        # if key:
-                        #     files_path[key] = value
     if files_text.xpath('//img/@src'):
         files_list = files_text.xpath('//img')
         for con in files_list:
