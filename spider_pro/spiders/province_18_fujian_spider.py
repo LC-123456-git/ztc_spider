@@ -16,9 +16,9 @@ from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, 
 class MySpider(CrawlSpider):
     name = 'province_18_fujian_spider'
     area_id = "18"
-    domain_url = "http://www.fjggzyjy.cn"
-    query_url = "http://fjggzyjy.cn/queryContent_{}-jygk.jspx?title=&origin=&channelId={}&ext="
-    basr_url = 'http://fjggzyjy.cn/queryContent_1-jygk.jspx?title=&origin=&channelId={}&ext='
+    domain_url = "https://www.fjggzyjy.cn"
+    query_url = "https://fjggzyjy.cn/queryContent_{}-jygk.jspx?title=&origin=&channelId={}&ext="
+    basr_url = 'https://fjggzyjy.cn/queryContent_1-jygk.jspx?title=&origin=&channelId={}&ext='
     allowed_domains = ['fjggzyjy.cn']
     area_province = '福建'
 
