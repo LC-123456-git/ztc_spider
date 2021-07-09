@@ -5,31 +5,20 @@
 # @Describe: 福建公共资源交易平台 - 全量/增量脚本
 #
 import re
-import math
-import json
 import scrapy
-import random
-import urllib
-import datetime
-from urllib import parse
-
-
-from spider_pro.utils import get_real_url
-from scrapy.spiders import CrawlSpider, Rule
-from scrapy.linkextractors import LinkExtractor
-from spider_pro.items import NoticesItem, FileItem
+from lxml import etree
+from scrapy.spiders import CrawlSpider
+from spider_pro.items import NoticesItem
 from spider_pro import constans as const
-from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, get_iframe_pdf_div_code
-
-
-
+from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, get_iframe_pdf_div_code, \
+                             get_real_url, get_files
 
 class MySpider(CrawlSpider):
     name = 'province_18_fujian_spider'
     area_id = "18"
     domain_url = "http://www.fjggzyjy.cn"
     query_url = "http://fjggzyjy.cn/queryContent_{}-jygk.jspx?title=&origin=&channelId={}&ext="
-    basr_url = 'http://fjggzyjy.cn/queryContent-jygk.jspx?title=&origin=&channelId={}&ext='
+    basr_url = 'http://fjggzyjy.cn/queryContent_1-jygk.jspx?title=&origin=&channelId={}&ext='
     allowed_domains = ['fjggzyjy.cn']
     area_province = '福建'
 
@@ -74,14 +63,15 @@ class MySpider(CrawlSpider):
             else:
                 notice = ''
             if notice:
-                yield scrapy.Request(url=self.basr_url.format(code), callback=self.parse_urls,
-                                     meta={"notice": notice, 'code': code})
+                info_url = self.basr_url.format(code)
+                yield scrapy.Request(url=info_url, callback=self.parse_urls,
+                                     meta={"notice": notice})
 
     def parse_urls(self, response):
         try:
             category_name = (response.xpath('//ul[@id="sx_nav"]/li[@class="on"]/text()').get()).strip()
+            code = re.findall('.*=(\d+)', response.url[:response.url.rindex('&')])[0]
             if self.enable_incr:
-                page = 1
                 li_list = response.xpath('//ul[@class="list-body"]/li')
                 nums = 0
                 for li in range(len(li_list)):
@@ -92,19 +82,20 @@ class MySpider(CrawlSpider):
                     x, y, z = judge_dst_time_in_interval(put_time, self.sdt_time, self.edt_time)
                     if x:
                         nums += 1
-                        total = int(len(li_list))
-                        if total == None:
-                            return
-                        self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
                         yield scrapy.Request(url=li_url, callback=self.parse_item,
                                              meta={"category": category_name,
                                                    'title_name': title_name,
                                                    'put_time': put_time,
                                                    'notice': response.meta['notice']})
                     if nums >= len(li_list):
-                        page += 1
-                        data_url = self.query_url.format(page, response.meta['code'])
-                        yield scrapy.Request(url=data_url, callback=self.parse_data_urls, dont_filter=True,
+                        page_num = int(re.findall('\w+_(\d+)-\w+', response.url[response.url.rindex('/') + 1:])[0])
+                        page_num += 1
+                        total = int(len(li_list))
+                        if total == None:
+                            return
+                        self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                        data_url = self.query_url.format(page_num, code)
+                        yield scrapy.Request(url=data_url, callback=self.parse_urls, dont_filter=True,
                                              meta={"notice": response.meta['notice'],
                                                    'category': category_name})
 
@@ -112,7 +103,6 @@ class MySpider(CrawlSpider):
                 pages = response.xpath('//ul[@class="pages-list"]/li[@class="select_page"]/select/option[last()]/text()').get()
                 self.logger.info(f"本次获取总条数为：{int(pages) * 10}")
                 for num in range(1, int(pages) + 1):
-                    code = response.meta['code']
                     data_urls = self.query_url.format(num, code)
                     yield scrapy.Request(url=data_urls, callback=self.parse_data_urls, priority=100,
                                          meta={"notice": response.meta['notice'],
@@ -123,12 +113,12 @@ class MySpider(CrawlSpider):
 
     def parse_data_urls(self, response):
         try:
-            li_list = response.xpath('//ul[@class="list-body"]/li/p[2]')
+            li_list = response.xpath('//ul[@class="list-body"]/li')
             for li in li_list:
                 li_url = li.xpath('./p[1]/a/@href').get()
                 put_time = li.xpath('./p[2]/text()').get()
                 title_name = ''.join(li.xpath('./p[1]/a/text()').extract()).strip()
-                yield scrapy.Request(url=li_url, callback=self.parse_item,priority=150,
+                yield scrapy.Request(url=li_url, callback=self.parse_item, priority=150,
                                      meta={"category": response.meta['category'],
                                            'title_name': title_name,
                                            'put_time': put_time,
@@ -155,12 +145,13 @@ class MySpider(CrawlSpider):
 
             patterns = re.compile(r'<div class="other".*?>(.*?)</div>', re.S)
             contents = content_text.replace(re.findall(patterns, content_text)[0], '')
+            files_text = etree.HTML(content)
+            files_path = get_files(self.domain_url, origin, files_text)
             if re.search(r'终止|中止|异常|废标|流标', title_name):
                 notice_type = const.TYPE_ZB_ABNORMAL
             else:
                 notice_type = response.meta['notice']
 
-            files_path = {}
             notice_item = NoticesItem()
             notice_item["origin"] = origin
             notice_item["title_name"] = title_name
@@ -178,7 +169,7 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_18_fujian_spider".split(" "))
-    # cmdline.execute("scrapy crawl province_18_fujian_spider -a sdt=2021-02-01 -a edt=2021-06-11".split(" "))
+    # cmdline.execute("scrapy crawl province_18_fujian_spider".split(" "))
+    cmdline.execute("scrapy crawl province_18_fujian_spider -a sdt=2021-04-01 -a edt=2021-07-11".split(" "))
 
 
