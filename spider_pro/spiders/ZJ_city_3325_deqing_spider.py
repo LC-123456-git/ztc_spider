@@ -26,7 +26,7 @@ class ZjCity3325DeqingSpiderSpider(scrapy.Spider):
     basic_area = '浙江省-湖州市-德清县-德清县公共资源交易平台'
     area_id = 3325
     keywords_map = {
-        '变更|答疑|澄清|补充|延期': '招标变更',
+        '变更|答疑|澄清|补充|延期|更正': '招标变更',
         '废标|流标': '招标异常',
         '候选人|预成交': '中标预告',
         '中标|成交': '中标公告',
@@ -35,60 +35,60 @@ class ZjCity3325DeqingSpiderSpider(scrapy.Spider):
     url_map = {
         '招标公告': [
             {'category': '工程交易', 'url': 'http://116.62.168.209/zbgg/index.htm'},
-            {'category': '政府采购', 'url': 'http://116.62.168.209/cggg/index.htm'},
-            {'category': '政府采购', 'url': 'http://116.62.168.209/zfcgzxuj/index.htm'},
-            {'category': '土地交易', 'url': 'http://116.62.168.209/churgg/index.htm'},
-            {'category': '产权交易', 'url': 'http://116.62.168.209/chuanrgg/index.htm'},
-            {'category': '农村集体产权', 'url': 'http://116.62.168.209/nczrgg/index.htm'},
-            {'category': '用能指标总量交易', 'url': 'http://116.62.168.209/ynjygg/index.htm'},
-            {'category': '排污权交易', 'url': 'http://116.62.168.209/pwjygg/index.htm'},
-            {'category': '工程建设交易', 'url': 'http://116.62.168.209/gxqzbgg/index.htm'},
-            {'category': '非政府采购项目', 'url': 'http://116.62.168.209/fzfcgzbgg/index.htm'},
-            {'category': '部门限额以下', 'url': 'http://116.62.168.209/bmzzgg/index.htm'},
-            {'category': '集体产权', 'url': 'http://116.62.168.209/sqjyjygg/index.htm'},
-            {'category': '非政府采购项目', 'url': 'http://116.62.168.209/fsqjyjygg/index.htm'},
+            # {'category': '政府采购', 'url': 'http://116.62.168.209/cggg/index.htm'},
+            # {'category': '政府采购', 'url': 'http://116.62.168.209/zfcgzxuj/index.htm'},
+            # {'category': '土地交易', 'url': 'http://116.62.168.209/churgg/index.htm'},
+            # {'category': '产权交易', 'url': 'http://116.62.168.209/chuanrgg/index.htm'},
+            # {'category': '农村集体产权', 'url': 'http://116.62.168.209/nczrgg/index.htm'},
+            # {'category': '用能指标总量交易', 'url': 'http://116.62.168.209/ynjygg/index.htm'},
+            # {'category': '排污权交易', 'url': 'http://116.62.168.209/pwjygg/index.htm'},
+            # {'category': '工程建设交易', 'url': 'http://116.62.168.209/gxqzbgg/index.htm'},
+            # {'category': '非政府采购项目', 'url': 'http://116.62.168.209/fzfcgzbgg/index.htm'},
+            # {'category': '部门限额以下', 'url': 'http://116.62.168.209/bmzzgg/index.htm'},
+            # {'category': '集体产权', 'url': 'http://116.62.168.209/sqjyjygg/index.htm'},
+            # {'category': '非政府采购项目', 'url': 'http://116.62.168.209/fsqjyjygg/index.htm'},
         ],
-        '资格预审结果公告': [
-            {'category': '工程交易', 'url': 'http://116.62.168.209/zsgs/index.htm'},
-        ],
-        '招标变更': [
-            {'category': '工程交易', 'url': 'http://116.62.168.209/dy/index.htm'},
-            {'category': '用能指标总量交易', 'url': 'http://116.62.168.209/yndycq/index.htm'},
-            {'category': '排污权交易', 'url': 'http://116.62.168.209/pwdycq/index.htm'},
-            {'category': '工程建设交易', 'url': 'http://116.62.168.209/gxqdybc/index.htm'},
-            {'category': '非政府采购项目', 'url': 'http://116.62.168.209/fzfcgdybc/index.htm'},
-            {'category': '镇街道限额以下', 'url': 'http://116.62.168.209/xzdybc/index.htm'},
-            {'category': '部门限额以下', 'url': 'http://116.62.168.209/bmdybc/index.htm'},
-            {'category': '集体产权', 'url': 'http://116.62.168.209/sqjyjggs/index.htm'},
-            {'category': '非政府采购项目', 'url': 'http://116.62.168.209/fsqjyjggs/index.htm'},
-            {'category': '部门限额以下', 'url': 'http://116.62.168.209/bmdybc/index.htm'},
-        ],
-        '招标异常': [
-            # {'category': '工程交易', 'url': 'http://116.62.168.209/dy/index.htm'},
-        ],
-        '中标预告': [
-            {'category': '工程交易', 'url': 'http://116.62.168.209/zbhxrgs/index.htm'},
-            {'category': '工程建设交易', 'url': 'http://116.62.168.209/gxqpbjjgs/index.htm'},
-            {'category': '非政府采购项目', 'url': 'http://116.62.168.209/fcfcgpbjggs/index.htm'},
-            {'category': '镇街道限额以下', 'url': 'http://116.62.168.209/xzpbjggg/index.htm'},
-            {'category': '部门限额以下', 'url': 'http://116.62.168.209/bmpbjggg/index.htm'},
-        ],
-        '中标公告': [
-            {'category': '工程交易', 'url': 'http://116.62.168.209/zbjggg/index.htm'},
-            {'category': '政府采购', 'url': 'http://116.62.168.209/zzbgs/index.htm'},
-            {'category': '土地交易', 'url': 'http://116.62.168.209/chengjgs/index.htm'},
-            {'category': '产权交易', 'url': 'http://116.62.168.209/cqcjgs/index.htm'},
-            {'category': '农村集体产权', 'url': 'http://116.62.168.209/nccjgs/index.htm'},
-            {'category': '用能指标总量交易', 'url': 'http://116.62.168.209/yncjgg/index.htm'},
-            {'category': '排污权交易', 'url': 'http://116.62.168.209/pwcjgg/index.htm'},
-            {'category': '集体产权', 'url': 'http://116.62.168.209/sqjybggg/index.htm'},
-            {'category': '农村集体产权', 'url': 'http://116.62.168.209/nccjgs/index.htm'},
-            {'category': '非政府采购项目', 'url': 'http://116.62.168.209/fsqjybggg/index.htm'},
-        ],
-        '其他公告': [
-            {'category': '工程交易', 'url': 'http://116.62.168.209/zgxj/index.htm'},
-            {'category': '政府采购', 'url': 'http://116.62.168.209/yjzq/index.htm'},
-        ]
+        # '资格预审结果公告': [
+        #     {'category': '工程交易', 'url': 'http://116.62.168.209/zsgs/index.htm'},
+        # ],
+        # '招标变更': [
+        #     {'category': '工程交易', 'url': 'http://116.62.168.209/dy/index.htm'},
+        #     {'category': '用能指标总量交易', 'url': 'http://116.62.168.209/yndycq/index.htm'},
+        #     {'category': '排污权交易', 'url': 'http://116.62.168.209/pwdycq/index.htm'},
+        #     {'category': '工程建设交易', 'url': 'http://116.62.168.209/gxqdybc/index.htm'},
+        #     {'category': '非政府采购项目', 'url': 'http://116.62.168.209/fzfcgdybc/index.htm'},
+        #     {'category': '镇街道限额以下', 'url': 'http://116.62.168.209/xzdybc/index.htm'},
+        #     {'category': '部门限额以下', 'url': 'http://116.62.168.209/bmdybc/index.htm'},
+        #     {'category': '集体产权', 'url': 'http://116.62.168.209/sqjyjggs/index.htm'},
+        #     {'category': '非政府采购项目', 'url': 'http://116.62.168.209/fsqjyjggs/index.htm'},
+        #     {'category': '部门限额以下', 'url': 'http://116.62.168.209/bmdybc/index.htm'},
+        # ],
+        # '招标异常': [
+        #     {'category': '工程交易', 'url': 'http://116.62.168.209/dy/index.htm'},
+        # ],
+        # '中标预告': [
+        #     {'category': '工程交易', 'url': 'http://116.62.168.209/zbhxrgs/index.htm'},
+        #     {'category': '工程建设交易', 'url': 'http://116.62.168.209/gxqpbjjgs/index.htm'},
+        #     {'category': '非政府采购项目', 'url': 'http://116.62.168.209/fcfcgpbjggs/index.htm'},
+        #     {'category': '镇街道限额以下', 'url': 'http://116.62.168.209/xzpbjggg/index.htm'},
+        #     {'category': '部门限额以下', 'url': 'http://116.62.168.209/bmpbjggg/index.htm'},
+        # ],
+        # '中标公告': [
+        #     {'category': '工程交易', 'url': 'http://116.62.168.209/zbjggg/index.htm'},
+        #     {'category': '政府采购', 'url': 'http://116.62.168.209/zzbgs/index.htm'},
+        #     {'category': '土地交易', 'url': 'http://116.62.168.209/chengjgs/index.htm'},
+        #     {'category': '产权交易', 'url': 'http://116.62.168.209/cqcjgs/index.htm'},
+        #     {'category': '农村集体产权', 'url': 'http://116.62.168.209/nccjgs/index.htm'},
+        #     {'category': '用能指标总量交易', 'url': 'http://116.62.168.209/yncjgg/index.htm'},
+        #     {'category': '排污权交易', 'url': 'http://116.62.168.209/pwcjgg/index.htm'},
+        #     {'category': '集体产权', 'url': 'http://116.62.168.209/sqjybggg/index.htm'},
+        #     {'category': '农村集体产权', 'url': 'http://116.62.168.209/nccjgs/index.htm'},
+        #     {'category': '非政府采购项目', 'url': 'http://116.62.168.209/fsqjybggg/index.htm'},
+        # ],
+        # '其他公告': [
+        #     {'category': '工程交易', 'url': 'http://116.62.168.209/zgxj/index.htm'},
+        #     {'category': '政府采购', 'url': 'http://116.62.168.209/yjzq/index.htm'},
+        # ]
     }
 
     def __init__(self, *args, **kwargs):
@@ -299,8 +299,12 @@ class ZjCity3325DeqingSpiderSpider(scrapy.Spider):
         )
 
         # 匹配文件
-        _, files_path = utils.catch_files(content, self.query_url)
-
+        _, c_files_path = utils.catch_files(content, self.query_url)
+        _, files_path, content = utils.catch_files_from_table(
+            resp.url, content, tb_attr='id', tb_attr_val='tab', key_tag='相关下载文件',
+            val_tag='下载', tb_index=0, proxies=resp.meta.get('proxy')
+        )
+        files_path.update(**c_files_path)
         notice_item = items.NoticesItem()
         notice_item["origin"] = resp.url
 
@@ -322,5 +326,5 @@ class ZjCity3325DeqingSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3325_deqing_spider -a sdt=2021-01-01 -a edt=2021-01-30".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3325_deqing_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3325_deqing_spider -a sdt=2021-06-01 -a edt=2021-07-08".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3325_deqing_spider".split(" "))

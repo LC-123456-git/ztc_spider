@@ -9,6 +9,7 @@ import random
 import requests
 import datetime
 import base64
+import json
 from Crypto.Cipher import AES
 from spider_pro import constans as const
 from dateutil.relativedelta import relativedelta
@@ -17,9 +18,11 @@ from spider_pro import rules_clean
 from lxml import etree
 import html
 import uuid
+
 headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36'
-    }
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36'
+}
+
 
 def remove_element_contained(content, ele_name, attr_name, attr_value, specific_ele):
     """
@@ -52,7 +55,8 @@ def remove_element_contained(content, ele_name, attr_name, attr_value, specific_
     return msg, content.replace('<html><body>', '').replace('</body></html>', '')
 
 
-def remove_specific_element(content, ele_name, attr_name=None, attr_value=None, if_child=False, index=1, text='', **kwargs):
+def remove_specific_element(content, ele_name, attr_name=None, attr_value=None, if_child=False, index=1, text='',
+                            **kwargs):
     """
     remove specific html element attribute from content
     params:
@@ -139,13 +143,156 @@ def clean_file_name(file_name, file_types):
     return file_name
 
 
+def catch_files_from_table(resp_url, content, tb_attr=None, tb_attr_val=None, key_tag='相关下载文件', val_tag='下载',
+                           tb_index=0, **kwargs):
+    """
+    处理表格里包含的文件
+        - 文件名与文件地址所在节点不同
+
+    Args:
+        base_url ([string]): [网站域名]
+        content ([string]): [HTML文档内容]
+        tb_attr ([string]): [表格属性]
+        tb_attr_val ([string], optional): [表格属性值]. Defaults to None.
+        key_tag (str, optional): [文件名所在位置的定位条件]. Defaults to '相关下载文件'.
+        val_tag (str, optional): [文件地址所在位置的定位条件]. Defaults to '下载'.
+        tb_index (int, optional): [指定表格所在位置]. Defaults to 0.
+
+    Returns:
+        msg: [错误信息]
+        files_path: [文件地址封装信息]
+    """
+    msg = ''
+    files_path = {}
+    file_types = [
+        'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
+        'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF',
+    ]
+    search_regex = '|'.join(r'\.{0}'.format(file_type) for file_type in file_types)
+
+    # http://116.62.168.209/bmzzgg/49232.htm
+    com = re.compile(r'(?P<base_url>http[s]{0,1}://.*?)/.*?/(?P<p_id>\d+)')
+    ret = [m.groupdict() for m in re.finditer(com, resp_url)]
+    if ret:
+        ret = ret[-1]
+        base_url = ret.get('base_url', '')
+        p_id = ret.get('p_id', '')
+        try:
+            doc = etree.HTML(content)
+            if all([tb_attr, tb_attr_val]):
+                tr_els = [tr_el for tr_el in doc.xpath('//table[@{tb_attr}="{tb_attr_val}"]//tr'.format(**{
+                    'tb_attr': tb_attr,
+                    'tb_attr_val': tb_attr_val,
+                })) if tr_el.xpath('./td')]
+
+                # 判断th中key_tag与val_tag的位置
+                th_els = doc.xpath('//table[@{tb_attr}="{tb_attr_val}"]//th'.format(**{
+                    'tb_attr': tb_attr,
+                    'tb_attr_val': tb_attr_val,
+                }))
+                key_index = 1
+                val_index = -1
+                for n, th_el in enumerate(th_els):
+                    txt = ''.join(th_el.xpath('.//text()'))
+
+                    if txt == key_tag:
+                        key_index = n + 1
+                    if txt == val_tag:
+                        val_index = n + 1
+
+                for n, tr_el in enumerate(tr_els):
+                    file_name_td = tr_el.xpath('./td[position()={key_index}]'.format(key_index=key_index))
+                    file_url_td = tr_el.xpath('./td[position()={val_index}]'.format(val_index=val_index))
+                    if all([file_name_td, file_url_td]):
+                        file_name_td = file_name_td[0]
+                        file_url_td = file_url_td[0]
+
+                        # - 获取 file_name
+                        file_name = file_name_td.xpath('.//text()')
+
+                        if file_name:
+                            file_name = ''.join(file_name).strip()
+
+                        # - 获取 href
+                        file_url = get_file_url(base_url, p_id, n + 1, kwargs=kwargs)
+
+                        # - file_url_td 删除所有子节点
+                        child_els = file_url_td.xpath('./*')
+                        for child_el in child_els:
+                            file_url_td.remove(child_el)
+
+                        # -  ADD <a href="">val_tag<a>
+                        sub_el = etree.SubElement(file_url_td, 'a')
+                        sub_el.attrib['href'] = file_url
+                        sub_el.text = val_tag
+
+                        content = etree.tounicode(doc, method='html')
+                        content = content.replace('<html>', '').replace('<body>', '').replace('</body>', '').replace(
+                            '</html>', '')
+
+                        # check file_name exists zip|doc|docx|xls|xlsx
+                        # RECORDS ALL LINKS EXCEPT CONTENT-TYPE CONTAINS 'text/html'
+                        if not check_if_http_based(file_url):
+                            file_url = base_url + file_url
+
+                        if re.search(search_regex, file_name):
+                            files_path[file_name.strip()] = file_url
+                        else:
+                            content_type = requests.get(url=file_url, headers={
+                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+                                              '(KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
+                            }).headers.get('Content-Type')
+                            if 'text/html' not in content_type:
+                                files_path[file_name.strip()] = file_url
+            else:  # TODO 直接根据索引定位
+                pass
+
+        except Exception as e:
+            msg = 'error:{0}'.format(e)
+
+    return msg, files_path, content
+
+
+def get_file_url(base_url, p_id, r_id, **kwargs):
+    """
+    获取文件真实链接
+
+    Args:
+        base_url ([string]): [网站域名]
+        p_id ([int]): [详情页ID]
+        r_id ([int]): [文件所在位置]
+    """
+    url_conf = ''.join([base_url, '/attachment_url.jspx?cid={p_id}&n={r_id}'.format(**{
+        'p_id': p_id,
+        'r_id': r_id
+    })])
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+                      '(KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
+    }
+    proxies = kwargs.get('proxies', None)
+
+    data = requests.get(url=url_conf, headers=headers, proxies=proxies).content.decode('utf-8')
+
+    data = json.loads(data)
+    suffix = data[0] if data else ''
+
+    # href="/attachment.jspx?cid=48377&i=0&t=1625796990073&k=e005329f67432b84c4efdcdc6e273c3a"
+    file_url = ''.join([base_url, '/attachment.jspx?cid={p_id}&i={r_id}'.format(**{
+        'p_id': p_id,
+        'r_id': r_id - 1
+    }), suffix])
+
+    return file_url
+
+
 def catch_files(content, base_url, **kwargs):
     """
     find doc/excel from content
     """
     msg = ''
     files_path = {}
-    # file_types = ['\.pdf|\.rar|\.zip|\.doc|\.docx|\.xls|\.xlsx|\.xml|\.dwg|\.AJZF']
     file_types = [
         'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
         'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF',
@@ -161,7 +308,10 @@ def catch_files(content, base_url, **kwargs):
                 if not check_if_http_based(src):
                     src = ''.join([base_url, src])
                 suffix_name = src.split('.')[-1]
-                files_path['{uuid}.{suffix_name}'.format(uuid=str(uuid.uuid1()), suffix_name=suffix_name)] = src
+                if len(suffix_name) > 4:  # TODO 特殊情况
+                    files_path['{uuid}.{suffix_name}'.format(uuid=str(uuid.uuid1()), suffix_name='jpeg')] = src
+                else:
+                    files_path['{uuid}.{suffix_name}'.format(uuid=str(uuid.uuid1()), suffix_name=suffix_name)] = src
 
         # files
         has_suffix = kwargs.get('has_suffix', False)  # .pdf后有其他符号
@@ -192,26 +342,6 @@ def catch_files(content, base_url, **kwargs):
                     }).headers.get('Content-Type')
                     if 'text/html' not in content_type:
                         files_path[file_name.strip()] = file_url
-        # iframe_els = doc.xpath('//iframe')
-        #
-        # for iframe_el in iframe_els:
-        #     file_name = iframe_el.get('src', '')
-        #
-        #     # check file_name exists zip|doc|docx|xls|xlsx
-        #     # RECORDS ALL LINKS EXCEPT CONTENT-TYPE CONTAINS 'text/html'
-        #     file_url = iframe_el.get('src', '')
-        #     if not check_if_http_based(file_url):
-        #         file_url = base_url + file_url
-        #
-        #     if re.search('\.pdf|\.rar|\.zip|\.doc|\.docx|\.xls|\.xlsx|\.xml|\.dwg|\.AJZF', file_name):
-        #         files_path[file_name.strip()] = file_url
-        #     else:
-        #         content_type = requests.get(url=file_url, headers={
-        #             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
-        #                           '(KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
-        #         }).headers.get('Content-Type')
-        #         if 'text/html' not in content_type:
-        #             files_path[file_name.strip()] = file_url
     except Exception as e:
         msg = e
     return msg, files_path
@@ -255,6 +385,7 @@ def add_to_16(s):
         s += (16 - len(s) % 16) * chr(16 - len(s) % 16)
     return str.encode(s)  # 返回bytes
 
+
 def get_files(domain_url, origin, files_text, keys_a=None):
     files_path = {}
     key_name = 'pdf/img/doc'
@@ -276,18 +407,18 @@ def get_files(domain_url, origin, files_text, keys_a=None):
                     if cont.xpath('.//text()'):
                         keys = ''.join(cont.xpath('.//text()')[0]).strip()
                         # 先判断 value 有没有 后缀
-                        if value[value.rindex('.') + 1:] in keys_list:          # value 的后缀在 列表中
-                            if '.' in keys:    # 在判断 keys 有后缀 点
+                        if value[value.rindex('.') + 1:] in keys_list:  # value 的后缀在 列表中
+                            if '.' in keys:  # 在判断 keys 有后缀 点
                                 suffix_keys = keys[keys.rindex('.') + 1:]
-                                if suffix_keys not in keys_list:      # 判断 keys后缀在不在 列表中
+                                if suffix_keys not in keys_list:  # 判断 keys后缀在不在 列表中
                                     key = keys + value[value.rindex('.'):]
                                 else:
                                     key = keys
                             else:
                                 key = keys + value[value.rindex('.'):]
                             files_path[key] = value
-                        else:          # value 的后缀不在 列表中
-                            if '.' in keys:    # 在判断 keys 有后缀 点
+                        else:  # value 的后缀不在 列表中
+                            if '.' in keys:  # 在判断 keys 有后缀 点
                                 suffix_keys = keys[keys.rindex('.') + 1:]
                                 if suffix_keys in keys_list:  # 判断 keys后缀在不在 列表中
                                     key = keys
@@ -310,22 +441,24 @@ def get_files(domain_url, origin, files_text, keys_a=None):
             files_path[key] = value
     return files_path
 
+
 def get_notice_type(title_name, notice):
-    if re.search(r'变更|更正|澄清|补充|取消|延期', title_name):         # 招标变更
+    if re.search(r'变更|更正|澄清|补充|取消|延期', title_name):  # 招标变更
         notice_type = const.TYPE_ZB_ALTERATION
-    elif re.search(r'终止|中止|废标|流标', title_name):                # 招标异常
+    elif re.search(r'终止|中止|废标|流标', title_name):  # 招标异常
         notice_type = const.TYPE_ZB_ABNORMAL
-    elif re.search(r'候选人', title_name):                             # 中标预告
+    elif re.search(r'候选人', title_name):  # 中标预告
         notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-    elif re.search(r'采购意向|需求公示', title_name):                   # 招标预告
+    elif re.search(r'采购意向|需求公示', title_name):  # 招标预告
         notice_type = const.TYPE_ZB_ADVANCE_NOTICE
     elif re.search(r'单一来源|询价|竞争性谈判|竞争性磋商', title_name):  # 招标公告
         notice_type = const.TYPE_ZB_NOTICE
-    elif re.search(r'预审', title_name):                               # 资格预审公告
+    elif re.search(r'预审', title_name):  # 资格预审公告
         notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
     else:
         notice_type = notice
     return notice_type
+
 
 def get_secret_url(text, key='qnbyzzwmdgghmcnm'):
     aes = AES.new(str.encode(key), AES.MODE_ECB)
@@ -915,6 +1048,7 @@ def match_key_re(content, regular_plan, keys):
             keys = data.get('keys', '')
         return keys
 
+
 def regular_match(keys, content, plan=0):
     """
     正则匹配字段内容
@@ -949,13 +1083,12 @@ def regular_match(keys, content, plan=0):
             status = True
     return status, data
 
+
 def get_url(strst_url, cid):
     cid_url = "{}/cms/attachment_url.jspx?cid={}&n=1".format(strst_url, cid)
     response = requests.get(url=cid_url, headers=headers).content.decode('utf-8').replace('["', '').replace('"]', '')
 
     return response
-
-
 
 
 if __name__ == "__main__":
