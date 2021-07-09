@@ -270,8 +270,6 @@ class ScrapyDataPost(object):
                 # s = conn.execute(f"select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 0 limit {err_start},{rows} ").fetchall()
                 if not e_time:
                     c_sql = f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' limit {err_start},{rows} "
-                elif table_name in ['notices_3331', 'notices_3332']:
-                    c_sql = f"select * from {table_name} where is_clean = 1 and is_upload = 0 and files_path = '' and pub_time >= '{d_time}' limit {err_start},{rows} "
                 else:
                     c_sql = f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time >= '{d_time}' and pub_time < '{e_time}' limit {err_start},{rows} "
 
@@ -618,7 +616,10 @@ if __name__ == "__main__":
         "notices_3327",
         "notices_3328",
         "notices_3331",
-        "notices_3332"
+        "notices_3332",
+        "notices_3334",
+        "notices_3335",
+        "notices_3336",
     ])
     print('{0:%Y-%m-%d %H:%M:%S} post...'.format(datetime.datetime.now()))
     # 正式批量推今天之前的数据 解开注释需要当心！！！
