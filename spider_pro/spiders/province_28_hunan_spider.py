@@ -9,10 +9,12 @@ import json
 import scrapy
 import urllib
 from urllib import parse
+
+from lxml import etree
 from scrapy.spiders import Spider
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
-from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time
+from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, get_files
 
 
 class MySpider(Spider):
@@ -83,8 +85,8 @@ class MySpider(Spider):
                     notice = const.TYPE_OTHERS_NOTICE
                 if notice:
                     yield scrapy.Request(url=type_url, callback=self.parse_all_urls,
-                                 meta={'categoy': response.meta.get('categoy'),
-                                       'notice': notice, 'type_code': type_code})
+                                         meta={'categoy': response.meta.get('categoy'),
+                                               'notice': notice, 'type_code': type_code})
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
@@ -92,7 +94,6 @@ class MySpider(Spider):
         try:
             if response.xpath('//ul[@class="wb-data-item"]/li'):
                 if self.enable_incr:
-                    page = 1
                     data_li_list = response.xpath('//ul[@class="wb-data-item"]/li')
                     nums = 0
                     for li in range(len(data_li_list)):
@@ -103,10 +104,6 @@ class MySpider(Spider):
                         x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
                         if x:
                             nums += 1
-                            total = int(len(data_li_list))
-                            if total == None:
-                                return
-                            self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
                             yield scrapy.Request(url=info_url, callback=self.parse_itme,
                                                  meta={'categoy': response.meta.get('categoy'),
                                                        'notice': response.meta['notice'],
@@ -114,9 +111,17 @@ class MySpider(Spider):
                                                        'pub_time': pub_time,
                                                        'title_name': title_name})
                         if nums >= len(data_li_list):
-                            page += 1
+                            total = int(len(data_li_list))
+                            if total == None:
+                                return
+                            self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                            page = re.findall('(.*?)\.\w+', response.url[response.url.rindex('/') + 1:])[0]
+                            if page == 'moreinfo':
+                                page = 2
+                            else:
+                                page = int(page) + 1
                             data_all_url = re.findall('(.*\d{12})', response.url)[0] + '/{}.html'.format(page)
-                            yield scrapy.Request(url=data_all_url, callback=self.parse_all_data,
+                            yield scrapy.Request(url=data_all_url, callback=self.parse_all_urls,
                                                  meta={'categoy': response.meta.get('categoy'),
                                                        'notice': response.meta['notice'],
                                                        'type_code': response.meta['type_code']})
@@ -179,7 +184,6 @@ class MySpider(Spider):
                 notice_type = const.TYPE_ZB_ABNORMAL
             else:
                 notice_type = response.meta['notice']
-            files_path = {}
             content = response.xpath('//div[@class="news-article"]').get()
             pattern = re.compile(r'<p class="news-article-info".*?>(.*?)</p>', re.S)
             contents = content.replace(''.join(re.findall(pattern, content)), '')
@@ -189,6 +193,9 @@ class MySpider(Spider):
 
             pattern = re.compile(r'<h6 class="news-article-tt".*?>(.*?)</h6>', re.S)
             contents = contents.replace(''.join(re.findall(pattern, contents)), '')
+
+            files_text = etree.HTML(content)
+            files_path = get_files(self.url, origin, files_text)
 
             notice_item = NoticesItem()
             notice_item["origin"] = origin
@@ -206,7 +213,8 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl province_28_hunan_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_28_hunan_spider".split(" "))
+    cmdline.execute("scrapy crawl province_28_hunan_spider -a sdt=2021-04-01 -a edt=2021-07-11".split(" "))
 
 
 
