@@ -16,7 +16,7 @@ from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, 
 class MySpider(CrawlSpider):
     name = 'province_18_fujian_spider'
     area_id = "18"
-    domain_url = "https://www.fjggzyjy.cn"
+    domain_url = "https://fjggzyjy.cn"
     query_url = "https://fjggzyjy.cn/queryContent_{}-jygk.jspx?title=&origin=&channelId={}&ext="
     basr_url = 'https://fjggzyjy.cn/queryContent_1-jygk.jspx?title=&origin=&channelId={}&ext='
     allowed_domains = ['fjggzyjy.cn']
@@ -146,7 +146,8 @@ class MySpider(CrawlSpider):
             patterns = re.compile(r'<div class="other".*?>(.*?)</div>', re.S)
             contents = content_text.replace(re.findall(patterns, content_text)[0], '')
             files_text = etree.HTML(content)
-            files_path = get_files(self.domain_url, origin, files_text)
+            keys_a = ['jhtml']
+            files_path = get_files(self.domain_url, origin, files_text, keys_a=keys_a)
             if re.search(r'终止|中止|异常|废标|流标', title_name):
                 notice_type = const.TYPE_ZB_ABNORMAL
             else:
