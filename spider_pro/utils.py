@@ -431,11 +431,12 @@ def get_files(domain_url, origin, files_text, keys_a=None):
                 value = domain_url + values
             else:
                 value = values
-            if value[value.rindex('.') + 1:] in keys_list:
-                key = key_name + value[value.rindex('.'):]
-            else:
-                key = key_name + '.jpg'
-            files_path[key] = value
+            if value[value.rindex('.') + 1:] not in suffix_list:
+                if value[value.rindex('.') + 1:] in keys_list:
+                    key = key_name + value[value.rindex('.'):]
+                else:
+                    key = key_name + '.jpg'
+                files_path[key] = value
     return files_path
 
 
