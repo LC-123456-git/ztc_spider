@@ -386,7 +386,7 @@ def add_to_16(s):
 def get_files(domain_url, origin, files_text, keys_a=None):
     files_path = {}
     key_name = 'pdf/img/doc'
-    suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##', 'cn:8080/', 'htm']
+    suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##', 'cn:8080/', 'htm', 'gif']
     keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
                  'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
                  'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX', 'bmp']
@@ -427,7 +427,7 @@ def get_files(domain_url, origin, files_text, keys_a=None):
         files_list = files_text.xpath('//img')
         for con in files_list:
             values = con.xpath('./@src')[0]
-            if 'http:' not in values:
+            if 'http' not in values:
                 value = domain_url + values
             else:
                 value = values
