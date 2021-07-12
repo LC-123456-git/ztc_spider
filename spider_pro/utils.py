@@ -3,6 +3,7 @@
 # @Author: wwj
 # @Date: 2020-12-22
 # @Describe: 工具类
+import ast
 import re
 import hashlib
 import random
@@ -18,11 +19,9 @@ from spider_pro import rules_clean
 from lxml import etree
 import html
 import uuid
-
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36'
-}
-
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36'
+    }
 
 def remove_element_contained(content, ele_name, attr_name, attr_value, specific_ele):
     """
@@ -55,8 +54,7 @@ def remove_element_contained(content, ele_name, attr_name, attr_value, specific_
     return msg, content.replace('<html><body>', '').replace('</body></html>', '')
 
 
-def remove_specific_element(content, ele_name, attr_name=None, attr_value=None, if_child=False, index=1, text='',
-                            **kwargs):
+def remove_specific_element(content, ele_name, attr_name=None, attr_value=None, if_child=False, index=1, text='', **kwargs):
     """
     remove specific html element attribute from content
     params:
@@ -385,7 +383,6 @@ def add_to_16(s):
         s += (16 - len(s) % 16) * chr(16 - len(s) % 16)
     return str.encode(s)  # 返回bytes
 
-
 def get_files(domain_url, origin, files_text, keys_a=None):
     files_path = {}
     key_name = 'pdf/img/doc'
@@ -407,18 +404,18 @@ def get_files(domain_url, origin, files_text, keys_a=None):
                     if cont.xpath('.//text()'):
                         keys = ''.join(cont.xpath('.//text()')[0]).strip()
                         # 先判断 value 有没有 后缀
-                        if value[value.rindex('.') + 1:] in keys_list:  # value 的后缀在 列表中
-                            if '.' in keys:  # 在判断 keys 有后缀 点
+                        if value[value.rindex('.') + 1:] in keys_list:          # value 的后缀在 列表中
+                            if '.' in keys:    # 在判断 keys 有后缀 点
                                 suffix_keys = keys[keys.rindex('.') + 1:]
-                                if suffix_keys not in keys_list:  # 判断 keys后缀在不在 列表中
+                                if suffix_keys not in keys_list:      # 判断 keys后缀在不在 列表中
                                     key = keys + value[value.rindex('.'):]
                                 else:
                                     key = keys
                             else:
                                 key = keys + value[value.rindex('.'):]
                             files_path[key] = value
-                        else:  # value 的后缀不在 列表中
-                            if '.' in keys:  # 在判断 keys 有后缀 点
+                        else:          # value 的后缀不在 列表中
+                            if '.' in keys:    # 在判断 keys 有后缀 点
                                 suffix_keys = keys[keys.rindex('.') + 1:]
                                 if suffix_keys in keys_list:  # 判断 keys后缀在不在 列表中
                                     key = keys
@@ -458,7 +455,6 @@ def get_notice_type(title_name, notice):
     else:
         notice_type = notice
     return notice_type
-
 
 def get_secret_url(text, key='qnbyzzwmdgghmcnm'):
     aes = AES.new(str.encode(key), AES.MODE_ECB)
@@ -1048,7 +1044,6 @@ def match_key_re(content, regular_plan, keys):
             keys = data.get('keys', '')
         return keys
 
-
 def regular_match(keys, content, plan=0):
     """
     正则匹配字段内容
@@ -1083,12 +1078,12 @@ def regular_match(keys, content, plan=0):
             status = True
     return status, data
 
+def get_url(strst_url, cid, num):
+    cid_url = "{}/cms/attachment_url.jspx?cid={}&n={}".format(strst_url, cid, num)
+    res_list = ast.literal_eval(requests.get(url=cid_url, headers=headers).content.decode('utf-8'))
+    return res_list
 
-def get_url(strst_url, cid):
-    cid_url = "{}/cms/attachment_url.jspx?cid={}&n=1".format(strst_url, cid)
-    response = requests.get(url=cid_url, headers=headers).content.decode('utf-8').replace('["', '').replace('"]', '')
 
-    return response
 
 
 if __name__ == "__main__":
