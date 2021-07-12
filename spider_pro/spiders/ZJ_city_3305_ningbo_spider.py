@@ -83,6 +83,7 @@ class MySpider(CrawlSpider):
                 else:
                     notice = ''
                 if notice:
+                    data_url = data_url.replace(''.join(data_url).split('/')[-1], 'index_1.htm')
                     yield scrapy.Request(url=data_url, callback=self.parse_data_urls,
                                          meta={'notice': notice})
         except Exception as e:
@@ -91,7 +92,6 @@ class MySpider(CrawlSpider):
     def parse_data_urls(self, response):
         try:
             if self.enable_incr:
-                pn = 1
                 num = 0
                 li_list = response.xpath('//div[@class="c1-body"]/li')
                 category = response.xpath('//div[@class="navCurrent"]/span/a[3]/text()').get()
@@ -103,19 +103,18 @@ class MySpider(CrawlSpider):
                     x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
                     if x:
                         num += 1
+                        yield scrapy.Request(url=all_info_url, callback=self.parse_item,
+                                             meta={'notice': response.meta['notice'], 'pub_time': pub_time,
+                                                   'title_name': title_name, 'category': category})
+                    info_url = response.url[:response.url.rindex('/') + 1] + 'index_{}.jhtml'
+                    if num >= len(li_list):
                         total = int(len(li_list))
                         if total == None:
                             return
                         self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                        yield scrapy.Request(url=all_info_url, callback=self.parse_item,
-                                             meta={'notice': response.meta['notice'], 'pub_time': pub_time,
-                                                   'title_name': title_name, 'category': category})
-
-
-                    info_url = response.url[:response.url.rindex('/') + 1] + 'index_{}.jhtml'
-                    if num >= len(li_list):
-                        pn += 1
-                        yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info,
+                        page = int(re.findall('\w\_(\d+)\.\w', response.url[response.url.rindex('/') + 1:])[0])
+                        page += 1
+                        yield scrapy.Request(url=info_url.format(page), callback=self.parse_data_urls,
                                              meta={'notice': response.meta['notice'], 'category': category})
             else:
                 category = response.xpath('//div[@class="navCurrent"]/span/a[3]/text()').get()
@@ -174,33 +173,51 @@ class MySpider(CrawlSpider):
             # 去除info
             _, content = remove_specific_element(content, 'div', 'class', 'source')
             # 去除 button
-            _, content = remove_specific_element(content, 'div', 'type', 'width:300px;margin:0 auto;')
+            _, content = remove_specific_element(content, 'div', 'style', 'width:300px;margin:0 auto;')
 
             _, content = remove_specific_element(content, 'div', 'class', 'operationBtnDiv')
-            _, contents = remove_specific_element(content, 'script', 'type', 'text/javascript')
+            _, content = remove_specific_element(content, 'script', 'type', 'text/javascript')
 
             files_path = {}
-            html = etree.HTML(contents)
-            cid = re.findall('\d+', response.url)[0]
-            if html.xpath('//img/@src'):
-                conet_list = html.xpath('//img')
-                for con in conet_list:
-                    if 'http' in con.xpath('./@src')[0]:
-                        value = con.xpath('./@src')[0]
+            key_name = 'pdf/img/doc'
+            keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
+                         'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
+                         'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX']
+            files_text = etree.HTML(content)
+            # 处理 文件 files_path
+            table_list = files_text.xpath('//div[@class="Main-p floatL"]/table')
+            cid = re.findall('(\d+)', origin[origin.rindex('/') + 1:])[0]
+            for table_num in table_list:
+                table_text = table_num.xpath('./tr//text()')
+                if '相关下载文件' in table_text:
+                    file_list = table_num.xpath('./tr')[1:]
+                    value_list = get_url(self.domain_url, cid, len(file_list))
+                    for file_num in range(len(file_list)):
+                        # 通过第三方请求 获得files_path的路径
+                        value = "{}/attachment.jspx?cid={}&i={}".format(self.query_url, cid, file_num) + value_list[file_num]
+                        keys = ''.join(file_list[file_num].xpath('./td[1]/a/@title')[0]).strip()
+                        files_path[keys] = value
+                        content = ''.join(content).replace('<a id="attach{}" title="文件下载">'.format(file_num),
+                                                           '<a id="attach{}" title="文件下载" href="{}">'.format(file_num, value))
+                else:
+                    pattern = re.compile('({}.*?</table>)'.format(''.join(table_text[:2]).strip()), re.S)
+                    content = content.replace(re.findall(pattern, content)[0], '')
+            # 处理正文img
+            if files_text.xpath('//img/@src'):
+                files_list = files_text.xpath('//img')
+                for con in files_list:
+                    values = con.xpath('./@src')[0]
+                    if 'http:' not in values:
+                        value = self.query_url + values
                     else:
-                        value = self.domain_url + con.xpath('./@src')[0]
-                    if con.xpath('./@alt'):
-                        keys = con.xpath('./@alt')[0] + '.jpg'
+                        value = values
+                    if value[value.rindex('.') + 1:] in keys_list:
+                        key = key_name + value[value.rindex('.'):]
                     else:
-                        keys = 'img/pdf/doc/xls.jpg'
-                    files_path[keys] = value
-            if html.xpath('//div[@class="Main-p"]//td[@align="center"]/a'):
-                conet_list = html.xpath('//div[@class="Main-p"]//td[@align="center"]/a')
-                for con in conet_list:
-                    value = "{}/cms/attachment.jspx?cid={}&i=0".format(self.domain_url, cid) + get_url(self.domain_url, cid)
-                    keys = con.xpath('./text()')[0] + '.pdf'
-                    files_path[keys] = value
-                    contents = ''.join(contents).replace('<a id="attach0" title="文件下载">', '<a id="attach0"  title="文件下载" href={}>'.format(value))
+                        key = key_name + '.jpg'
+                    files_path[key] = value
+
+
             notice_item = NoticesItem()
             notice_item["origin"] = origin
             notice_item["title_name"] = title_name
@@ -209,7 +226,7 @@ class MySpider(CrawlSpider):
             notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
             notice_item["files_path"] = "" if not files_path else files_path
             notice_item["notice_type"] = notice_type
-            notice_item["content"] = contents
+            notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = category
             yield notice_item
@@ -218,5 +235,5 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
     # cmdline.execute("scrapy crawl ZJ_city_3305_ningbo_spider".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3305_ningbo_spider -a sdt=2020-02-01 -a edt=2021-06-28".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3305_ningbo_spider -a sdt=2021-04-01 -a edt=2021-07-12".split(" "))
 
