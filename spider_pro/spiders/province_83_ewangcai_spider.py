@@ -105,10 +105,10 @@ class MySpider(CrawlSpider):
                                            "info_source": info_source})
             if count_num >= len(info_list):
                 self.currentPage = self.currentPage + 1
-                if self.currentPage <= int(pages):
-                    info_dict = {"yfFlg": pattern}
-                    yield scrapy.Request(url=f"{self.list_url.format(item, self.currentPage)}{urllib.parse.urlencode(info_dict)}", priority=6,
-                                         dont_filter=True, callback=self.extract_data_urls, meta={"item": item})
+                # if self.currentPage <= int(pages):
+                info_dict = {"yfFlg": pattern}
+                yield scrapy.Request(url=f"{self.list_url.format(item, self.currentPage)}{urllib.parse.urlencode(info_dict)}", priority=6,
+                                     dont_filter=True, callback=self.extract_data_urls, meta={"item": item, "pattern": pattern})
 
     def get_info_url(self, response):
         try:
