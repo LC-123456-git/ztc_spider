@@ -29,13 +29,13 @@ class MySpider(Spider):
     # flie_url = "https://www.hzctc.cn:20001/UService/DownloadAndShow.aspx?dirtype=3&filepath="
     page_size = "10"
     # 招标公告
-    list_notice_category_num = ["1229425417", "1229505851", "1229425421", "1229425422", "1229425427", "1229425430"]
+    list_notice_category_num = ["1229425417", "1229505851", "1229425421", "1229425427", "1229425430"]
     # 招标变更
     list_alteration_category_num = ["1229425420", "1229425424"]
     # 中标预告
     list_win_advance_notice_num = ["002001004"]
     # 中标公告
-    list_win_notice_category_num = ["1229425418", "1229425419", "1229425423", "1229425428", "1229425431"]
+    list_win_notice_category_num = ["1229425418", "1229425422", "1229425419", "1229425423", "1229425428", "1229425431"]
     # 其他公告
     list_other_notice = ["1229425429", "1229425432", "1229425433", "1229425434"]
 
@@ -95,15 +95,17 @@ class MySpider(Spider):
 
     def parse_urls(self, response):
         try:
+            startrecord = 1
+            endrecord = 15
             afficheType = response.meta["afficheType"]
             ttlrow = response.xpath("totalrecord/text()").get()
             if int(ttlrow) < 15:
-                pages = int(ttlrow)
+                pages = 1
+                endrecord = int(ttlrow)
             else:
                 pages = int(ttlrow) // 15
             self.logger.info(f"本次获取总条数为：{ttlrow},共有{pages}页")
-            startrecord = 1
-            endrecord = 15
+
             for page in range(1, pages+1):
                 if page > 1:
                     startrecord += 15
@@ -143,8 +145,9 @@ class MySpider(Spider):
             info_source = self.area_province
             content = response.xpath("//table[@id='c']").get()
             # _, content = remove_specific_element(content, 'td', 'class', 'bt-heise', index=0)
-            _, content = remove_specific_element(content, 'a', 'class', 'bt-color-wenzhang', index=0)
-            _, content = remove_specific_element(content, 'div', 'class', 'bshare-custom', index=0)
+            _, contents = remove_specific_element(content, 'td', 'align', 'right', index=0)
+            _, content = remove_specific_element(contents, 'td', 'align', 'left', index=0)
+            content = re.sub("浏览次数:", "", content)
 
             files_path = {}
             if file_list := re.findall("""附件:<a href="(.*)"><strong>""", content):

@@ -74,9 +74,9 @@ class MySpider(Spider):
             info_source = self.area_province
             content = json.loads(response.text).get("rsmegContent", "")
             notice_type_str = json.loads(response.text).get("rsmegBy5", "")
-            if re.search(r"采购意向|需求公示", notice_type_str):
+            if re.search(r"采购意向|需求公示|采购文件意见征询", notice_type_str):
                 notice_type = {"name": const.TYPE_ZB_ADVANCE_NOTICE}
-            elif re.search(r"单一来源|询价|竞争性谈判|竞争性磋商|招标(采购)公告|招标公告", notice_type_str):
+            elif re.search(r"单一来源|询价|竞争性谈判|竞争性磋商|招标\(采购\)公告|招标公告", notice_type_str):
                 notice_type = {"name": const.TYPE_ZB_NOTICE}
             elif re.search(r"资格预审|资格后审", notice_type_str):
                 notice_type = {"name": const.TYPE_QUALIFICATION_ADVANCE_NOTICE}
@@ -88,8 +88,10 @@ class MySpider(Spider):
                 notice_type = const.TYPE_WIN_ADVANCE_NOTICE
             elif re.search(r"中标结果公示|成交公告|中标公告|结果公告", notice_type_str):
                 notice_type = const.TYPE_WIN_NOTICE
-            elif re.search(r"开标结果|合同公告", notice_type_str):
+            elif re.search(r"开标结果|合同公告|开标", notice_type_str):
                 notice_type = const.TYPE_WIN_NOTICE
+            elif re.search(r"施工类|监理类", notice_type_str):
+                return
             else:
                 notice_type = const.TYPE_UNKNOWN_NOTICE
             files_path = {}
@@ -101,14 +103,23 @@ class MySpider(Spider):
                     else:
                         file_name = fjxx[1]
                     files_path[file_name] = file_url
-
+            if fjxx_list := re.findall('<a href="(.*?)">(.*?)</a>', content):
+                for fjxx in fjxx_list:
+                    file_url = fjxx[0]
+                    if re.search(">", fjxx[1]):
+                        file_name = fjxx[1].split(">")[1]
+                    else:
+                        file_name = fjxx[1]
+                        if re.search("标项", file_name):
+                            file_name = file_name + ".pdf"
+                    files_path[file_name] = file_url
             notice_item = NoticesItem()
             notice_item["origin"] = origin
             notice_item["title_name"] = title_name
             notice_item["pub_time"] = pub_time
             notice_item["info_source"] = info_source
             notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
-            notice_item["files_path"] = "null" if not files_path else files_path
+            notice_item["files_path"] = "" if not files_path else files_path
             notice_item["notice_type"] = notice_type
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id

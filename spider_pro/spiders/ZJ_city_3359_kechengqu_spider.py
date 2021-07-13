@@ -80,15 +80,16 @@ class MySpider(Spider):
 
     def parse_urls(self, response):
         try:
+            startrecord = 1
+            endrecord = 60
             afficheType = response.meta["afficheType"]
             ttlrow = response.xpath("totalrecord/text()").get()
             if int(ttlrow) < 60:
-                pages = int(ttlrow)
+                pages = 1
+                endrecord = int(ttlrow)
             else:
                 pages = int(ttlrow) // 60
             self.logger.info(f"本次获取总条数为：{ttlrow},共有{pages}页")
-            startrecord = 1
-            endrecord = 60
             for page in range(1, pages+1):
                 if page > 1:
                     startrecord += 60

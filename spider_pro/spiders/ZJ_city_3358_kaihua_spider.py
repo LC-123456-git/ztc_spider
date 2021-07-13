@@ -8,6 +8,7 @@ import math
 import json
 import scrapy
 import urllib
+import requests
 from urllib import parse
 
 from lxml import etree
@@ -25,18 +26,16 @@ class MySpider(Spider):
     allowed_domains = ['kaihua.gov.cn']
     domain_url = "http://www.kaihua.gov.cn"
     count_url = "http://www.kaihua.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=10"
-    # 招标预告
-    list_advance_notice_num = ["1229091448"]
     # 招标公告
-    list_notice_category_num = ["1229091438", "1229091451", "1229091458", "1229091464"]
+    list_notice_category_num = ["1229091438", "1229091458", "1229091464"]
     # 中标预告
     list_win_advance_notice_num = ["1229091439", "1229091459", "1229091459"]
     # 中标公告
-    list_win_notice_category_num = ["1229091440", "1229091452", "1229091460", "1229091465"]
+    list_win_notice_category_num = ["1229091440", "1229091460", "1229091465"]
     # 其他公告
     list_other_notice = ["1229091453"]
 
-    list_all_category_num = list_advance_notice_num + list_notice_category_num + list_win_advance_notice_num + \
+    list_all_category_num = list_notice_category_num + list_win_advance_notice_num + \
                             list_win_notice_category_num + list_other_notice
 
     def __init__(self, *args, **kwargs):
@@ -93,15 +92,16 @@ class MySpider(Spider):
 
     def parse_urls(self, response):
         try:
+            startrecord = 1
+            endrecord = 30
             afficheType = response.meta["afficheType"]
             ttlrow = response.xpath("totalrecord/text()").get()
             if int(ttlrow) < 30:
-                pages = int(ttlrow)
+                pages = 1
+                endrecord = int(ttlrow)
             else:
                 pages = int(ttlrow) // 30
             self.logger.info(f"本次获取总条数为：{ttlrow},共有{pages}页")
-            startrecord = 1
-            endrecord = 30
             for page in range(1, pages+1):
                 if page > 1:
                     startrecord += 30
@@ -122,7 +122,7 @@ class MySpider(Spider):
             for item in temp_list:
                 info_url = re.findall('href="(.*?)"', item.get())[0]
                 pub_time = re.findall("&gt;(\d+\-\d+\-\d+)&lt;", item.get())[0]
-                # info_url = "http://ggzy.qz.gov.cn/jyxx/002001/002001001/20171023/72a05665-7405-46bc-a8a2-289f88ceb225.html"
+                # info_url = "http://www.kaihua.gov.cn/art/2021/7/8/art_1229091438_4683817.html"
                 yield scrapy.Request(url=info_url, callback=self.parse_item, dont_filter=True,
                                      priority=10, meta={
                                            "category_num": category_num, "pub_time": pub_time,
@@ -135,25 +135,44 @@ class MySpider(Spider):
             origin = response.url
             print(origin)
             category_num = response.meta.get("category_num", "")
-            title_name = response.meta.get("title_name", "")
+            title_name = response.xpath("//title/text()").get()
             pub_time = response.meta.get("pub_time", "")
             info_source = self.area_province
             content = response.xpath("//table[@id='c']").get()
             # _, content = remove_specific_element(content, 'td', 'class', 'bt-heise', index=0)
-            _, content = remove_specific_element(content, 'a', 'class', 'bt-color-wenzhang', index=0)
-            _, content = remove_specific_element(content, 'div', 'class', 'bshare-custom', index=0)
-            content = re.sub("分享到：", "", content)
+            _, content = remove_specific_element(content, 'tr', 'align', 'center', index=0)
+            _, content = remove_specific_element(content, 'td', 'align', 'right', index=0)
             files_path = {}
-            if file_list := re.findall("""<a href="/module/download/downfile.jsp(.*?)">""", content):
-                file_suffix = file_list[0].split(".")[1]
-                file_url = self.domain_url + "/module/download/downfile.jsp?" + re.sub("amp;", "", file_list[0])
-                file_name = "附件下载." + file_suffix
-                files_path[file_name] = file_url
-
+            files_list = []
+            if file_list := re.findall("""<a href="(/module/download/downfile.jsp.*?)">.*?>(.*?)</a>""", content):
+                for item in file_list:
+                    file_url = self.domain_url + re.sub("amp;", "", item[0])
+                    file_name = item[1]
+                    files_path[file_name] = file_url
+            if file_url_test := re.findall("附件请至（.*?）下载", content):
+                get_file_url = file_url_test[0].split("附件请至（")[1].split("）下载")[0]
+                cid = get_file_url.split(".htm")[0].split("/")[-1]
+                strst_url = get_file_url.split("cms")[0]
+                response = requests.get(url=get_file_url)
+                response = response.content.decode('utf-8')
+                a_xml = etree.HTML(response)
+                file_name_list = a_xml.xpath("//table/tr/td[1]/a/text()")
+                num = len(file_name_list)
+                cid_url = "{}cms/attachment_url.jspx?cid={}&n={}".format(strst_url, cid, num)
+                file_infourl = "{}cms/attachment.jspx?cid={}&i={}{}"
+                res_list = requests.get(url=cid_url).content.decode('utf-8')
+                i = 0
+                for file_name, file_url in zip(file_name_list, eval(res_list)):
+                    file_url = file_infourl.format(strst_url, cid, i, file_url)
+                    print(file_url)
+                    files_path[file_name] = file_url
+                    file_path_str = "<a href='{}'>{}</a>".format(file_url, file_name)
+                    files_list.append(file_path_str)
+                    i += 1
+                file_paths = "<br/>".join(files_list)
+                content = re.sub("附件请至（.*?）下载", file_paths, content)
             if category_num in self.list_notice_category_num:
                 notice_type = const.TYPE_ZB_NOTICE
-            elif category_num in self.list_advance_notice_num:
-                notice_type = const.TYPE_ZB_ADVANCE_NOTICE
             elif category_num in self.list_win_notice_category_num:
                 notice_type = const.TYPE_WIN_NOTICE
             elif category_num in self.list_win_advance_notice_num:
@@ -163,21 +182,21 @@ class MySpider(Spider):
             else:
                 notice_type = const.TYPE_UNKNOWN_NOTICE
 
-            if re.search(r"招标|谈判|磋商|出让|招租", title_name):
+            if re.search(r"终止|中止|流标|废标|异常|暂停", title_name):
+                notice_type = const.TYPE_ZB_ABNORMAL
+            elif re.search(r"招标|谈判|磋商|出让|招租", title_name):
                 notice_type = const.TYPE_ZB_NOTICE
             elif re.search(r"候选人|评标结果", title_name):
                 notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-            elif re.search(r"终止|中止|流标|废标|异常", title_name):
-                notice_type = const.TYPE_ZB_ABNORMAL
             elif re.search(r"变更|更正|澄清|修正|补充", title_name):
                 notice_type = const.TYPE_ZB_ALTERATION
+            elif re.search(r"关于.*?的通知|关于.*?的公告", title_name):
+                notice_type = const.TYPE_UNKNOWN_NOTICE
 
-            if category_num in ["1229425427", "1229425428", "1229425429", "1229425430", "1229425431", "1229425432"]:
-                classifyShow = "政府采购"
-            elif category_num in ["1229425433", "1229425434"]:
-                classifyShow = "其他交易"
-            else:
+            if category_num in ["1229091438", "1229091439", "1229091440"]:
                 classifyShow = "工程建设"
+            else:
+                classifyShow = "其他交易"
 
             notice_item = NoticesItem()
             notice_item["origin"] = origin

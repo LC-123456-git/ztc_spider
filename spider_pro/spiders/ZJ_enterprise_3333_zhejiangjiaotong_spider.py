@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Author: zzq
 # @Date: 2021-07-01
-# @Describe: 浙江省水利厅 - 全量/增量脚本
+# @Describe: 浙江省交通运输厅 - 全量/增量脚本
 import re
 import math
 import json
@@ -72,7 +72,6 @@ class MySpider(CrawlSpider):
                 info_url = re.sub("cnart", "cn/art", info_url)
                 yield scrapy.Request(url=f"{info_url}", priority=10, dont_filter=True, callback=self.parse_item,
                                      meta={"title_name": title_name, "pub_time": pub_time})
-
 
     def pages_urls(self, response):
         try:
