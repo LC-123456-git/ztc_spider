@@ -88,13 +88,14 @@ class MySpider(CrawlSpider):
                         elif notice_name in self.list_win_notice_category_name:     # 中标公告
                             notice = const.TYPE_WIN_NOTICE
                         elif notice_name in self.list_win_advance_notice_name:       # 中标预告
-                            notice = const.TYPE_ZB_ABNORMAL
+                            notice = const.TYPE_WIN_ADVANCE_NOTICE
                         elif notice_name in self.list_qita_num:                      # 其他公告
                             notice = const.TYPE_OTHERS_NOTICE
                         else:
                             notice = ''
                         if notice:
                             info_url = li_url + "/MoreInfo.aspx?CategoryNum=" + li_url[li_url.rindex('/')+1:]
+                            # print(category, notice_name, notice, info_url)
                             yield scrapy.Request(url=info_url, callback=self.parse_data_info,
                                                  meta={'category': category,
                                                        'notice': notice,
