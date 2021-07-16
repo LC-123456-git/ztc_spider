@@ -314,7 +314,7 @@ def catch_files(content, base_url, **kwargs):
         has_suffix = kwargs.get('has_suffix', False)  # .pdf后有其他符号
 
         href_els = doc.xpath('//a')
-        for href_el in href_els:
+        for n, href_el in enumerate(href_els):
             file_name = href_el.xpath('.//text()')
 
             if file_name:
@@ -324,6 +324,7 @@ def catch_files(content, base_url, **kwargs):
                 if has_suffix:
                     file_name = clean_file_name(file_name, file_types)
 
+                file_name = '{0}{1}'.format(n, file_name)
                 # check file_name exists zip|doc|docx|xls|xlsx
                 # RECORDS ALL LINKS EXCEPT CONTENT-TYPE CONTAINS 'text/html'
                 file_url = href_el.get('href', '')
