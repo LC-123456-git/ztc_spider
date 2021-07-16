@@ -39,7 +39,7 @@ class MySpider(CrawlSpider):
     # 中标预告
     list_win_advance_notice_name = ['候选公示']
     # 中标公告
-    list_win_notice_category_name = ['中标结果', '出让结果', '中标公告', '成交公告']
+    list_win_notice_category_name = ['中标结果', '出让结果', '中标公告']
     # 招标异常
     list_alteration_category_name = []
     # 资格预审
@@ -65,6 +65,8 @@ class MySpider(CrawlSpider):
         return response
 
     def start_requests(self):
+        # url = 'http://ggzy.yj.gov.cn:7088/yjcms/kbjl/20000.htm'
+        # yield scrapy.Request(url=url, callback=self.parse_item)
         yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
 
     def parse_urls(self, response):
@@ -184,28 +186,37 @@ class MySpider(CrawlSpider):
                     _, content = remove_specific_element(content, 'blockquote', 'style', 'display: none; font-size: 13px;')
 
                     files_path = {}
+                    # origin = response.url
                     key_name = 'pdf/img/doc'
                     keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
                                  'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
                                  'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX']
                     files_text = etree.HTML(content)
                     # 处理 文件 files_path
+                    table_all_list = files_text.xpath('//div[@class="Content-Main FloatL"]//table')
                     table_list = files_text.xpath('//div[@class="Content-Main FloatL"]/table')
                     cid = re.findall('(\d+)', origin[origin.rindex('/') + 1:])[0]
-                    for table_num in table_list:
-                        table_text = table_num.xpath('./tr//text()')
+                    for table_num in range(len(table_list)):
+                        table_text = table_list[table_num].xpath('./tr//text()')
                         if '相关下载文件' in table_text:
-                            file_list = table_num.xpath('./tr')[1:]
+                            file_list = table_list[table_num].xpath('./tr')[1:]
                             values = ast.literal_eval(self.get_url(self.base_url, cid, int(len(file_list))))
                             for file_num in range(len(file_list)):
                                 # 通过第三方请求 获得files_path的路径
                                 value = "{}/attachment.jspx?cid={}&i={}".format(self.query_url, cid, file_num) + values[file_num]
                                 keys = ''.join(file_list[file_num].xpath('./td[1]/a/@title')[0]).strip()
                                 files_path[keys] = value
+                                content = ''.join(content).replace('<a title="{}">{}</a>'.format(keys, keys),'<p title="{}">{}</p>'.format(keys, keys))
                                 content = ''.join(content).replace('<a id="attach{}" title="文件下载">'.format(file_num),  '<a id="attach{}" title="文件下载" href="{}">'.format(file_num, value))
                         else:
-                            pattern = re.compile('(<table>.*?</table>)', re.S)
-                            content = content.replace(re.findall(pattern, content)[0], '')
+                            nums = len(table_all_list) - len(table_list)
+                            if table_num == 0:
+                                num = nums + 1
+                            elif (int(len(table_list)) - 1) - table_num == 0:
+                                num = table_num + nums
+                            else:
+                                num = (int(len(table_list)) - 1) - table_num + nums
+                            _, content = remove_specific_element(content, 'table', index=num)
                     # 处理正文img
                     if files_text.xpath('//img/@src'):
                         files_list = files_text.xpath('//img')
@@ -238,6 +249,6 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
     # cmdline.execute("scrapy crawl ZJ_city_3339_dongtou_spider".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3339_dongtou_spider -a sdt=2021-06-01 -a edt=2021-07-06".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3339_dongtou_spider -a sdt=2021-06-01 -a edt=2021-07-16".split(" "))
 
 

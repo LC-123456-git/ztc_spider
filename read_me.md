@@ -196,11 +196,11 @@
 - [x] 3334 建德市公共资源交易中心  http://www.jiande.gov.cn/
 - [x] 3335 温州市鹿城区公共资源交易中心 http://spgg.lucheng.gov.cn/
 - [x] 3336 温州市乐清市公共资源交易中心 http://ggzy.yueqing.gov.cn/
-- [] 3337 温州市瑞安市公共资源交易中心 http://ggzy.ruian.gov.cn/
+- [x] 3337 温州市瑞安市公共资源交易中心 http://ggzy.ruian.gov.cn/
 - [x] 3338 温州市永嘉县公共资源交易中心 http://ggzy.yj.gov.cn/
-- [] 3339 温州市洞头区公共资源交易中心 http://www.dongtou.gov.cn/
-- [] 3340 温州市文成县公共资源交易中心 http://ggjy.wencheng.gov.cn/
-- [] 3341 温州市泰顺县公共资源交易中心 http://www.ts.gov.cn/
+- [x] 3339 温州市洞头区公共资源交易中心 http://www.dongtou.gov.cn/
+- [x] 3340 温州市文成县公共资源交易中心 http://ggjy.wencheng.gov.cn/
+- [x] 3341 温州市泰顺县公共资源交易中心 http://www.ts.gov.cn/
 - [] 3342 绍兴市上虞区公共资源交易中心 http://xxgk.shangyu.gov.cn/
 - [] 3343 绍兴市新昌县公共资源交易中心 http://www.zjxc.gov.cn/
 - [] 3344 绍兴市越城区公共资源交易中心 http://www.sxyc.gov.cn/
