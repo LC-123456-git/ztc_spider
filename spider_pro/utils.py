@@ -141,8 +141,7 @@ def clean_file_name(file_name, file_types):
     return file_name
 
 
-def catch_files_from_table(resp_url, content, tb_attr=None, tb_attr_val=None, key_tag='相关下载文件', val_tag='下载',
-                           tb_index=0, **kwargs):
+def catch_files_from_table(resp_url, content, tb_attr=None, tb_attr_val=None, key_tag='相关下载文件', val_tag='下载', tb_index=0, **kwargs):
     """
     处理表格里包含的文件
         - 文件名与文件地址所在节点不同
@@ -389,20 +388,20 @@ def get_files(domain_url, origin, files_text, keys_a=None):
     suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##', 'cn:8080/', 'htm', 'gif']
     keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
                  'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
-                 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX', 'bmp', 'XCZF']
+                 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX', 'bmp', 'XCZF', 'YCZF']
     [keys_list.append(k_a) for k_a in keys_a]
     if files_text.xpath('//a/@href'):
         files_list = files_text.xpath('//a')
-        for cont in files_list:
-            if cont.xpath('./@href'):
-                values = cont.xpath('./@href')[0]
+        for cont in range(len(files_list)):
+            if files_list[cont].xpath('./@href'):
+                values = files_list[cont].xpath('./@href')[0]
                 if ''.join(values).split('.')[-1] not in suffix_list:
                     if 'http' not in values:
                         value = domain_url + ''.join(values).replace('./', origin[:origin.rindex('/') + 1])
                     else:
                         value = values
-                    if cont.xpath('.//text()'):
-                        keys = ''.join(cont.xpath('.//text()')[0]).strip()
+                    if files_list[cont].xpath('.//text()'):
+                        keys = ''.join(files_list[cont].xpath('.//text()')[0]).strip()
                         # 先判断 value 有没有 后缀
                         if value[value.rindex('.') + 1:] in keys_list:          # value 的后缀在 列表中
                             if '.' in keys:    # 在判断 keys 有后缀 点
@@ -418,7 +417,7 @@ def get_files(domain_url, origin, files_text, keys_a=None):
                             if '.' in keys:    # 在判断 keys 有后缀 点
                                 suffix_keys = keys[keys.rindex('.') + 1:]
                                 if suffix_keys in keys_list:  # 判断 keys后缀在不在 列表中
-                                    key = keys
+                                    key = keys[:keys.rindex('.')] + str(cont + 1) + '.' + suffix_keys
                                 else:
                                     key = ''
                                 if key:
