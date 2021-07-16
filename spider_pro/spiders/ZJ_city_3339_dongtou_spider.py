@@ -65,8 +65,6 @@ class MySpider(CrawlSpider):
         return response
 
     def start_requests(self):
-        # url = 'http://ggzy.yj.gov.cn:7088/yjcms/kbjl/20000.htm'
-        # yield scrapy.Request(url=url, callback=self.parse_item)
         yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
 
     def parse_urls(self, response):
@@ -139,7 +137,7 @@ class MySpider(CrawlSpider):
                                              meta={'category': response.meta['category'],
                                                    'notice': response.meta['notice']})
             else:
-                pages = re.findall('^\/(\d+)页', response.xpath('//div[@class="Zy-Page FloatL"]/div/text()').get())[0]
+                pages = re.findall('\/(\d+)页', response.xpath('//div[@class="Zy-Page FloatL"]/div/text()').get())[0]
                 total = re.findall('共(\d+)条', response.xpath('//div[@class="Zy-Page FloatL"]/div/text()').get())[0]
                 self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
                 for num in range(1, int(pages) + 1):
@@ -186,7 +184,6 @@ class MySpider(CrawlSpider):
                     _, content = remove_specific_element(content, 'blockquote', 'style', 'display: none; font-size: 13px;')
 
                     files_path = {}
-                    # origin = response.url
                     key_name = 'pdf/img/doc'
                     keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
                                  'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
@@ -248,7 +245,7 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    # cmdline.execute("scrapy crawl ZJ_city_3339_dongtou_spider".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3339_dongtou_spider -a sdt=2021-06-01 -a edt=2021-07-16".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3339_dongtou_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3339_dongtou_spider -a sdt=2021-06-01 -a edt=2021-07-16".split(" "))
 
 

@@ -138,7 +138,7 @@ class MySpider(CrawlSpider):
                                                    'notice': response.meta['notice']})
 
             else:
-                pages = re.findall('^\/(\d+)页', response.xpath('//div[@class="Zy-Page FloatL"]/div/text()').get())[0]
+                pages = re.findall('\/(\d+)页', response.xpath('//div[@class="Zy-Page FloatL"]/div/text()').get())[0]
                 total = re.findall('共(\d+)条', response.xpath('//div[@class="Zy-Page FloatL"]/div/text()').get())[0]
                 self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
                 for num in range(1, int(pages) + 1):
@@ -247,7 +247,7 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    # cmdline.execute("scrapy crawl ZJ_city_3338_yongjia_spider".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3338_yongjia_spider -a sdt=2021-04-01 -a edt=2021-07-16".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3338_yongjia_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3338_yongjia_spider -a sdt=2021-04-01 -a edt=2021-07-16".split(" "))
 
 
