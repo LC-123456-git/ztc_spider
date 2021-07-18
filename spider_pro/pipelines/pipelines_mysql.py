@@ -142,6 +142,7 @@ class MysqlPipeline(object):
         # 索引
         Index("index_push", my_table.c.pub_time, my_table.c.is_upload, my_table.c.is_clean)
         Index("update_time", my_table.c.update_time)
+        Index("pub_time", my_table.c.pub_time)
         metadata.create_all()
 
     def upload_all_clean_done_and_not_upload_data(self):
