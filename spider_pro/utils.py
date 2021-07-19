@@ -388,6 +388,16 @@ def get_table_url(strst_url, cid, num):
     response = requests.get(url=cid_url, headers=headers).content.decode('utf-8')
     return response
 
+def get_files_text(text):
+    files_text = etree.HTML(text)
+    table_list = files_text.xpath('//div[@class="Content-Main FloatL"]/table')
+    for table_num in range(len(table_list)):
+        table_text = table_list[table_num].xpath('./tr//text()')
+        if '相关下载文件' not in table_text:
+            table_list[table_num].getparent().remove(table_list[table_num])
+    conten = etree.tounicode(files_text)
+    return conten
+
 def get_table_files(query_url, origin, content, keys_a=None):
     files_path = {}
     key_name = 'pdf/img/doc'
@@ -395,38 +405,26 @@ def get_table_files(query_url, origin, content, keys_a=None):
                  'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
                  'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX']
     [keys_list.append(k_a) for k_a in keys_a]
-    # 处理 文件 files_path
+    content = get_files_text(content)
     files_text = etree.HTML(content)
-    table_all_list = files_text.xpath('//div[@class="Content-Main FloatL"]/table')
-    table_list = files_text.xpath('//div[@class="Content-Main FloatL"]/table')
     cid = re.findall('(\d+)', origin[origin.rindex('/') + 1:])[0]
+    table_list = files_text.xpath('//div[@class="Content-Main FloatL"]/table')
+    # 处理 文件 files_path
     for table_num in range(len(table_list)):
-        table_text = table_list[table_num].xpath('./tr//text()')
-        if '相关下载文件' in table_text:
-            file_list = table_list[table_num].xpath('./tr')[1:]
-            values = ast.literal_eval(get_table_url(query_url, cid, int(len(file_list))))
-            for file_num in range(len(file_list)):
-                # 通过第三方请求 获得files_path的路径
-                value = "{}/attachment.jspx?cid={}&i={}".format(query_url, cid, file_num) + values[file_num]
-                keys = ''.join(file_list[file_num].xpath('./td[1]/a/@title')[0]).strip()
-                files_path[keys] = value
-                content = ''.join(content).replace('<a title="{}">{}</a>'.format(keys, keys), '<p title="{}">{}</p>'.format(keys, keys))
-                content = ''.join(content).replace('<a id="attach{}" title="文件下载">'.format(file_num), '<a id="attach{}" title="文件下载" href="{}">'.format(file_num, value))
-
-        else:
-            nums = len(table_all_list) - len(table_list)
-            if table_num == 0:
-                num = nums + 1
-            elif (int(len(table_list)) - 1) - table_num == 0:
-                num = table_num
-            else:
-                num = (int(len(table_list)) - 1) - table_num
-            _, content = remove_specific_element(content, 'table', index=num)
-            # 处理正文img
+        file_list = table_list[table_num].xpath('./tr')[1:]
+        values = ast.literal_eval(get_table_url(query_url, cid, int(len(file_list))))
+        for file_num in range(len(file_list)):
+            # 通过第三方请求 获得files_path的路径
+            value = "{}/attachment.jspx?cid={}&i={}".format(query_url, cid, file_num) + values[file_num]
+            keys = ''.join(file_list[file_num].xpath('./td[1]/a/@title')[0]).strip()
+            files_path[keys] = value
+            content = ''.join(content).replace('<a title="{}">{}</a>'.format(keys, keys), '<p title="{}">{}</p>'.format(keys, keys))
+            content = ''.join(content).replace('<a id="attach{}" title="文件下载">'.format(file_num), '<a id="attach{}" title="文件下载" href="{}">'.format(file_num, value))
+    # 处理 img
     if files_text.xpath('//img/@src'):
         files_list = files_text.xpath('//img')
-        for con in files_list:
-            values = con.xpath('./@src')[0]
+        for con_num in range(len(files_list)):
+            values = files_list[con_num].xpath('./@src')[0]
             if 'http:' not in values:
                 value = query_url + values
             else:
@@ -434,9 +432,9 @@ def get_table_files(query_url, origin, content, keys_a=None):
             if value[value.rindex('.') + 1:] in keys_list:
                 key = key_name + value[value.rindex('.'):]
             else:
-                key = key_name + '.jpg'
+                key = key_name + str(con_num) + '.jpg'
             files_path[key] = value
-    return files_path
+    return files_path, content
 
 def get_files(domain_url, origin, files_text, keys_a=None):
     files_path = {}
