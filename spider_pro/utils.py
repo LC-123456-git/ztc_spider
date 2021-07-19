@@ -383,9 +383,9 @@ def add_to_16(s):
         s += (16 - len(s) % 16) * chr(16 - len(s) % 16)
     return str.encode(s)  # 返回bytes
 
-def get_url(self, strst_url, cid, num):
+def get_table_url(strst_url, cid, num):
     cid_url = "{}/attachment_url.jspx?cid={}&n={}".format(strst_url, cid, num)
-    response = requests.get(url=cid_url, headers=self.headers).content.decode('utf-8')
+    response = requests.get(url=cid_url, headers=headers).content.decode('utf-8')
     return response
 
 def get_table_files(query_url, origin, content, keys_a=None):
@@ -404,7 +404,7 @@ def get_table_files(query_url, origin, content, keys_a=None):
         table_text = table_list[table_num].xpath('./tr//text()')
         if '相关下载文件' in table_text:
             file_list = table_list[table_num].xpath('./tr')[1:]
-            values = ast.literal_eval(get_url(query_url, cid, int(len(file_list))))
+            values = ast.literal_eval(get_table_url(query_url, cid, int(len(file_list))))
             for file_num in range(len(file_list)):
                 # 通过第三方请求 获得files_path的路径
                 value = "{}/attachment.jspx?cid={}&i={}".format(query_url, cid, file_num) + values[file_num]
