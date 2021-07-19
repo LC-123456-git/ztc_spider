@@ -26,7 +26,6 @@ class MySpider(CrawlSpider):
     area_id = "3338"
     domain_url = "http://ggzy.yj.gov.cn:7088"
     query_url = "http://ggzy.yj.gov.cn:7088/yjcms"
-    # base_url = 'http://ggzy.yueqing.gov.cn/yqwebnew/ShowInfo/ShowSearchInfo.aspx?'
     allowed_domains = ['ggzy.yj.gov.cn']
     area_province = '浙江省温州市永嘉县人民政府'
 
