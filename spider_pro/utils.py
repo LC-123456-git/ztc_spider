@@ -398,7 +398,25 @@ def get_files_text(text):
     conten = etree.tounicode(files_text)
     return conten
 
-def get_table_files(query_url, origin, content, keys_a=None):
+def get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffix_list):
+    # 处理 img
+    if files_text.xpath('//img/@src'):
+        files_list = files_text.xpath('//img')
+        for con_num in range(len(files_list)):
+            values = files_list[con_num].xpath('./@src')[0]
+            if 'http:' not in values:
+                value = domain_url + values
+            else:
+                value = values
+            if value[value.rindex('.') + 1:] not in suffix_list:
+                if value[value.rindex('.') + 1:] in keys_list:
+                    key = key_name + value[value.rindex('.'):]
+                else:
+                    key = key_name + str(con_num) + '.jpg'
+                files_path[key] = value
+    return files_path
+
+def get_table_files(query_url, origin, content, keys_a=None, domain_url=None):
     files_path = {}
     key_name = 'pdf/img/doc'
     keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
@@ -421,19 +439,7 @@ def get_table_files(query_url, origin, content, keys_a=None):
             content = ''.join(content).replace('<a title="{}">{}</a>'.format(keys, keys), '<p title="{}">{}</p>'.format(keys, keys))
             content = ''.join(content).replace('<a id="attach{}" title="文件下载">'.format(file_num), '<a id="attach{}" title="文件下载" href="{}">'.format(file_num, value))
     # 处理 img
-    if files_text.xpath('//img/@src'):
-        files_list = files_text.xpath('//img')
-        for con_num in range(len(files_list)):
-            values = files_list[con_num].xpath('./@src')[0]
-            if 'http:' not in values:
-                value = query_url + values
-            else:
-                value = values
-            if value[value.rindex('.') + 1:] in keys_list:
-                key = key_name + value[value.rindex('.'):]
-            else:
-                key = key_name + str(con_num) + '.jpg'
-            files_path[key] = value
+    files_path = get_files_img(files_path, domain_url, keys_list, key_name, files_text)
     return files_path, content
 
 def get_files(domain_url, origin, files_text, keys_a=None):
@@ -476,20 +482,8 @@ def get_files(domain_url, origin, files_text, keys_a=None):
                                     key = ''
                                 if key:
                                     files_path[key] = value
-    if files_text.xpath('//img/@src'):
-        files_list = files_text.xpath('//img')
-        for con in files_list:
-            values = con.xpath('./@src')[0]
-            if 'http' not in values:
-                value = domain_url + values
-            else:
-                value = values
-            if value[value.rindex('.') + 1:] not in suffix_list:
-                if value[value.rindex('.') + 1:] in keys_list:
-                    key = key_name + value[value.rindex('.'):]
-                else:
-                    key = key_name + '.jpg'
-                files_path[key] = value
+    files_path = get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffix_list)
+
     return files_path
 
 
