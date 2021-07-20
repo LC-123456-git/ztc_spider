@@ -644,6 +644,24 @@ class QccCrawlerSpider(scrapy.Spider):
             except Exception as e:
                 self.logger.info('error:{0}'.format(e))
 
+    def clean_fields(self, data):
+        """
+        - 清洗字段信息
+            + 所有字段 去掉后面 复制
+            + 注册地址 去掉 附近企业复制
+        """
+        result = {}
+        for k, v in data.items():
+            if k == 'registered_address':
+                if v.endswith('复制'):
+                    result[k] = v[:-2]
+                if v.endswith('附近企业复制'):
+                    result[k] = v[:-6]
+            else:
+                if v.endswith('复制'):
+                    result[k] = v[:-2]
+        return result
+
     def parse_item(self, resp):
         content = resp.text
 
@@ -696,6 +714,7 @@ class QccCrawlerSpider(scrapy.Spider):
                 'industry_category': resp.meta.get('industry_category_name', ''),
                 'origin': resp.url,
             }
+            company_info_items = self.clean_fields(company_info_items)
 
             err, invoice_info = QccCrawlerSpider.get_invoice_info(resp)
 
