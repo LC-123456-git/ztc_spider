@@ -159,7 +159,7 @@ if __name__ == "__main__":
         # "province_49_ningxia_spider",
         "province_50_xinjiang_spider",
         "province_52_pinming_spider",
-        "province_53_bilian_spider",
+        # "province_53_bilian_spider",  # 暂时由后台管理系统测试
         "province_54_Egongxiang_spider",
         "province_55_tiangong_spider",
         "province_56_hebeijiantou_spider",

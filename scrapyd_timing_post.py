@@ -579,7 +579,7 @@ if __name__ == "__main__":
         "notices_49",
         "notices_50",
         "notices_52",
-        "notices_53",
+        # "notices_53",  # 暂时由后台管理系统测试
         "notices_54",
         "notices_55",
         "notices_56",
