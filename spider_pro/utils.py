@@ -419,6 +419,7 @@ def get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffi
 def get_table_files(query_url, origin, content, keys_a=None, domain_url=None):
     files_path = {}
     key_name = 'pdf/img/doc'
+    suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##', 'cn:8080/', 'htm', 'gif']
     keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
                  'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
                  'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX']
@@ -439,7 +440,7 @@ def get_table_files(query_url, origin, content, keys_a=None, domain_url=None):
             content = ''.join(content).replace('<a title="{}">{}</a>'.format(keys, keys), '<p title="{}">{}</p>'.format(keys, keys))
             content = ''.join(content).replace('<a id="attach{}" title="文件下载">'.format(file_num), '<a id="attach{}" title="文件下载" href="{}">'.format(file_num, value))
     # 处理 img
-    files_path = get_files_img(files_path, domain_url, keys_list, key_name, files_text)
+    files_path = get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffix_list)
     return files_path, content
 
 def get_files(domain_url, origin, files_text, keys_a=None):
