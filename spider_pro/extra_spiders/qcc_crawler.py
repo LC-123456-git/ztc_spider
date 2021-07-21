@@ -653,13 +653,17 @@ class QccCrawlerSpider(scrapy.Spider):
         result = {}
         for k, v in data.items():
             if k == 'registered_address':
-                if v.endswith('复制'):
-                    result[k] = v[:-2]
                 if v.endswith('附近企业复制'):
                     result[k] = v[:-6]
+                elif v.endswith('复制'):
+                    result[k] = v[:-2]
+                else:
+                    result[k] = v
             else:
                 if v.endswith('复制'):
                     result[k] = v[:-2]
+                else:
+                    result[k] = v
         return result
 
     def parse_item(self, resp):
