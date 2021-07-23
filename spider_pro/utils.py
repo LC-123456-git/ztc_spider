@@ -443,7 +443,7 @@ def get_table_files(query_url, origin, content, keys_a=None, domain_url=None):
     files_path = get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffix_list)
     return files_path, content
 
-def get_files(domain_url, origin, files_text, pub_time, keys_a=None):
+def get_files(domain_url, origin, files_text, keys_a=None):
     from datetime import datetime
     files_path = {}
     key_name = 'pdf/img/doc'
