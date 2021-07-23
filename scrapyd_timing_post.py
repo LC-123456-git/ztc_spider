@@ -623,6 +623,8 @@ if __name__ == "__main__":
         "notices_3337",
         "notices_3338",
         "notices_3339",
+        "notices_3340",
+        "notices_3341",
     ])
     print('{0:%Y-%m-%d %H:%M:%S} post...'.format(datetime.datetime.now()))
     # 正式批量推今天之前的数据 解开注释需要当心！！！

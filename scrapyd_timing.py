@@ -205,6 +205,8 @@ if __name__ == "__main__":
         "ZJ_city_3337_ruian_spider",
         "ZJ_city_3338_yongjia_spider",
         "ZJ_city_3339_dongtou_spider",
+        "ZJ_city_3340_wencheng_spider",
+        "ZJ_city_3341_taishun_spider",
         "qcc_crawler",
     ]
 
