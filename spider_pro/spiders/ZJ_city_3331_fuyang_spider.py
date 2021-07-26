@@ -41,10 +41,10 @@ class MySpider(CrawlSpider):
     # 招标变更
     list_zb_abnormal_code = ['6717274', '6717150', '6717173', '6717283']
     list_zb_abnormal_name = ['答疑文件', '更正公告', '更正通知']
-    # 中标预告
+    # 中标公告
     list_win_advance_notice_code = ['6717153', '6717170']
     list_win_advance_notice_name = ['中标公告']
-    # 中标公告
+    # 中标预告
     list_win_notice_category_code = ['6717277', '6717291']
     list_win_notice_category_name = ['成交结果公示']
     # 招标异常
@@ -103,10 +103,10 @@ class MySpider(CrawlSpider):
                     notice = const.TYPE_ZB_NOTICE
                 elif notice_name in self.list_zb_abnormal_name:         # 变更公告
                     notice = const.TYPE_ZB_ALTERATION
-                elif notice_name in self.list_win_advance_notice_name:  # 中标预告
-                    notice = const.TYPE_WIN_ADVANCE_NOTICE
-                elif notice_name in self.list_win_notice_category_name:  # 中标公告
+                elif notice_name in self.list_win_advance_notice_name:  # 中标公告
                     notice = const.TYPE_WIN_NOTICE
+                elif notice_name in self.list_win_notice_category_name:  # 中标预告
+                    notice = const.TYPE_WIN_ADVANCE_NOTICE
                 elif notice_name in self.list_alteration_category_name:  # 招标异常
                     notice = const.TYPE_ZB_ABNORMAL
                 else:
