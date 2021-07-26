@@ -969,8 +969,6 @@ def get_accurate_pub_time(pub_time):
         return ""
     if pub_time_str := re.search(r"\d{4}-\d{1,2}-\d{1,2} \d{1,2}:\d{1,2}", pub_time):
         pub_time_a = pub_time_str.group(0)
-    elif pub_time_str := re.search(r"\d{4}-\d{1,2}-\d{1,2}", pub_time):
-        pub_time_a = pub_time_str.group(0)
     elif pub_time_str := re.search(r"\d{4}\.\d{1,2}\.\d{1,2} \d{1,2}:\d{1,2}", pub_time):
         pub_time_a = pub_time_str.group(0).replace(".", "-")
     elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日\d{1,2}:\d{1,2}", pub_time):
@@ -981,6 +979,8 @@ def get_accurate_pub_time(pub_time):
         pub_time_a = pub_time_str.group(0).replace("年", "-").replace("月", "-").replace("日", "")
     elif pub_time_str := re.search(r'\d{4}.*\d{1,2}.*\d{1,2}.*\d{1,2}:\d{1,2}:\d{1,2}', pub_time):
         pub_time_a = pub_time_str.group(0).replace("/", "-")
+    elif pub_time_str := re.search(r"\d{4}-\d{1,2}-\d{1,2}", pub_time):
+        pub_time_a = pub_time_str.group(0)
     elif pub_time_str := re.search(r"\d{4}\.\d{1,2}\.\d{1,2}", pub_time):
         pub_time_a = pub_time_str.group(0).replace(".", "-")
     elif pub_time_str := re.search(r"\d{4}/\d{1,2}/\d{1,2}", pub_time):
