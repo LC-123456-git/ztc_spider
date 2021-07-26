@@ -185,7 +185,8 @@ class MySpider(CrawlSpider):
 
                     keys_a = []
                     files_path, content = get_table_files(self.query_url, origin, content, keys_a=keys_a,
-                                                          domain_url=self.domain_url)
+                                                          domain_url=self.domain_url,
+                                                          proxies=response.meta.get('proxy'))
                     notice_item = NoticesItem()
                     notice_item["origin"] = origin
                     notice_item["title_name"] = title_name

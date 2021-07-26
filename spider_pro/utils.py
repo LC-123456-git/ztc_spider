@@ -382,12 +382,13 @@ def add_to_16(s):
         s += (16 - len(s) % 16) * chr(16 - len(s) % 16)
     return str.encode(s)  # 返回bytes
 
-def get_table_url(strst_url, cid, num):
+def get_table_url(strst_url, cid, num, **kwargs):
+    proxies = kwargs.get('proxies', None)
     cid_url = "{}/attachment_url.jspx?cid={}&n={}".format(strst_url, cid, num)
-    response = requests.get(url=cid_url, headers=headers).content.decode('utf-8')
+    response = requests.get(url=cid_url, headers=headers, proxies=proxies).content.decode('utf-8')
     return response
 
-def get_files_text(text):
+def get_files_text(text, **kwargs):
     files_text = etree.HTML(text)
     table_list = files_text.xpath('//div[@class="Content-Main FloatL"]/table')
     for table_num in range(len(table_list)):
@@ -415,7 +416,7 @@ def get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffi
                 files_path[key] = value
     return files_path
 
-def get_table_files(query_url, origin, content, keys_a=None, domain_url=None):
+def get_table_files(query_url, origin, content, keys_a=None, domain_url=None, **kwargs):
     from datetime import datetime
     files_path = {}
     key_name = 'pdf/img/doc'
@@ -424,7 +425,7 @@ def get_table_files(query_url, origin, content, keys_a=None, domain_url=None):
                  'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
                  'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX']
     [keys_list.append(k_a) for k_a in keys_a]
-    content = get_files_text(content)
+    content = get_files_text(content, kwargs=kwargs)
     files_text = etree.HTML(content)
     cid = re.findall('(\d+)', origin[origin.rindex('/') + 1:])[0]
     table_list = files_text.xpath('//div[@class="Content-Main FloatL"]/table')
