@@ -110,10 +110,12 @@ class MysqlPipeline(object):
             Column('tenderopen_time', mysql.VARCHAR(255), nullable=True, comment="开标时间"),
 
             Column('publish_time', mysql.VARCHAR(255), nullable=True, comment="发布时间"),
-            Column('project_leader', mysql.VARCHAR(300), nullable=True, comment="项目负责人"),
-            Column('project_contact_information', mysql.VARCHAR(255), nullable=True, comment="项目负责人联系方式"),
-            Column('tender_contact', mysql.VARCHAR(255), nullable=True, comment="招标人联系方式"),
-            Column('agent_contact', mysql.VARCHAR(255), nullable=True, comment="招标代理联系方式"),
+            Column('liaison', mysql.VARCHAR(300), nullable=True, comment="联系人"),
+            Column('contact_information', mysql.VARCHAR(300), nullable=True, comment="联系方式"),
+            # Column('project_leader', mysql.VARCHAR(300), nullable=True, comment="项目负责人"),
+            # Column('project_contact_information', mysql.VARCHAR(255), nullable=True, comment="项目负责人联系方式"),
+            # Column('tender_contact', mysql.VARCHAR(255), nullable=True, comment="招标人联系方式"),
+            # Column('agent_contact', mysql.VARCHAR(255), nullable=True, comment="招标代理联系方式"),
             Column('content', mysql.LONGTEXT, nullable=True, comment="公告内容"),
             Column('classify_id', mysql.VARCHAR(255), nullable=True, comment="公告分类id"),
 
