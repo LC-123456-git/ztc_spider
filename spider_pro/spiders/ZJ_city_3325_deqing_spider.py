@@ -284,6 +284,10 @@ class ZjCity3325DeqingSpiderSpider(scrapy.Spider):
         notice_type_ori = resp.meta.get('notice_type')
 
         # 移除不必要信息: 删除面包屑导航, 发布时间
+        # 移除标题
+        _, content = utils.remove_specific_element(
+            content, 'div', 'class', 'Content_Border hidden', if_child=True, child_attr='div', index=2
+        )
         _, content = utils.remove_specific_element(
             content, 'div', 'class', 'Content_Border hidden', if_child=True, child_attr='h6', index=2
         )

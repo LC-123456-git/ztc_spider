@@ -323,7 +323,7 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
 
     def parse_item(self, resp):
         try:
-            content = resp.xpath('//div[@class="wzy_content"]/div').get()
+            content = resp.xpath('//td[@class="bt_content"]').get()
             title_name = resp.xpath('//td[@class="title"]/text()').get()
             category_type = resp.meta.get('category_type')
 

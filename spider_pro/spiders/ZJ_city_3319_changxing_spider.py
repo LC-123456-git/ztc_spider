@@ -2,7 +2,7 @@
 author: miaokela
 Date: 2021-04-26 09:05:50
 LastEditTime: 2021-04-27 22:12:07
-Description: 
+Description:
 '''
 import requests
 import scrapy
@@ -292,7 +292,8 @@ class ZjCity3319ChangxingSpiderSpider(scrapy.Spider):
         title_name = resp.meta.get('title_name')
         notice_type_ori = resp.meta.get('notice_type')
 
-        # 移除不必要信息: 发布时间、上下页
+        # 移除不必要信息: 发布时间、上下页tdTitle
+        _, content = utils.remove_specific_element(content, 'td', 'id', 'tdTitle')
         _, content = utils.remove_specific_element(content, 'table', 'id', 'tblInfo', if_child=True,
                                                    child_attr='tr', index=2)
 

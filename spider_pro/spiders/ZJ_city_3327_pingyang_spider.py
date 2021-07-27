@@ -300,7 +300,7 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
 
     def parse_item(self, resp):
         try:
-            content = resp.xpath('//table[@id="c"]').get()
+            content = resp.xpath('//div[@id="zoom"]').get()
             title_name = resp.xpath('//div[@class="wenzhnag"]//tr[1]/td[@align="center"]/text()').get()
             category_type = resp.meta.get('category_type')
 
@@ -316,10 +316,6 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
             notice_types = list(
                 filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
             )
-            # REMOVE DATE
-            _, content = utils.remove_specific_element(content, 'table', 'align', 'center', if_child=True,
-                                                       child_attr='tr',
-                                                       index=2)
             # 投标文件
             _, files_path = utils.catch_files(content, self.base_url)
 
@@ -343,5 +339,5 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3327_pingyang_spider -a sdt=2020-01-01 -a edt=2021-05-25".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3327_pingyang_spider".split(" "))
+    #cmdline.execute("scrapy crawl ZJ_city_3327_pingyang_spider -a sdt=2020-01-01 -a edt=2021-05-25".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3327_pingyang_spider".split(" "))

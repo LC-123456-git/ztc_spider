@@ -317,7 +317,7 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
         return matched, notice_type
 
     def parse_item(self, resp):
-        content = resp.xpath('//div[@class="article-body"]').get()
+        content = resp.xpath('//div[@class="article-content"]').get()
         category_type = resp.meta.get('category_type')
         title_name = resp.meta.get('title_name')
 
@@ -357,5 +357,5 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider -a sdt=2021-03-01 -a edt=2021-05-24".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider -a sdt=2021-03-01 -a edt=2021-07-26".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider".split(" "))

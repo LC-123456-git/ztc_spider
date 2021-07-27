@@ -186,7 +186,7 @@ class Province55TiangongSpiderSpider(scrapy.Spider):
         return matched, notice_type
 
     def parse_item(self, resp):
-        content = resp.xpath('//div[@class="mleft"]').get()
+        content = resp.xpath('//div[@class="ninfo-con"]').get()
         title_name = resp.xpath('//div[@class="ninfo-title"]/h2/text()').get()
         notice_type_ori = resp.meta.get('notice_type')
 

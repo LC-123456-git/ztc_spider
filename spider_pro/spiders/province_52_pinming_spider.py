@@ -258,6 +258,9 @@ class Province52PinmingSpiderSpider(scrapy.Spider):
         # 内容防止转义字符
         content = utils.avoid_escape(content)
 
+        # 移除标题
+        _, content = utils.remove_specific_element(content, 'div', 'class', 'content-title')
+
         # 移除信息时间
         _, content = utils.remove_specific_element(content, 'div', 'class', 'content-title', if_child=True,
                                                    child_attr='span')

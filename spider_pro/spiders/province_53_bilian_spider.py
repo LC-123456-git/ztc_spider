@@ -132,7 +132,7 @@ class Province53BilianSpiderSpider(scrapy.Spider):
             except Exception as e:
                 self.log(e)
             detail_url = el.xpath('.//a/@href').get()
-            
+
             # 获取地区
             area_els = el.xpath('./div[2]/div[2]/p[2]/span[2]/text()')
             area_name = area_els[0].get() if area_els else ''
@@ -183,6 +183,9 @@ class Province53BilianSpiderSpider(scrapy.Spider):
 
         # 去除解析字段position-relative
         _, content = utils.remove_specific_element(content, 'div', 'class', 'position-relative', index=2)
+
+        # 去除标题
+        _, content = utils.remove_specific_element(content, 'h2', 'class', 'details-title')
 
         # 投标文件
         _, files_path = utils.catch_files(content, self.base_url)

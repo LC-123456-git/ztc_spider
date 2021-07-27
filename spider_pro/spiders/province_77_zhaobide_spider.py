@@ -332,6 +332,9 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
             filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
         )
 
+        # - 移除标题
+        _, content = utils.remove_specific_element(content, 'div', 'class', 'noticeTitle')
+
         # - HANDLE CONTENT FROM IFRAME HREF
         _, content = Province77ZhaobideSpiderSpider.handle_iframe_content(content, resp)
         _, content = utils.remove_specific_element(content, 'div', 'class', 'area01')
@@ -367,6 +370,6 @@ if __name__ == "__main__":
     from scrapy import cmdline
 
     cmdline.execute(
-        "scrapy crawl province_77_zhaobide_spider -a sdt=2021-01-01 -a edt=2021-06-17".split(" ")
+        "scrapy crawl province_77_zhaobide_spider -a sdt=2021-07-01 -a edt=2021-07-27".split(" ")
     )
     # cmdline.execute("scrapy crawl province_77_zhaobide_spider".split(" "))

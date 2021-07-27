@@ -273,6 +273,7 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
         notice_type_ori = resp.meta.get('notice_type')
 
         # 移除不必要信息: 删除第一个正文title/发布时间、打印关闭
+        _, content = utils.remove_specific_element(content, 'div', 'class', 'detail-tt')
         _, content = utils.remove_specific_element(content, 'div', 'class', 'detail-info')
         _, content = utils.remove_specific_element(content, 'div', 'class', 'ewb-route')
         _, content = utils.remove_specific_element(content, 'div', 'class', 'detail-tt')
@@ -315,5 +316,5 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider -a sdt=2021-05-27 -a edt=2021-05-28".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider -a sdt=2021-05-27 -a edt=2021-05-28".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider".split(" "))
