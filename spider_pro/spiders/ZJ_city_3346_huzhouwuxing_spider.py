@@ -177,12 +177,12 @@ class ZjCity3346HuzhouwuxingSpiderSpider(scrapy.Spider):
             # 获取某个时间段的详情页链接
             link_infos = self.get_links(link_data_list)
 
-            for link_info in link_infos:
+            for n, link_info in enumerate(link_infos):
                 yield scrapy.Request(url=link_info['link'], callback=self.parse_detail, meta={
                     'notice_type': resp.meta.get('notice_type', ''),
                     'category': resp.meta.get('category', ''),
                     'pub_time': link_info['pub_time'],
-                })
+                }, priority=len(link_infos)-n)
 
     def parse_detail(self, resp):
         content = resp.xpath('//div[@class="zw"]').get()
