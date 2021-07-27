@@ -1,14 +1,10 @@
 # @file           :ZJ_city_3346_huzhouwuxing_spider.py
-# @description    :
+# @description    :浙江省湖州吴兴市人民政府
 # @date           :2021/07/27 08:53:08
 # @author         :miaokela
 # @version        :1.0
 import re
 import json
-from ast import literal_eval
-import requests
-from lxml import etree
-import random
 from datetime import datetime
 
 import scrapy
