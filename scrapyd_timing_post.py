@@ -376,9 +376,9 @@ class ScrapyDataPost(object):
 
                     count = itme_num
                     result = conn.execute(
-                        f"select * from statistical where area_id={area_id} and push_day={push_day}").fetchall()
+                        f"select * from statistical where area_id={area_id} and push_day='{push_day}'").fetchall()
                     if result:
-                        count_num = conn.execute(f"select count from statistical where area_id={area_id} and push_day={push_day}").fetchone()[0] + count
+                        count_num = conn.execute(f"select count from statistical where area_id={area_id} and push_day='{push_day}'").fetchone()[0] + count
                         conn.execute(f"update statistical set count='{count_num}', push_time='{push_time}' where area_id={area_id}")
                     else:
                         conn.execute(
