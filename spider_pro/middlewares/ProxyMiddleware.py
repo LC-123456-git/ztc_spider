@@ -49,12 +49,11 @@ class ProxyMiddleware(RetryMiddleware):
         self.enable_proxy_use = True if kwargs.get("ENABLE_PROXY_USE") in const.TRUE_LIST else False
 
         if self.enable_proxy_use:
-            self.maintain_proxy_thread = threading.Thread(target=self.maintain_proxy_pool)
+            self.maintain_proxy_thread = threading.Thread(target=self.maintain_proxy_pool, args=(crawler,))
             self.maintain_proxy_thread.setDaemon(True)
             self.maintain_proxy_thread.start()
 
         # - 半小时队列保持为空，强制终止爬虫
-        self.crawler = crawler
         self.c_time = datetime.datetime.now()
 
     @classmethod
@@ -256,19 +255,21 @@ class ProxyMiddleware(RetryMiddleware):
                 self.redis_client.srem(self.name_https_proxy, item)
                 self.redis_client.sadd(self.name_https_used_proxy, item)
 
-    def maintain_proxy_pool(self):
+    def maintain_proxy_pool(self, crawler):
         while True:
-            # 半小时Request队列持续为空，终止爬虫(检测)
-            r_queue = len(self.crawler.engine.slot.scheduler)
-            if r_queue:
-                self.c_time = datetime.datetime.now()
-                self.logger.info('重置时间 {0} 请求队列数 {1}'.format(self.c_time, r_queue))
-            else:
-                d_time = (datetime.datetime.now() - self.c_time).total_seconds()
-                if d_time > 60*30:
-                    self.logger.info('长达半小时请求队列为空，异常阻塞，强制终止当前爬虫采集.')
-                    self.crawler.engine.close_spider()
-
+            try:
+                # 半小时Request队列持续为空，终止爬虫(检测)
+                r_queue = len(crawler.engine.slot.scheduler)
+                if r_queue:
+                    self.c_time = datetime.datetime.now()
+                    self.logger.info('重置时间 {0} 请求队列数 {1}'.format(self.c_time, r_queue))
+                else:
+                    d_time = (datetime.datetime.now() - self.c_time).total_seconds()
+                    if d_time > 60*30:
+                        self.logger.info('长达半小时请求队列为空，异常阻塞，强制终止当前爬虫采集.')
+                        crawler.engine.close_spider()
+            except Exception as e:
+                print('catch error:{0}'.format(e))
             # 更新redis ip池
             for name_proxy in [self.name_http_proxy, self.name_https_proxy]:
                 max_num = self.max_http if name_proxy == self.name_http_proxy else self.max_https
