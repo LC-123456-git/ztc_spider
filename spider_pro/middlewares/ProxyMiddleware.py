@@ -262,6 +262,7 @@ class ProxyMiddleware(RetryMiddleware):
             r_queue = len(self.crawler.engine.slot.scheduler)
             if r_queue:
                 self.c_time = datetime.datetime.now()
+                self.logger.info('重置时间 {0} 请求队列数 {1}'.format(self.c_time, r_queue))
             else:
                 d_time = (datetime.datetime.now() - self.c_time).total_seconds()
                 if d_time > 60*30:
