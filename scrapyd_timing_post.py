@@ -339,6 +339,14 @@ class ScrapyDataPost(object):
                                     if r_dict.get("code") in [200, "200"]:
                                         r = True
                                         itme_num += 1
+                                    elif r_dict.get("code") in [411, "411"]:  # 重复数据，is_upload为2
+                                        r = False
+                                        update_sql = f"update {table_name} set is_upload = 2 where id = {item_id}"  # 推送
+                                        result = conn.execute(update_sql)
+                                        if result.rowcount != 2:
+                                            print("update", item_id, False)
+                                        else:
+                                            print("update", item_id, True)
                                     else:
                                         print(r_dict.get("code"))
                                         r = False
@@ -370,8 +378,8 @@ class ScrapyDataPost(object):
                     result = conn.execute(
                         f"select * from statistical where area_id={area_id} and push_day={push_day}").fetchall()
                     if result:
-                        count_num = conn.execute( f"select count from statistical where area_id={area_id} and push_day={push_day}").fetchone()[0] + count
-                        conn.execute( f"update statistical set count='{count_num}', push_time='{push_time}' where area_id={area_id}")
+                        count_num = conn.execute(f"select count from statistical where area_id={area_id} and push_day={push_day}").fetchone()[0] + count
+                        conn.execute(f"update statistical set count='{count_num}', push_time='{push_time}' where area_id={area_id}")
                     else:
                         conn.execute(
                             f"INSERT INTO statistical (area_id, count, push_time, push_day) values ('{area_id}', '{count}', '{push_time}', '{push_day}')")
