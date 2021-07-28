@@ -20,11 +20,12 @@ from lxml import etree
 
 class ProxyMiddleware(RetryMiddleware):
 
-    def __init__(self, kwargs, logger):
+    def __init__(self, kwargs, logger, crawler):
         super(ProxyMiddleware, self).__init__(kwargs)
         self.logger = logger
         self.redis_pool = redis.ConnectionPool(
-            host=kwargs.get("REDIS_HOST"), port=8090,decode_responses=True, max_connections=int(kwargs.get("MAX_CONNECTIONS")),
+            host=kwargs.get("REDIS_HOST"), port=8090, decode_responses=True,
+            max_connections=int(kwargs.get("MAX_CONNECTIONS")),
             password=kwargs.get("REDIS_PASSWORD"), retry_on_timeout=True)
         self.redis_client = redis.StrictRedis(connection_pool=self.redis_pool, port=8090)
         self.max_http = int(kwargs.get("CURRENT_HTTP_PROXY_MAX"))
@@ -52,11 +53,15 @@ class ProxyMiddleware(RetryMiddleware):
             self.maintain_proxy_thread.setDaemon(True)
             self.maintain_proxy_thread.start()
 
+        # - 半小时队列保持为空，强制终止爬虫
+        self.crawler = crawler
+        self.c_time = datetime.datetime.now()
+
     @classmethod
     def from_crawler(cls, crawler):
         settings = crawler.settings
         logger = crawler.spider.logger
-        return cls(settings, logger)
+        return cls(settings, logger, crawler)
 
     def process_request(self, request, spider):
         if self.enable_proxy_use:
@@ -80,7 +85,7 @@ class ProxyMiddleware(RetryMiddleware):
         if response.status == 200:
             if spider.name == 'qcc_crawler':
                 if '<script>window.location.href=' in response.text:
-                    self.logger.info('企查查IP被封禁')
+                    self.logger.info('企查查页面访问失败.')
                     # self.delete_redis_ip_from(request.meta.get("proxy"))
             return response
         else:
@@ -164,8 +169,8 @@ class ProxyMiddleware(RetryMiddleware):
         if _type == 1:
             # 套餐
             r = requests.get(
-                             url=f"http://webapi.http.zhimacangku.com/getip?num={num}&type={data_type}&pro=&city=0&yys={yys}&port={port}&pack=159988&ts={ts}&ys=0&cs=0&lb=1&sb=0&pb=4&mr={mr}&regions="
-                             )
+                url=f"http://webapi.http.zhimacangku.com/getip?num={num}&type={data_type}&pro=&city=0&yys={yys}&port={port}&pack=159988&ts={ts}&ys=0&cs=0&lb=1&sb=0&pb=4&mr={mr}&regions="
+            )
             # 单次
             # r = requests.get(
             #     url=f"http://webapi.http.zhimacangku.com/getip?num={num}&type={data_type}&pro=&city=0&yys={yys}&port={port}&time={_time}&ts={ts}&ys=0&cs=0&lb=1&sb=0&pb=4&mr={mr}&regions="
@@ -253,6 +258,16 @@ class ProxyMiddleware(RetryMiddleware):
 
     def maintain_proxy_pool(self):
         while True:
+            # 半小时Request队列持续为空，终止爬虫(检测)
+            r_queue = len(self.crawler.engine.slot.scheduler)
+            if r_queue:
+                self.c_time = datetime.datetime.now()
+            else:
+                d_time = (datetime.datetime.now() - self.c_time).total_seconds()
+                if d_time > 60*30:
+                    self.logger.info('长达半小时请求队列为空，异常阻塞，强制终止当前爬虫采集.')
+                    self.crawler.engine.close_spider()
+
             # 更新redis ip池
             for name_proxy in [self.name_http_proxy, self.name_https_proxy]:
                 max_num = self.max_http if name_proxy == self.name_http_proxy else self.max_https
