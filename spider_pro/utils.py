@@ -432,7 +432,7 @@ def get_table_files(query_url, origin, content, keys_a=None, domain_url=None, **
     # 处理 文件 files_path
     for table_num in range(len(table_list)):
         file_list = table_list[table_num].xpath('./tr')[1:]
-        values = ast.literal_eval(get_table_url(query_url, cid, int(len(file_list))))
+        values = ast.literal_eval(get_table_url(query_url, cid, int(len(file_list)), **kwargs))
         for file_num in range(len(file_list)):
             # 通过第三方请求 获得files_path的路径
             value = "{}/attachment.jspx?cid={}&i={}".format(query_url, cid, file_num) + values[file_num]
