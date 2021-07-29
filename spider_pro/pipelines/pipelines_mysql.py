@@ -116,8 +116,8 @@ class MysqlPipeline(object):
             # Column('project_contact_information', mysql.VARCHAR(255), nullable=True, comment="项目负责人联系方式"),
             # Column('tender_contact', mysql.VARCHAR(255), nullable=True, comment="招标人联系人"),
             # Column('agent_contact', mysql.VARCHAR(255), nullable=True, comment="招标代理联系人"),
-            # Column('content', mysql.LONGTEXT, nullable=True, comment="公告内容"),
-            # Column('classify_id', mysql.VARCHAR(255), nullable=True, comment="公告分类id"),
+            Column('content', mysql.LONGTEXT, nullable=True, comment="公告内容"),
+            Column('classify_id', mysql.VARCHAR(255), nullable=True, comment="公告分类id"),
 
             Column('classify_name', mysql.VARCHAR(255), nullable=True, comment="公告分类名称"),
             Column('project_type', mysql.VARCHAR(255), nullable=True, comment="项目类型"),
