@@ -80,12 +80,6 @@ class MysqlPipeline(object):
                    server_default="0"),
 
             # 清洗后字段
-            Column('title', mysql.VARCHAR(2000), nullable=True, comment="公告标题"),
-            Column('project_number', mysql.VARCHAR(300), nullable=True, comment="项目编号"),
-            Column('project_name', mysql.VARCHAR(300), nullable=True, comment="项目名称"),
-            Column('tenderee', mysql.VARCHAR(300), nullable=True, comment="招标人"),
-            Column('bidding_agency', mysql.VARCHAR(255), nullable=True, comment="招标代理"),
-
             Column('area_code', mysql.VARCHAR(255), nullable=True, comment="区县编号"),
             Column('area', mysql.VARCHAR(255), nullable=True, comment="地区"),
             Column('address', mysql.VARCHAR(500), nullable=True, comment="详细地址"),
@@ -110,12 +104,18 @@ class MysqlPipeline(object):
             Column('tenderopen_time', mysql.VARCHAR(255), nullable=True, comment="开标时间"),
 
             Column('publish_time', mysql.VARCHAR(255), nullable=True, comment="发布时间"),
-            Column('liaison', mysql.VARCHAR(300), nullable=True, comment="联系人"),
-            Column('contact_information', mysql.VARCHAR(300), nullable=True, comment="联系方式"),
+
+            Column('title', mysql.VARCHAR(2000), nullable=True, comment="公告标题"),
+            Column('project_number', mysql.VARCHAR(300), nullable=True, comment="项目编号"),
+            Column('project_name', mysql.VARCHAR(300), nullable=True, comment="项目名称"),
+            Column('tenderee', mysql.VARCHAR(300), nullable=True, comment="招标人"),  # 招标单位
+            Column('bidding_agency', mysql.VARCHAR(255), nullable=True, comment="招标代理"),  # 代理单位
+            Column('liaison', mysql.VARCHAR(300), nullable=True, comment="联系人"),      # 招标人联系方式
+            Column('contact_information', mysql.VARCHAR(300), nullable=True, comment="联系方式"),  # 招标代理联系方式
             # Column('project_leader', mysql.VARCHAR(300), nullable=True, comment="项目负责人"),
             # Column('project_contact_information', mysql.VARCHAR(255), nullable=True, comment="项目负责人联系方式"),
-            # Column('tender_contact', mysql.VARCHAR(255), nullable=True, comment="招标人联系方式"),
-            # Column('agent_contact', mysql.VARCHAR(255), nullable=True, comment="招标代理联系方式"),
+            # Column('tender_contact', mysql.VARCHAR(255), nullable=True, comment="招标人联系人"),
+            # Column('agent_contact', mysql.VARCHAR(255), nullable=True, comment="招标代理联系人"),
             Column('content', mysql.LONGTEXT, nullable=True, comment="公告内容"),
             Column('classify_id', mysql.VARCHAR(255), nullable=True, comment="公告分类id"),
 
@@ -235,8 +235,10 @@ class MysqlPipeline(object):
                     'budget_amount': mysql.VARCHAR(),
                     'tenderopen_time': mysql.VARCHAR(),
                     'publish_time': mysql.DATETIME(),
+                    # 需要修改的字段
                     'liaison': mysql.VARCHAR(),
                     'contact_information': mysql.VARCHAR(),
+
                     'classify_id': mysql.VARCHAR(),
                     'classify_name': mysql.VARCHAR(),
                     'project_type': mysql.VARCHAR(),
