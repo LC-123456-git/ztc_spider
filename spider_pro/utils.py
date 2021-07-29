@@ -736,7 +736,7 @@ def deal_base_notices_data(data, is_hump=False):
             "title": get_limit_char_from_data(data, "title", 9999),  # 公告标题
             "projectNumber": get_limit_char_from_data(data, "project_number", 300),  # 项目编号
             "projectName": get_limit_char_from_data(data, "project_name", 100),  # 项目名称
-            "tenderee": get_limit_char_from_data(data, "tenderee", 100),  # 招标人
+            "tenderee": get_limit_char_from_data(data, "tenderee", 100),  # 招标单位（招标人）
             "biddingAgency": get_limit_char_from_data(data, "bidding_agency", 255),  # 招标代理
 
             "areaCode": get_limit_char_from_data(data, "area_code", 25),  # 区县编号
@@ -772,8 +772,12 @@ def deal_base_notices_data(data, is_hump=False):
 
             "publishTime": process_data_by_type_begin_upload(
                 get_limit_char_from_data(data, "publish_time"), data_type="datetime"),
-            "liaison": get_limit_char_from_data(data, "liaison", 100),
-            "contactInformation": get_limit_char_from_data(data, "contact_information", 255),
+            "liaison": get_limit_char_from_data(data, "liaison", 100),         # 招标人联系方式
+            "agentContact": get_limit_char_from_data(data, "agent_contact", 100),    # 招标代理联系人
+            "projectLeader": get_limit_char_from_data(data, "project_leader", 100),  # 项目负责人
+            "projectContactInformation": get_limit_char_from_data(data, "project_contact_information", 100),  # 项目负责人联系方式
+            "contactInformation": get_limit_char_from_data(data, "contact_information", 255),   # 招标代理联系方式
+            "biddingContact": get_limit_char_from_data(data, "bidding_contact", 100),
             "content": data.get("content", ""),  # 公告内容
             "classifyId": data.get("classify_id", ""),
 
@@ -797,7 +801,7 @@ def deal_base_notices_data(data, is_hump=False):
             "title": get_limit_char_from_data(data, "title", 9999),  # 公告标题
             "project_number": get_limit_char_from_data(data, "project_number", 300),  # 项目编号
             "project_name": get_limit_char_from_data(data, "project_name", 100),  # 项目名称
-            "tenderee": get_limit_char_from_data(data, "tenderee", 100),  # 招标人
+            "tenderee": get_limit_char_from_data(data, "tenderee", 100),  # 招标单位（招标人）
             "bidding_agency": get_limit_char_from_data(data, "bidding_agency", 255),  # 招标代理
 
             "area_code": get_limit_char_from_data(data, "area_code", 25),  # 区县编号
@@ -823,9 +827,13 @@ def deal_base_notices_data(data, is_hump=False):
             "budget_amount": get_limit_char_from_data(data, "budget_amount", 255),
             "tenderopen_time": get_limit_char_from_data(data, "tenderopen_time", 100),
 
-            "publish_time": get_limit_char_from_data(data, "publish_time"),
-            "liaison": get_limit_char_from_data(data, "liaison", 100),
-            "contact_information": get_limit_char_from_data(data, "contact_information", 255),
+            "publish_time": process_data_by_type_begin_upload(get_limit_char_from_data(data, "publish_time"), data_type="datetime"),
+            "liaison": get_limit_char_from_data(data, "liaison", 100),         # 招标人联系方式
+            "agent_contact": get_limit_char_from_data(data, "agent_contact", 100),    # 招标代理联系人
+            "project_leader": get_limit_char_from_data(data, "project_leader", 100),  # 项目负责人
+            "project_contact_information": get_limit_char_from_data(data, "project_contact_information", 100),  # 项目负责人联系方式
+            "contact_information": get_limit_char_from_data(data, "contact_information", 255),   # 招标代理联系方式
+            "bidding_contact": get_limit_char_from_data(data, "bidding_contact", 100),
             "content": data.get("content", ""),  # 公告内容
             "classify_id": data.get("classify_id", ""),
 
