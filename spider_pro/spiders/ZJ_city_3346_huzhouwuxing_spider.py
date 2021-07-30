@@ -22,7 +22,7 @@ class ZjCity3346HuzhouwuxingSpiderSpider(scrapy.Spider):
     area_id = 3346
     keywords_map = {
         '采购意向|需求公示': '招标预告',
-        '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
+        '单一来源|询价|竞争性谈判': '招标公告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
@@ -183,38 +183,41 @@ class ZjCity3346HuzhouwuxingSpiderSpider(scrapy.Spider):
     def parse_detail(self, resp):
         content = resp.xpath('//div[@class="zw"]').get()
         title_name = resp.xpath('//div[@class="title"]/text()').get()
-        notice_type_ori = resp.meta.get('notice_type')
 
-        _, content = utils.remove_specific_element(content, 'form', 'name', 'form1')
+        # 标题携带 重要通知 开标记录公示 测试 不采集
+        if not any(["重要通知" in title_name, "开标记录公示" in title_name, "测试" in title_name]):
+            notice_type_ori = resp.meta.get('notice_type')
 
-        # 关键字重新匹配 notice_type
-        matched, match_notice_type = self.match_title(title_name)
-        if matched:
-            notice_type_ori = match_notice_type
+            _, content = utils.remove_specific_element(content, 'form', 'name', 'form1')
 
-        notice_types = list(
-            filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
-        )
+            # 关键字重新匹配 notice_type
+            matched, match_notice_type = self.match_title(title_name)
+            if matched:
+                notice_type_ori = match_notice_type
 
-        # 匹配文件
-        _, files_path = utils.catch_files(content, self.query_url)
+            notice_types = list(
+                filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
+            )
 
-        notice_item = items.NoticesItem()
-        notice_item["origin"] = resp.url
+            # 匹配文件
+            _, files_path = utils.catch_files(content, self.query_url)
 
-        notice_item["title_name"] = title_name.strip() if title_name else ''
-        notice_item["pub_time"] = resp.meta.get('pub_time')
+            notice_item = items.NoticesItem()
+            notice_item["origin"] = resp.url
 
-        notice_item["info_source"] = self.basic_area
-        notice_item["is_have_file"] = constans.TYPE_HAVE_FILE if files_path else constans.TYPE_NOT_HAVE_FILE
-        notice_item["files_path"] = files_path
-        notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
-        notice_item["content"] = content
-        notice_item["area_id"] = self.area_id
-        notice_item["category"] = resp.meta.get('category')
-        print(resp.meta.get('pub_time'), resp.url)
+            notice_item["title_name"] = title_name.strip() if title_name else ''
+            notice_item["pub_time"] = resp.meta.get('pub_time')
 
-        return notice_item
+            notice_item["info_source"] = self.basic_area
+            notice_item["is_have_file"] = constans.TYPE_HAVE_FILE if files_path else constans.TYPE_NOT_HAVE_FILE
+            notice_item["files_path"] = files_path
+            notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
+            notice_item["content"] = content
+            notice_item["area_id"] = self.area_id
+            notice_item["category"] = resp.meta.get('category')
+            print(resp.meta.get('pub_time'), resp.url)
+
+            return notice_item
 
 
 if __name__ == "__main__":

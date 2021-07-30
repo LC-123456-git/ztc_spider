@@ -736,10 +736,6 @@ class QccCrawlerSpider(scrapy.Spider):
             """
             notice_item = items.QCCItem()
             notice_item.update(**company_info_items)
-            self.logger.info(
-                '关键词:{0}; 企业:{1}; 当前采集类型: {2}'.format(resp.meta.get('company', ''), company_info.get('企业名称', ''),
-                                                      resp.meta.get('tag', '')))
-            print('企业:{0}; 当前采集类型: {1}'.format(company_info.get('企业名称', ''), resp.meta.get('tag', '')))
             return notice_item
         else:
             self.logger.info('regular error.')
