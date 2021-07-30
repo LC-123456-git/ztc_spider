@@ -22,6 +22,17 @@ headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36'
     }
 
+
+def file_notout_time(pub_time):
+    today = datetime.datetime.now()
+    pub_time = datetime.datetime.strptime(pub_time, '%Y-%m-%d')
+    c = today - pub_time
+    if c.days > 90:
+        return False
+    else:
+        return True
+
+
 def remove_element_contained(content, ele_name, attr_name, attr_value, specific_ele):
     """
     删除子节点中包含 指定 元素的节点
@@ -634,8 +645,12 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         area_dict = const.zhe_jiang
         province_name = area_dict["name"]
         province_code = area_dict["code"]
-        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
-        return deal_area_dict
+        if re.search(province_name, info_source):
+            deal_area_dict = temp_area_data(province_name, province_code, area_dict, info_source)
+            return deal_area_dict
+        elif re.search(province_name, data):
+            deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
+            return deal_area_dict
     elif area_id == "16":
         area_dict = const.an_hui
         province_name = area_dict["name"]
