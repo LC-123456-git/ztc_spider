@@ -53,9 +53,6 @@ class ProxyMiddleware(RetryMiddleware):
             self.maintain_proxy_thread.setDaemon(True)
             self.maintain_proxy_thread.start()
 
-        # - 半小时队列保持为空，强制终止爬虫
-        self.c_time = datetime.datetime.now()
-
     @classmethod
     def from_crawler(cls, crawler):
         settings = crawler.settings
@@ -256,18 +253,20 @@ class ProxyMiddleware(RetryMiddleware):
                 self.redis_client.sadd(self.name_https_used_proxy, item)
 
     def maintain_proxy_pool(self, crawler):
+        q_count = 0
+        c_count = 0
         while True:
             try:
-                # 半小时Request队列持续为空，终止爬虫(检测)
-                r_queue = len(crawler.engine.slot.scheduler)
-                if r_queue:
-                    self.c_time = datetime.datetime.now()
-                    self.logger.info('重置时间 {0} 请求队列数 {1}'.format(self.c_time, r_queue))
+                self.logger.info('强制终止计数(至180)，当前：{0}'.format(c_count))
+                if c_count == 180:  # 10s 循环一次 半小时请求数不变表示阻塞 强制终止爬虫
+                    self.logger.info('正在强制终止爬虫...')
+                    crawler.engine.close_spider()
+
+                if q_count == len(crawler.engine.slot.scheduler):
+                    c_count += 1
                 else:
-                    d_time = (datetime.datetime.now() - self.c_time).total_seconds()
-                    if d_time > 60*30:
-                        self.logger.info('长达半小时请求队列为空，异常阻塞，强制终止当前爬虫采集.')
-                        crawler.engine.close_spider()
+                    c_count = 0
+                q_count = len(crawler.engine.slot.scheduler)
             except Exception as e:
                 print('catch error:{0}'.format(e))
             # 更新redis ip池
