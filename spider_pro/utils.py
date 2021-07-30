@@ -417,7 +417,6 @@ def get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffi
     return files_path
 
 def get_table_files(query_url, origin, content, keys_a=None, domain_url=None, **kwargs):
-    from datetime import datetime
     files_path = {}
     key_name = 'pdf/img/doc'
     suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##', 'cn:8080/', 'htm', 'gif']
@@ -445,7 +444,6 @@ def get_table_files(query_url, origin, content, keys_a=None, domain_url=None, **
     return files_path, content
 
 def get_files(domain_url, origin, files_text, keys_a=None):
-    from datetime import datetime
     files_path = {}
     key_name = 'pdf/img/doc'
     suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##', 'cn:8080/', 'htm', 'gif']
@@ -453,9 +451,7 @@ def get_files(domain_url, origin, files_text, keys_a=None):
                  'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
                  'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX', 'bmp', 'XCZF', 'YCZF', 'XCCF']
     [keys_list.append(k_a) for k_a in keys_a]
-    # present_time = datetime.strptime(time.strftime("%Y-%m-%d", time.localtime()), '%Y-%m-%d')
-    # new_time = datetime.strptime(pub_time, '%Y-%m-%d')
-    # if (present_time - new_time).days <= 10:
+    # if get_time(pub_time):
     if files_text.xpath('//a/@href'):
         files_list = files_text.xpath('//a')
         for cont in range(len(files_list)):
@@ -493,6 +489,13 @@ def get_files(domain_url, origin, files_text, keys_a=None):
     files_path = get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffix_list)
 
     return files_path
+
+def get_time(pub_time):
+    from datetime import datetime
+    present_time = datetime.strptime(time.strftime("%Y-%m-%d", time.localtime()), '%Y-%m-%d')
+    new_time = datetime.strptime(pub_time, '%Y-%m-%d')
+    if (present_time - new_time).days <= 10:
+        return True
 
 
 def get_notice_type(title_name, notice):
