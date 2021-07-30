@@ -90,13 +90,13 @@ class MySpider(CrawlSpider):
                     elif notice_name in self.list_notice_category_name:      # 招标公告
                         notice = const.TYPE_ZB_NOTICE
                     elif notice_name in self.list_zb_abnormal_name:          # 招标变更
-                        notice = const.TYPE_WIN_NOTICE
+                        notice = const.TYPE_ZB_ALTERATION
                     elif notice_name in self.list_win_advance_notice_name:   # 中标预告
-                        notice = const.TYPE_ZB_ABNORMAL
-                    elif notice_name in self.list_win_notice_category_name:  # 中标公告
                         notice = const.TYPE_WIN_ADVANCE_NOTICE
+                    elif notice_name in self.list_win_notice_category_name:  # 中标公告
+                        notice = const.TYPE_WIN_NOTICE
                     elif notice_name in self.list_qita_num:                  # 其他
-                        notice = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
+                        notice = const.TYPE_OTHERS_NOTICE
                     else:
                         notice = ''
                     if notice:
