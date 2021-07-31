@@ -11,16 +11,19 @@ import time, datetime
 import requests
 import base64
 import json
-from Crypto.Cipher import AES
-from spider_pro import constans as const
-from dateutil.relativedelta import relativedelta
-from spider_pro import rules_clean
-from lxml import etree
 import html
 import uuid
+from Crypto.Cipher import AES
+from dateutil.relativedelta import relativedelta
+from lxml import etree
+from functools import wraps
+
+from spider_pro import rules_clean
+from spider_pro import constans as const
+
 headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36'
-    }
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36'
+}
 
 
 def file_notout_time(pub_time):
@@ -64,7 +67,8 @@ def remove_element_contained(content, ele_name, attr_name, attr_value, specific_
     return msg, content.replace('<html><body>', '').replace('</body></html>', '')
 
 
-def remove_specific_element(content, ele_name, attr_name=None, attr_value=None, if_child=False, index=1, text='', **kwargs):
+def remove_specific_element(content, ele_name, attr_name=None, attr_value=None, if_child=False, index=1, text='',
+                            **kwargs):
     """
     remove specific html element attribute from content
     params:
@@ -151,7 +155,48 @@ def clean_file_name(file_name, file_types):
     return file_name
 
 
-def catch_files_from_table(resp_url, content, tb_attr=None, tb_attr_val=None, key_tag='相关下载文件', val_tag='下载', tb_index=0, **kwargs):
+def convert_to_strptime(str_time):
+    """
+    - 根据不同时间格式字符串 返回时间戳
+    """
+    regs = const.DATE_REG
+    strp_time = None
+    for rg in regs:
+        d_format = rg["d_format"]
+        reg = rg["reg"]
+
+        com = re.compile(reg)
+        if com.search(str_time):
+            strp_time = datetime.datetime.strptime(str_time, d_format)
+            break
+    return strp_time
+
+
+def do_files_dec(func):
+    """
+    - 适配处理文件的方法
+    """
+
+    @wraps(func)
+    def inner(*arg, **kwargs):
+        pub_time = kwargs.get('pub_time', None)
+        try:
+            pub_time = convert_to_strptime(pub_time)
+        except:
+            pub_time = None
+
+        # - 处理时间: 3个月外不采集文件
+        if pub_time:
+            delta_days = (datetime.datetime.now() - datetime.timedelta(days=90)).day
+            if delta_days < 90:
+                func(*arg, **kwargs)
+
+    return inner
+
+
+@do_files_dec
+def catch_files_from_table(resp_url, content, tb_attr=None, tb_attr_val=None, key_tag='相关下载文件', val_tag='下载',
+                           tb_index=0, **kwargs):
     """
     处理表格里包含的文件
         - 文件名与文件地址所在节点不同
@@ -294,6 +339,7 @@ def get_file_url(base_url, p_id, r_id, **kwargs):
     return file_url
 
 
+@do_files_dec
 def catch_files(content, base_url, **kwargs):
     """
     find doc/excel from content
@@ -393,11 +439,13 @@ def add_to_16(s):
         s += (16 - len(s) % 16) * chr(16 - len(s) % 16)
     return str.encode(s)  # 返回bytes
 
+
 def get_table_url(strst_url, cid, num, **kwargs):
     proxies = kwargs.get('proxies', None)
     cid_url = "{}/attachment_url.jspx?cid={}&n={}".format(strst_url, cid, num)
     response = requests.get(url=cid_url, headers=headers, proxies=proxies).content.decode('utf-8')
     return response
+
 
 def get_files_text(text, **kwargs):
     files_text = etree.HTML(text)
@@ -408,6 +456,7 @@ def get_files_text(text, **kwargs):
             table_list[table_num].getparent().remove(table_list[table_num])
     conten = etree.tounicode(files_text)
     return conten
+
 
 def get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffix_list):
     # 处理 img
@@ -426,6 +475,7 @@ def get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffi
                     key = key_name + str(con_num) + '.jpg'
                 files_path[key] = value
     return files_path
+
 
 def get_table_files(query_url, origin, content, keys_a=None, domain_url=None, **kwargs):
     files_path = {}
@@ -448,11 +498,14 @@ def get_table_files(query_url, origin, content, keys_a=None, domain_url=None, **
             value = "{}/attachment.jspx?cid={}&i={}".format(query_url, cid, file_num) + values[file_num]
             keys = ''.join(file_list[file_num].xpath('./td[1]/a/@title')[0]).strip()
             files_path[keys] = value
-            content = ''.join(content).replace('<a title="{}">{}</a>'.format(keys, keys), '<p title="{}">{}</p>'.format(keys, keys))
-            content = ''.join(content).replace('<a id="attach{}" title="文件下载">'.format(file_num), '<a id="attach{}" title="文件下载" href="{}">'.format(file_num, value))
+            content = ''.join(content).replace('<a title="{}">{}</a>'.format(keys, keys),
+                                               '<p title="{}">{}</p>'.format(keys, keys))
+            content = ''.join(content).replace('<a id="attach{}" title="文件下载">'.format(file_num),
+                                               '<a id="attach{}" title="文件下载" href="{}">'.format(file_num, value))
     # 处理 img
     files_path = get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffix_list)
     return files_path, content
+
 
 def get_files(domain_url, origin, files_text, keys_a=None):
     files_path = {}
@@ -476,18 +529,18 @@ def get_files(domain_url, origin, files_text, keys_a=None):
                     if files_list[cont].xpath('.//text()'):
                         keys = ''.join(files_list[cont].xpath('.//text()')[0]).strip()
                         # 先判断 value 有没有 后缀
-                        if value[value.rindex('.') + 1:] in keys_list:          # value 的后缀在 列表中
-                            if '.' in keys:    # 在判断 keys 有后缀 点
+                        if value[value.rindex('.') + 1:] in keys_list:  # value 的后缀在 列表中
+                            if '.' in keys:  # 在判断 keys 有后缀 点
                                 suffix_keys = keys[keys.rindex('.') + 1:]
-                                if suffix_keys not in keys_list:      # 判断 keys后缀在不在 列表中
+                                if suffix_keys not in keys_list:  # 判断 keys后缀在不在 列表中
                                     key = keys + value[value.rindex('.'):]
                                 else:
                                     key = keys
                             else:
                                 key = keys + value[value.rindex('.'):]
                             files_path[key] = value
-                        else:          # value 的后缀不在 列表中
-                            if '.' in keys:    # 在判断 keys 有后缀 点
+                        else:  # value 的后缀不在 列表中
+                            if '.' in keys:  # 在判断 keys 有后缀 点
                                 suffix_keys = keys[keys.rindex('.') + 1:]
                                 if suffix_keys in keys_list:  # 判断 keys后缀在不在 列表中
                                     key = keys[:keys.rindex('.')] + str(cont + 1) + '.' + suffix_keys
@@ -500,6 +553,7 @@ def get_files(domain_url, origin, files_text, keys_a=None):
     files_path = get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffix_list)
 
     return files_path
+
 
 def get_time(pub_time):
     from datetime import datetime
@@ -525,6 +579,7 @@ def get_notice_type(title_name, notice):
     else:
         notice_type = notice
     return notice_type
+
 
 def get_secret_url(text, key='qnbyzzwmdgghmcnm'):
     aes = AES.new(str.encode(key), AES.MODE_ECB)
@@ -790,11 +845,12 @@ def deal_base_notices_data(data, is_hump=False):
 
             "publishTime": process_data_by_type_begin_upload(
                 get_limit_char_from_data(data, "publish_time"), data_type="datetime"),
-            "liaison": get_limit_char_from_data(data, "liaison", 100),         # 招标人联系方式
-            "agentContact": get_limit_char_from_data(data, "agent_contact", 100),    # 招标代理联系人
+            "liaison": get_limit_char_from_data(data, "liaison", 100),  # 招标人联系方式
+            "agentContact": get_limit_char_from_data(data, "agent_contact", 100),  # 招标代理联系人
             "projectLeader": get_limit_char_from_data(data, "project_leader", 100),  # 项目负责人
-            "projectContactInformation": get_limit_char_from_data(data, "project_contact_information", 100),  # 项目负责人联系方式
-            "contactInformation": get_limit_char_from_data(data, "contact_information", 255),   # 招标代理联系方式
+            "projectContactInformation": get_limit_char_from_data(data, "project_contact_information", 100),
+            # 项目负责人联系方式
+            "contactInformation": get_limit_char_from_data(data, "contact_information", 255),  # 招标代理联系方式
             "biddingContact": get_limit_char_from_data(data, "bidding_contact", 100),
             "content": data.get("content", ""),  # 公告内容
             "classifyId": data.get("classify_id", ""),
@@ -845,12 +901,14 @@ def deal_base_notices_data(data, is_hump=False):
             "budget_amount": get_limit_char_from_data(data, "budget_amount", 255),
             "tenderopen_time": get_limit_char_from_data(data, "tenderopen_time", 100),
 
-            "publish_time": process_data_by_type_begin_upload(get_limit_char_from_data(data, "publish_time"), data_type="datetime"),
-            "liaison": get_limit_char_from_data(data, "liaison", 100),         # 招标人联系方式
-            "agent_contact": get_limit_char_from_data(data, "agent_contact", 100),    # 招标代理联系人
+            "publish_time": process_data_by_type_begin_upload(get_limit_char_from_data(data, "publish_time"),
+                                                              data_type="datetime"),
+            "liaison": get_limit_char_from_data(data, "liaison", 100),  # 招标人联系方式
+            "agent_contact": get_limit_char_from_data(data, "agent_contact", 100),  # 招标代理联系人
             "project_leader": get_limit_char_from_data(data, "project_leader", 100),  # 项目负责人
-            "project_contact_information": get_limit_char_from_data(data, "project_contact_information", 100),  # 项目负责人联系方式
-            "contact_information": get_limit_char_from_data(data, "contact_information", 255),   # 招标代理联系方式
+            "project_contact_information": get_limit_char_from_data(data, "project_contact_information", 100),
+            # 项目负责人联系方式
+            "contact_information": get_limit_char_from_data(data, "contact_information", 255),  # 招标代理联系方式
             "bidding_contact": get_limit_char_from_data(data, "bidding_contact", 100),
             "content": data.get("content", ""),  # 公告内容
             "classify_id": data.get("classify_id", ""),
@@ -1004,8 +1062,8 @@ def get_accurate_pub_time(pub_time):
     elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日 \d{1,2}:\d{1,2}", pub_time):
         pub_time_a = pub_time_str.group().replace("年", "-").replace("月", "-").replace("日", " ")
     elif pub_time_str := re.search(r'\d{4}.*\d{1,2}.*\d{1,2}.*\d{1,2}.*\d{1,2}', pub_time):
-        pub_time_a = pub_time_str.group().replace("年", "-").replace("月", "-").replace("日", " ")\
-                     .replace("时",":").replace("分", "")
+        pub_time_a = pub_time_str.group().replace("年", "-").replace("月", "-").replace("日", " ") \
+            .replace("时", ":").replace("分", "")
     elif pub_time_str := re.search(r'\d{4}.*\d{1,2}.*\d{1,2}.*\d{1,2}:\d{1,2}:\d{1,2}', pub_time):
         pub_time_a = pub_time_str.group(0).replace("/", "-")
     elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日", pub_time):
@@ -1133,6 +1191,7 @@ def match_key_re(content, regular_plan, keys):
             keys = data.get('keys', '')
         return keys
 
+
 def regular_match(keys, content, plan=0):
     """
     正则匹配字段内容
@@ -1167,19 +1226,24 @@ def regular_match(keys, content, plan=0):
             status = True
     return status, data
 
+
 def get_url(strst_url, cid, num):
     cid_url = "{}/cms/attachment_url.jspx?cid={}&n={}".format(strst_url, cid, num)
     res_list = ast.literal_eval(requests.get(url=cid_url, headers=headers).content.decode('utf-8'))
     return res_list
 
 
-
-
 if __name__ == "__main__":
     # print(get_real_url('http://ggzyjy.shandong.gov.cn:80/jsgczbgg/4795851.jhtml'))
     # pass
-    title_name = '黄骅市第七中学建设项目设计中标候选人公示'
-    info_source = '河北-廊坊市'
-    area_id = '04'
-    ret = deal_area_data(title_name, info_source, area_id)
-    print(ret)
+    # title_name = '黄骅市第七中学建设项目设计中标候选人公示'
+    # info_source = '河北-廊坊市'
+    # area_id = '04'
+    # ret = deal_area_data(title_name, info_source, area_id)
+    # print(ret)
+    # date = convert_to_strptime("2020-01-01 10:10:10")
+    # date = convert_to_strptime("2020.01.01 10:10:10")
+    # date = convert_to_strptime("2020/01/01 10:10")
+    # date = convert_to_strptime("2020年01月")
+    date = convert_to_strptime("2020年")
+    print(date, type(date))
