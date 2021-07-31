@@ -180,16 +180,19 @@ def do_files_dec(func):
     @wraps(func)
     def inner(*arg, **kwargs):
         pub_time = kwargs.get('pub_time', None)
-        try:
-            pub_time = convert_to_strptime(pub_time)
-        except:
-            pub_time = None
-
-        # - 处理时间: 3个月外不采集文件
         if pub_time:
-            delta_days = (datetime.datetime.now() - datetime.timedelta(days=90)).day
-            if delta_days < 90:
-                func(*arg, **kwargs)
+            try:
+                c_pub_time = convert_to_strptime(pub_time)
+            except:
+                c_pub_time = None
+
+            # - 处理时间: 3个月外不采集文件
+            if c_pub_time:
+                days_before = datetime.datetime.now() - datetime.timedelta(days=90)
+                if days_before < c_pub_time:
+                    func(*arg, **kwargs)
+        else:
+            func(*arg, **kwargs)
 
     return inner
 
