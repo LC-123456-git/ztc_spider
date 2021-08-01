@@ -190,9 +190,9 @@ def do_files_dec(func):
             if c_pub_time:
                 days_before = datetime.datetime.now() - datetime.timedelta(days=90)
                 if days_before < c_pub_time:
-                    func(*arg, **kwargs)
+                    return func(*arg, **kwargs)
         else:
-            func(*arg, **kwargs)
+            return func(*arg, **kwargs)
 
     return inner
 
