@@ -183,7 +183,7 @@ def do_files_dec(func):
         if pub_time:
             try:
                 c_pub_time = convert_to_strptime(pub_time)
-            except:
+            except Exception as e:
                 c_pub_time = None
 
             # - 处理时间: 3个月外不采集文件
@@ -191,6 +191,7 @@ def do_files_dec(func):
                 days_before = datetime.datetime.now() - datetime.timedelta(days=90)
                 if days_before < c_pub_time:
                     return func(*arg, **kwargs)
+            return '不在文件处理时效内', {}
         else:
             return func(*arg, **kwargs)
 
