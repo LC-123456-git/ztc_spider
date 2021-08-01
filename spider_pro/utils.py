@@ -172,33 +172,36 @@ def convert_to_strptime(str_time):
     return strp_time
 
 
-def do_files_dec(func):
+def do_files_dec(days=30):
     """
     - 适配处理文件的方法
+        + pub_time 方法传参
+        + days 装饰器传参(默认只对30天内的文件做处理)
     """
+    def decorator(func):
+        @wraps(func)
+        def inner(*arg, **kwargs):
+            pub_time = kwargs.get('pub_time', None)
+            if pub_time:
+                try:
+                    c_pub_time = convert_to_strptime(pub_time)
+                except Exception as e:
+                    c_pub_time = None
 
-    @wraps(func)
-    def inner(*arg, **kwargs):
-        pub_time = kwargs.get('pub_time', None)
-        if pub_time:
-            try:
-                c_pub_time = convert_to_strptime(pub_time)
-            except Exception as e:
-                c_pub_time = None
+                # - 处理时间: 3个月外不采集文件
+                if c_pub_time:
+                    days_before = datetime.datetime.now() - datetime.timedelta(days=days)
+                    if days_before < c_pub_time:
+                        return func(*arg, **kwargs)
+                return '不在文件处理时效内', {}
+            else:
+                return func(*arg, **kwargs)
 
-            # - 处理时间: 3个月外不采集文件
-            if c_pub_time:
-                days_before = datetime.datetime.now() - datetime.timedelta(days=90)
-                if days_before < c_pub_time:
-                    return func(*arg, **kwargs)
-            return '不在文件处理时效内', {}
-        else:
-            return func(*arg, **kwargs)
-
-    return inner
+        return inner
+    return decorator
 
 
-@do_files_dec
+@do_files_dec(days=90)
 def catch_files_from_table(resp_url, content, tb_attr=None, tb_attr_val=None, key_tag='相关下载文件', val_tag='下载',
                            tb_index=0, **kwargs):
     """
@@ -343,7 +346,7 @@ def get_file_url(base_url, p_id, r_id, **kwargs):
     return file_url
 
 
-@do_files_dec
+@do_files_dec(days=90)
 def catch_files(content, base_url, **kwargs):
     """
     find doc/excel from content
