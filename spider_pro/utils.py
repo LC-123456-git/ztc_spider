@@ -568,17 +568,17 @@ def get_time(pub_time):
 
 
 def get_notice_type(title_name, notice):
-    if re.search(r'变更|更正|澄清|补充|取消|延期', title_name):  # 招标变更
+    if re.search(r'变更|更正|澄清|补充|取消|延期', title_name):        # 招标变更
         notice_type = const.TYPE_ZB_ALTERATION
-    elif re.search(r'终止|中止|废标|流标', title_name):  # 招标异常
+    elif re.search(r'终止|中止|废标|流标', title_name):               # 招标异常
         notice_type = const.TYPE_ZB_ABNORMAL
-    elif re.search(r'候选人', title_name):  # 中标预告
+    elif re.search(r'候选人', title_name):                          # 中标预告
         notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-    elif re.search(r'采购意向|需求公示', title_name):  # 招标预告
+    elif re.search(r'采购意向|需求公示', title_name):                 # 招标预告
         notice_type = const.TYPE_ZB_ADVANCE_NOTICE
     elif re.search(r'单一来源|询价|竞争性谈判|竞争性磋商', title_name):  # 招标公告
         notice_type = const.TYPE_ZB_NOTICE
-    elif re.search(r'预审', title_name):  # 资格预审公告
+    elif re.search(r'预审', title_name):                            # 资格预审公告
         notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
     else:
         notice_type = notice
