@@ -483,7 +483,7 @@ def get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffi
                 files_path[key] = value
     return files_path
 
-
+@do_files_dec(days=90)
 def get_table_files(query_url, origin, content, keys_a=None, domain_url=None, **kwargs):
     files_path = {}
     key_name = 'pdf/img/doc'
@@ -513,8 +513,8 @@ def get_table_files(query_url, origin, content, keys_a=None, domain_url=None, **
     files_path = get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffix_list)
     return files_path, content
 
-
-def get_files(domain_url, origin, files_text, keys_a=None):
+@do_files_dec(days=90)
+def get_files(domain_url, origin, files_text, keys_a=None, **kwargs):
     files_path = {}
     key_name = 'pdf/img/doc'
     suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##', 'cn:8080/', 'htm', 'gif']
@@ -522,7 +522,6 @@ def get_files(domain_url, origin, files_text, keys_a=None):
                  'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
                  'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX', 'bmp', 'XCZF', 'YCZF', 'XCCF']
     [keys_list.append(k_a) for k_a in keys_a]
-    # if get_time(pub_time):
     if files_text.xpath('//a/@href'):
         files_list = files_text.xpath('//a')
         for cont in range(len(files_list)):
@@ -555,8 +554,6 @@ def get_files(domain_url, origin, files_text, keys_a=None):
                                     key = ''
                                 if key:
                                     files_path[key] = value
-    # else:
-    #     files_path = ''
     files_path = get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffix_list)
 
     return files_path
