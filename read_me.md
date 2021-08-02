@@ -221,6 +221,13 @@
 - [] 3358 衢州市开化县公共资源交易中心 http://www.kaihua.gov.cn/
 - [] 3359 衢州市柯城区公共资源交易中心 http://www.qjq.gov.cn/
 
+- [] 3360 金华市武义县人民政府 http://www.zjwy.gov.cn/
+- [] 3361 金华市浦江县人民政府 http://www.pj.gov.cn/
+- [] 3362 金华市磐安县人民政府 http://www.panan.gov.cn/
+
+
+
+
 ### 反爬策略汇总
 
 > 49 宁夏回族自治区公共资源交易网
