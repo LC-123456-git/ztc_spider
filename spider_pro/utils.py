@@ -118,10 +118,14 @@ def remove_specific_element(content, ele_name, attr_name=None, attr_value=None, 
                         else:  # 删除所有匹配节点
                             el.getparent().remove(el)
 
-        else:  # 无属性元素 指定索引删除
-            for n, el in enumerate(els):
-                if n + 1 == index:
+        else:
+            if len(els) + 1 != index:      # 无属性元素 删除all
+                for n, el in enumerate(els):
                     el.getparent().remove(el)
+            else:    # 无属性元素 指定索引删除
+                for n, el in enumerate(els):
+                    if n + 1 == index:
+                        el.getparent().remove(el)
         content = etree.tounicode(doc, method='html')
 
     except Exception as e:
