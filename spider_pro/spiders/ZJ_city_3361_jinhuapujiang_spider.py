@@ -196,7 +196,7 @@ class ZjCity3361JinhuapujiangSpiderSpider(scrapy.Spider):
                     page_size=offset,
                 )
 
-                # TODO 判断是否翻页
+                # 判断是否翻页
                 judge_status = self.is_in_interval(
                     c_url,
                     resp,
@@ -258,6 +258,7 @@ class ZjCity3361JinhuapujiangSpiderSpider(scrapy.Spider):
                                     'notice_type': notice_type,
                                     'category': category,
                                     'pub_time': pub_time,
+                                    'detail_url': detail_url,
                                 }, priority=len(data_list) * 1000 - n, dont_filter=True)
 
     def parse_detail(self, resp):
@@ -284,7 +285,7 @@ class ZjCity3361JinhuapujiangSpiderSpider(scrapy.Spider):
             _, files_path = utils.catch_files(content, self.query_url)
 
             notice_item = items.NoticesItem()
-            notice_item["origin"] = resp.url
+            notice_item["origin"] = resp.meta.get('detail_url', '')
 
             notice_item["title_name"] = title_name.strip() if title_name else ''
             notice_item["pub_time"] = resp.meta.get('pub_time')
@@ -304,5 +305,5 @@ class ZjCity3361JinhuapujiangSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3361_jinhuapujiang_spider -a sdt=2021-06-20 -a edt=2021-08-02".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3361_jinhuapujiang_spider -a sdt=2021-01-01 -a edt=2021-06-20".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3361_jinhuapujiang_spider".split(" "))
