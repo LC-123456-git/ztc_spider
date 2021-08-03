@@ -101,7 +101,7 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
             c_com = re.compile(r'<record>.*?<span>(?P<pub_time>[0-9 \-]+)</span><ahref=\"(?P<url>.*?)\"target')
 
             for pub_time, suffix_url in c_com.findall(content):
-                if utils.check_range_time(self.start_time, self.end_time, pub_time):
+                if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                     c_url = ''.join([self.query_url, suffix_url])
                     yield scrapy.Request(url=c_url, callback=self.parse_detail, meta={
                         'notice_type': resp.meta.get('notice_type', ''),
@@ -150,5 +150,5 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3362_jinhuapanan_spider -a sdt=2021-06-20 -a edt=2021-08-03".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3362_jinhuapanan_spider -a sdt=2021-06-01 -a edt=2021-08-03".split(" "))
     # cmdline.execute("scrapy crawl ZJ_city_3362_jinhuapanan_spider".split(" "))

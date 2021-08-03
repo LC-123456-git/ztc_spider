@@ -234,7 +234,7 @@ class ZjCity3361JinhuapujiangSpiderSpider(scrapy.Spider):
         else:
             for n, dl in enumerate(data_list):
                 pub_time = dl.get('shr_date', '')
-                if utils.check_range_time(self.start_time, self.end_time, pub_time):
+                if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                     open_url = dl.get('url', '')
 
                     c_com = re.compile(r'window.open\(\'(.*?)\',')
