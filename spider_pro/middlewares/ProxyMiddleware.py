@@ -260,6 +260,7 @@ class ProxyMiddleware(RetryMiddleware):
                 self.logger.info('强制终止计数(至180)，当前：{0}'.format(c_count))
                 if c_count == 180:  # 10s 循环一次 半小时请求数不变表示阻塞 强制终止爬虫
                     self.logger.info('正在强制终止爬虫...')
+                    crawler.engine.close_spider(self, '长时间阻塞，强制终止爬虫.')
                     exit(0)
                 if q_count == len(crawler.engine.slot.scheduler):
                     c_count += 1
