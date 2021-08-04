@@ -105,7 +105,7 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
                     c_url = ''.join([self.query_url, suffix_url])
                     yield scrapy.Request(url=c_url, callback=self.parse_detail, meta={
                         'notice_type': resp.meta.get('notice_type', ''),
-                        'category': resp.meta.get('notice_type', ''),
+                        'category': resp.meta.get('category', ''),
                         'pub_time': pub_time,
                     })
                 else:
@@ -150,5 +150,5 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3362_jinhuapanan_spider -a sdt=2021-06-01 -a edt=2021-08-03".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3362_jinhuapanan_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3362_jinhuapanan_spider -a sdt=2021-01-01 -a edt=2021-06-01".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3362_jinhuapanan_spider".split(" "))
