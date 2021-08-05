@@ -578,7 +578,7 @@ def get_notice_type(title_name, notice):
         notice_type = const.TYPE_ZB_ABNORMAL
     elif re.search(r'候选人', title_name):                          # 中标预告
         notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-    elif re.search(r'采购意向|需求公示', title_name):                 # 招标预告
+    elif re.search(r'采购意向|需求公示|意见征询', title_name):                 # 招标预告
         notice_type = const.TYPE_ZB_ADVANCE_NOTICE
     elif re.search(r'单一来源|询价|竞争性谈判|竞争性磋商', title_name):  # 招标公告
         notice_type = const.TYPE_ZB_NOTICE
@@ -1072,10 +1072,6 @@ def get_accurate_pub_time(pub_time):
         pub_time_a = pub_time_str.group().replace("年", "-").replace("月", "-").replace("日", " ")
     elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日", pub_time):
         pub_time_a = pub_time_str.group(0).replace("年", "-").replace("月", "-").replace("日", "")
-    elif pub_time_str := re.search(r"\d{4}-\d{1,2}-\d{1,2}", pub_time):
-        pub_time_a = pub_time_str.group(0)
-    elif pub_time_str := re.search(r"\d{4}/\d{1,2}/\d{1,2}", pub_time):
-        pub_time_a = pub_time_str.group(0).replace("/", "-")
     else:
         pub_time_a = ""
     return pub_time_a
