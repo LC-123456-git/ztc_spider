@@ -5,8 +5,10 @@
 # @Describe: 工具类
 import ast
 import re
+import os
 import hashlib
 import random
+import yaml
 import time, datetime
 import requests
 import base64
@@ -25,6 +27,26 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36'
 }
 
+def get_keywords(cf, area_id, field):
+    """
+    - 根据yaml对象获取关键字列表
+    """
+    keywords = []
+    try:
+        keywords = cf.get(area_id).get(field)
+    except Exception as e:
+        pass
+    return keywords
+
+
+def init_yaml():
+    config_path = os.path.join(os.path.join(os.path.dirname(__file__), 'conf'), 'keywords.yaml')
+
+    with open(config_path, 'rb') as f:
+        cont = f.read()
+
+    cf = yaml.load(cont, Loader=yaml.FullLoader)
+    return cf
 
 def file_notout_time(pub_time):
     today = datetime.datetime.now()
