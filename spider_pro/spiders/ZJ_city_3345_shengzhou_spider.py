@@ -171,8 +171,8 @@ class MySpider(CrawlSpider):
                 jsonstr = json.loads(json.dumps(xmlparse))['datastore']['recordset']['record']
                 for info in jsonstr:
                     pub_time = ''.join(re.findall('<td width="12%" .*>(.*)</td>', info)).strip()
-                    info_url = self.domain_url + re.findall('<a .*? href="(.*?)" .*>', info)[0]
-                    title_name = re.findall('"<a .* title="(.*?)" .*>', info)[0]
+                    info_url = self.domain_url + ''.join(re.findall('<a .*? href="(.*?)" .*>', info))
+                    title_name = ''.join(re.findall('<a .* title="(.*?)" .*>', info))
                     yield scrapy.Request(url=info_url, callback=self.parse_item, priority=200,
                                          meta={'category': response.meta['category'],
                                                'notice': response.meta['notice'],

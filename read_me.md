@@ -148,6 +148,7 @@
 - [] 115 全国招标信息网 https://www.bidnews.cn/zjzd/
 
 - [] 116 湖南招标网 http://www.hnbidding.com/
+
 - [] 117 河北政府采购网 http://www.ccgp-hebei.gov.cn/
 - [] 118 河南省政府采购网 http://www.ccgp-henan.gov.cn/
 - [] 119 湖北省政府采购网 http://www.ccgp-hubei.gov.cn/
