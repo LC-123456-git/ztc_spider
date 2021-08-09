@@ -179,8 +179,6 @@
 - [] 145 青岛市政府采购网 http://www.ccgp-qingdao.gov.cn/
 - [] 146 兵团政府采购网 http://www.ccgp-qingdao.gov.cn/
 
-
-
 ---
 
 ###地方
