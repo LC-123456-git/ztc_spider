@@ -143,25 +143,41 @@
 - [] 109 福州地铁 http://www.fzmtr.com/html/fzdt/pagenoticelist/1596446278.html
 - [] 110 厦门地铁 https://www.xmgdjt.com.cn/Modules/ControlHtml/Bidding.aspx
 - [] 111 长沙轨交 http://www.hncsmtr.com/zbtb/index.html
-- [] 112 辽宁政府采购网 http://www.ccgp-liaoning.gov.cn
 - [] 113 辽宁建设工程信息网 http://www.hncsmtr.com/zbtb/index.html
 - [] 114 光咨电子招投标交易平台 https://www.gzebid.cn/
 - [] 115 全国招标信息网 https://www.bidnews.cn/zjzd/
-- [] 116 湖南招标网 https://www.bidnews.cn/zjzd/
-- [] 117 河北政府采购网 https://www.bidnews.cn/zjzd/
-- [] 118 河南省政府采购网 https://www.bidnews.cn/zjzd/
-- [] 119 湖北省政府采购网 https://www.bidnews.cn/zjzd/
-- [] 120 湖南省政府采购网 https://www.bidnews.cn/zjzd/
-- [] 121 山西省政府采购网 https://www.bidnews.cn/zjzd/
-- [] 122 山东省政府采购网 https://www.bidnews.cn/zjzd/
-- [] 123 黑龙江政府采购网 https://www.bidnews.cn/zjzd/
-- [] 124 吉林省政府采购网 https://www.bidnews.cn/zjzd/
-- [] 125 辽宁省政府采购网 https://www.bidnews.cn/zjzd/
-- [] 126 海南省政府采购网 https://www.bidnews.cn/zjzd/
-- [] 127 内蒙古自治区政府采购网 https://www.bidnews.cn/zjzd/
-- [] 128 广东政府采购网 https://www.bidnews.cn/zjzd/
-- [] 130 海南 https://www.bidnews.cn/zjzd/
-- [] 128 广东政府采购网 https://www.bidnews.cn/zjzd/
+
+- [] 116 湖南招标网 http://www.hnbidding.com/
+- [] 117 河北政府采购网 http://www.ccgp-hebei.gov.cn/
+- [] 118 河南省政府采购网 http://www.ccgp-henan.gov.cn/
+- [] 119 湖北省政府采购网 http://www.ccgp-hubei.gov.cn/
+- [] 120 湖南省政府采购网 http://www.ccgp-hunan.gov.cn/
+- [] 121 山西省政府采购网 http://www.ccgp-shanxi.gov.cn/
+- [] 122 山东省政府采购网 http://www.ccgp-shandong.gov.cn/
+- [] 123 黑龙江政府采购网 http://www.ccgp-heilongj.gov.cn/
+- [] 124 吉林省政府采购网 http://www.ccgp-jilin.gov.cn/
+- [] 125 辽宁省政府采购网 http://www.ccgp-liaoning.gov.cn/
+- [] 126 海南省政府采购网 https://www.ccgp-hainan.gov.cn/
+- [] 127 内蒙古自治区政府采购网 http://www.ccgp-neimenggu.gov.cn/
+- [] 128 广东政府采购网 https://gdgpo.czt.gd.gov.cn/
+- [] 129 陕西省政府采购网 http://www.ccgp-shaanxi.gov.cn/
+- [] 130 甘肃省政府采购网 http://www.ccgp-gansu.gov.cn/
+- [] 131 青海省政府采购网 http://www.ccgp-qinghai.gov.cn/
+- [] 132 宁夏回族自治区政府采购网 http://www.ccgp-ningxia.gov.cn/
+- [] 133 江西省政府采购网 http://www.ccgp-jiangxi.gov.cn/
+- [] 134 新疆政府采购网 http://www.ccgp-xinjiang.gov.cn/
+- [] 135 四川省政府采购网 http://www.ccgp-sichuan.gov.cn/
+- [] 136 江苏省政府采购网 http://www.ccgp-jiangsu.gov.cn/
+- [] 137 广西省政府采购网 http://www.ccgp-guangxi.gov.cn/
+- [] 138 云南省政府采购网 http://www.ccgp-yunnan.gov.cn
+- [] 139 福建省政府采购网 http://www.ccgp-fujian.gov.cn/
+- [] 140 贵州省政府采购网 http://www.ccgp-guizhou.gov.cn/
+- [] 141 安徽省政府采购网 http://www.ccgp-anhui.gov.cn
+- [] 142 西藏自治区政府采购网 http://www.ccgp-xizang.gov.cn/
+- [] 143 大连市政府采购网 http://www.ccgp-dalian.gov.cn/
+- [] 144 深圳市政府采购网 http://zfcg.sz.gov.cn/
+- [] 145 青岛市政府采购网 http://www.ccgp-qingdao.gov.cn/
+- [] 146 兵团政府采购网 http://www.ccgp-qingdao.gov.cn/
 
 
 ---
