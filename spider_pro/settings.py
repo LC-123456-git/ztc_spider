@@ -11,9 +11,9 @@ import logging.config
 BOT_NAME = 'spider_pro'
 
 # project spider modules
-SPIDER_MODULES = ['spider_pro.spiders', 'spider_pro.extra_spiders']
+SPIDER_MODULES = ['spider_pro.spiders', 'spider_pro.extra_spiders', 'spider_pro.spider_govern']
 # SPIDER_MODULES = ['spider_pro.spiders']
-NEWSPIDER_MODULE = 'spider_pro.spiders'
+NEWSPIDER_MODULE = 'spider_pro.spider_govern'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
