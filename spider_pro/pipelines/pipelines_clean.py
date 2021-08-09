@@ -535,8 +535,8 @@ class CleanPipeline(object):
                 'is_have_file': is_have_file,
                 # 'project_leader': project_leader,
                 # 'project_contact_information': project_contact_information,
-                'bidding_contact': bidding_contact,
-                'agent_contact': agent_contact
+                # 'bidding_contact': bidding_contact,
+                # 'agent_contact': agent_contact
                 }
 
     def get_keys_value_from_content(self, content: str, keys, area_id="00", field_name=None, title=None):
@@ -586,8 +586,8 @@ class CleanPipeline(object):
                             'tenderopen_time',
                             # 'project_leader',
                             # 'project_contact_information',
-                            'bidding_contact',
-                            'agent_contact',
+                            # 'bidding_contact',
+                            # 'agent_contact',
                         ]
                         update_sql = text(
                             """UPDATE {} set """.format(table_name) +
@@ -644,8 +644,8 @@ class CleanPipeline(object):
                             'tenderopen_time',
                             # 'project_leader',
                             # 'project_contact_information',
-                            'agent_contact',
-                            'contact_information',
+                            # 'agent_contact',
+                            # 'contact_information',
                         ]
                         update_sql = text(
                             """UPDATE {} set """.format(table_name) +
