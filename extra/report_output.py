@@ -133,6 +133,7 @@ class ReportOutput(DBQuery):
         '83': '旺采网',
         '85': '安装信息网',
         '114': '广咨电子招投标交易平台',
+        '3101': '上海市政府采购网',
         '3301': '杭州市公共资源交易平台',
         '3302': '浙江政府采购网',
         '3303': '浙能集团电子招标投标交易平台',
@@ -155,6 +156,7 @@ class ReportOutput(DBQuery):
         '3322': '安吉公共资源交易中心',
         '3323': '萧山政府门户网站',
         '3324': '南浔区公共资源交易平台',
+        '3325': '德清县公共资源交易平台',
         '3326': '龙游政府门户网站',
         '3327': '平阳公共资源交易平台',
         '3331': '富阳区公共资源交易中心',
@@ -163,6 +165,25 @@ class ReportOutput(DBQuery):
         '3334': '杭州市公共资源交易中心建德分中心',
         '3335': '浙江省温州市鹿城区人民政府',
         '3336': '浙江省温州市乐清市人民政府',
+
+        '3337': '浙江瑞安市人民政府',
+        '3338': '浙江省温州市永嘉县人民政府',
+        '3339': '浙江省温州市洞头区人民政府',
+        '3340': '浙江省温州市文成县人民政府',
+        '3341': '浙江省温州市泰顺县人民政府',
+        '3342': '浙江省绍兴市上虞区人民政府',
+        '3346': '浙江省湖州吴兴市人民政府',
+        '3350': '未知',
+        '3352': '金华市金东区公共资源交易网',
+        '3353': '金华市兰溪市公共资源交易',
+        '3354': '金华市东阳市公共资源交易',
+        '3355': '金华市永康市公共资源交易网',
+        '3356': '浙江省金华义乌市公共资源交易中心',
+        '3357': '衢州衢江区公共资源交易网',
+        '3358': '衢州开化县公共资源交易网',
+        '3359': '衢州柯城区公共资源交易网',
+        '3361': '浙江省金华市浦江县人民政府',
+        '3362': '浙江省金华市磐安县人民政府',
     }
     border_type = Side(border_style="medium", color='FF000000')
     border = Border(left=border_type,
@@ -250,7 +271,7 @@ class ReportOutput(DBQuery):
         except Exception as e:
             push_n = 0
 
-        # - 异常分析() 
+        # - 异常分析()
         errors = []
         if push_n > pub_n:
             errors.append('ERROR: 推送异常;')
@@ -266,10 +287,10 @@ class ReportOutput(DBQuery):
             errors.append('WARNING: 请检查文章未推送原因;')
         if pub_n > download_n:
             errors.append('WARNING: 请检查是否当日未采集完,第二天采集完造成;')
-        
+
         error = ''.join(errors)
         error = ''
-        
+
         result.append(
             [date, serial_number, area_id, pub_n, download_n, push_n, '', '', error]
         )
@@ -395,5 +416,5 @@ if __name__ == '__main__':
     }
     rpt = ReportOutput(**data)
     start_time = datetime.now()
-    rpt.output(sdt='2021-07-09', edt='2021-07-09')
+    rpt.output(sdt='2021-08-09', edt='2021-08-09')
     # print((datetime.now() - start_time).total_seconds())

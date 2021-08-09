@@ -682,7 +682,7 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id in ["4", "04", "76", "71"]:
+    elif area_id in ["4", "04", "76", "71", "117"]:
         area_dict = const.he_bei
         province_name = area_dict["name"]
         province_code = area_dict["code"]
