@@ -65,63 +65,63 @@ class MySpider(CrawlSpider):
         else:
             self.enable_incr = False
 
-    def start_requests(self):
-        for url in self.urls_list:
-            classifyShow = '建设工程'
-            code = re.findall('\d{8,10}', url)[0]
-            if code in self.list_alteration_category_num:
-                notice = const.TYPE_ZB_ABNORMAL
-            elif code in self.list_notice_category_code:
-                notice = const.TYPE_ZB_NOTICE
-            elif code in self.list_zb_abnormal_code:
-                notice = const.TYPE_ZB_ALTERATION
-            elif code in self.list_win_advance_notice_code:
-                notice = const.TYPE_WIN_ADVANCE_NOTICE
-            elif code in self.list_win_notice_category_code:
-                notice = const.TYPE_WIN_NOTICE
-            elif code in self.list_qualification_num:
-                notice = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
-            elif code in self.list_qita_code:
-                notice = const.TYPE_OTHERS_NOTICE
-            else:
-                notice = 'null'
-            if notice != 'null':
-                yield scrapy.Request(url=url, callback=self.parse_data_urls,
-                                     meta={'classifyShow': classifyShow, 'notice': notice})
-
     # def start_requests(self):
-    #     yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
-    #
-    # def parse_urls(self, response):
-    #     try:
-    #         li_list = response.xpath('//div[@class="ewb-tree-bd"]/ul/li')
-    #         for li in li_list:
-    #             classifyShow = li.xpath('./h3/span/a/text()').get()
-    #             info_url_list = li.xpath('./ul/li')
-    #             for info in info_url_list:
-    #                 info_url = self.domain_url + info.xpath('./a/@href').get()
-    #                 code = re.findall('\d{8,10}', info_url)[0]
-    #                 if code in self.list_alteration_category_num:
-    #                     notice = const.TYPE_ZB_ABNORMAL
-    #                 elif code in self.list_notice_category_code:
-    #                     notice = const.TYPE_ZB_NOTICE
-    #                 elif code in self.list_zb_abnormal_code:
-    #                     notice = const.TYPE_ZB_ALTERATION
-    #                 elif code in self.list_win_advance_notice_code:
-    #                     notice = const.TYPE_WIN_ADVANCE_NOTICE
-    #                 elif code in self.list_win_notice_category_code:
-    #                     notice = const.TYPE_WIN_NOTICE
-    #                 elif code in self.list_qualification_num:
-    #                     notice = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
-    #                 elif code in self.list_qita_code:
-    #                     notice = const.TYPE_OTHERS_NOTICE
-    #                 else:
-    #                     notice = 'null'
-    #                 if notice != 'null':
-    #                     yield scrapy.Request(url=info_url, callback=self.parse_data_urls,
-    #                                          meta={'classifyShow': classifyShow, 'notice': notice})
-    #     except Exception as e:
-    #         self.logger.error(f"发起数据请求失败 {e} {response.url=}")
+    #     for url in self.urls_list:
+    #         classifyShow = '建设工程'
+    #         code = re.findall('\d{8,10}', url)[0]
+    #         if code in self.list_alteration_category_num:
+    #             notice = const.TYPE_ZB_ABNORMAL
+    #         elif code in self.list_notice_category_code:
+    #             notice = const.TYPE_ZB_NOTICE
+    #         elif code in self.list_zb_abnormal_code:
+    #             notice = const.TYPE_ZB_ALTERATION
+    #         elif code in self.list_win_advance_notice_code:
+    #             notice = const.TYPE_WIN_ADVANCE_NOTICE
+    #         elif code in self.list_win_notice_category_code:
+    #             notice = const.TYPE_WIN_NOTICE
+    #         elif code in self.list_qualification_num:
+    #             notice = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
+    #         elif code in self.list_qita_code:
+    #             notice = const.TYPE_OTHERS_NOTICE
+    #         else:
+    #             notice = 'null'
+    #         if notice != 'null':
+    #             yield scrapy.Request(url=url, callback=self.parse_data_urls,
+    #                                  meta={'classifyShow': classifyShow, 'notice': notice})
+
+    def start_requests(self):
+        yield scrapy.Request(url=self.query_url, callback=self.parse_urls)
+
+    def parse_urls(self, response):
+        try:
+            li_list = response.xpath('//div[@class="ewb-tree-bd"]/ul/li')
+            for li in li_list:
+                classifyShow = li.xpath('./h3/span/a/text()').get()
+                info_url_list = li.xpath('./ul/li')
+                for info in info_url_list:
+                    info_url = self.domain_url + info.xpath('./a/@href').get()
+                    code = re.findall('\d{8,10}', info_url)[0]
+                    if code in self.list_alteration_category_num:
+                        notice = const.TYPE_ZB_ABNORMAL
+                    elif code in self.list_notice_category_code:
+                        notice = const.TYPE_ZB_NOTICE
+                    elif code in self.list_zb_abnormal_code:
+                        notice = const.TYPE_ZB_ALTERATION
+                    elif code in self.list_win_advance_notice_code:
+                        notice = const.TYPE_WIN_ADVANCE_NOTICE
+                    elif code in self.list_win_notice_category_code:
+                        notice = const.TYPE_WIN_NOTICE
+                    elif code in self.list_qualification_num:
+                        notice = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
+                    elif code in self.list_qita_code:
+                        notice = const.TYPE_OTHERS_NOTICE
+                    else:
+                        notice = 'null'
+                    if notice != 'null':
+                        yield scrapy.Request(url=info_url, callback=self.parse_data_urls,
+                                             meta={'classifyShow': classifyShow, 'notice': notice})
+        except Exception as e:
+            self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
     def parse_data_urls(self, response):
         try:
@@ -255,5 +255,5 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3306_jiaxing_spider -a sdt=2021-02-01 -a edt=2021-06-23".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3306_jiaxing_spider -a sdt=2021-02-01 -a edt=2021-06-30".split(" "))
 

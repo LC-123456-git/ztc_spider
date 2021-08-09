@@ -147,6 +147,22 @@
 - [] 113 辽宁建设工程信息网 http://www.hncsmtr.com/zbtb/index.html
 - [] 114 光咨电子招投标交易平台 https://www.gzebid.cn/
 - [] 115 全国招标信息网 https://www.bidnews.cn/zjzd/
+- [] 116 湖南招标网 https://www.bidnews.cn/zjzd/
+- [] 117 河北政府采购网 https://www.bidnews.cn/zjzd/
+- [] 118 河南省政府采购网 https://www.bidnews.cn/zjzd/
+- [] 119 湖北省政府采购网 https://www.bidnews.cn/zjzd/
+- [] 120 湖南省政府采购网 https://www.bidnews.cn/zjzd/
+- [] 121 山西省政府采购网 https://www.bidnews.cn/zjzd/
+- [] 122 山东省政府采购网 https://www.bidnews.cn/zjzd/
+- [] 123 黑龙江政府采购网 https://www.bidnews.cn/zjzd/
+- [] 124 吉林省政府采购网 https://www.bidnews.cn/zjzd/
+- [] 125 辽宁省政府采购网 https://www.bidnews.cn/zjzd/
+- [] 126 海南省政府采购网 https://www.bidnews.cn/zjzd/
+- [] 127 内蒙古自治区政府采购网 https://www.bidnews.cn/zjzd/
+- [] 128 广东政府采购网 https://www.bidnews.cn/zjzd/
+- [] 130 海南 https://www.bidnews.cn/zjzd/
+- [] 128 广东政府采购网 https://www.bidnews.cn/zjzd/
+
 
 ---
 

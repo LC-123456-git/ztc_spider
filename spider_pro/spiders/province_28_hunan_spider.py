@@ -195,7 +195,8 @@ class MySpider(Spider):
             contents = contents.replace(''.join(re.findall(pattern, contents)), '')
 
             files_text = etree.HTML(content)
-            files_path = get_files(self.url, origin, files_text)
+            keys_a = []
+            files_path = get_files(self.url, origin, files_text, keys_a=keys_a)
 
             notice_item = NoticesItem()
             notice_item["origin"] = origin

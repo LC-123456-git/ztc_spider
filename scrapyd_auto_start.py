@@ -213,7 +213,7 @@ def get_back_date_by_month(month):
 
 if __name__ == "__main__":
 
-    days_before = get_back_date(2)
+    days_before = get_back_date(10)
     yesterday = get_back_date(1)
     today = '{0:%Y-%m-%d}'.format(datetime.datetime.now())
 
@@ -227,7 +227,7 @@ if __name__ == "__main__":
         # "province_10_heilongjiang_spider",  # error
         # "province_11_shanghai_spider",  # ok
         # "province_13_jiangsu_spider",  # error_07 + error_01
-        "province_14_zhejiang_spider",  # error
+        # "province_14_zhejiang_spider",  # error
         # "province_15_zhejiang_spider",  # ok
         # "province_16_anhui_spider",  # ok + error_02
         # "province_18_fujian_spider",  # ok + error_05
@@ -280,10 +280,20 @@ if __name__ == "__main__":
         # "ZJ_city_3326_longyou_spider",
         # "qcc_crawler",
         # "ZJ_city_3327_pingyang_spider",
-        # "ZJ_city_3328_changshan_spider",
-        # "province_68_qilu_spider",
-        # "province_67_yangguangyizhao_spider",
-        # "province_59_xinzhi_spider",
+        # "ZJ_city_3331_fuyang_spider",
+        # "ZJ_city_3332_chunan_spider",
+        # "ZJ_city_3334_jiande_spider",
+        # "ZJ_city_3335_wzlucheng_spider",
+        # "ZJ_city_3336_yueqing_spider",
+        # "ZJ_city_3337_ruian_spider",
+        # "ZJ_city_3338_yongjia_spider",
+        # "ZJ_city_3339_dongtou_spider",
+        # "ZJ_city_3340_wencheng_spider",
+        # "ZJ_city_3341_taishun_spider",
+        "ZJ_city_3342_shangyu_spider",
+        # "ZJ_city_3343_xinchang_spider",
+        # "ZJ_city_3344_shengzhou_spider",
+        # "ZJ_city_3345_yuecheng_spider",
     ]
 
     # 优先判断运行状态
@@ -313,8 +323,8 @@ if __name__ == "__main__":
                     # 'day': 10
                 }
 
-                if_incr = True            # 增量
-                # if_incr = False         # 全量
+                # if_incr = True            # 增量
+                if_incr = False         # 全量
                 resp = exec_each_schedule(item, area_id, arg_choices=arg_choices, if_incr=if_incr, **info)
 
                 if resp:

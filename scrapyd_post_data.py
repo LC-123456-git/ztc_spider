@@ -213,7 +213,7 @@ class ScrapyDataPost(object):
         if_push = True
         try:
             files_path = ast.literal_eval(files_path_string)
-            ret = requests.post(url='http://file.zhaotx.cn/sapi/webfile/getDownloadState', data={
+            ret = requests.post(url='http://tfile.zhaotx.cn/sapi/webfile/addWebFileTask', data={
                 'jsonString': files_path
             })
             if ret.status_code == 200:
@@ -239,7 +239,7 @@ class ScrapyDataPost(object):
 
     def run_post(self, d_time="1970-01-01", table_name=None, e_time=None):
         table_name = table_name if table_name else self.table_name
-        rows = 200
+        rows = 300
         err_start = 0
         with self.engine.connect() as conn:
             while True:
@@ -254,8 +254,7 @@ class ScrapyDataPost(object):
                 """
                 results = conn.execute(
                     # f"-- select * from {table_name} where is_clean = 1 and is_upload = 0 and is_have_file = 1 and pub_time >= '{d_time}' and pub_time < '{e_time}'limit {err_start},{rows} ").fetchall()
-                    f"select * from {table_name} where is_clean = 1 and is_have_file = 0 and is_upload = 0 and id='21' and pub_time > '{d_time}' and pub_time <= '{e_time}'limit {err_start},{rows} "
-                ).fetchall()
+                    f"select * from {table_name} where is_clean = 1 and is_upload = 0 and pub_time > '{d_time}' and pub_time <= '{e_time}'limit {err_start},{rows} ").fetchall()
                 if len(results) != 0:
                     area_id = results[0]['area_id']
                     push_time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
@@ -264,9 +263,9 @@ class ScrapyDataPost(object):
                     for item in results:
                         item_dict = dict(item)
                         item_id = item_dict.get("id")
+
                         if item_dict['is_have_file'] != 0:
-                            if_push, item_dict['content'] = ScrapyDataPost.reset_file_url(
-                                item_dict['content'], item_dict['files_path'])
+                            if_push, item_dict['content'] = ScrapyDataPost.reset_file_url(item_dict['content'], item_dict['files_path'])
                             if not if_push:
                                 continue
 
@@ -349,18 +348,19 @@ class ScrapyDataPost(object):
                             print(item_id, "不执行更新操作")
 
                     count = itme_num
-                    result = conn.execute(f"select * from statistical where area_id={area_id} and push_day={push_day}").fetchall()
+                    result = conn.execute(
+                        f"select * from statistical where area_id={area_id} and push_day='{push_day}'").fetchall()
                     if result:
-                        count_num = conn.execute(f"select count from statistical where area_id={area_id} and push_day={push_day}").fetchone()[0] + count
+                        count_num = conn.execute(f"select count from statistical where area_id={area_id} and push_day='{push_day}'").fetchone()[0] + count
                         conn.execute(f"update statistical set count='{count_num}', push_time='{push_time}' where area_id={area_id}")
                     else:
-                        conn.execute(f"INSERT INTO statistical (area_id, count, push_time, push_day) values ('{area_id}', '{count}', '{push_time}', '{push_day}')")
+                        conn.execute(
+                            f"INSERT INTO statistical (area_id, count, push_time, push_day) values ('{area_id}', '{count}', '{push_time}', '{push_day}')")
                 if len(results) < rows:
                     break
                 else:
                     print("没有数据可执行更新操作")
                     break
-
 
 
 
@@ -548,9 +548,10 @@ if __name__ == "__main__":
     # ])
 
     # 测试推数据
-    cp = ScrapyDataPost(table_name="notices_3306",
+    cp = ScrapyDataPost(table_name="notices_3345",
                         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
                         post_url="http://192.168.1.243:30007/feign/data/v1/notice/addGatherNotice")
+    # cp.run_post(d_time='2021-06-20', e_time='2021-07-08')
     cp.run_post()
     # # 测试多线程推数据
     # cp.run_multi_thead_prepare(st='2018-10-08', et='2018-12-31')

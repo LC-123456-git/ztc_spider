@@ -76,12 +76,18 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
         except Exception as e:
             return ""
 
-    elif area_id == "3305":
-        ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name)
+    elif area_id in ["3300", '3306', '3307', '3313', '3331', '3334']:  # 3305
+        ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id, title=title)
+        # ke.fields_regular = {
+        #     'bidding_agency': [
+        #         # r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+.*?)ψψ',
+        #         r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+.*?)ψψ'
+        #     ]
+        # }
         return ke.get_value()
 
     # elif area_id == "3306":
-    # # TODO 还需优化
+    # # 还需优化
     #     try:
     #         if isinstance(keys, str):
     #             keys_str_list = [keys]
@@ -922,7 +928,7 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
                         p_Name = ";".join(purchaseProjectName_list)
                         p_Detail = ";".join(purchaseRequirementDetail_list)
                         p_Time = ";".join(estimatedPurchaseTime_list)
-                        Price = str(sum(list(map(int, budgetPrice_list))))
+                        Price = str(sum(list(map(int, budgetPrice_list))) / 10000)
                         data_dict[title_header[1]] = p_Name
                         data_dict[title_header[2]] = p_Detail
                         data_dict[title_header[3]] = Price
@@ -934,12 +940,12 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
                         Price = budgetPrice_list[0]
                         data_dict[title_header[1]] = p_Name
                         data_dict[title_header[2]] = p_Detail
-                        data_dict[title_header[3]] = str(Price)
+                        data_dict[title_header[3]] = str(int(Price) / 10000)
                         data_dict[title_header[4]] = p_Time
                     for keys in keys_str_list:
                         value = data_dict.get(keys)
                         if value:
-                            return re.sub(" ", "", value)
+                            return value
                     # print(title_header)
 
                 ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id)
@@ -949,7 +955,6 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
                     ],
                     'project_number': [
                         r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                        r'%s[ψ：:。，,、]*?[: ：\s]+?\s*[ψ]*?([^ψ]+?)ψ'
                     ],
                     'budget_amount': [
                         r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
@@ -1085,8 +1090,7 @@ def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type=""
             print(e)
             return ""
     elif area_id in ["3309", "3320", "3319", "3326"]:
-        ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id,
-                             title=title)
+        ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id, title=title)
         ke.fields_regular = {
             'project_name': [
                 r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
@@ -1237,47 +1241,82 @@ class KeywordsExtract:
         self.field_name = field_name
         self.title = title
         self.msg = ''
+        self.field = ['bidding_contact', 'liaison', 'agent_contact', 'contact_information']
+        self.table_name_list = []
         self.keysss = [
-            "招标项目", "中标（成交）金额(元)", "代理机构", "中标供应商名称", "工程名称", "项目名称", "成交价格", "招标工程项目",
-            "项目编号", "招标项目编号","招标编号", "招标人", "发布时间", "招标单位", "招标代理:", "招标代理：", "招标代理机构",
-            "项目金额", "预算金额（元）","预算金额（元）", "招标估算价","中标（成交）金额（元）", "联系人", "项目经理（负责人）",
-            "建设单位", "中标单位", "中标价", "退付类型",
+            "招标联系人", "代理机构", "招标代理:", "招标单位", "招标代理机构", "中标单位", "建设单位", "招标联系人", "单位名称", "招标人",
+            "招标项目", "中标供应商名称", "工程名称", "项目名称", "招标工程项目",
+            "项目编号", "招标项目编号", "标段编号", "招标编号",
+            "中标（成交）金额(元)", "成交价格", "项目金额", "预算金额（元）", "招标估算价", "投资总额(万元)", '中交价格(万元)',
+            "中标（成交）金额（元）", "中标价", "预算金额（元）", "退付类型", "投标报价（元）", "中标价（元）",
+            "发布时间", "成交时间", "工期", "开标时间",
+            "联系人", "项目经理（负责人）", "公告号", "竞得人", "序号", "备注"
         ]
         # 各字段对应的规则
         self.fields_regular = {
             'project_name': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'project_number': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'budget_amount': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'tenderee': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'bidding_agency': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'liaison': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'contact_information': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'successful_bidder': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'bid_amount': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
             ],
             'tenderopen_time': [
-                r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
+            ],
+            'project_leader': [
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
+            ],
+            'project_contact_information': [
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
+            ],
+            'agent_contact': [
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
+            ],
+            'bidding_contact': [
+                r'%sψ?[^ψ ：:。，,、”“"]?[: ：]\s*?[ψ]*?([^ψ]+?)ψ',
             ],
         }
         self.fields_regular_with_symbol = copy.deepcopy(self.fields_regular)
         self._value = ''
+        # 倍数
+        self.multi_number = 1
+
+    def reload_multi_number(self, key):
+        """
+        - 取到值并处理之后，根据 key 中包含 千万 百万 十万 万 设置倍率
+        """
+        if self.field_name in ['bid_amount', 'budget_amount']:
+            if '千万' in key:
+                self.multi_number *= 10000000
+            elif '百万' in key:
+                self.multi_number *= 1000000
+            elif '十万' in key:
+                self.multi_number *= 100000
+            elif '万' in key:
+                self.multi_number *= 10000
+            else:
+                pass
 
     def _regular_match(self, text, key, with_symbol=True):
         """
@@ -1297,19 +1336,15 @@ class KeywordsExtract:
             re_string = rl % key if with_symbol else rl
             com = re.compile(re_string)
             result = com.findall(text)
-            if result:  # 处理一个例外：匹配的就是一个空字符串，而不是没匹配到
-                if result[0].strip():
-                    val = ''.join(result[0]).replace('业主：', '')
-                else:
-                    val = ' '
-                if self.field_name in ['bid_amount', 'budget_amount'] and not re.search("元", val):
-                    val = result[0]
-                    if unit := re.search("元|万元", key):
-                        val_unit = val + unit.group()
-                        return val_unit
-                    return val
-
+            if result:
+                val = result[0]
+            else:
+                val = ''
             if val:
+                if with_symbol:
+                    self.reload_multi_number(key)
+                else:
+                    self.reload_multi_number(val)
                 break
         return val
 
@@ -1329,9 +1364,13 @@ class KeywordsExtract:
             pass
         if self.field_name == 'bid_amount':
             pass
-        if self.field_name == 'contact_information':
+        if self.field_name == 'contact_information':                  # 招标代理联系方式
             pass
-        if self.field_name == 'liaison':
+        if self.field_name == 'liaison':                              # 招标人联系方式
+            pass
+        if self.field_name == 'project_leader':                       # 项目负责人
+            pass
+        if self.field_name == 'project_contact_information':          # 项目负责人联系方式
             pass
 
     def _extract_from_text(self, with_symbol=True):
@@ -1343,9 +1382,9 @@ class KeywordsExtract:
         if not self._value:
             for key in self.keys:
                 try:
-                    doc = etree.HTML(self.content)
+                    doc = etree.HTML(self.content.replace('&nbsp;', ''))
                     txt_els = [x.strip() for x in doc.xpath('//*//text()')]
-                    text = 'ψ'.join(txt_els) if with_symbol else ''.join(txt_els)
+                    text = 'ψ'.join(txt_els) if with_symbol else ''.join(txt_els).replace(' ', '')
 
                     self._value = self._regular_match(text, key, with_symbol=with_symbol)
                 except Exception as e:
@@ -1372,7 +1411,7 @@ class KeywordsExtract:
         else:
             for t_data_key in t_data:
                 try:
-                    t_data_key = ''.join(t_data_key.split())
+                    t_data_key = ''.join(t_data_key.split()).replace(':', '').replace("：", "")
                 except:
                     t_data_key = ''
                 if t_data_key in self.keysss:
@@ -1409,8 +1448,7 @@ class KeywordsExtract:
 
             return next_val
 
-    @staticmethod
-    def get_val_from_table(result, key):
+    def get_val_from_table(self, result, key):
         for tr in result:
             for c_index, td in enumerate(tr):
                 try:
@@ -1421,6 +1459,7 @@ class KeywordsExtract:
                     # next
                     next_val = KeywordsExtract.get_h_val(c_index, key, tr)
                     if next_val:
+                        self.reload_multi_number(key)
                         return next_val
         return ''
 
@@ -1452,10 +1491,10 @@ class KeywordsExtract:
                 extractor.parse()
                 result = extractor.return_list()
                 if self.is_horizon(t_data):
-                    self._value = KeywordsExtract.get_val_from_table(result, key)
+                    self._value = self.get_val_from_table(result, key)
                 else:
                     result = list(zip(*result))
-                    self._value = KeywordsExtract.get_val_from_table(result, key)
+                    self._value = self.get_val_from_table(result, key)
                 if self._value:
                     return True
             child_tables = KeywordsExtract.get_child_tables(table_el)
@@ -1515,6 +1554,8 @@ class KeywordsExtract:
                         continue
                     self._value = ''.join([self.title.split(name)[0], name])
                     break
+                else:
+                    self._value = self.title
 
     def done_before_extract(self):
         """
@@ -1522,6 +1563,7 @@ class KeywordsExtract:
         :param val:
         :return:
         """
+
         if self.area_id == '3309':  # 温州
             self.get_val_from_title()
             self._value = self._value if self._value else ''
@@ -1742,7 +1784,61 @@ class KeywordsExtract:
                         r'中标单位[: ：]\s*([\u4e00-\u9fa5]+)\s*项目',
                         # r'中标人[: ：]\s*([\u4e00-\u9fa5]+)\s*中标价',
                     ]
+                self.reset_regular(regular_list, with_symbol=False)
 
+                self._extract_from_text(with_symbol=False)
+
+        if self.area_id == "3305":
+            self._value = self._value if self._value else ''
+            if not self._value.strip():
+                regular_list = []
+                if self.field_name == 'project_number':                          # 项目编号
+                    regular_list = [
+                        r'公示编号[: ：]{0,1}(.*?)土地',
+                    ]
+                elif self.field_name == 'bidding_agency':                          # 招标代理
+                    regular_list = [
+                        r'招标代理的名称和地址[: ：]\s*.* ?室(.*?[(司)(单位)])[\u4e00-\u9fa5]',
+                        r'代理名称[: ：]{0,1}[( （]盖章[) ）]\s*(.*?)联系地址',
+                        r'采购代理机构信息名称[: ：]{0,1}\s*(.*?)地址',
+
+                    ]
+                elif self.field_name == "project_name":                            # 项目名称
+                    regular_list = [
+                        r"项目名称[: ：]{0,1}(.*?)[项目|宗|交易登记]",
+                    ]
+                elif self.field_name == "tenderee":                                 # 招标人
+                    regular_list = [
+                        r'业主的名称和办公室地址[：:].*?[: ：]\s*(.*?[(室) (单位)])[\u4e00-\u9fa5]',
+                        r'单位名称[( （]盖章[) ）][: ：]{0,1}\s*(.*?)地点',
+                        r'采购人信息名称[: ：]{0,1}\s*(.*?)地址',
+
+                    ]
+                elif self.field_name == "bid_amount":                               # 中标金额
+                    regular_list = [
+                        r'成交价格[: ：]{0,1}(.*?)[\u4e00-\u9fa5]',
+                        r'中标价[: ：]{0,1}\s*¥(.*[元 万元])?[( （][\u4e00-\u9fa5]',
+                        r'成交总价[: ：]{0,1}(.*?)三'
+                    ]
+                elif self.field_name == "successful_bidder":                         # 中标方
+                    regular_list = [
+                        r'受让人名称[: ：]{0,1}(.*?)成交'
+                    ]
+                elif self.field_name == 'contact_information':                       # 联系方式
+                    regular_list = [
+                        r'联\s*系\s*电\s*话\s*[: ：]{0,1}(.*?)[\u4e00-\u9fa5]',
+                        r'电\s*话[: ：]{0,1}\s*(.*?)[\u4e00-\u9fa5]'
+                    ]
+                if self.field_name == "liaison":                                   # 联系人
+                    regular_list = [
+                        r'联\s*系\s*方\s*式[: ：]{0,1}(.*?)\d',
+                        r'联\s*系\s*人\s*[: ：]{0,1}(.*?)[联\s*系\s*电\s*话 , ， 电话]',
+
+                    ]
+                if self.field_name == 'budget_amount':
+                    regular_list = [
+                        r'估\s*算\s*价\s*.*?(\d+\.\d+\s*[元 万元])[\u4e00-\u9fa5]',
+                    ]
                 self.reset_regular(regular_list, with_symbol=False)
 
                 self._extract_from_text(with_symbol=False)
@@ -1753,35 +1849,44 @@ class KeywordsExtract:
                 regular_list = []
                 if self.field_name == 'bidding_agency':  # 招标代理
                     regular_list = [
-                        r'代理机构\s*[: ：](.*?)联系人',
+                        r'代理机构\s*[: ：](.*?)[联系人 地址]',
                         r'采购代理机构信息名 称\s*[: ：](.*?)地\s*址',
                         r'代理机构联系方式\s*[: ：](.*?)联系人',
                         r'报名.*?发售地点\s*[: ：](.*?)[( （]',
-                        r'招标代理\s*[: ：](.*?)地'
+                        r'招标代理\s*[: ：](.*?)地',
+                        r'代理名称[( （]盖章[) ）]\s*(.*?)联系地址',
+                        # r'名称\s*[: ：](.*?)'
                     ]
                 elif self.field_name == 'project_number':  # 项目编号
                     regular_list = [
-                        r'项目编号\s*[: ：](.*?)[\u4e00-\u9fa5]'
-                        r'项目编号\s*[: ：](.*?)二'
+                        r'项目编号\s*[: ：](.*?)[\u4e00-\u9fa5]',
+                        r'项目编号\s*[: ：](.*?)[二 三]'
                     ]
                 elif self.field_name == "project_name":  # 项目名称
                     regular_list = [
-                        r'项目名称\s*[: ：](.*?)三',
-                        r'项目名称\s*[: ：](.*?)[\u4e00-\u9fa5]',
-
+                        r'工程名称\s*[: ：]{0,1}(.*?)工程情况',
+                        # r'项目名称\s*[: ：]{0,1}(.*?)\d',
+                        r'项目名称\s*[: ：]{0,1}(.*?)[二、 三、]',
+                        r'项目名称\s*[: ：]{0,1}(.*?)[\u4e00-\u9fa5]',
                     ]
                 elif self.field_name == "tenderee":  # 招标人
                     regular_list = [
+                        r'采购单位\s*[: ：](.*?)招标代理',
+                        r'招标单位\s*[: ：](.*?)[联系人 五]',
+                        r'受(.*?[公司|委员会|单位|合作社])的{0,1}委托',
                         r'招标人联系方式\s*[: ：](.*?)联系人',
                         r'招标方联系方式\s*[: ：](.*?)联系人',
                         r'招标人\s*[: ：](.*?)联',
                         r'招标人(.*)工程规模',
-                        r'联系人[: ：](.*?)联'
+                        # r'联系人[: ：](.*?)联',
+                        r'单位名称[( （]盖章[) ）]\s*(.*?)地点',
+                        r'招标人名称[（ (]盖章[) ）](.*?)联系地址'
                     ]
                 elif self.field_name == "liaison":  # 联系人
                     regular_list = [
                         r'联系人\s*（.*?）[: ：](.*?)项目',
                         r'联系人\s*[: ：](.*?)[联系电话 , ， 电话]',
+                        r'联\s*系\s*人\s*(.*?)[联\s*系\s*电\s*话 , ， 电话]',
                         # r'联系人\s*[: ：](.*?)[, ，]',
                         # r'联系人\s*[: ：](.*?)联系电话',
                     ]
@@ -1796,32 +1901,156 @@ class KeywordsExtract:
                         r'联系人.*?联系电话\s*[: ：](.*?)传',
                         r'联系电话\s*[: ：](.*?)[, ，]',
                         r'联系电话\s*[: ：](.*?)[\u4e00-\u9fa5]',
+                        r'联\s*系\s*电\s*话\s*(.*?)[\u4e00-\u9fa5]',
+                    ]
+                elif self.field_name == 'budget_amount':                             # 预算金额
+                    regular_list = [
+                        r'估\s*算\s*价\s*.*?(\d+\.\d+\s*[元 万元])[\u4e00-\u9fa5]',
+                    ]
+                elif self.field_name == "successful_bidder":                          # 中标方
+                    regular_list = [
+                        r'受让人名称(.*?)成交',
+                        r'竞\s*得\s*人(.*?)地理'
+                    ]
+                elif self.field_name == "tenderopen_time":
+                    regular_list = [
+                        r'开标时间[:：]{0,1}(.*?)[(（]',
 
                     ]
                 self.reset_regular(regular_list, with_symbol=False)
 
                 self._extract_from_text(with_symbol=False)
 
-        if self.area_id == "3305":
+        if self.area_id == "3307":
             self._value = self._value if self._value else ''
             if not self._value.strip():
                 regular_list = []
-                if self.field_name == 'project_number':  # 项目编号
+                if self.field_name == 'bidding_agency':       # 采购人
                     regular_list = [
-                        r'公示编号(.*?)土地',
+                        r'采购代理机构信息名称[: ：](.*?)地址'
                     ]
-                elif self.field_name == "project_name":  # 项目名称
+                if self.field_name == 'tenderee':              # 招标人
+                    pass
+                    # regular_list = [
+                    #     r'采购人信息名称[: ：](.*?)地址'
+                    # ]
+                if self.field_name == 'tenderopen_time':
+                   regular_list = [
+                       r'开标时间[: ：](.*?[) ）])',
+                   ]
+                self.reset_regular(regular_list, with_symbol=False)
+
+                self._extract_from_text(with_symbol=False)
+
+        if self.area_id == '3334':
+            # self.table_name_list.append(self.area_id)
+            self._value = self._value if self._value else ''
+            self.get_val_from_title()
+            if not self._value.strip():
+                regular_list = []
+                if self.field_name == 'bidding_contact':      # 招标联系人
                     regular_list = [
-                        r"项目名称(.*?)宗",
+                        r'采购单位[: ：].*?联系人[: ：](.*?)联',
+                        r'招标单位[: ：].*?联系人[: ：](.*?)联',
+                        r'采购单位名称[: ：].*?联系人[: ：](.*?)联',
+                        r'采购人信息.*?项目联系人（询问）[: ：](.*?)项'
                     ]
-                elif self.field_name == "bid_amount":  # 中标金额
+                if self.field_name == 'liaison':              # 招标人联系方式
                     regular_list = [
-                        r'成交价格(.*?)[\u4e00-\u9fa5]'
+                        r'采购单位[: ：].*?电话[: ：](.*?)[\u4e00-\u9fa5]',
+                        r'采购人信息.*?项目联系方式（询问）[: ：](.*?)质'
                     ]
-                elif self.field_name == "successful_bidder":  # 中标方
+                if self.field_name == 'agent_contact':         # 招标代理联系人
                     regular_list = [
-                        r'受让人名称(.*?)成交'
+                        r'招标代理[: ：].*?联系人[: ：](.*?)联',
+                        r'代理机构[: ：].*?联系人[: ：](.*?)联',
+                        r'招标代理单位[: ：].*?联系人[: ：](.*?)联',
+                        r'代理单位[: ：].*?联系人[: ：](.*?)联',
+                        r'代理单位名称[: ：].*?联系人[: ：](.*?)联',
+                        r'采购代理机构信息.*?项目联系人（询问）[: ：](.*?)项',
+                        r'采购代理机构.*?联系人[: ：](.*?)联',
                     ]
+                if self.field_name == 'contact_information':   # 招标代理联系方式
+                    regular_list = [
+                        r'采购代理机构.*?联系电话及传真[: ：](\d{11}?)',
+                        r'招标代理[: ：].*?电话[: ：](.*?)[\u4e00-\u9fa5]',
+                        r'代理机构[: ：].*?电话[: ：](.*?)[\u4e00-\u9fa5]',
+                        r'采购代理机构.*?电话[: ：](.*?)[\u4e00-\u9fa5]',
+                        r'采购代理机构信息.*?项目联系方式（询问）[: ：](.*?)质',
+
+                    ]
+                if self.field_name == 'tenderopen_time':       # 开标时间
+                    regular_list = [
+                        r'本次招标将于(.*?)分.*?开标',
+                        r'本次磋商将于(.*?)整.*?开标'
+                    ]
+                if self.field_name == 'project_number':
+                    regular_list = [
+                        # r'项目编号\s*[: ：](.*?)[\u4e00-\u9fa5]',
+                        r'项目编号\s*[: ：](.*?)[二|三|四|项]'
+                    ]
+                if self.field_name == 'tenderee':
+                    regular_list = [
+                        r'采购人名称[: ：](.*?)[二]',
+                        r'采购人信息名\s*称[: ：](.*?)地',
+                    ]
+                if self.field_name == 'bidding_agency':
+                    regular_list = [
+                        r'采购代理机构信息名\s*称[: ：](.*?)地',
+                        r'采购代理机构名\s*称[: ：](.*?)地'
+                    ]
+                if self.field_name == 'budget_amount':
+                    regular_list = [
+                        r'最高限价(.*?[(元)|(万元)])'
+                    ]
+
+
+                self.reset_regular(regular_list, with_symbol=False)
+
+                self._extract_from_text(with_symbol=False)
+
+        if self.area_id == '3337':
+            self._value = self._value if self._value else ''
+            self.get_val_from_title()
+            if not self._value.strip():
+                regular_list = []
+                # 代理联系人
+                if self.field_name == 'agent_contact':
+                    regular_list = [
+                        r'招标代理机构[: ：].*联系人[: ：](.*?)电话',
+                        r'采购代理机构信息名.*?项目联系人（询问）[: ：](.*?)项'
+                    ]
+                # 代理联系方式
+                if self.field_name == 'contact_information':
+                    regular_list = [
+                        r'招标代理机构[: ：].*电话[: ：](.*?)[\u4e00-\u9fa5]',
+                        r'采购代理机构信息名.*?项目联系方式（询问）[: ：](.*?)质',
+                    ]
+                # 代理单位
+                if self.field_name == 'bidding_agency':
+                    regular_list = [
+                        r'采购代理机构信息名\s*称[: ：](.*?)地',
+                        r'采购代理机构名称.*?联系人[: ：](.*)联'
+                    ]
+                # 招标人联系方式
+                if self.field_name == 'liaison':
+                    regular_list = [
+                        r'招标代理机构[: ：].*?电话[: ：](.*?)[\u4e00-\u9fa5]',
+                        r'采购人信息.*?项目联系方式（询问）[: ：](.*?)质'
+                    ]
+                # 招标单位（招标人）
+                if self.field_name == 'tenderee':
+                    regular_list = [
+                        r'招标人[: ：](.*?)招标代理机构',
+                        r'采购人信息名\s*称[: ：](.*?)地'
+                    ]
+                # 招标联系人
+                if self.field_name == 'bidding_contact':
+                    regular_list = [
+                        r'采购人信息.*?项目联系人（询问）[: ：](.*?)项'
+                    ]
+
+
                 self.reset_regular(regular_list, with_symbol=False)
 
                 self._extract_from_text(with_symbol=False)
@@ -1832,7 +2061,9 @@ class KeywordsExtract:
         :param val:
         :return:
         """
-        if self.area_id == '3320':  # 苍南
+        if self.area_id == '3305':  # 苍南
+            pass
+        if self.area_id == '3334':  # 富阳区
             pass
 
     @staticmethod
@@ -1859,7 +2090,7 @@ class KeywordsExtract:
         - 特殊单位的处理
         :return:
         """
-        extra_units = ['元/m3', '%']
+        extra_units = ['元/m3', '%', '单页', '元/平方米', '元/亩']
         for extra_unit in extra_units:
             if extra_unit in self._value:
                 return True
@@ -1884,9 +2115,10 @@ class KeywordsExtract:
                 self._value = ''
                 return
 
-            # 预算造价约3.9994亿元
+            # if self._value in re.findall('\d+.*[元|万元]', self._value):
+                # 预算造价约3.9994亿元
+            handled = True
             com = re.compile(r'([0-9 .]+)')
-
             if re.search('百万元|百万', self._value):
                 try:
                     values = com.findall(self._value)
@@ -1915,14 +2147,23 @@ class KeywordsExtract:
                 try:
                     values = com.findall(self._value)
                     self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0].strip())))
+                    self._value = str(Decimal(values[-1]))
                 except Exception as e:
                     self.msg = 'error:{0}'.format(e)
             else:
-                pass
+                handled = False
 
             # 匹配不到任何数值的内容置空
             if not re.search(r'\d+', self._value):
                 self._value = ''
+
+            try:
+                assert Decimal(self._value), '非数字'
+            except Exception as e:
+                print(e)
+            else:
+                self._value = '{}'.format(KeywordsExtract.remove_rest_zero(self.multi_number * Decimal(self._value) if not handled else Decimal(self._value)))
+
         if self.field_name == 'project_name':
             com = re.compile(r'([\[【][\u4e00-\u9fa5]+?[】 \]])')
             suffix_trash = com.findall(self._value)
@@ -1930,134 +2171,208 @@ class KeywordsExtract:
                 suffix_trash = suffix_trash[0]
                 self._value = ''.join(self._value.split(suffix_trash))
 
+        if self.field_name == 'liaison':
+            self._value = '' if u'\u4e00' <= self._value <= u'\u9fff' else self._value
+
+        if self.field_name in ['bidding_agency', 'tenderee', ]:
+            self._value = ''.join(self._value).replace('（盖章）', '').replace('业主：', '').replace('（重新招标）', '')
+
+        if self.field_name in ['agent_contact', 'bidding_contact', 'project_leader']:
+            # N个联系人
+            # """唐爱平（村）15988409931魏菊琴（镇）15990089781"""
+            # """汪佳胤 15867186206/667206（政府网）0571-65089396程霞敏13968113786/613786（政府网）"""
+            self._value = re.sub(r'（[\u4e00-\u9fa5]+）', ' ', self._value)
+            c_re_list = [
+                r'(?P<lianxiren>[\u4e00-\u9fa5]+)\s*[\d（]',
+                r'联系人[:：](?P<lianxiren>[\u4e00-\u9fa5]+)联系电话[:：][\d /，,]+',
+            ]
+            for c_re in c_re_list:
+                c_com = re.compile(c_re)
+                c_value = '，'.join(c_com.findall(self._value))
+                if c_value:
+                    self._value = c_value
+                    break
+
+        if self.field_name in ['contact_information', 'liaison', 'project_contact_information']:
+            # N个联系方式
+            self._value = re.sub(r'（[\u4e00-\u9fa5]+）', ' ', self._value)
+            c_re_list = [
+                r'[\u4e00-\u9fa5]+(?P<lianxifangshi>[\d /，\-（）]+)',
+                r'联系人[:：][\u4e00-\u9fa5]+联系电话[:：]([\d /，,]+)',
+            ]
+            for c_re in c_re_list:
+                c_com = re.compile(c_re)
+                c_value = '，'.join(c_com.findall(self._value))
+                if c_value:
+                    self._value = c_value
+                    break
+
+
         self.set_blank()
 
     def get_value(self):
         self.done_before_extract()  # 通用提取前各地区处理
-        self._extract_from_text()
         self._extract_from_table()
+        self._extract_from_text()
         self.done_after_extract()  # 通用提取后各地区处理
         self.clean_value()
         return self._value
 
 
 if __name__ == '__main__':
-
-    content = """<div class="MainList" style="min-height:600px;height:auto;">
-        <div class="AfficheTitle">
-            东湖街道社会组织孵化园配套设施设备采购项目
-            <br>
-            2021-06-28
+    content = '''<div class="col-md-20 top20 border-infodetail">
+<div id="ivs_content" class="infocontent">
+           <!--ZJEG_RSS.content.begin--><meta name="ContentStart"><p style="text-align: center; line-height: 27px; -ms-layout-grid-mode: char;"><strong><span style="background: white; color: black; font-family: 黑体; font-size: 21px;">建德市更楼街道绿化养护服务采购项目</span></strong></p><p style="text-align: center; line-height: 27px; -ms-layout-grid-mode: char;"><strong><span style="background: white; color: black; font-family: 黑体; font-size: 21px;">预中标结果公示</span></strong></p><p style="text-align: center; line-height: 20px; text-indent: 4px; -ms-layout-grid-mode: char;"><strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">公示日期：2021年6月30日</span></strong></p><p style="margin: 0px 0px 8px 28px;"><span style="font-family: Calibri;"> </span></p><p style="margin: 4px 4px 4px 0px; text-align: left; line-height: 24px; text-indent: 0px; -ms-layout-grid-mode: char;"><span style="color: black; font-family: 宋体; font-size: 16px;">一．</span><strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">采购人名称：</span></strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">建德市城南城建开发有限公司</span></p><p style="margin: 4px 4px 4px 0px; text-align: left; line-height: 24px; -ms-layout-grid-mode: char;"><strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">采购项目名称：</span></strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">建德市更楼街道绿化养护服务采购项目</span></p><p style="margin: 4px 4px 4px 0px; text-align: left; line-height: 24px; -ms-layout-grid-mode: char;"><strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">采购项目编号：</span></strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">XAJF2021B-017</span></p><p style="margin: 4px 4px 4px 0px; text-align: left; line-height: 24px; -ms-layout-grid-mode: char;"><strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">四．采购组织类型：</span></strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">分散采购委托代理</span></p><p style="margin: 4px 4px 4px 0px; text-align: left; line-height: 24px; -ms-layout-grid-mode: char;"><strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">五．采购方式：</span></strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">公开招标</span></p><p style="margin: 4px 4px 4px 0px; text-align: left; line-height: 24px; -ms-layout-grid-mode: char;"><strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">六．采购公告发布日期：</span></strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">2021</span><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">年6月9日</span></p><p style="margin: 4px 4px 4px 0px; text-align: left; line-height: 24px; -ms-layout-grid-mode: char;"><strong><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">七．预中标结果：</span></strong></p><div align="center"><table style="border-collapse: collapse;" border="0" cellspacing="0" cellpadding="0"><tbody><tr style="height: 29px; page-break-inside: avoid;"><td width="57" height="29" valign="top" style="padding: 0px 7px; border: 1px solid windowtext; border-image: none; background-color: transparent;"><div style="padding: 0px; border: 1px rgb(99, 99, 99); border-image: none; margin-right: 4px; margin-left: 4px;"><p style="margin: 4px 0px; padding: 0px; border: currentColor; border-image: none; text-align: center; line-height: 24px;"><span style="color: black; font-family: 宋体; font-size: 16px;">序号</span></p></div></td><td width="237" height="29" valign="top" style="border-width: 1px 1px 1px 0px; border-style: solid solid solid none; border-color: windowtext windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; border-image: none; background-color: transparent;"><div style="padding: 0px; border: 1px rgb(99, 99, 99); border-image: none; margin-right: 4px; margin-left: 4px;"><p style="margin: 4px 0px; padding: 0px; border: currentColor; border-image: none; text-align: center; line-height: 24px;"><span style="color: black; font-family: 宋体; font-size: 16px;">预中标单位</span></p></div></td><td width="106" height="29" valign="top" style="border-width: 1px 1px 1px 0px; border-style: solid solid solid none; border-color: windowtext windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; border-image: none; background-color: transparent;"><div style="padding: 0px; border: 1px rgb(99, 99, 99); border-image: none; margin-right: 4px; margin-left: 0px;"><p style="margin: 4px 0px; padding: 0px; border: currentColor; border-image: none; text-align: center; line-height: 24px;"><span style="color: black; font-family: 宋体; font-size: 16px;">投标报价（万元）</span></p></div></td><td width="91" height="29" valign="top" style="border-width: 1px 1px 1px 0px; border-style: solid solid solid none; border-color: windowtext windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; border-image: none; background-color: transparent;"><div style="padding: 0px; border: 1px rgb(99, 99, 99); border-image: none; margin-right: 4px; margin-left: 4px;"><p style="margin: 4px 0px; padding: 0px; border: currentColor; border-image: none; text-align: center; line-height: 24px;"><span style="color: black; font-family: 宋体; font-size: 16px;">综合得分</span></p></div></td></tr><tr style="height: 33px; page-break-inside: avoid;"><td width="57" height="33" style="border-width: 0px 1px 1px; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0px 7px; border-image: none; background-color: transparent;"><div style="padding: 0px; border: 1px rgb(99, 99, 99); border-image: none; margin-right: 4px; margin-left: 4px;"><p style="margin: 4px 0px; padding: 0px; border: currentColor; border-image: none; text-align: center; line-height: 24px;"><span style="color: black; font-family: 宋体; font-size: 16px;">1</span></p></div></td><td width="237" height="33" style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; background-color: transparent;"><p style="margin: 0px; text-align: center; vertical-align: middle;"><span style="color: black; font-family: 宋体; font-size: 16px;">建德市中振建设有限公司</span></p></td><td width="106" height="33" style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; background-color: transparent;"><div style="padding: 0px; border: 1px rgb(99, 99, 99); border-image: none; margin-right: 4px; margin-left: 4px;"><p style="margin: 4px 0px; padding: 0px; border: currentColor; border-image: none; text-align: center; line-height: 24px;"><span style="color: black; font-family: 宋体; font-size: 16px;">59.7618</span></p></div></td><td width="91" height="33" style="border-width: 0px 1px 1px 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0px 7px; background-color: transparent;"><p style="margin: 0px; text-align: center; vertical-align: middle;"><a></a><span style="color: black; font-family: 宋体; font-size: 16px;">79.18 </span></p></td></tr></tbody></table></div><p style="margin: 4px; text-align: left; line-height: 24px; -ms-layout-grid-mode: char;"><span style="background: white; color: black; font-family: 宋体; font-size: 16px;"> </span></p><p style="margin: 4px; text-align: left; line-height: 24px; -ms-layout-grid-mode: char;"><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">八．其它事项：</span></p><p style="margin: 4px; text-align: left; line-height: 24px; -ms-layout-grid-mode: char;"><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">各参加政府采购供应商对该预中标结果和采购过程等有异议的，可以自本公示之日起7个工作日内，以书面形式向采购人或其委托的采购代理机构提出质疑。同时也可向建德市公共资源交易中心新安江分中心反应</span></p><p style="margin: 4px; text-align: left; line-height: 24px; -ms-layout-grid-mode: char;"><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">九.联系方式：</span></p><p style="margin: 8px 57px 0px 0px; text-align: left; -ms-layout-grid-mode: char;"><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">1</span><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">、采购代理机构名称: 耀华建设管理有限公司</span></p><p style="margin: 8px 57px 0px 0px; text-align: left; -ms-layout-grid-mode: char;"><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">联系人：柴文琪    联系电话及传真：19957823508 </span></p><p style="background: white; margin: 4px 4px 4px 0px; text-align: left; line-height: 24px;"><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">2</span><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">、监管部门：建德市公共资源交易中心新安江分中心</span></p><p style="background: white; margin: 4px 4px 4px 0px; text-align: left; line-height: 24px;"><span style="background: white; color: black; font-family: 宋体; font-size: 16px;">监督投诉电话：0571-64787970</span></p><p style="background: white; margin: 4px; text-align: left; line-height: 24px; text-indent: 36px;"><span style="background: white; color: black; font-family: 宋体; font-size: 16px;"> </span></p><p style="margin: 8px 57px 0px 0px; text-align: left; -ms-layout-grid-mode: char;"><span style="background: white; color: black; font-family: 宋体; font-size: 16px;"> </span></p><p><a href="http://tfile.zhaotx.cn/files/webfile/20210707/doc/C3DDE5C689574F8ABBFC723254D8109C.doc"><img style="border: currentColor; border-image: none;" src="http://tfile.zhaotx.cn/files/webfile/20210707/png/EF0F2CAFA1514BBDBACF6A96672A5E03.png">XAJF2021B-017中标公式.doc</a></p><meta name="ContentEnd"><!--ZJEG_RSS.content.end-->
+        </div>
+        <div class="infoattach">
+            
         </div>
 
-        <div style="text-align: justify;padding: 8px 15px 10px 13px;">
-            <style id="fixTableStyle" type="text/css">th,td {border:1px solid #DDD;padding: 5px 10px;}</style>
-<div id="fixTableStyle" type="text/css" cdata_tag="style" cdata_data="th,td {border:1px solid #DDD;padding: 5px 10px;}" _ue_custom_node_="true"></div><div><div><div><div style="border:2px solid"><div style="font-family:FangSong;"><p><span style="font-size: 18px;">    项目概况</span>                                                    </p><p><span style="font-size: 18px; line-height:30px; ">    <span class="bookmark-item uuid-1596015933656 code-00003 addWord single-line-text-input-box-cls">东湖街道社会组织孵化园配套设施设备采购项目</span></span><span style="font-size: 18px;">招标项目的潜在投标人应在</span><span style="font-size: 18px; text-decoration: none;"><span class="bookmark-item uuid-1594623824358 code-23007 addWord single-line-text-input-box-cls readonly">网上</span></span><span style="font-size: 18px;">获取（下载）招标文件，并于 <span class="bookmark-item uuid-1595940588841 code-23011 addWord date-time-selection-cls">2021年07月19日 09:30</span></span><span style="font-size: 18px;">（北京时间）前递交（上传）投标文件。</span>                             </p></div></div><p style="margin: 17px 0;text-align: justify;line-height: 20px;break-after: avoid;font-size: 18px;font-family: SimHei, sans-serif;white-space: normal"><span style="font-size: 18px;"><strong>一、项目基本情况</strong></span>                                            </p><div style="font-family:FangSong;line-height:20px;"><p><span style="font-size: 18px;">    项目编号：<span class="bookmark-item uuid-1595940643756 code-00004 addWord single-line-text-input-box-cls">YJDL2021-114</span> </span></p><p><span style="font-size: 18px;">    项目名称：<span class="bookmark-item uuid-1596015939851 code-00003 addWord single-line-text-input-box-cls">东湖街道社会组织孵化园配套设施设备采购项目</span></span></p><p><span style="font-size: 18px;">    预算金额（元）：<span class="bookmark-item uuid-1595940673658 code-AM01400034 addWord numeric-input-box-cls">6890000</span> </span> </p><p><span style="font-size: 18px;">    最高限价（元）：<span class="bookmark-item uuid-1589437289226 code-AM014priceCeiling addWord single-line-text-input-box-cls">6890000</span> </span></p><p><span style="font-size: 18px;">    采购需求：</span></p><div><div style="padding: 10px" class="template-bookmark uuid-1593419700012 code-AM014230011 text-招标项目概况 object-panel-cls"><p style="line-height: 1.5em;"><span style="font-size: 18px;"><span style="font-size: 18px; display: inline-block;">    <span class="bookmark-item uuid-1595941042480 code-AM014sectionNo editDisable "></span></span><br>     标项名称: <span class="bookmark-item uuid-1593432150293 code-AM014bidItemName editDisable single-line-text-input-box-cls">东湖街道社会组织孵化园配套设施设备采购项目</span> <br>     数量: <span class="bookmark-item uuid-1595941076685 code-AM014bidItemCount editDisable single-line-text-input-box-cls">不限</span>  <br>     预算金额（元）: <span class="bookmark-item uuid-1593421137256 code-AM014budgetPrice editDisable single-line-text-input-box-cls">6890000</span> <br>     简要规格描述或项目基本概况介绍、用途：<span class="bookmark-item uuid-1593421202487 code-AM014briefSpecificationDesc editDisable single-line-text-input-box-cls">东湖街道社会组织孵化园配套设施设备采购</span> <br>     备注：<span class="bookmark-item uuid-1593432166973 code-AM014remarks editDisable "></span></span> </p></div></div><p><span style="font-size: 18px;">    合同履约期限：<span class="bookmark-item uuid-1589437299696 code-AM014ContractPerformancePeriod addWord single-line-text-input-box-cls">标项 1，60日历天</span></span></p><p><span style="font-size: 18px;">    本项目（<span class="bookmark-item uuid-1589181188930 code-AM014cg005 addWord single-line-text-input-box-cls">否</span>）接受联合体投标。</span></p><p style="margin-bottom: 15px; margin-top: 15px;"><strong style="font-size: 18px; font-family: SimHei, sans-serif; text-align: justify;">二、申请人的资格要求：</strong><br></p></div><div style="font-family:FangSong;line-height:20px;"><p><span style="font-size: 18px;">    1.满足《中华人民共和国政府采购法》第二十二条规定；未被“信用中国”（www.creditchina.gov.cn)、中国政府采购网（www.ccgp.gov.cn）列入失信被执行人、重大税收违法案件当事人名单、政府采购严重违法失信行为记录名单。</span></p><p><span style="font-size: 18px;">    2.落实政府采购政策需满足的资格要求：<span class="bookmark-item uuid-1595940687802 code-23021 editDisable multi-line-text-input-box-cls readonly">无</span> </span></p><p><span style="font-size: 18px;">    3.本项目的特定资格要求：<span class="bookmark-item uuid-1596277470067 code-23002 editDisable multi-line-text-input-box-cls readonly">标项1：（1）单位负责人为同一人或者存在直接控股、管理关系的不同供应商，不得参加同一合同项下的政府采购活动承诺函；（2）投标供应商没有失信记录承诺函,（3）供应商未被列入失信被执行人名单、重大税收违法案件当事人名单、政府采购严重违法失信行为记录名单，信用信息以信用中国网站（www.creditchina.gov.cn）、中国政府采购网（www.ccgp.gov.cn）公布为准；(4)公益一类事业单位、使用事业编制且由财政拨款保障的群团组织，不作为政府购买服务的购买主体和承接主体。</span> </span></p></div><p style="margin: 17px 0;text-align: justify;line-height: 20px;break-after: avoid;font-size: 18px;font-family: SimHei, sans-serif;white-space: normal"><span style="font-size: 18px;"><strong>三、获取招标文件</strong></span> </p><div style="font-family:FangSong;line-height:20px;"><p style="line-height:20px;"><span style="font-size: 18px;">    </span><span style="font-size: 18px; text-decoration: none;line-height:20px;">时间：<span class="bookmark-item uuid-1587980024345 code-23003 addWord date-selection-cls">/</span>至<span class="bookmark-item uuid-1588129524349 code-23004 addWord date-selection-cls readonly">2021年07月19日</span> ，每天上午<span class="bookmark-item uuid-1594624027756 code-23005 addWord morning-time-section-selection-cls">00:00至12:00</span> ，下午<span class="bookmark-item uuid-1594624265677 code-23006 addWord afternoon-time-section-selection-cls">12:00至23:59</span>（北京时间，线上获取法定节假日均可，线下获取文件法定节假日除外）</span></p><p><span style="font-size: 18px;">    地点（网址）：<span class="bookmark-item uuid-1588129635457 code-23007 addWord single-line-text-input-box-cls readonly">网上</span> </span></p><p><span style="font-size: 18px;">    方式：<span class="bookmark-item uuid-1595940713919 code-AM01400046 editDisable single-line-text-input-box-cls readonly">供应商登录政采云平台https://www.zcygov.cn/在线申请获取采购文件（进入“项目采购”应用，在获取采购文件菜单中选择项目，申请获取采购文件）</span> </span></p><p><span style="font-size: 18px;">    售价（元）：<span class="bookmark-item uuid-1595940727161 code-23008 addWord numeric-input-box-cls">0</span></span> </p></div><p style="margin: 17px 0;text-align: justify;line-height: 20px;break-after: avoid;font-size: 18px;font-family: SimHei, sans-serif;white-space: normal"><span style="font-size: 18px;line-height:20px;"><strong>四、提交投标文件截止时间、开标时间和地点</strong></span></p><div style="font-family:FangSong;line-height:20px;"><p><span style="font-size: 18px;">   </span><span style="font-size: 18px; text-decoration: none;"> 提交投标文件截止时间：<span class="bookmark-item uuid-1595940760210 code-23011 addWord date-time-selection-cls">2021年07月19日 09:30</span>（北京时间）</span></p><p><span style="font-size: 18px;">   </span><span style="font-size: 18px; text-decoration: none;"> 投标地点（网址）：<span style="text-decoration: none; font-size: 18px;"><span class="bookmark-item uuid-1594624424199 code-23012 addWord single-line-text-input-box-cls readonly">“政府采购云平台（www.zcygov.cn）”实行在线投标响应</span></span></span> </p><p><span style="font-size: 18px; text-decoration: none;">    开标时间：<span style="text-decoration: none; font-size: 18px;"><span class="bookmark-item uuid-1594624443488 code-23013 addWord date-time-selection-cls readonly">2021年07月19日 09:30</span></span></span> </p><p><span style="font-size: 18px; text-decoration: none;">    开标地点（网址）：<span style="text-decoration: none; font-size: 18px;"><span class="bookmark-item uuid-1588129973591 code-23015 addWord single-line-text-input-box-cls readonly">杭州市余杭区南苑街道人民大道270号,“政府采购云平台（www.zcygov.cn）”实行在线投标响应</span></span></span>  </p></div><p style="margin: 17px 0;text-align: justify;line-height: 20px;break-after: avoid;font-size: 21px;font-family: SimHei, sans-serif;white-space: normal"><span style="font-size: 18px;line-height:20px;"></span></p><p style="margin-top: 17px; margin-bottom: 17px; line-height: 20px; white-space: normal; text-align: justify; break-after: avoid; font-size: 21px; font-family: SimHei, sans-serif;"><span style="font-size: 18px; line-height: 20px;"><strong>五、采购意向公开链接</strong></span></p><p style="margin-top: 17px; margin-bottom: 17px; line-height: 20px; white-space: normal; text-align: justify; break-after: avoid; font-size: 21px; font-family: SimHei, sans-serif;">   <span style="font-size: 18px; line-height: 20px;"><span style="font-family: FangSong;"><samp class="bookmark-item uuid-1615898165993 code-cgyx001 addWord" style="font-family: FangSong;"></samp></span></span></p><p style="margin: 17px 0;text-align: justify;line-height: 20px;break-after: avoid;font-size: 21px;font-family: SimHei, sans-serif;white-space: normal"><span style="font-size: 18px; line-height: 20px;"><strong>六、公告期限</strong></span> <br></p><p><span style="font-size: 18px; font-family:FangSong;">    自本公告发布之日起5个工作日。</span></p><p style="margin: 17px 0;text-align: justify;line-height: 20px;break-after: avoid;font-size: 18px;font-family: SimHei, sans-serif;white-space: normal"><span style="font-size: 18px;"><strong>七、其他补充事宜</strong></span></p><p style="line-height: 1.5em;"><span style="font-size: 18px;font-family:FangSong;line-height:20px;">    1.供应商认为采购文件使自己的权益受到损害的，可以自获取采购文件之日或者采购文件公告期限届满之日（公告期限届满后获取采购文件的，以公告期限届满之日为准）起7个工作日内，对采购文件需求的以书面形式向采购人提出质疑，对其他内容的以书面形式向采购人和采购代理机构提出质疑。质疑供应商对采购人、采购代理机构的答复不满意或者采购人、采购代理机构未在规定的时间内作出答复的，可以在答复期满后十五个工作日内向同级政府采购监督管理部门投诉。质疑函范本、投诉书范本请到浙江政府采购网下载专区下载。<br>    2.其他事项：<span class="bookmark-item uuid-1589194982864 code-31006 addWord multi-line-text-input-box-cls">无</span> </span><span style="font-size: 18px;font-family:FangSong;line-height:20px;"> </span></p><p style="margin: 17px 0;text-align: justify;line-height: 32px;break-after: avoid;font-size: 21px;font-family: SimHei, sans-serif;white-space: normal"><span style="font-size: 18px;"><strong>八、对本次采购提出询问、质疑、投诉，请按以下方式联系</strong></span></p><div style="font-family:FangSong;line-height:20px;"><p><span style="font-size: 18px;">    1.采购人信息</span></p><p><span style="font-size: 18px;">    名    称：<span class="bookmark-item uuid-1596004663203 code-00014 editDisable interval-text-box-cls readonly">杭州市临平区人民政府东湖街道办事处</span> </span></p><p><span style="font-size: 18px;">    地    址：<span class="bookmark-item uuid-1596004672274 code-00018 addWord single-line-text-input-box-cls">顺达路3号</span> </span></p><p><span style="font-size: 18px;">    传    真：<span class="bookmark-item uuid-1596004680354 code-00017  addWord"></span> </span> </p><p><span style="font-size: 18px;">    项目联系人（询问）：<span class="bookmark-item uuid-1596004688403 code-00015 editDisable single-line-text-input-box-cls readonly">超级机构管理员</span> </span> </p><p><span style="font-size: 18px;">    项目联系方式（询问）：<span class="bookmark-item uuid-1596004695990 code-00016 editDisable single-line-text-input-box-cls readonly">(0571) 88566666</span> </span></p><p><span style="font-size: 18px;">    质疑联系人：<span class="bookmark-item uuid-1596004703774 code-AM014cg001 addWord single-line-text-input-box-cls">东湖党政办</span> </span>   </p><p><span style="font-size: 18px;">    质疑联系方式：<span class="bookmark-item uuid-1596004712085 code-AM014cg002 addWord single-line-text-input-box-cls">13750814293</span> </span></p><p><span style="font-size: 18px;">    <br>    2.采购代理机构信息</span>            </p><p><span style="font-size: 18px;">    名    称：<span class="bookmark-item uuid-1596004721081 code-00009 addWord interval-text-box-cls">杭州益嘉工程咨询代理有限公司</span> </span>            </p><p><span style="font-size: 18px;">    地    址：<span class="bookmark-item uuid-1596004728442 code-00013 editDisable single-line-text-input-box-cls readonly">南苑街道人民大道270号</span> </span>            </p><p><span style="font-size: 18px;">    传    真：<span class="bookmark-item uuid-1596004736097 code-00012  addWord"></span> </span>            </p><p><span style="font-size: 18px;">    项目联系人（询问）：<span class="bookmark-item uuid-1596004745033 code-00010 editDisable single-line-text-input-box-cls readonly">朱海强</span>  </span>            </p><p><span style="font-size: 18px;">    项目联系方式（询问）：<span class="bookmark-item uuid-1596004753055 code-00011 addWord single-line-text-input-box-cls">13735887310</span> </span></p><p><span style="font-size: 18px;">    质疑联系人：<span class="bookmark-item uuid-1596004761573 code-AM014cg003 addWord single-line-text-input-box-cls">杨文波</span> </span>            </p><p><span style="font-size: 18px;">    质疑联系方式：<span class="bookmark-item uuid-1596004769998 code-AM014cg004 addWord single-line-text-input-box-cls">15397053608</span> 　　　　　　</span>     </p><p><span style="font-size: 18px;">    <br>    3.同级政府采购监督管理部门</span>            </p><p><span style="font-size: 18px;">    名    称：<span class="bookmark-item uuid-1596004778916 code-00019 addWord single-line-text-input-box-cls">杭州市余杭区财政局</span> </span>            </p><p><span style="font-size: 18px;">    地    址：<span class="bookmark-item uuid-1596004787211 code-00023 addWord single-line-text-input-box-cls">/</span> </span>            </p><p><span style="font-size: 18px;">    传    真：<span class="bookmark-item uuid-1596004796586 code-00022 addWord single-line-text-input-box-cls">/</span> </span>            </p><p><span style="font-size: 18px;">    联系人 ：<span class="bookmark-item uuid-1596004804824 code-00020 addWord single-line-text-input-box-cls">江引妹</span> </span>            </p><p><span style="font-size: 18px;">    监督投诉电话：<span class="bookmark-item uuid-1596004812886 code-00021 addWord single-line-text-input-box-cls">0571-89185312 </span> </span>          <br>         </p></div></div><p><br></p><div style="font-family:FangSong;">若对项目采购电子交易系统操作有疑问，可登录政采云（https://www.zcygov.cn/），点击右侧咨询小采，获取采小蜜智能服务管家帮助，或拨打政采云服务热线400-881-7190获取热线服务帮助。       </div></div><div style="font-family:FangSong;">CA问题联系电话（人工）：汇信CA 400-888-4636；天谷CA 400-087-8198。</div><p><br></p> <blockquote style="display: none;"><span class="bookmark-item uuid-1596269980873 code-AM014acquirePurFileDetailUrl addWord single-line-text-input-box-cls"> <a class="purInfoPublishEditAcquireDetailUrl" id="purInfoPublishEditAcquireDetailUrl" href="https://www.zcygov.cn/bidding-entrust/#/acquirepurfile/launch/5e941e0e25bff477" style="padding: 2px 15px;margin: 0;font-size: 14px;border-radius: 4px;border: 1px solid transparent;font-weight: 400;white-space: nowrap;text-align: center;background-image: none;color: #fff;background-color: #1890ff;border-color: #1890ff;text-decoration:none;display:none" target="_blank">潜在供应商</a></span></blockquote> <br><br></div><p><br></p><p><br></p><p><br></p><p><br></p><p style="font-size" class="fjxx">附件信息：</p><ul class="fjxx" style="font-size: 16px;margin-left: 38px;color: #0065ef;list-style-type: none;"><li><p style="display:inline-block"><a href="http://tfile.zhaotx.cn/fileswebfile/20210628/doc/1C637FC307AE462F88E605CB469A7EA2.doc">东湖街道社会组织孵化园配套设施设备采购项目--招标文件.doc</a></p><p style="display:inline-block;margin-left:20px">688.5K</p></li></ul>
-        </div>
-    </div>"""
+ 
+      </div>'''
     ke = KeywordsExtract(content, [
-        # "项目名称",  # project_name
+        # "投标报价（万元）",          # bid_amount
+
+        # "项目名称",                 # project_name
         # "采购项目名称",
         # "招标项目",
         # "工\s*程\s*名\s*称",
         # "招标工程项目",
         # "工程名称",
+        # "标段名称"
 
-        # "中标单位",  # successful_bidder
+        # '项目负责人',                # project_leader
+        # "电话",                     # liaison
+        # "项目联系方式（询问）",        # contact_information
+        # "联系电话",
+        # "咨询代理单位",
+        # "联系方式",
+        # "代理联系电话",  # 3331
+        # "咨询代理联系人及联系电话"
 
-        "联系电话",  # contact_information
-        "联系方式",
-        "电\s*话",
-
-        # "联系人",  # liaison
-        # "联\s*系\s*人",
+        # "联系人",                    # bidding_contact
         # "项目经理",
         # "项目经理（负责人）",
         # "项目负责人",
         # "项目联系人",
         # "填报人",
+        # "项目联系人（询问）",
+        # "招标联系电话"
 
-        # "招标人",  # tenderee
-        # "招 标 人",
-        # "招&nbsp;标&nbsp;人",
-        # "招\s*?标\s*?人：",
-        # "招标单位",
-        # "采购人信息[ψ \s]*?名[\s]+称",
-        # "建设（招标）单位",
-        # "建设单位",
-        # "采购单位名称",
+        # "采购单位",                   # tenderee
         # "采购人信息",
-        # "建设单位",
+        # "招标人",
+        # "招标联系人",   # 3331
+        # "单位名称",     # 3331  中标公告
+        # "建设单位",     # 3331  中标公告
+        #
+        # # "招标代理",                    # bidding_agency
+        # # "招标代理机构",
+        # # "代理单位",
+        # # '招标代理机构（盖章）',
+        # # "代理公司",
+        # # "招标代理公司",
+        # # "采购代理机构",
+        # # "填报单位",
+        #
+        # # "项目编号",                    # project_number
+        # # "招标项目编号",
+        # # "招标编号",
+        # # "标段编号",
+        # # "编号",
+        # # "工程编号",
 
-        # "招标代理",  # bidding_agency
-        # "招标代理机构",
-        # "采购代理机构信息[ψ \s]*?名[\s]+称",
-        # "代理单位",
-        # '招标代理机构（盖章）',
-        # "代理公司",
-        # "采购代理机构信息",
-        # "填报单位",
+        # "投资总额(万元)",
+        # "项目金额",                     # budget_amount
+        # "预算金额（元）",
+        # "预算价",
+        # "项目概况",
+        # "预算价(万元)",
 
-        # "项目编号",  # project_number
-        # "招标项目编号",
-        # "招标编号",
-        # "编号",
-        # "工程编号",
-
-        # "项目金额",  # budget_amount
-        "预算金额（元）",
-
-        # "中标价格",  # bid_amount
-        # "中标价",
-        # "中标（成交）金额(元)",
+        # "中标价格",                     # bid_amount
+        # "投标报价(万元)",     # 3331
+        # "投标报价（万元）",    # 3331
         # "报价（元）",
         # "中标价（元）",
 
         # "招标方式",
 
-        # "开标时间",  # tenderopen_time
-        # "开启时间",
+        # "联系人",                       # agent_contact
+        "代理联系电话",
+        "咨询代理联系人及联系电话"
 
-        # "中标人",  # successful_bidder
+        # "开标时间",                      # tenderopen_time
+        # "开启时间",
+        # "投标截止时间（开标时间）",  # 3331
+        # "预计采购时间（填写到月）",
+        # "开标日期",               # 3331
+        # "备\s*注"
+
+        # "中标人",                        # successful_bidder
+        # "单位名称",
         # "中标人名称",
         # "中标单位",
         # "供应商名称",
-        # ], field_name='project_name')
 
-    ], field_name='budget_amount', area_id="3301")
+        # "项目负责人"                      # project_leader
+
+        # "建设单位联系人",                  # bidding_contact
+        # "招标联系人",
+        # "招标单位联系人",    # 3334
+        # "采购单位联系人",    # 3334
+        # "联系人",
+
+
+        # '咨询代理单位',  # 3334
+        # "代理公司",  # 3331
+        # "代理机构",  # 3331
+        # "招标代理公司"  # 3331
+        # "采购代理机构",  # 3334
+        # "招标代理",  # 3334
+        # "代理单位",  # 3334
+        # "代理单位名称",
+
+
+    ], field_name='contact_information', area_id="3334")
+    # ], field_name='tenderopen_time', area_id="3307")
     # ], field_name='project_name', area_id="3319", title='')
     # ke = KeywordsExtract(content, ["项目编号"])
-    ke.fields_regular = {
-        'project_name': [
-            r'%s[^ψ：:。，,、]*?[: ： \s]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'project_number': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'budget_amount': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'tenderee': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'bidding_agency': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'liaison': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
-        ],
-        'contact_information': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
-        ],
-        'successful_bidder': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'bid_amount': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-        'tenderopen_time': [
-            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-        ],
-    }
-
+    # ke.fields_regular = {
+    #         'project_name': [
+    #             r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+    #         ],
+    #         'project_number': [
+    #             r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+    #         ],
+    #         'budget_amount': [
+    #             r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+    #         ],
+    #         'tenderee': [
+    #             r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+    #         ],
+    #         'bidding_agency': [
+    #             r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+    #         ],
+    #         'liaison': [
+    #             r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+    #         ],
+    #         'contact_information': [
+    #             r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+    #         ],
+    #         'successful_bidder': [
+    #             r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+    #         ],
+    #         'bid_amount': [
+    #             r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+    #         ],
+    #         'tenderopen_time': [
+    #             r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+    #         ],
+    #         'project_contact_information': [
+    #             r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+    #         ],
+    #         'project_leader': [
+    #             r'%s[^ψ：:。，,、”“"]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+    #         ],
+    #     }
     print(ke.get_value())

@@ -1,5 +1,9 @@
-
 # 备份 项目清洗解析代码
+import re
+import pandas
+from lxml import etree
+
+
 class KeywordsExtract:
     """
     根据若干个关键字 权衡匹配出对应的值 返回首个匹配结果
@@ -165,10 +169,6 @@ class KeywordsExtract:
                                                 return
                                     c_index += 1
 
-
-
-
-
                 except Exception as e:
                     print(e)
                     self.msg = 'error:{0}'.format(e)
@@ -202,3 +202,195 @@ class KeywordsExtract:
         self.done_after_extract()  # 通用提取后各地区处理
         return self._value
 
+
+if __name__ == '__main__':
+    content = """
+
+    """
+    ke = KeywordsExtract(content, [
+        # "项目名称",  # project_name
+        # "采购项目名称",
+        # "招标项目",
+        # "工\s*程\s*名\s*称",
+        # "招标工程项目",
+        # "工程名称",
+
+        # "中标单位",  # successful_bidder
+        #
+        # "联\s*系\s*电\s*话",  # contact_information
+        # "联系方式",
+        # "电\s*话",
+
+        # "联系人",  # liaison
+        # "联\s*系\s*人",
+        # "项目经理",
+        # "项目经理（负责人）",
+        # "项目负责人",
+        # "项目联系人",
+        # "填报人",
+
+        # "招标人",  # tenderee
+        # "招 标 人",
+        # "招&nbsp;标&nbsp;人",
+        # "招\s*?标\s*?人：",
+        # "招标单位",
+        # "采购人信息[ψ \s]*?名[\s]+称",
+        # "建设（招标）单位",
+        # "建设单位",
+        # "采购单位名称",
+        # "采购人信息",
+        # "建设单位",
+        # "名称[( （]盖章[） )]"
+
+        # "招标代理",  # bidding_agency
+        # "招标代理机构",
+        # "采购代理机构信息[ψ \s]*?名[\s]+称",
+        # "代理单位",
+        # '招标代理机构（盖章）',
+        # "代理公司",
+        # "采购代理机构信息",
+        # "填报单位",
+        # "名称[( （]盖章[） )]"
+
+        # "项目编号",  # project_number
+        # "招标项目编号",
+        # "招标编号",
+        # "编号",
+        # "工程编号",
+
+        # "项目金额",  # budget_amount
+        # "预算金额（元）",
+        # "估算加"
+
+        # "中标价格",  # bid_amount
+        # "中标价",
+        # "中标（成交）金额(元)",
+
+        # "招标方式",
+
+        # "开标时间",
+        # "开启时间",
+
+        "中标人",  # successful_bidder
+        "中标人名称",
+        "中标单位",
+        "供应商名称",
+        "竞\s*得\s*人"
+        # ], field_name='project_name')
+    ], field_name='successful_bidder', area_id="3306")
+
+    # ke = KeywordsExtract(content, ["项目编号"])
+    ke.fields_regular = {
+        'project_name': [
+            r'%s[^ψ：:。，,、]*?[: ： \s]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'project_number': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'budget_amount': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'tenderee': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'bidding_agency': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'liaison': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+        ],
+        'contact_information': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
+        ],
+        'successful_bidder': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'bid_amount': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+        'tenderopen_time': [
+            r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
+        ],
+    }
+
+    # print(ke.get_value())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#    给已有的数据表 添加字段
+import pymysql
+
+
+class DBQuery(object):
+    """
+    数据库操作
+        MySQL
+    """
+
+    __instance = None
+
+    def __new__(cls, **kwargs):
+        if not cls.__instance:
+            cls.__instance = object.__new__(cls)
+        return cls.__instance
+
+    def __del__(self):
+        self.con.close()
+
+    def __init__(self, **kwargs):
+        self.db_name = kwargs.get('db')
+        self.con = pymysql.connect(
+            host=kwargs.get('host'),
+            user=kwargs.get('user'),
+            password=kwargs.get('password'),
+            db=self.db_name,
+            charset='utf8mb4',
+            port=8050
+        )
+        self.table_name = kwargs.get('table_name')
+        self.msg = ''
+
+    def fetch_all(self, sql):
+        ret = []
+        if self.con:
+            try:
+                with self.con.cursor() as cursor:
+                    cursor.execute(sql)
+                    ret = cursor.fetchall()
+            except Exception as e:
+                self.msg = '数据库链接失败: {0}'.format(e)
+        else:
+            self.msg = '查询SQL({0})时链接断开.'.format(sql)
+
+        return ret
+
+    def updata(self, ret):
+        for num_ret in range(1, len(ret)-2):
+            if ret[num_ret][0] != 'notices_00':
+                try:
+                    print('开始执行：', ret[num_ret][0])
+                    # sql = f"ALTER TABLE test2_data_collection.{ret[num_ret][0]} ADD COLUMN `bidding_contact` VARCHAR(32) DEFAULT NULL COMMENT '招标联系人'"
+                    # sql = f"ALTER TABLE test2_data_collection.{ret[num_ret][0]} ADD COLUMN `agent_contact` VARCHAR(32) DEFAULT NULL COMMENT '招标代理联系人'"
+                    # sql = f"ALTER TABLE test2_data_collection.{ret[num_ret][0]} ADD COLUMN `project_contact_information` VARCHAR(32) DEFAULT NULL COMMENT '项目负责人联系方式'"
+                    sql = f"ALTER TABLE test2_data_collection.{ret[num_ret][0]} ADD COLUMN `project_leader` VARCHAR(32) DEFAULT NULL COMMENT '项目负责人'"
+                    self.con.cursor().execute(sql)
+                    print('执行成功：', ret[num_ret][0])
+                    # self.con.commit()
+                except Exception as e:
+                    print('已经完成了执行过程{}'.format(ret[num_ret][0]), e)
+
+if __name__ == '__main__':
+    db = DBQuery(host='114.67.84.76', user='root', password='Ly3sa%@D0$pJt0y6', db='mysql')
+    sql = db.fetch_all("select table_name from information_schema.TABLES where TABLE_SCHEMA='test2_data_collection' and TABLE_TYPE = 'base table'")
+    db.updata(sql)

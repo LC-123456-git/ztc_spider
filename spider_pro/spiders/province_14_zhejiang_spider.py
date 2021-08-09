@@ -22,8 +22,6 @@ from spider_pro import constans as const
 from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, get_iframe_pdf_div_code
 
 
-
-
 class MySpider(CrawlSpider):
     name = 'province_14_zhejiang_spider'
     area_id = "14"
@@ -129,7 +127,6 @@ class MySpider(CrawlSpider):
         try:
             if json.loads(response.text):
                 if self.enable_incr:
-                    page = 1
                     _dict = response.meta['type_dict']['time'][0] | {'startTime': self.sdt_time} | {'endTime': self.edt_time}
                     type_dict = response.meta['type_dict'] | {'time': [_dict]}
                     if json.loads(response.text)['result']['records']:
@@ -156,8 +153,9 @@ class MySpider(CrawlSpider):
                                                            'info_source': info_source})
 
                             if nums >= len(num_count):
-                                page += 1
-                                _type_dict = type_dict | {'pn': (page - 1) * 50}
+                                page = response.meta['type_dict']
+                                page += 50
+                                type_dict = type_dict | {'pn': page}
                                 yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict),
                                                      dont_filter=True, callback=self.parse_data_urls,
                                                      meta={'category': response.meta['category'],
@@ -234,7 +232,7 @@ class MySpider(CrawlSpider):
                         if ''.join(values).split('.')[-1] not in suffix_list:
                             if 'http:' not in values:
                                 value = self.data_url + values
-                                contents = ''.join(content).replace(values, value)
+                                content = ''.join(content).replace(values, value)
                             else:
                                 value = values
                             if cont.xpath('.//text()'):
@@ -245,7 +243,7 @@ class MySpider(CrawlSpider):
                                     key = keys
                                 files_path[key] = value
             if files_path:
-                content = contents
+                content = content
             else:
                 content = content
 
@@ -267,5 +265,5 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
     # cmdline.execute("scrapy crawl province_14_zhejiang_spider".split(" "))
-    cmdline.execute("scrapy crawl province_14_zhejiang_spider -a sdt=2021-05-20 -a edt=2021-06-18".split(" "))
+    cmdline.execute("scrapy crawl province_14_zhejiang_spider -a sdt=2021-06-20 -a edt=2021-07-10".split(" "))
 
