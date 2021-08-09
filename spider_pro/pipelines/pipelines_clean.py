@@ -426,15 +426,15 @@ class CleanPipeline(object):
 
         liaison = self.get_keys_value_from_content(content, liaison_tags, area_id=area_id, field_name='liaison')
 
-        bidding_contact_tags = [
-            "建设单位联系人",    # 3334
-            "招标联系人",
-            "招标单位联系人",    # 3334
-            "采购单位联系人",    # 3334
-            "联系人",
-        ]   # 招标联系人
-        bidding_contact = self.get_keys_value_from_content(content, bidding_contact_tags, area_id=area_id,
-                                                           field_name='bidding_contact')
+        # bidding_contact_tags = [
+        #     "建设单位联系人",    # 3334
+        #     "招标联系人",
+        #     "招标单位联系人",    # 3334
+        #     "采购单位联系人",    # 3334
+        #     "联系人",
+        # ]   # 招标联系人
+        # bidding_contact = self.get_keys_value_from_content(content, bidding_contact_tags, area_id=area_id,
+        #                                                    field_name='bidding_contact')
 
         bidding_agency_tags = [
             '咨询代理单位',                # 3334
@@ -457,15 +457,15 @@ class CleanPipeline(object):
         ]    # 招标代理联系方式
         contact_information = self.get_keys_value_from_content(content, contact_information_tags, area_id=area_id,
                                                                 field_name='contact_information')  # √
-        agent_contact_tags = [
-            "咨询代理联系人及联系电话",  # 3334
-            "代理联系人",
-            "联系人",
-            "代理单位联系人",          # 3334
-        ]     # 招标代理联系人
-
-        agent_contact = self.get_keys_value_from_content(content, agent_contact_tags, area_id=area_id,
-                                                         field_name='agent_contact')  # √
+        # agent_contact_tags = [
+        #     "咨询代理联系人及联系电话",  # 3334
+        #     "代理联系人",
+        #     "联系人",
+        #     "代理单位联系人",          # 3334
+        # ]     # 招标代理联系人
+        #
+        # agent_contact = self.get_keys_value_from_content(content, agent_contact_tags, area_id=area_id,
+        #                                                  field_name='agent_contact')  # √
 
         budget_amount_tags = [
             "投资总额(万元)",        # 3334
