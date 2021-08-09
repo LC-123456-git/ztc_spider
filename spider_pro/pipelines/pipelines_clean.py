@@ -17,12 +17,10 @@ from ast import literal_eval
 from urllib import parse
 from spider_pro.items import NoticesItem
 from spider_pro import constans as const
-from spider_pro.utils import deal_base_notices_data, deal_area_data, get_accurate_pub_time,\
-                             init_yaml, get_keywords
+from spider_pro.utils import deal_base_notices_data, deal_area_data, get_accurate_pub_time
 from sqlalchemy import create_engine, text
 from spider_pro.rules_clean import get_keys_value_from_content_ahead
 
-cf = init_yaml()
 
 class CleanPipeline(object):
 
@@ -261,7 +259,7 @@ class CleanPipeline(object):
     def extract_data(self, pre_data, area_id="00"):
         data = pre_data.get("content")
         # 提取特有字段 11
-        notice_nature = bid_file = bid_file_start_time = bid_file_end_time = apply_end_time = bid_amount = budget_amount = ""
+        notice_nature = bid_file = bid_file_start_time = bid_file_end_time = apply_end_time = bid_amount = ""
         notice_start_time = notice_end_time = aberrant_type = tenderopen_time = successful_bidder = ""
         if pre_data.get("classify_id") == const.TYPE_ZB_NOTICE:
             notice_nature = "正常公告"
@@ -277,14 +275,13 @@ class CleanPipeline(object):
             apply_end_time = get_accurate_pub_time(
                 self.get_keys_value_from_content(data, "报名截止时间", area_id=area_id))
 
-            budget_amount_tags = get_keywords(cf, area_id, 'budget_amount')
-            budget_amount = self.get_keys_value_from_content(data, budget_amount_tags, area_id=area_id,
-                                                             field_name='budget_amount')  # √
-
-            tenderopen_time_tags = get_keywords(cf, area_id, 'tenderopen_time')
+            tenderopen_time_tags = [
+                "开标时间",                  # 3331
+                "投标截止时间（开标时间）",     # 3331
+                "开标日期",                  # 3331
+            ]
             tenderopen_times = get_accurate_pub_time(self.get_keys_value_from_content(data, tenderopen_time_tags,
-                                                                                      area_id=area_id,
-                                                                                      field_name='tenderopen_time'))  # √
+                                                     area_id=area_id, field_name='tenderopen_time'))  # √
 
             # 特殊处理 未获取到值则使用开标时间
             if not notice_end_time:
@@ -307,14 +304,33 @@ class CleanPipeline(object):
                 self.get_keys_value_from_content(data, ["公告开始时间"], area_id=area_id))
             notice_end_time = get_accurate_pub_time(
                 self.get_keys_value_from_content(data, ["公告结束时间"], area_id=area_id))
-        if pre_data.get("classify_id") == const.TYPE_WIN_NOTICE or const.TYPE_WIN_ADVANCE_NOTICE:
-
-            successful_bidder_tags = get_keywords(cf, area_id, 'successful_bidder')
-            successful_bidder = self.get_keys_value_from_content(data, successful_bidder_tags, area_id=area_id,
-                                                                 field_name='successful_bidder')  # √
-            bid_amount_tags = get_keywords(cf, area_id, 'bid_amount')
-            bid_amount = self.get_keys_value_from_content(data, bid_amount_tags, area_id=area_id,
-                                                          field_name='bid_amount')  # √
+        elif pre_data.get("classify_id") == const.TYPE_WIN_NOTICE:
+            successful_bidder_tags = [
+                # "竞得人",
+                # "中标人",
+                # "中标人名称",
+                # "中标单位",
+                # "供应商名称",
+                # "受让人名称",
+                "单位名称",          # 3331
+            ]   # 中标人
+            successful_bidder = self.get_keys_value_from_content(data, successful_bidder_tags, area_id=area_id, field_name='successful_bidder')  # √
+            bid_amount_tags = [
+                # "成交金额（万元）",
+                # "中标价格",
+                # "中标价",
+                # "中标（成交）金额(元)",
+                # "报价（元）",
+                # "中标价（元）",
+                "投标报价(万元)",            # 3331
+                "投标报价（万元）",           # 3331
+                # "预中标价",
+                # "成交价格",
+                # "成交总价",
+                # "预中标价",
+                # "项目总投资"
+            ]        # 中标价
+            bid_amount = self.get_keys_value_from_content(data, bid_amount_tags, area_id=area_id, field_name='bid_amount')  # √
         elif pre_data.get("classify_id") == const.TYPE_QUALIFICATION_ADVANCE_NOTICE:
             pass
         elif pre_data.get("classify_id") == const.TYPE_OTHERS_NOTICE:
@@ -339,23 +355,41 @@ class CleanPipeline(object):
 
         # 公共提取字段 15
 
-        project_leader_tags = get_keywords(cf, area_id, 'project_leader')
+        # project_leader_tags = [
+        #     "项目负责人",
+        #     "项目经理"
+        # ]       # 项目负责人
+        #
+        # project_leader = self.get_keys_value_from_content(content, project_leader_tags, area_id=area_id,
+        #                                                   field_name='project_leader')
 
-        project_leader = self.get_keys_value_from_content(content, project_leader_tags, area_id=area_id,
-                                                          field_name='project_leader')
+        # project_contact_information_tags = [
+        #     # '联系电话'    # 3331
+        # ]       # 项目负责人联系方式
+        #
+        # project_contact_information = self.get_keys_value_from_content(content, project_contact_information_tags, area_id=area_id,
+        #                                                  field_name='project_contact_information')
 
-        project_contact_information_tags = get_keywords(cf, area_id, 'project_contact_information')
+        project_tags = [
 
-        project_contact_information = self.get_keys_value_from_content(content, project_contact_information_tags,
-                                                                       area_id=area_id,
-                                                                       field_name='project_contact_information')
+            # "招标项目",
+            # "工\s*程\s*名\s*称",
+            "采购项目名称",          # 3331
+            "项目名称",             # 3331
+            "标段名称",
+            "招标工程项目",
+            "工程名称",
+        ]    # 项目名称
+        project_name = self.get_keys_value_from_content(content, project_tags, area_id=area_id,
+                                                        field_name='project_name', title=title)  # √
 
-        project_tags = get_keywords(cf, area_id, 'project_name')
-        project_name = self.get_keys_value_from_content(
-            content, project_tags, area_id=area_id, field_name='project_name', title=title
-        )  # √
+        project_number_tags = [
+            "项目编号",        # 3331
+            "招标项目编号",     # 3334
+            "招标编号",        # 3331
+            "标段编号",        # 3331
 
-        project_number_tags = get_keywords(cf, area_id, 'project_number')
+        ]       # 项目编号
 
         project_numbers = self.get_keys_value_from_content(content, project_number_tags, area_id=area_id,
                                                            field_name='project_number')  # √
@@ -364,34 +398,88 @@ class CleanPipeline(object):
         else:
             project_number = project_numbers
 
-        tenderee_tags = get_keywords(cf, area_id, 'tenderee')
+        tenderee_tags = [
+            "采购单位",                 # 3334
+            "采购单位名称",             # 3334
+            "采购人名称",               # 3331
+            "U招标单位",                # 3331
+            "20招标单位",               # 3331
+            "招标单位",                 # 3331 3334
+            "建设单位",                 # 3331
+            # '建设单位（盖章）',
+            # "采购单位名称",
+            # "采购人信息",
+            # "监督部门",
+            # "采购人信息",
+            # "名称[( （]盖章[） )]",
+            # "业主的名称和办公室地址",
+        ]     # 招标单位（招标人）
 
         tenderee = self.get_keys_value_from_content(content, tenderee_tags, area_id=area_id, field_name='tenderee')  # √
         if len(tenderee) < 2:
             tenderee = ''
 
-        liaison_tags = get_keywords(cf, area_id, 'liaison')
+        liaison_tags = [
+            "招标联系电话",
+            "联系电话",      # 3334
+        ]  # 招标人联系方式
 
         liaison = self.get_keys_value_from_content(content, liaison_tags, area_id=area_id, field_name='liaison')
 
-        bidding_contact_tags = get_keywords(cf, area_id, 'bidding_contact')
+        bidding_contact_tags = [
+            "建设单位联系人",    # 3334
+            "招标联系人",
+            "招标单位联系人",    # 3334
+            "采购单位联系人",    # 3334
+            "联系人",
+        ]   # 招标联系人
         bidding_contact = self.get_keys_value_from_content(content, bidding_contact_tags, area_id=area_id,
                                                            field_name='bidding_contact')
 
-        bidding_agency_tags = get_keywords(cf, area_id, 'bidding_agency')
+        bidding_agency_tags = [
+            '咨询代理单位',                # 3334
+            "代理公司",                   # 3331
+            "代理机构",                   # 3331
+            "招标代理公司"                 # 3331
+            "采购代理机构",                # 3334
+            "招标代理",                   # 3334
+            "代理单位",                   # 3334
+            "代理单位名称",                # 3334
+            "招标代理机构"                 # 3337
+        ]        # 代理单位
         bidding_agency = self.get_keys_value_from_content(content, bidding_agency_tags, area_id=area_id,
-                                                          field_name='bidding_agency')  # √
-        contact_information_tags = get_keywords(cf, area_id, 'contact_information')
+                                                           field_name='bidding_agency')  # √
+        contact_information_tags = [
+            "咨询代理联系人及联系电话",  # 3334
+            "联系电话",
+            "代理联系电话",            # 3331
+
+        ]    # 招标代理联系方式
         contact_information = self.get_keys_value_from_content(content, contact_information_tags, area_id=area_id,
                                                                 field_name='contact_information')  # √
-
-
-        agent_contact_tags = get_keywords(cf, area_id, 'agent_contact')
+        agent_contact_tags = [
+            "咨询代理联系人及联系电话",  # 3334
+            "代理联系人",
+            "联系人",
+            "代理单位联系人",          # 3334
+        ]     # 招标代理联系人
 
         agent_contact = self.get_keys_value_from_content(content, agent_contact_tags, area_id=area_id,
                                                          field_name='agent_contact')  # √
 
-
+        budget_amount_tags = [
+            "投资总额(万元)",        # 3334
+            "项目预算审核价",        # 3334
+            "标段概算(万元)",        # 3331
+            "项目概况",             # 3331
+            "预算金额",             # 3331
+            "预算价(万元)",          # 3331
+            "交易中标价(万元)"        # 3331
+            "投资概算(万元)",        # 3331
+            "预算价"                # 3331
+        ]
+        budget_amount = self.get_keys_value_from_content(content, budget_amount_tags, area_id=area_id,
+                                                         field_name='budget_amount')  # √
 
         email = self.get_keys_value_from_content(content, ["电子邮箱"], area_id=area_id)
         address = self.get_keys_value_from_content(content, ["详细地址", "采购单位地址"], area_id=area_id)
@@ -404,7 +492,7 @@ class CleanPipeline(object):
 
         # 暂未使用字段
         file_ids = ""
-
+        # print(project_number, '**', project_name, bidding_agency, tenderopen_time)
         return {'title': title,
                 'project_number': project_number,
                 'project_name': project_name,
@@ -420,7 +508,7 @@ class CleanPipeline(object):
                 'inspect_dept': inspect_dept,
                 'review_dept': review_dept,
                 'notice_nature': notice_nature,
-                'bid_file': bid_file,
+                 'bid_file': bid_file,
                 'bid_file_start_time': bid_file_start_time,
                 'bid_file_end_time': bid_file_end_time,
                 'apply_end_time': apply_end_time,
@@ -445,8 +533,8 @@ class CleanPipeline(object):
                 'source': source,
                 'source_url': source_url,
                 'is_have_file': is_have_file,
-                'project_leader': project_leader,
-                'project_contact_information': project_contact_information,
+                # 'project_leader': project_leader,
+                # 'project_contact_information': project_contact_information,
                 'bidding_contact': bidding_contact,
                 'agent_contact': agent_contact
                 }
@@ -468,11 +556,11 @@ class CleanPipeline(object):
         start = 0
         with self.engine.connect() as conn:
             while True:
-                # results = conn.execute(f"SELECT * FROM {table_name} WHERE (project_type = '5' OR project_type = '6') AND"
-                #                        f"(classify_name = '中标预告') limit {start}, {rows}").fetchall()
+                results = conn.execute(f"SELECT * FROM {table_name} WHERE (project_type = '5' OR project_type = '6') AND"
+                                       f"(classify_name = '招标公告') limit {start}, {rows}").fetchall()
                 # results = conn.execute(f"SELECT * FROM notices_3334 WHERE (project_type = '5' OR project_type = '6') AND"
                 #                        f" classify_name = '招标公告' limit 0, 3000").fetchall()
-                results = conn.execute(f"SELECT * FROM {table_name} WHERE id=191").fetchall()
+                # results = conn.execute(f"SELECT * FROM {table_name} WHERE id=189").fetchall()
                 results = [dict(zip(result.keys(), result)) for result in results]
                 for item in results:
                     try:
@@ -496,8 +584,8 @@ class CleanPipeline(object):
                             'successful_bidder',
                             'bid_amount',
                             'tenderopen_time',
-                            'project_leader',
-                            'project_contact_information',
+                            # 'project_leader',
+                            # 'project_contact_information',
                             'bidding_contact',
                             'agent_contact',
                         ]
@@ -554,7 +642,8 @@ class CleanPipeline(object):
                             'successful_bidder',
                             'bid_amount',
                             'tenderopen_time',
-                            'project_leaxinyueshect_information',
+                            # 'project_leader',
+                            # 'project_contact_information',
                             'agent_contact',
                             'contact_information',
                         ]
@@ -588,7 +677,7 @@ if __name__ == "__main__":
     # cp.run_clean(table_name="notices_00", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
 
     cp.run_clean(
-        table_name="notices_3334",
+        table_name="notices_3337",
         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'
     )
 
