@@ -66,9 +66,6 @@ class ProxyMiddleware(RetryMiddleware):
             else:
                 c_proxy = self.get_redis_proxy_ip(self.name_https_proxy, spider)
 
-            # splash proxy
-            request.meta['splash']['args']['proxy'] = c_proxy
-
             request.meta['proxy'] = c_proxy
             request.meta['download_slot'] = request.meta['proxy']
         # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
