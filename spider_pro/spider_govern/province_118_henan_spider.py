@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-# @file           :province_117_hebei_spider.py
-# @description    :中国河北政府采购网
-# @date           :2021/08/09 16:56:29
-# @author         :miaokela
-# @version        :1.0
 import re
 import random
 import requests
@@ -11,50 +6,55 @@ from datetime import datetime
 from lxml import etree
 
 import scrapy
-from scrapy_splash import SplashRequest
 
 from spider_pro import utils, constans, items
 
 
-class Province117HebeiSpiderSpider(scrapy.Spider):
-    name = 'province_117_hebei_spider'
-    allowed_domains = ['ccgp-hebei.gov.cn']
-    start_urls = ['http://ccgp-hebei.gov.cn/']
+class Province118HenanSpiderSpider(scrapy.Spider):
+    name = 'province_118_henan_spider'
+    allowed_domains = ['www.ccgp-henan.gov.cn']
+    start_urls = ['http://www.ccgp-henan.gov.cn/']
 
-    basic_area = '中国河北政府采购网'
-    query_url = 'http://search.hebcz.cn:8080/was5/web/search?'
-    base_url = 'http://search.hebcz.cn:8080'
+    basic_area = '中国河南政府采购网'
+    query_url = 'http://www.ccgp-henan.gov.cn/henan/list2?'
+    base_url = 'http://www.ccgp-henan.gov.cn'
 
-    area_id = 117
+    area_id = 118
     keywords_map = {
         '采购意向|需求公示': '招标预告',
         '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
+        '候选人': '中标预告',
     }
     url_map = {
         '招标预告': [
-            {'params': 'channelid=218195&lanmu=zfcgyx&city=province'},  # 政府采购意向 省级  TODO js混淆内容 规则1
-            {'params': 'channelid=218195&lanmu=zfcgyxAAAA&city=sjz_ys'},  # 政府采购意向 县市  TODO js混淆内容 规则1
+            {'params': 'channelCode=9102&pageNo={page_no}&pageSize=16&bz=1&gglx=0'},  # 意向采购 省
+            {'params': 'channelCode=9102&pageNo={page_no}&pageSize=16&bz=2&gglx=0'},  # 意向采购 县市
         ],
         '招标公告': [
-            {'params': 'channelid=240117&lanmu=zbgg&syprovince=0'},  # 招标采购 省级
-            {'params': 'channelid=240117&lanmu=zbgg&syprovince=0'},  # 招标采购 县市
-            {'params': 'channelid=228483&lanmu=fgw_zbfggg&syprovince=0'},  # 招标采购 其他
-        ],
-        '招标变更': [
-            {'params': 'channelid=218195&lanmu=zfcgyxbg&city=province'},  # 政府采购意向变更 省级   TODO js混淆内容 规则1
-            {'params': 'channelid=240117&lanmu=gzgg&syprovince=0'},  # 变更 省级   TODO js混淆内容 规则3
-            {'params': 'channelid=218195&lanmu=zfcgyxbgAAAS&city=sjz'},  # 政府采购意向变更 县市  TODO js混淆内容 规则1
-            {'params': 'channelid=240117&lanmu=gzgg&syprovince=0'},  # 变更 县市
-            {'params': 'channelid=228483&lanmu=fgw_gzfggg&syprovince=0'},  # 变更 其他
+            {'params': 'channelCode=9101&pageNo={page_no}&pageSize=16&bz=1&gglx=0'},  # 非政府采购 省
+            {'params': 'channelCode=9101&pageNo={page_no}&pageSize=16&bz=2&gglx=0'},  # 非政府采购 县市
+            {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=1&gglb=01&gglx=0'},  # 公开招标公告 省
+            {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=2&gglb=01&gglx=0'},  # 公开招标公告 县市
+
+            # TODO
+            {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=1&gglb=02&gglx=0'},  # 竞争性谈判公告 省
+            {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=2&gglb=02&gglx=0'},  # 竞争性谈判公告 县市
+            {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=1&gglb=03&gglx=0'},  # 竞争性磋商公告 省
+            {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=2&gglb=03&gglx=0'},  # 竞争性磋商公告 县市
+            {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=1&gglb=04&gglx=0'},  # 邀请招标公告 省
+            {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=2&gglb=04&gglx=0'},  # 邀请招标公告 县市
+            {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=1&gglb=05&gglx=0'},  # 询价公告 省
+            {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=2&gglb=05&gglx=0'},  # 询价公告 县市
         ],
         '招标异常': [
-            {'params': 'channelid=240117&lanmu=fbgg&syprovince=0'},  # 废标终止
+            {'params': 'channelCode=0190&pageNo={page_no}&pageSize=16&bz=1&gglx=0'},  # 废标公告
+            {'params': 'channelCode=0190&pageNo={page_no}&pageSize=16&bz=2&gglx=0'},  # 废标公告
         ],
         '中标公告': [
-            {'params': 'channelid=240117&lanmu=zhbgg&syprovince=0'},  # 中标结果
-            {'params': 'channelid=228483&lanmu=zhbfggg_fgw&syprovince=0'},  # 中标结果
+            {'params': 'channelCode=0102&pageNo={page_no}&pageSize=16&bz=1&gglx=0'},  # 结果公告
+            {'params': 'channelCode=0102&pageNo={page_no}&pageSize=16&bz=2&gglx=0'},  # 结果公告
         ],
     }
 
@@ -111,7 +111,7 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
                 2 末条大于最大时间 continue
         """
         status = 0
-        headers = Province117HebeiSpiderSpider.get_headers(resp)
+        headers = Province118HenanSpiderSpider.get_headers(resp)
         if all([self.start_time, self.end_time]):
             try:
                 text = ''
@@ -154,7 +154,7 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
                         final_el = els[-1]
 
                         # 解析出时间
-                        t_com = re.compile('(\d+%s\d+%s\d+)' % (time_sep, time_sep))
+                        t_com = re.compile(r'(\d+%s\d+%s\d+)' % (time_sep, time_sep))
 
                         first_pub_time = t_com.findall(first_el)
                         final_pub_time = t_com.findall(final_el)
@@ -190,32 +190,34 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
     def start_requests(self):
         for notice_type, category_urls in self.url_map.items():
             for cu in category_urls:
-                params = cu['params']
+                params = cu['params'].format(
+                    page_no=1,
+                )
                 c_url = ''.join([self.query_url, params])
                 yield scrapy.Request(url=c_url, callback=self.parse_list, meta={
                     'notice_type': notice_type,
                 }, cb_kwargs={
-                    'url': c_url
+                    'params': params,
                 })
 
-    def parse_list(self, resp, url):
-        last_page = resp.xpath('//a[@class="last-page"]/@href').get()
-
+    def parse_list(self, resp, params):
+        last_page = resp.xpath('//li[@class="lastPage"]/a/@href').get()
         try:
-            p_com = re.compile(r'\?page=(\d+)')
+            p_com = re.compile(r'pageNo=(\d+)')
             max_pages = p_com.findall(last_page)
             max_age = int(max_pages[0])
         except Exception as e:
             print(e)
             max_age = 1
-        # for page in range(1, max_age + 1):
         for page in range(1, max_age + 1):
-            c_url = ''.join([url, '&page={0}'.format(page)])
+            c_url = ''.join([self.query_url, params.format(
+                page_no=page,
+            )])
 
             judge_status = self.judge_in_interval(
-                c_url, method='GET', ancestor_el='table', ancestor_attr='id',
-                ancestor_val='moredingannctable',
-                child_el='/td[@class="txt1"]/span[position()=1]', resp=resp,
+                c_url, method='GET', ancestor_el='div', ancestor_attr='class',
+                ancestor_val='Top10 PaddingLR15',
+                child_el='/span[@class="Gray Right"]', resp=resp,
             )
             if judge_status == 0:
                 break
@@ -227,8 +229,8 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
                 }, priority=max_age - page, dont_filter=True)
 
     def parse_urls(self, resp):
-        url_els = resp.xpath('//tr[@id="biaoti"]/td[2]/a/@href').extract()
-        pub_time_els = resp.xpath('//td[@class="txt1"]/span[position()=1]/text()').extract()
+        url_els = resp.xpath('//div[@class="Top10 PaddingLR15"]//ul/li/a/@href').extract()
+        pub_time_els = resp.xpath('//div[@class="Top10 PaddingLR15"]//span[@class="Gray Right"]/text()').extract()
 
         for n, href in enumerate(url_els):
             if href:
@@ -236,14 +238,26 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
                 if pub_time:
                     pub_time = pub_time.strip()
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
-                    yield SplashRequest(url=href, callback=self.parse_detail, meta={
+                    yield scrapy.Request(url=''.join([self.query_url, href]), callback=self.parse_detail_url, meta={
                         'notice_type': resp.meta.get('notice_type'),
                         'pub_time': pub_time,
-                    }, args={'wait': '0.5'}, priority=(len(url_els) - n) * 1000)
+                    }, priority=(len(url_els) - n) * 1000)
+
+    def parse_detail_url(self, resp):
+        """
+        内容页获取真实链接
+        :param resp:
+        :return:
+        """
+        c_url = ''
+        scrapy.Request(url=c_url, callback=self.parse_detail, meta={
+            'notice_type': resp.meta.get('notice_type'),
+            'pub_time': resp.meta.get('pub_time'),
+        }, priority=1000000)
 
     def parse_detail(self, resp):
-        content = resp.xpath('//table[position()=1]').get()
-        title_name = resp.xpath('//span[@class="txt2"]/text()').get()
+        content = resp.xpath('//table[@class="Content"]').get()
+        title_name = resp.xpath('//h1[@class="TxtCenter Top18 PaddingLR15 PaddingTop10"]/text()').get()
         pub_time = resp.meta.get('pub_time')
         notice_type_ori = resp.meta.get('notice_type')
 
@@ -254,21 +268,6 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
         notice_types = list(
             filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
         )
-
-        # 移除不必要信息
-        _, content = utils.remove_element_by_xpath(
-            content,
-            xpath_rule='//span[@class="txt2"]'
-        )  # 标题
-        _, content = utils.remove_element_by_xpath(
-            content,
-            xpath_rule='//td[@align="center" and (contains(text(), "发布时间：") or contains(text(), "日期：") or contains(text(), "（公告来源："))]'
-        )  # 日期
-        _, content = utils.remove_element_by_xpath(
-            content,
-            xpath_rule='//input[@class="guanbi"]'
-        )  # 关闭按钮
-        _, content = utils.remove_specific_element(content, 'td', 'bgcolor', 'EAEAEA')  # 面包屑导航
 
         # 匹配文件
         _, files_path = utils.catch_files(content, self.base_url, pub_time=pub_time)
@@ -294,5 +293,5 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_117_hebei_spider -a sdt=2021-06-01 -a edt=2021-08-10".split(" "))
-    # cmdline.execute("scrapy crawl province_117_hebei_spider".split(" "))
+    cmdline.execute("scrapy crawl province_118_henan_spider -a sdt=2021-06-01 -a edt=2021-08-10".split(" "))
+    # cmdline.execute("scrapy crawl province_118_henan_spider".split(" "))

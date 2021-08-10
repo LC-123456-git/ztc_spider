@@ -412,6 +412,24 @@ def catch_files(content, base_url, **kwargs):
         'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF',
     ]
     search_regex = '|'.join(r'\.{0}'.format(file_type) for file_type in file_types)
+    resp = kwargs.get('resp', None)
+    proxy = resp.meta.get('proxy', None)
+    proxies = None
+    if proxy:
+        if proxy.startswith('https'):
+            proxies = {
+                'https': proxy,
+            }
+        else:
+            proxies = {
+                'http': proxy,
+            }
+    default_headers = resp.request.headers if resp else {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+                      '(KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
+    }
+    headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
+
     try:
         doc = etree.HTML(content)
         # pictures
@@ -451,10 +469,9 @@ def catch_files(content, base_url, **kwargs):
                 if re.search(search_regex, file_name):
                     files_path[file_name.strip()] = file_url
                 else:
-                    content_type = requests.get(url=file_url, headers={
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
-                                      '(KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
-                    }).headers.get('Content-Type')
+                    content_type = requests.get(
+                        url=file_url, headers=headers, proxies=proxies
+                    ).headers.get('Content-Type')
                     if 'text/html' not in content_type:
                         files_path[file_name.strip()] = file_url
     except Exception as e:
@@ -465,19 +482,15 @@ def catch_files(content, base_url, **kwargs):
 def check_range_time(start_time, end_time, content_time):
     """
     check if time between start_time and end_time
-    params:
-        @start_time: yyyy-mm-dd
-        @end_time: yyyy-mm-dd
-        @content_time: yyyy-mm-dd
     """
     msg = ''
     status = 1
 
     if all([start_time, end_time]):
         try:
-            start_time = datetime.datetime.strptime(start_time, '%Y-%m-%d')
-            end_time = datetime.datetime.strptime(end_time, '%Y-%m-%d')
-            content_time = datetime.datetime.strptime(content_time, '%Y-%m-%d')
+            start_time = convert_to_strptime(start_time)
+            end_time = convert_to_strptime(end_time) + datetime.timedelta(days=1, seconds=-1)
+            content_time = convert_to_strptime(content_time)
 
             if start_time <= content_time <= end_time:
                 pass

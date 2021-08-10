@@ -108,16 +108,27 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
                 0 首条不在区间内 停止翻页
                 2 末条大于最大时间 continue
         """
+        proxy = resp.meta.get('proxy', None)
+        proxies = None
+        if proxy:
+            if proxy.startswith('https'):
+                proxies = {
+                    'https': proxy,
+                }
+            else:
+                proxies = {
+                    'http': proxy,
+                }
         status = 0
         headers = Province67YangguangyizhaoSpiderSpider.get_headers(resp)
         if all([self.start_time, self.end_time]):
             try:
                 text = ''
                 if method == 'GET':
-                    text = requests.get(url=url, headers=headers).text
+                    text = requests.get(url=url, headers=headers, proxies=proxies if proxies else None).text
                 if method == 'POST':
                     text = requests.post(url=url, data=kwargs.get(
-                        'data'), headers=headers).text
+                        'data'), headers=headers, proxies=proxies if proxies else None).text
                 if text:
                     els = []
                     if doc_type == 'html':
@@ -151,7 +162,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
                         final_el = els[-1]
 
                         # 解析出时间
-                        t_com = re.compile('(\d+%s\d+%s\d+)' %
+                        t_com = re.compile(r'(\d+%s\d+%s\d+)' %
                                            (time_sep, time_sep))
 
                         first_pub_time = t_com.findall(first_el)
@@ -182,7 +193,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
                             else:
                                 status = 1
             except Exception as e:
-                self.log(e)
+                self.logger.info(e)
         else:
             status = 1  # 没有传递时间
         return status
@@ -234,7 +245,6 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
             else:
                 for page in range(1, max_page + 1):
                     c_url = url.replace('index', 'index_{0}'.format(page)) if page > 1 else url
-
                     # 最末一条符合时间区间则翻页
                     # 解析详情页时再次根据区间判断去采集
                     judge_status = self.judge_in_interval(
@@ -266,7 +276,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
                         'notice_type': resp.meta.get('notice_type'),
                         'category_type': resp.meta.get('category_type'),
                         'pub_time': pub_time,
-                    }, priority=(len(els) - n) * 100)
+                    }, priority=(len(els) - n) * 1000)
 
     def parse_detail(self, resp):
         content = resp.xpath('//div[@class="s_content"]').get()
@@ -285,7 +295,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
         )
 
         # 匹配文件
-        _, files_path = utils.catch_files(content, self.query_url)
+        _, files_path = utils.catch_files(content, self.query_url, resp=resp)
 
         notice_item = items.NoticesItem()
         notice_item["origin"] = resp.url
