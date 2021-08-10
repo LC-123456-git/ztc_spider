@@ -195,6 +195,7 @@ if __name__ == "__main__":
         "ZJ_city_3322_anji_spider",
         "ZJ_city_3323_xiaoshan_spider",
         "ZJ_city_3324_nanxun_spider",
+        "ZJ_city_3325_deqing_spider",
         "ZJ_city_3326_longyou_spider",
         "ZJ_city_3327_pingyang_spider",
         "ZJ_city_3328_changshan_spider",
@@ -208,6 +209,12 @@ if __name__ == "__main__":
         "ZJ_city_3339_dongtou_spider",
         "ZJ_city_3340_wencheng_spider",
         "ZJ_city_3341_taishun_spider",
+
+        "ZJ_city_3346_huzhouwuxing_spider",
+        "ZJ_city_3356_jinhuayiwu_spider",
+        # "ZJ_city_3361_jinhuapujiang_spider",
+        "ZJ_city_3362_jinhuapanan_spider",
+
         "qcc_crawler",
     ]
 

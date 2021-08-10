@@ -587,7 +587,7 @@ if __name__ == "__main__":
         "notices_49",
         "notices_50",
         "notices_52",
-        # "notices_53",  # 暂时由后台管理系统测试
+        "notices_53",  # 暂时由后台管理系统测试
         "notices_54",
         "notices_55",
         "notices_56",
@@ -621,6 +621,7 @@ if __name__ == "__main__":
         "notices_3322",
         "notices_3323",
         "notices_3324",
+        "notices_3325",
         "notices_3326",
         "notices_3327",
         "notices_3328",
@@ -634,6 +635,11 @@ if __name__ == "__main__":
         "notices_3339",
         "notices_3340",
         "notices_3341",
+
+        "notices_3346",
+        "notices_3356",
+        # "notices_3361",
+        "notices_3362",
     ])
     print('{0:%Y-%m-%d %H:%M:%S} post...'.format(datetime.datetime.now()))
     # 正式批量推今天之前的数据 解开注释需要当心！！！
