@@ -18,7 +18,7 @@ from spider_pro import utils, constans, items
 
 class ZjCity3361JinhuapujiangSpiderSpider(scrapy.Spider):
     name = 'ZJ_city_3361_jinhuapujiang_spider'
-    allowed_domains = ['pj.gov.cn', '220.191.229.165:900']
+    allowed_domains = ['pj.gov.cn', '220.191.229.165']
     start_urls = ['http://pj.gov.cn/']
     query_url = 'http://pj.gov.cn'
     query_list_url = 'http://220.191.229.165:900/TPFrame/zhmanagemis/pages/allprojectgonggao/allprojectgonggaolistaction' \
@@ -259,7 +259,7 @@ class ZjCity3361JinhuapujiangSpiderSpider(scrapy.Spider):
                                     'category': category,
                                     'pub_time': pub_time,
                                     'detail_url': detail_url,
-                                }, priority=len(data_list) * 1000 - n, dont_filter=True)
+                                }, priority=(len(data_list) - n) * 1000, dont_filter=True)
 
     def parse_detail(self, resp):
         json_data = resp.text

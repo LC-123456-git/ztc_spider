@@ -73,14 +73,6 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
             {'notice_type': '中标公告', 'url': 'http://www.sunbidding.com/jsljg/index.jhtml'},
         ]
     }
-    custom_settings = {
-        'DOWNLOADER_MIDDLEWARES': {
-            # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
-            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
-            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
-        },
-    }
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -222,7 +214,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
                 yield scrapy.Request(url=url, callback=self.get_max_page, meta={
                     'category_type': category_type,
                     'notice_type': notice_type
-                }, cb_kwargs = {
+                }, cb_kwargs={
                     'url': url,
                 })
 
@@ -231,7 +223,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
         获取总页数
         """
         page_string = resp.xpath('//div[@class="TxtCenter"]/div/text()[1]').get().strip()
-        max_page_com = re.compile('/(\d+)页')  # 共1169条记录 1/65页
+        max_page_com = re.compile(r'/(\d+)页')  # 共1169条记录 1/65页
         max_pages = max_page_com.findall(page_string)
         if max_pages:
             max_page = max_pages[0]
@@ -258,7 +250,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
                             'notice_type': resp.meta.get('notice_type', ''),
                             'category_type': resp.meta.get('category_type', '')
                         }, priority=max_page - page, dont_filter=True)
-    
+
     def parse_list(self, resp):
         """
         获取详情页链接与发布时间
@@ -274,7 +266,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
                         'notice_type': resp.meta.get('notice_type'),
                         'category_type': resp.meta.get('category_type'),
                         'pub_time': pub_time,
-                    }, priority=(len(els)-n) * 100)
+                    }, priority=(len(els) - n) * 100)
 
     def parse_detail(self, resp):
         content = resp.xpath('//div[@class="s_content"]').get()
@@ -312,10 +304,11 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
 
         return notice_item
 
+
 if __name__ == "__main__":
     from scrapy import cmdline
 
     cmdline.execute(
-        "scrapy crawl province_67_yangguangyizhao_spider -a sdt=2021-06-07 -a edt=2021-06-09".split(" ")
+        "scrapy crawl province_67_yangguangyizhao_spider -a sdt=2021-08-09 -a edt=2021-08-09".split(" ")
     )
     # cmdline.execute("scrapy crawl province_67_yangguangyizhao_spider".split(" "))

@@ -270,7 +270,7 @@ class ZjCity3356JinhuayiwuSpiderSpider(scrapy.Spider):
                         'notice_type': resp.meta.get('notice_type'),
                         'category': resp.meta.get('category'),
                         'pub_time': pub_time,
-                    }, priority=len(els)-n)
+                    }, priority=(len(els)-n)*1000)
 
     def parse_detail(self, resp):
         content = resp.xpath('//div[@class="news-article-para"]').get()
@@ -313,5 +313,5 @@ class ZjCity3356JinhuayiwuSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3356_jinhuayiwu_spider -a sdt=2021-06-01 -a edt=2021-07-20".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3356_jinhuayiwu_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3356_jinhuayiwu_spider -a sdt=2021-06-01 -a edt=2021-07-20".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3356_jinhuayiwu_spider".split(" "))

@@ -31,29 +31,29 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
         '流标|废标|终止|中止': '招标异常',
     }
     url_map = {
-        '招标预告': [
-            {'params': 'channelid=218195&lanmu=zfcgyx&city=province'},  # 政府采购意向 省级
-            {'params': 'channelid=218195&lanmu=zfcgyxAAAA&city=sjz_ys'},  # 政府采购意向 县市
-        ],
-        '招标公告': [
-            {'params': 'channelid=240117&lanmu=zbgg&syprovince=0'},  # 招标采购 省级
-            {'params': 'channelid=240117&lanmu=zbgg&syprovince=0'},  # 招标采购 县市
-            {'params': 'channelid=228483&lanmu=fgw_zbfggg&syprovince=0'},  # 招标采购 其他
-        ],
+        # '招标预告': [
+        #     {'params': 'channelid=218195&lanmu=zfcgyx&city=province'},  # 政府采购意向 省级  TODO js混淆内容 规则1
+        #     {'params': 'channelid=218195&lanmu=zfcgyxAAAA&city=sjz_ys'},  # 政府采购意向 县市  TODO js混淆内容 规则1
+        # ],
+        # '招标公告': [
+        #     {'params': 'channelid=240117&lanmu=zbgg&syprovince=0'},  # 招标采购 省级 TODO js混淆内容 规则2
+        #     {'params': 'channelid=240117&lanmu=zbgg&syprovince=0'},  # 招标采购 县市 TODO js混淆内容 规则2
+        #     {'params': 'channelid=228483&lanmu=fgw_zbfggg&syprovince=0'},  # 招标采购 其他
+        # ],
         '招标变更': [
-            {'params': 'channelid=218195&lanmu=zfcgyxbg&city=province'},  # 政府采购意向变更 省级
-            {'params': 'channelid=240117&lanmu=gzgg&syprovince=0'},  # 变更 省级
-            {'params': 'channelid=218195&lanmu=zfcgyxbgAAAS&city=sjz'},  # 政府采购意向变更 县市
-            {'params': 'channelid=240117&lanmu=gzgg&syprovince=0'},  # 变更 县市
+            # {'params': 'channelid=218195&lanmu=zfcgyxbg&city=province'},  # 政府采购意向变更 省级   TODO js混淆内容 规则1
+            # {'params': 'channelid=240117&lanmu=gzgg&syprovince=0'},  # 变更 省级   TODO js混淆内容 规则3
+            # {'params': 'channelid=218195&lanmu=zfcgyxbgAAAS&city=sjz'},  # 政府采购意向变更 县市  TODO js混淆内容 规则1
+            # {'params': 'channelid=240117&lanmu=gzgg&syprovince=0'},  # 变更 县市
             {'params': 'channelid=228483&lanmu=fgw_gzfggg&syprovince=0'},  # 变更 其他
         ],
-        '招标异常': [
-            {'params': 'channelid=240117&lanmu=fbgg&syprovince=0'},  # 废标终止
-        ],
-        '中标公告': [
-            {'params': 'channelid=240117&lanmu=zhbgg&syprovince=0'},  # 中标结果
-            {'params': 'channelid=228483&lanmu=zhbfggg_fgw&syprovince=0'},  # 中标结果
-        ],
+        # '招标异常': [
+        #     {'params': 'channelid=240117&lanmu=fbgg&syprovince=0'},  # 废标终止
+        # ],
+        # '中标公告': [
+        #     {'params': 'channelid=240117&lanmu=zhbgg&syprovince=0'},  # 中标结果
+        #     {'params': 'channelid=228483&lanmu=zhbfggg_fgw&syprovince=0'},  # 中标结果
+        # ],
     }
 
     def __init__(self, *args, **kwargs):
@@ -206,8 +206,7 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
         except Exception as e:
             print(e)
             max_age = 1
-        # for page in range(1, max_age + 1):
-        for page in range(1, 2):
+        for page in range(1, max_age + 1):
             c_url = ''.join([url, '&page={0}'.format(page)])
 
             judge_status = self.judge_in_interval(
@@ -220,7 +219,6 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
             elif judge_status == 2:
                 continue
             else:
-                print(c_url)
                 yield scrapy.Request(url=c_url, callback=self.parse_urls, meta={
                     'notice_type': resp.meta.get('notice_type', ''),
                 }, priority=max_age - page, dont_filter=True)
@@ -255,11 +253,14 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
         )
 
         # 移除不必要信息
-        _, content = utils.remove_specific_element(content, 'span', 'class', 'txt2')
-        _, content = utils.remove_specific_element(content, 'td', 'align', 'center', text="（公告来源：")
-        _, content = utils.remove_specific_element(content, 'input', 'class', 'guanbi')
-        _, content = utils.remove_specific_element(content, 'td', 'bgcolor', 'EAEAEA')
-        _, content = utils.remove_specific_element(content, 'td', 'class', 'txt7')
+        _, content = utils.remove_specific_element(content, 'span', 'class', 'txt2')  # 标题
+        # _, content = utils.remove_specific_element(
+        #     content, 'table', 'align', 'center', child_attr='td', text="（公告来源：", if_child=True
+        # )  # 来源
+
+
+        _, content = utils.remove_specific_element(content, 'input', 'class', 'guanbi')  # 关闭按钮
+        _, content = utils.remove_specific_element(content, 'td', 'bgcolor', 'EAEAEA')  # 面包屑导航
 
         # 匹配文件
         _, files_path = utils.catch_files(content, self.query_url)
@@ -276,7 +277,7 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
         notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
         notice_item["content"] = content
         notice_item["area_id"] = self.area_id
-        notice_item["category"] = '采购'
+        notice_item["category"] = '政府采购'
         print(resp.meta.get('pub_time'), resp.url)
 
         return notice_item
