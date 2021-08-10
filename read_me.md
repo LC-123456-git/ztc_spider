@@ -434,10 +434,12 @@ scp  D:\ztx_clone\ztx_spider\scrapyd_clean_data.py root@192.168.1.248:/home/pyth
   docker run -d -p 8060:6801 scrapyd
   ```
 
->>>>>>> Stashed changes
->>>>>>>
->>>>>>
->>>>>
->>>>
->>>
->>
+
+### Splash动态js加载服务
+```txt
+docker pull scrapinghub/splash
+docker run -p 4300:8050 --name ztx_splash -d scrapinghub/splash
+```
+
+> 调用方式: yield SplashRequest(url=href, callback=self.parse_detail, args={'wait': '0.5'})
+
