@@ -62,10 +62,14 @@ class ProxyMiddleware(RetryMiddleware):
     def process_request(self, request, spider):
         if self.enable_proxy_use:
             if request.url.startswith("http://"):
-                request.meta['proxy'] = self.get_redis_proxy_ip(self.name_http_proxy, spider)
+                c_proxy = self.get_redis_proxy_ip(self.name_http_proxy, spider)
             else:
-                request.meta['proxy'] = self.get_redis_proxy_ip(self.name_https_proxy, spider)
+                c_proxy = self.get_redis_proxy_ip(self.name_https_proxy, spider)
 
+            # splash proxy
+            request.meta['splash']['args']['proxy'] = c_proxy
+
+            request.meta['proxy'] = c_proxy
             request.meta['download_slot'] = request.meta['proxy']
         # print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         # print(f"{request.meta.get('channelId')} time={time.time()} r_times={request.meta.get('retry_times', 0)} {request.meta.get(self.name_delay_request, None)}")

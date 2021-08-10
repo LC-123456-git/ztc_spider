@@ -13,7 +13,7 @@ BOT_NAME = 'spider_pro'
 # project spider modules
 SPIDER_MODULES = ['spider_pro.spiders', 'spider_pro.extra_spiders', 'spider_pro.spider_govern']
 # SPIDER_MODULES = ['spider_pro.spiders']
-NEWSPIDER_MODULE = 'spider_pro.spider_govern'
+NEWSPIDER_MODULE = 'spider_pro.spiders'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -32,7 +32,19 @@ DOWNLOADER_MIDDLEWARES = {
     'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
     'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
     'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+    # Splash
+    'scrapy_splash.SplashCookiesMiddleware': 770,
+    'scrapy_splash.SplashMiddleware': 780,
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
 }
+
+# spider_middleware
+SPIDER_MIDDLEWARES = {
+    'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
+}
+
+DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 
 # item pipelines
 ITEM_PIPELINES = {
@@ -130,7 +142,7 @@ RETRY_TIMES = 3
 RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 400, 403, 404]
 
 # concurrent
-CONCURRENT_REQUESTS = 1  # 32 理论上可以支持 每小时10w数据 调式环境设置为1
+CONCURRENT_REQUESTS = 16  # 32 理论上可以支持 每小时10w数据 调式环境设置为1
 CONCURRENT_REQUESTS_PER_IP = 1     # 1
 REACTOR_THREADPOOL_MAXSIZE = 20
 
@@ -210,9 +222,10 @@ ENABLE_UPLOAD_ALL_WHEN_START = False  # 异常自动恢复上传功能
 ENABLE_PROXY_INFINITE = False
 NAME_PROXY_INFINITE = "proxy_infinite"
 
+# ENABLE_PROXY_USE = True  # 启用代理
 ENABLE_PROXY_USE = False  # 启用代理
 ENABLE_URL_DUP_REMOVE_USE = False
 
-DEPTH_PRIORITY = 1
-SCHEDULER_DISK_QUEUE = 'scrapy.squeues.PickleFifoDiskQueue'
-SCHEDULER_MEMORY_QUEUE = 'scrapy.squeues.FifoMemoryQueue'
+
+# Splash
+SPLASH_URL = 'http://114.67.84.76:4300'

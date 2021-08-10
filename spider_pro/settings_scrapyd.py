@@ -30,7 +30,20 @@ DOWNLOADER_MIDDLEWARES = {
     'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
     'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
     'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 750,
+
+    # Splash
+    'scrapy_splash.SplashCookiesMiddleware': 770,
+    'scrapy_splash.SplashMiddleware': 780,
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
 }
+
+# spider_middleware
+SPIDER_MIDDLEWARES = {
+    'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
+}
+
+DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 
 # item pipelines
 ITEM_PIPELINES = {
@@ -149,3 +162,6 @@ NAME_PROXY_INFINITE = "proxy_infinite"
 
 ENABLE_PROXY_USE = False
 ENABLE_URL_DUP_REMOVE_USE = False
+
+# Splash
+SPLASH_URL = 'http://114.67.84.76:4300'

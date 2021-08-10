@@ -11,6 +11,7 @@ from datetime import datetime
 from lxml import etree
 
 import scrapy
+from scrapy_splash import SplashRequest
 
 from spider_pro import utils, constans, items
 
@@ -31,29 +32,29 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
         '流标|废标|终止|中止': '招标异常',
     }
     url_map = {
-        # '招标预告': [
-        #     {'params': 'channelid=218195&lanmu=zfcgyx&city=province'},  # 政府采购意向 省级  TODO js混淆内容 规则1
-        #     {'params': 'channelid=218195&lanmu=zfcgyxAAAA&city=sjz_ys'},  # 政府采购意向 县市  TODO js混淆内容 规则1
-        # ],
-        # '招标公告': [
-        #     {'params': 'channelid=240117&lanmu=zbgg&syprovince=0'},  # 招标采购 省级 TODO js混淆内容 规则2
-        #     {'params': 'channelid=240117&lanmu=zbgg&syprovince=0'},  # 招标采购 县市 TODO js混淆内容 规则2
-        #     {'params': 'channelid=228483&lanmu=fgw_zbfggg&syprovince=0'},  # 招标采购 其他
-        # ],
+        '招标预告': [
+            {'params': 'channelid=218195&lanmu=zfcgyx&city=province'},  # 政府采购意向 省级  TODO js混淆内容 规则1
+            {'params': 'channelid=218195&lanmu=zfcgyxAAAA&city=sjz_ys'},  # 政府采购意向 县市  TODO js混淆内容 规则1
+        ],
+        '招标公告': [
+            {'params': 'channelid=240117&lanmu=zbgg&syprovince=0'},  # 招标采购 省级
+            {'params': 'channelid=240117&lanmu=zbgg&syprovince=0'},  # 招标采购 县市
+            {'params': 'channelid=228483&lanmu=fgw_zbfggg&syprovince=0'},  # 招标采购 其他
+        ],
         '招标变更': [
-            # {'params': 'channelid=218195&lanmu=zfcgyxbg&city=province'},  # 政府采购意向变更 省级   TODO js混淆内容 规则1
-            # {'params': 'channelid=240117&lanmu=gzgg&syprovince=0'},  # 变更 省级   TODO js混淆内容 规则3
-            # {'params': 'channelid=218195&lanmu=zfcgyxbgAAAS&city=sjz'},  # 政府采购意向变更 县市  TODO js混淆内容 规则1
-            # {'params': 'channelid=240117&lanmu=gzgg&syprovince=0'},  # 变更 县市
+            {'params': 'channelid=218195&lanmu=zfcgyxbg&city=province'},  # 政府采购意向变更 省级   TODO js混淆内容 规则1
+            {'params': 'channelid=240117&lanmu=gzgg&syprovince=0'},  # 变更 省级   TODO js混淆内容 规则3
+            {'params': 'channelid=218195&lanmu=zfcgyxbgAAAS&city=sjz'},  # 政府采购意向变更 县市  TODO js混淆内容 规则1
+            {'params': 'channelid=240117&lanmu=gzgg&syprovince=0'},  # 变更 县市
             {'params': 'channelid=228483&lanmu=fgw_gzfggg&syprovince=0'},  # 变更 其他
         ],
-        # '招标异常': [
-        #     {'params': 'channelid=240117&lanmu=fbgg&syprovince=0'},  # 废标终止
-        # ],
-        # '中标公告': [
-        #     {'params': 'channelid=240117&lanmu=zhbgg&syprovince=0'},  # 中标结果
-        #     {'params': 'channelid=228483&lanmu=zhbfggg_fgw&syprovince=0'},  # 中标结果
-        # ],
+        '招标异常': [
+            {'params': 'channelid=240117&lanmu=fbgg&syprovince=0'},  # 废标终止
+        ],
+        '中标公告': [
+            {'params': 'channelid=240117&lanmu=zhbgg&syprovince=0'},  # 中标结果
+            {'params': 'channelid=228483&lanmu=zhbfggg_fgw&syprovince=0'},  # 中标结果
+        ],
     }
 
     def __init__(self, *args, **kwargs):
@@ -206,6 +207,7 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
         except Exception as e:
             print(e)
             max_age = 1
+        # for page in range(1, max_age + 1):
         for page in range(1, max_age + 1):
             c_url = ''.join([url, '&page={0}'.format(page)])
 
@@ -233,15 +235,15 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
                 if pub_time:
                     pub_time = pub_time.strip()
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
-                    yield scrapy.Request(url=href, callback=self.parse_detail, meta={
+                    yield SplashRequest(url=href, callback=self.parse_detail, meta={
                         'notice_type': resp.meta.get('notice_type'),
                         'pub_time': pub_time,
-                    }, priority=(len(url_els) - n) * 1000)
+                    }, args={'wait': '0.5'}, priority=(len(url_els) - n) * 1000)
 
     def parse_detail(self, resp):
         content = resp.xpath('//table[position()=1]').get()
         title_name = resp.xpath('//span[@class="txt2"]/text()').get()
-
+        pub_time = resp.meta.get('pub_time')
         notice_type_ori = resp.meta.get('notice_type')
 
         matched, match_notice_type = self.match_title(title_name)
@@ -253,23 +255,28 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
         )
 
         # 移除不必要信息
-        _, content = utils.remove_specific_element(content, 'span', 'class', 'txt2')  # 标题
-        # _, content = utils.remove_specific_element(
-        #     content, 'table', 'align', 'center', child_attr='td', text="（公告来源：", if_child=True
-        # )  # 来源
-
-
-        _, content = utils.remove_specific_element(content, 'input', 'class', 'guanbi')  # 关闭按钮
+        _, content = utils.remove_element_by_xpath(
+            content,
+            xpath_rule='//span[@class="txt2"]'
+        )  # 标题
+        _, content = utils.remove_element_by_xpath(
+            content,
+            xpath_rule='//td[@align="center" and (contains(text(), "发布时间：") or contains(text(), "日期：") or contains(text(), "（公告来源："))]'
+        )  # 日期
+        _, content = utils.remove_element_by_xpath(
+            content,
+            xpath_rule='//input[@class="guanbi"]'
+        )  # 关闭按钮
         _, content = utils.remove_specific_element(content, 'td', 'bgcolor', 'EAEAEA')  # 面包屑导航
 
         # 匹配文件
-        _, files_path = utils.catch_files(content, self.query_url)
+        _, files_path = utils.catch_files(content, self.query_url, pub_time=pub_time)
 
         notice_item = items.NoticesItem()
         notice_item["origin"] = resp.url
 
         notice_item["title_name"] = title_name.strip() if title_name else ''
-        notice_item["pub_time"] = resp.meta.get('pub_time')
+        notice_item["pub_time"] = pub_time
 
         notice_item["info_source"] = self.basic_area
         notice_item["is_have_file"] = constans.TYPE_HAVE_FILE if files_path else constans.TYPE_NOT_HAVE_FILE
@@ -286,5 +293,5 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_117_hebei_spider -a sdt=2021-06-01 -a edt=2021-08-09".split(" "))
-    # cmdline.execute("scrapy crawl province_117_hebei_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_117_hebei_spider -a sdt=2021-06-01 -a edt=2021-08-10".split(" "))
+    cmdline.execute("scrapy crawl province_117_hebei_spider".split(" "))
