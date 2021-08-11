@@ -621,7 +621,6 @@ def get_files(domain_url, origin, files_text, keys_a=None, **kwargs):
 
     return files_path
 
-
 def get_time(pub_time):
     from datetime import datetime
     present_time = datetime.strptime(time.strftime("%Y-%m-%d", time.localtime()), '%Y-%m-%d')
@@ -629,6 +628,21 @@ def get_time(pub_time):
     if (present_time - new_time).days <= 10:
         return True
 
+def get_timestamp(timeStamp):
+    """
+    将时间戳转化为日期时间 pub_time
+    13位时间戳 是微秒
+    10位时间戳 是秒
+    """
+    try:
+        if len(str(timeStamp)) == 13:
+            timeArray = time.localtime(timeStamp / 1000)
+        else:
+            timeArray = time.localtime(timeStamp)
+        otherStyleTime = time.strftime("%Y-%m-%d", timeArray)
+        return otherStyleTime
+    except Exception as e:
+        print('时间戳格式不正确', e)
 
 def get_notice_type(title_name, notice):
     if re.search(r'变更|更正|澄清|补充|取消|延期', title_name):        # 招标变更
