@@ -34,9 +34,9 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
     url_map = {
         '招标预告': [
             {'category': '建设工程', 'url': 'http://www.panan.gov.cn/col/col1229500305/index.html'},  # 招标公告、文件预公示
-            {'category': '政府采购', 'url': 'http://www.panan.gov.cn/col/col1229170812/index.html'},  # 采购公告
         ],
         '招标公告': [
+            {'category': '政府采购', 'url': 'http://www.panan.gov.cn/col/col1229170812/index.html'},  # 采购公告
             {'category': '建设工程', 'url': 'http://www.panan.gov.cn/col/col1229170806/index.html'},  # 招标公告
             {'category': '土地交易', 'url': 'http://www.panan.gov.cn/col/col1229170816/index.html'},  # 招标公告
             {'category': '产权交易', 'url': 'http://www.panan.gov.cn/col/col1229170819/index.html'},  # 招标公告
@@ -114,6 +114,8 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
     def parse_detail(self, resp):
         title_name = ''.join(resp.xpath('//div[@class="gm_tt"]/text()').extract()).strip()
         content = resp.xpath('//div[@class="gm_tt3"]').get()
+        if content:
+            content = content.replace('<body>', '').replace('</body>', '')
 
         notice_type_ori = resp.meta.get('notice_type')
 
@@ -127,7 +129,7 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
         )
 
         # 匹配文件
-        _, files_path = utils.catch_files(content, self.query_url)
+        _, files_path = utils.catch_files(content, self.query_url, resp=resp)
 
         notice_item = items.NoticesItem()
         notice_item["origin"] = resp.url

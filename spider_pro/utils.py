@@ -409,7 +409,7 @@ def catch_files(content, base_url, **kwargs):
     ]
     search_regex = '|'.join(r'\.{0}'.format(file_type) for file_type in file_types)
     resp = kwargs.get('resp', None)
-    proxy = resp.meta.get('proxy', None)
+    proxy = resp.meta.get('proxy', None) if resp else None
     proxies = None
     if proxy:
         if proxy.startswith('https'):
@@ -436,7 +436,7 @@ def catch_files(content, base_url, **kwargs):
                 if not check_if_http_based(src):
                     src = ''.join([base_url, src])
                 suffix_name = src.split('.')[-1]
-                if len(suffix_name) > 4:  # TODO 特殊情况
+                if len(suffix_name) > 4:
                     files_path['{uuid}.{suffix_name}'.format(uuid=str(uuid.uuid1()), suffix_name='jpeg')] = src
                 else:
                     files_path['{uuid}.{suffix_name}'.format(uuid=str(uuid.uuid1()), suffix_name=suffix_name)] = src
@@ -797,7 +797,7 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id in ["23", "67"]:
+    elif area_id in ["23", "67", "118"]:
         area_dict = const.he_nan
         province_name = area_dict["name"]
         province_code = area_dict["code"]

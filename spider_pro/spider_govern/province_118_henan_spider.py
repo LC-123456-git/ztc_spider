@@ -87,6 +87,21 @@ class Province118HenanSpiderSpider(scrapy.Spider):
         headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
         return headers
 
+    @staticmethod
+    def get_proxies(resp):
+        proxy = resp.meta.get('proxy', None) if resp else None
+        proxies = None
+        if proxy:
+            if proxy.startswith('https'):
+                proxies = {
+                    'https': proxy,
+                }
+            else:
+                proxies = {
+                    'http': proxy,
+                }
+        return proxies
+
     def judge_in_interval(self, url, method='GET', resp=None, ancestor_el='table', ancestor_attr='id', ancestor_val='',
                           child_el='tr', time_sep='-', doc_type='html', **kwargs):
         """
@@ -112,15 +127,16 @@ class Province118HenanSpiderSpider(scrapy.Spider):
         """
         status = 0
         headers = Province118HenanSpiderSpider.get_headers(resp)
+        proxies = Province118HenanSpiderSpider.get_proxies(resp)
         if all([self.start_time, self.end_time]):
             try:
                 text = ''
                 if method == 'GET':
-                    text = requests.get(url=url, headers=headers, proxies=resp.meta.get('proxy') if resp else None).text
+                    text = requests.get(url=url, headers=headers, proxies=proxies).text
                 if method == 'POST':
                     text = requests.post(url=url, data=kwargs.get(
                         'data'
-                    ), headers=headers, proxies=resp.meta.get('proxy') if resp else None).text
+                    ), headers=headers, proxies=proxies).text
                 if text:
                     els = []
                     if doc_type == 'html':
@@ -229,7 +245,7 @@ class Province118HenanSpiderSpider(scrapy.Spider):
                 }, priority=max_age - page, dont_filter=True)
 
     def parse_urls(self, resp):
-        url_els = resp.xpath('//div[@class="Top10 PaddingLR15"]//ul/li/a/@href').extract()
+        url_els = resp.xpath('//div[@class="Top10 PaddingLR15"]/div[1]/ul/li/a/@href').extract()
         pub_time_els = resp.xpath('//div[@class="Top10 PaddingLR15"]//span[@class="Gray Right"]/text()').extract()
 
         for n, href in enumerate(url_els):
@@ -238,7 +254,7 @@ class Province118HenanSpiderSpider(scrapy.Spider):
                 if pub_time:
                     pub_time = pub_time.strip()
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
-                    yield scrapy.Request(url=''.join([self.query_url, href]), callback=self.parse_detail_url, meta={
+                    yield scrapy.Request(url=''.join([self.base_url, href]), callback=self.parse_detail_url, meta={
                         'notice_type': resp.meta.get('notice_type'),
                         'pub_time': pub_time,
                     }, priority=(len(url_els) - n) * 1000)
@@ -246,18 +262,33 @@ class Province118HenanSpiderSpider(scrapy.Spider):
     def parse_detail_url(self, resp):
         """
         内容页获取真实链接
-        :param resp:
-        :return:
+        jQuery(document).ready(function () {
+            $.get("/webfile/pdslss/cgxx/cgyx/webinfo/2021/03/774836.htm", function (data) {
+                var s = data;
+                s = s.replace(new RegExp('/henan/rootfiles', 'g'), "/webfile/henan/rootfiles");
+            $("#content").html(s);
+
+            });
+        });
         """
-        c_url = ''
-        scrapy.Request(url=c_url, callback=self.parse_detail, meta={
-            'notice_type': resp.meta.get('notice_type'),
-            'pub_time': resp.meta.get('pub_time'),
-        }, priority=1000000)
+        title_name = resp.xpath('//h1[position()=1]/text()').get()
+        content = resp.text
+        url_com = re.compile(r'\$\.get\("(.*?)",')
+        hrefs = url_com.findall(content)
+        if hrefs:
+            href = hrefs[0]
+            c_url = ''.join([self.base_url, href])
+            yield scrapy.Request(url=c_url, callback=self.parse_detail, meta={
+                'notice_type': resp.meta.get('notice_type'),
+                'pub_time': resp.meta.get('pub_time'),
+                'title_name': title_name,
+            }, headers={
+                "If-Modified-Since": ""  # 取消访问缓存
+            }, priority=1000000)
 
     def parse_detail(self, resp):
-        content = resp.xpath('//table[@class="Content"]').get()
-        title_name = resp.xpath('//h1[@class="TxtCenter Top18 PaddingLR15 PaddingTop10"]/text()').get()
+        content = resp.xpath('//body').get()
+        title_name = resp.meta.get('title_name')
         pub_time = resp.meta.get('pub_time')
         notice_type_ori = resp.meta.get('notice_type')
 
@@ -270,7 +301,7 @@ class Province118HenanSpiderSpider(scrapy.Spider):
         )
 
         # 匹配文件
-        _, files_path = utils.catch_files(content, self.base_url, pub_time=pub_time)
+        _, files_path = utils.catch_files(content, self.base_url, pub_time=pub_time, resp=resp)
 
         notice_item = items.NoticesItem()
         notice_item["origin"] = resp.url
@@ -293,5 +324,5 @@ class Province118HenanSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_118_henan_spider -a sdt=2021-06-01 -a edt=2021-08-10".split(" "))
+    cmdline.execute("scrapy crawl province_118_henan_spider -a sdt=2021-06-01 -a edt=2021-08-11".split(" "))
     # cmdline.execute("scrapy crawl province_118_henan_spider".split(" "))

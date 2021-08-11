@@ -638,7 +638,7 @@ if __name__ == "__main__":
 
         "notices_3346",
         "notices_3356",
-        # "notices_3361",
+        "notices_3361",
         "notices_3362",
     ])
     print('{0:%Y-%m-%d %H:%M:%S} post...'.format(datetime.datetime.now()))
