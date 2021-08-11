@@ -290,10 +290,11 @@ if __name__ == "__main__":
         # "ZJ_city_3339_dongtou_spider",
         # "ZJ_city_3340_wencheng_spider",
         # "ZJ_city_3341_taishun_spider",
-        "ZJ_city_3342_shangyu_spider",
+        # "ZJ_city_3342_shangyu_spider",
         # "ZJ_city_3343_xinchang_spider",
-        # "ZJ_city_3344_shengzhou_spider",
-        # "ZJ_city_3345_yuecheng_spider",
+        # "ZJ_city_3344_yuecheng_spider",
+        # "ZJ_city_3345_shengzhou_spider",
+        "ZJ_city_3360_wuyi_spider",
     ]
 
     # 优先判断运行状态
@@ -314,7 +315,7 @@ if __name__ == "__main__":
                 continue
             else:
                 # 允许运行脚本
-                area_id = item.split("_")[1]
+                area_id = item.split("_")[2] if item.split("_")[1] == 'city' else item.split("_")[1]
                 info = {}
 
                 arg_choices = {
