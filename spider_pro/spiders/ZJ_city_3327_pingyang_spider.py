@@ -317,7 +317,7 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
                 filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
             )
             # 投标文件
-            _, files_path = utils.catch_files(content, self.base_url)
+            _, files_path = utils.catch_files(content, self.base_url, resp=resp)
 
             notice_item = items.NoticesItem()
             notice_item["origin"] = resp.url

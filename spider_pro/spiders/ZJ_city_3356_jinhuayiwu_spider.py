@@ -110,6 +110,21 @@ class ZjCity3356JinhuayiwuSpiderSpider(scrapy.Spider):
         headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
         return headers
 
+    @staticmethod
+    def get_proxies(resp):
+        proxy = resp.meta.get('proxy', None) if resp else None
+        proxies = None
+        if proxy:
+            if proxy.startswith('https'):
+                proxies = {
+                    'https': proxy,
+                }
+            else:
+                proxies = {
+                    'http': proxy,
+                }
+        return proxies
+
     def judge_in_interval(self, url, method='GET', resp=None, ancestor_el='table', ancestor_attr='id', ancestor_val='',
                           child_el='tr', time_sep='-', doc_type='html', **kwargs):
         """
@@ -135,15 +150,16 @@ class ZjCity3356JinhuayiwuSpiderSpider(scrapy.Spider):
         """
         status = 0
         headers = ZjCity3356JinhuayiwuSpiderSpider.get_headers(resp)
+        proxies = ZjCity3356JinhuayiwuSpiderSpider.get_proxies(resp)
         if all([self.start_time, self.end_time]):
             try:
                 text = ''
                 if method == 'GET':
-                    text = requests.get(url=url, headers=headers, proxies=resp.meta.get('proxy') if resp else None).text
+                    text = requests.get(url=url, headers=headers, proxies=proxies if resp else None).text
                 if method == 'POST':
                     text = requests.post(url=url, data=kwargs.get(
                         'data'
-                    ), headers=headers, proxies=resp.meta.get('proxy') if resp else None).text
+                    ), headers=headers, proxies=proxies if resp else None).text
                 if text:
                     els = []
                     if doc_type == 'html':
@@ -290,7 +306,7 @@ class ZjCity3356JinhuayiwuSpiderSpider(scrapy.Spider):
             )
 
             # 匹配文件
-            _, files_path = utils.catch_files(content, self.query_url, pub_time=resp.meta.get('pub_time'))
+            _, files_path = utils.catch_files(content, self.query_url, pub_time=resp.meta.get('pub_time'), resp=resp)
 
             notice_item = items.NoticesItem()
             notice_item["origin"] = resp.url

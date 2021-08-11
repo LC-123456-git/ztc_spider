@@ -206,7 +206,7 @@ class Province55TiangongSpiderSpider(scrapy.Spider):
             filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT))
 
         # 匹配文件
-        _, files_path = utils.catch_files(content, self.query_url)
+        _, files_path = utils.catch_files(content, self.query_url, resp=resp)
 
         notice_item = items.NoticesItem()
         notice_item["origin"] = resp.url

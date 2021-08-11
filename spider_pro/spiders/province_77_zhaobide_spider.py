@@ -345,7 +345,7 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
         _, content = utils.remove_specific_element(content, 'div', 'class', 'pd-l10 pd-r10 border-t mt30 mb-30')
 
         # - 匹配文件
-        _, files_path = utils.catch_files(content, self.base_url, has_suffix=True)
+        _, files_path = utils.catch_files(content, self.base_url, has_suffix=True, resp=resp)
 
         notice_item = items.NoticesItem()
 

@@ -350,7 +350,7 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
             _, content = ZjCity3328ChangshanSpiderSpider.replace_a_without_href(content)
 
             # 投标文件
-            _, files_path = utils.catch_files(content, self.base_url)
+            _, files_path = utils.catch_files(content, self.base_url, resp=resp)
 
             notice_item = items.NoticesItem()
             notice_item["origin"] = resp.url

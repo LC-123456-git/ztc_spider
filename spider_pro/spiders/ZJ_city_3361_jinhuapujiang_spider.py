@@ -130,10 +130,25 @@ class ZjCity3361JinhuapujiangSpiderSpider(scrapy.Spider):
         headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
         return headers
 
+    @staticmethod
+    def get_proxies(resp):
+        proxy = resp.meta.get('proxy', None) if resp else None
+        proxies = None
+        if proxy:
+            if proxy.startswith('https'):
+                proxies = {
+                    'https': proxy,
+                }
+            else:
+                proxies = {
+                    'http': proxy,
+                }
+        return proxies
+
     def is_in_interval(self, url, resp, method='GET', **kwargs):
         status = 0
         headers = ZjCity3361JinhuapujiangSpiderSpider.get_headers(resp)
-        proxies = resp.meta.get('proxy')
+        proxies = ZjCity3361JinhuapujiangSpiderSpider.get_proxies(resp)
         if all([self.start_time, self.end_time]):
             try:
                 text = ''
@@ -282,7 +297,7 @@ class ZjCity3361JinhuapujiangSpiderSpider(scrapy.Spider):
             )
 
             # 匹配文件
-            _, files_path = utils.catch_files(content, self.query_url)
+            _, files_path = utils.catch_files(content, self.query_url, pub_time=resp.meta.get('pub_time'), resp=resp)
 
             notice_item = items.NoticesItem()
             notice_item["origin"] = resp.meta.get('detail_url', '')

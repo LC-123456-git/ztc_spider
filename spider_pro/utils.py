@@ -350,7 +350,7 @@ def catch_files_from_table(resp_url, content, tb_attr=None, tb_attr_val=None, ke
                             content_type = requests.get(url=file_url, headers={
                                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
                                               '(KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
-                            }).headers.get('Content-Type')
+                            }, proxies=kwargs.get('proxies', None)).headers.get('Content-Type')
                             if 'text/html' not in content_type:
                                 files_path[file_name.strip()] = file_url
             else:  # TODO 直接根据索引定位

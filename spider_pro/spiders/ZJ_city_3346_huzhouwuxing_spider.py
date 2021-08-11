@@ -200,7 +200,7 @@ class ZjCity3346HuzhouwuxingSpiderSpider(scrapy.Spider):
             )
 
             # 匹配文件
-            _, files_path = utils.catch_files(content, self.query_url, pub_time=resp.meta.get('pub_time'))
+            _, files_path = utils.catch_files(content, self.query_url, pub_time=resp.meta.get('pub_time'), resp=resp)
 
             notice_item = items.NoticesItem()
             notice_item["origin"] = resp.url

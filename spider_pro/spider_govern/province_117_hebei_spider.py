@@ -271,7 +271,7 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
         _, content = utils.remove_specific_element(content, 'td', 'bgcolor', 'EAEAEA')  # 面包屑导航
 
         # 匹配文件
-        _, files_path = utils.catch_files(content, self.base_url, pub_time=pub_time)
+        _, files_path = utils.catch_files(content, self.base_url, pub_time=pub_time, resp=resp)
 
         notice_item = items.NoticesItem()
         notice_item["origin"] = resp.url

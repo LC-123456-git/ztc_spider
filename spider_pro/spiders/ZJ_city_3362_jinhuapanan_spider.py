@@ -103,11 +103,13 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
             for pub_time, suffix_url in c_com.findall(content):
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                     c_url = ''.join([self.query_url, suffix_url])
+                    c_url = 'http://www.panan.gov.cn/art/2021/6/18/art_1229170823_59236367.html'
                     yield scrapy.Request(url=c_url, callback=self.parse_detail, meta={
                         'notice_type': resp.meta.get('notice_type', ''),
                         'category': resp.meta.get('category', ''),
                         'pub_time': pub_time,
                     })
+                    break
                 else:
                     break
 
@@ -129,7 +131,7 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
         )
 
         # 匹配文件
-        _, files_path = utils.catch_files(content, self.query_url, resp=resp)
+        _, files_path = utils.catch_files(content, self.query_url, resp=resp, pub_time=resp.meta.get('pub_time'))
 
         notice_item = items.NoticesItem()
         notice_item["origin"] = resp.url

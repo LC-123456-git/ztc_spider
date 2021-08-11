@@ -221,6 +221,21 @@ class ZjCity3325DeqingSpiderSpider(scrapy.Spider):
             status = 1  # 没有传递时间
         return status
 
+    @staticmethod
+    def get_proxies(resp):
+        proxy = resp.meta.get('proxy', None) if resp else None
+        proxies = None
+        if proxy:
+            if proxy.startswith('https'):
+                proxies = {
+                    'https': proxy,
+                }
+            else:
+                proxies = {
+                    'http': proxy,
+                }
+        return proxies
+
     def start_requests(self):
         for notice_type, category_urls in self.url_map.items():
             for cu in category_urls:
@@ -304,9 +319,10 @@ class ZjCity3325DeqingSpiderSpider(scrapy.Spider):
 
         # 匹配文件
         _, c_files_path = utils.catch_files(content, self.query_url)
+        proxies = ZjCity3325DeqingSpiderSpider.get_proxies(resp)
         _, files_path, content = utils.catch_files_from_table(
             resp.url, content, tb_attr='id', tb_attr_val='tab', key_tag='相关下载文件',
-            val_tag='下载', tb_index=0, proxies=resp.meta.get('proxy')
+            val_tag='下载', tb_index=0, proxies=proxies
         )
         files_path.update(**c_files_path)
         notice_item = items.NoticesItem()

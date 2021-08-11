@@ -234,7 +234,7 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
             )
 
             # 匹配文件
-            _, files_path = utils.catch_files(content, self.base_url)
+            _, files_path = utils.catch_files(content, self.base_url, resp=resp)
 
             if '测试项目' not in title_name:
                 notice_item = items.NoticesItem()

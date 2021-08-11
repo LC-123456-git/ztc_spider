@@ -281,7 +281,7 @@ class ZjCity3320CangnanSpiderSpider(scrapy.Spider):
         )
 
         # 匹配文件
-        _, files_path = utils.catch_files(content, self.query_url)
+        _, files_path = utils.catch_files(content, self.query_url, resp=resp)
 
         notice_item = items.NoticesItem()
         notice_item["origin"] = resp.url

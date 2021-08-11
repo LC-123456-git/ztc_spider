@@ -38,7 +38,6 @@ class Province118HenanSpiderSpider(scrapy.Spider):
             {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=1&gglb=01&gglx=0'},  # 公开招标公告 省
             {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=2&gglb=01&gglx=0'},  # 公开招标公告 县市
 
-            # TODO
             {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=1&gglb=02&gglx=0'},  # 竞争性谈判公告 省
             {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=2&gglb=02&gglx=0'},  # 竞争性谈判公告 县市
             {'params': 'channelCode=0101&pageNo={page_no}&pageSize=16&bz=1&gglb=03&gglx=0'},  # 竞争性磋商公告 省
@@ -284,7 +283,7 @@ class Province118HenanSpiderSpider(scrapy.Spider):
                 'title_name': title_name,
             }, headers={
                 "If-Modified-Since": ""  # 取消访问缓存
-            }, priority=1000000)
+            }, priority=10000000)
 
     def parse_detail(self, resp):
         content = resp.xpath('//body').get()
@@ -324,5 +323,5 @@ class Province118HenanSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_118_henan_spider -a sdt=2021-06-01 -a edt=2021-08-11".split(" "))
+    cmdline.execute("scrapy crawl province_118_henan_spider -a sdt=2021-05-01 -a edt=2021-08-11".split(" "))
     # cmdline.execute("scrapy crawl province_118_henan_spider".split(" "))

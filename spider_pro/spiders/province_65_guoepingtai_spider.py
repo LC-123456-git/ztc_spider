@@ -267,7 +267,7 @@ class Province65GuoepingtaiSpiderSpider(scrapy.Spider):
             )
 
             # 匹配文件
-            _, files_path = utils.catch_files(content, self.base_url)
+            _, files_path = utils.catch_files(content, self.base_url, resp=resp)
 
             notice_item = items.NoticesItem()
 

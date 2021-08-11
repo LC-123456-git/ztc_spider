@@ -260,7 +260,7 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
             # REMOVE DATE
             _, content = utils.remove_specific_element(content, 'p', 'class', 'detail-info')
             # 投标文件
-            _, files_path = utils.catch_files(content, self.base_url)
+            _, files_path = utils.catch_files(content, self.base_url, resp=resp)
 
             notice_item = items.NoticesItem()
             notice_item["origin"] = resp.url

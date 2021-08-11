@@ -23,14 +23,6 @@ class Province53BilianSpiderSpider(scrapy.Spider):
         '评标结果': '中标预告',
         '中标|结果': '中标公告',
     }
-    # custom_settings = {
-    #     'DOWNLOADER_MIDDLEWARES': {
-    #         # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
-    #         'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
-    #         'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-    #         # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
-    #     },
-    # }
     url_map = {
         '招标预告': {
             'info_class_code': ['zbyg'],
@@ -188,7 +180,7 @@ class Province53BilianSpiderSpider(scrapy.Spider):
         _, content = utils.remove_specific_element(content, 'h2', 'class', 'details-title')
 
         # 投标文件
-        _, files_path = utils.catch_files(content, self.base_url)
+        _, files_path = utils.catch_files(content, self.base_url, resp=resp)
 
         area_name = resp.meta.get('area_name', '')
         notice_item = items.NoticesItem()
