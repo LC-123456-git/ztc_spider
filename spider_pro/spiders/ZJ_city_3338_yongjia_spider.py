@@ -164,6 +164,9 @@ class MySpider(CrawlSpider):
 
     def parse_item(self, response):
         if response.status == 200:
+            ip = response.meta.get('proxy')
+            proxies = {'http': ip,
+                     'https': ip}
             origin = response.url
             category = response.meta['category']
             info_source = self.area_province
@@ -186,7 +189,7 @@ class MySpider(CrawlSpider):
                     keys_a = []
                     files_path, content = get_table_files(self.query_url, origin, content, keys_a=keys_a,
                                                           domain_url=self.domain_url,
-                                                          proxies=response.meta.get('proxy'))
+                                                          proxies=proxies)
                     notice_item = NoticesItem()
                     notice_item["origin"] = origin
                     notice_item["title_name"] = title_name
