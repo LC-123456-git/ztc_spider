@@ -138,21 +138,22 @@ class MySpider(CrawlSpider):
                                                  meta={'category': response.meta['category'],
                                                        'notice': response.meta['notice']})
             else:
-                total = response.xpath('//datastore/totalrecord/text()').get()
-                self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                pages = math.ceil(int(total)/120)
-                for num in range(1, int(pages) + 1):
-                    if num == 1:
-                        startrecord = 1
-                        endrecord = 120
-                    else:
-                        startrecord += 120
-                        endrecord += 120
-                    yield scrapy.FormRequest(url=self.base_url.format(startrecord, endrecord),
-                                             formdata=response.meta['info_dict'],
-                                             callback=self.parse_data_check, dont_filter=True,
-                                             meta={'notice': response.meta['notice'],
-                                                   'category': response.meta['category']})
+                if response.xpath('//datastore/totalrecord/text()').get():
+                    total = response.xpath('//datastore/totalrecord/text()').get()
+                    self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                    pages = math.ceil(int(total)/120)
+                    for num in range(1, int(pages) + 1):
+                        if num == 1:
+                            startrecord = 1
+                            endrecord = 120
+                        else:
+                            startrecord += 120
+                            endrecord += 120
+                        yield scrapy.FormRequest(url=self.base_url.format(startrecord, endrecord),
+                                                 formdata=response.meta['info_dict'],
+                                                 callback=self.parse_data_check, dont_filter=True,
+                                                 meta={'notice': response.meta['notice'],
+                                                       'category': response.meta['category']})
         except Exception as e:
             self.logger.error(f"发起数据请求失败parse_data_info {e} {response.meta['info_dict']}")
 
