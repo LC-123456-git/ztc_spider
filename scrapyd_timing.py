@@ -166,7 +166,7 @@ if __name__ == "__main__":
         # "province_57_jingcaizongheng_spider",
         # "province_59_xinzhi_spider",
         # "province_65_guoepingtai_spider",
-        "province_67_yangguangyizhao_spider",
+        # "province_67_yangguangyizhao_spider",
         # "province_68_qilu_spider",
         # "province_62_xindian_spider",
         # "province_71_zhaocaijingbao_spider",
@@ -233,7 +233,7 @@ if __name__ == "__main__":
                 continue
             else:
                 # 允许运行脚本
-                area_id = item.split("_")[1]
+                area_id = item.split("_")[2] if item.split("_")[1] == 'city' else item.split("_")[1]
                 info = {}
 
                 arg_choices = {
@@ -265,50 +265,6 @@ if __name__ == "__main__":
                     arg_choices = {
                         'day': 1
                     }
-                # if item == "ZJ_city_3319_changxing_spider":  # 特殊处理,根据需求
-                #     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
-                # if item == "province_57_jingcaizongheng_spider":
-                #     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_TIMEOUT": 15, 'ROBOTSTXT_OBEY': False}
-                # if item == "province_21_shandong_spider":
-                #     if_incr = True
-                #     # CONCURRENT_REQUESTS_PER_IP
-                #     info = {
-                #         # "ENABLE_PROXY_USE": False,
-                #         # 'CONCURRENT_REQUESTS_PER_IP': 20,
-                #         "DOWNLOAD_TIMEOUT": 0.5,
-                #         'CONCURRENT_REQUESTS': 10,
-                #         'RANDOMIZE_DOWNLOAD_DELAY': True,
-                #     }
-                #
-                #     arg_choices = {
-                #         'day': 30
-                #     }
-                # if item == "province_00_quanguo_spider":  # 特殊处理,根据需求
-                #     if_incr = True
-                #
-                #     info = {
-                #         "ENABLE_PROXY_USE": False,
-                #         "DOWNLOAD_DELAY": 0,
-                #         "DOWNLOAD_TIMEOUT": 20,
-                #         "CONCURRENT_REQUESTS_PER_IP": 20,
-                #         "CONCURRENT_REQUESTS": 5,
-                #     }  # province_00_quanguo_spider
-                # if item == "ZJ_city_3314_yuhang_spider":  # 特殊处理,根据需求
-                #     info = {"ENABLE_PROXY_USE": False, "DOWNLOAD_DELAY": 5}
-                #
-                # if item == "ZJ_city_3309_wenzhou_spider":
-                #     info = {"ENABLE_PROXY_USE": False}
-                #     # info = {"DOWNLOAD_TIMEOUT": 60}
-                #     # info = {"DOWNLOAD_DELAY": 0.5, "DOWNLOAD_TIMEOUT": 20, 'RANDOMIZE_DOWNLOAD_DELAY': True}
-                # if item == "province_44_xizang_spider":
-                #     info = {"ENABLE_PROXY_USE": False, "CONCURRENT_REQUESTS": 5, "DOWNLOAD_TIMEOUT": 60}
-                # if item == "province_11_shanghai_spider":
-                #     info = {
-                #         "DOWNLOAD_TIMEOUT": 0,
-                #         'RANDOMIZE_DOWNLOAD_DELAY': True,
-                #         'DOWNLOAD_DELAY': 1,
-                #         'RETRY_ENABLED': False,
-                #     }
                 resp = exec_each_schedule(item, area_id, arg_choices=arg_choices, if_incr=if_incr, **info)
 
                 if resp:

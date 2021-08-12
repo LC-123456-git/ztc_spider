@@ -73,8 +73,10 @@ class MySpider(CrawlSpider):
             for li in li_list:
                 category = li.xpath('./span/text()').get()
                 notice_li_list = li.xpath('./ul/li')
+                count = 0
                 for notice_li in notice_li_list:
                     if notice_li.xpath('./a'):
+                        count += 1
                         notice_url = notice_li.xpath('./a/@href').get()
                         notice_name = notice_li.xpath('./a/text()').get()
                         li_code = re.findall('(\d+)', notice_url)[0]
@@ -95,7 +97,7 @@ class MySpider(CrawlSpider):
                         if notice:
                             info_dict = self.r_dict | {'columnid': str(li_code)}
                             yield scrapy.FormRequest(url=self.base_url.format(1, 120), callback=self.parse_data_info,
-                                                     formdata=info_dict,
+                                                     formdata=info_dict, priority=(len(notice_li_list)-count)*2,
                                                      meta={'category': category,
                                                            'notice': notice,
                                                            'info_dict': info_dict})
@@ -142,7 +144,9 @@ class MySpider(CrawlSpider):
                     total = response.xpath('//datastore/totalrecord/text()').get()
                     self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
                     pages = math.ceil(int(total)/120)
+                    count = 0
                     for num in range(1, int(pages) + 1):
+                        count += 1
                         if num == 1:
                             startrecord = 1
                             endrecord = 120
@@ -150,7 +154,7 @@ class MySpider(CrawlSpider):
                             startrecord += 120
                             endrecord += 120
                         yield scrapy.FormRequest(url=self.base_url.format(startrecord, endrecord),
-                                                 formdata=response.meta['info_dict'],
+                                                 formdata=response.meta['info_dict'], priority=(int(pages)-count)*5,
                                                  callback=self.parse_data_check, dont_filter=True,
                                                  meta={'notice': response.meta['notice'],
                                                        'category': response.meta['category']})
@@ -162,11 +166,13 @@ class MySpider(CrawlSpider):
             if xmltodict.parse(response.text):
                 xmlparse = xmltodict.parse(response.text)
                 jsonstr = json.loads(json.dumps(xmlparse))['datastore']['recordset']['record']
+                count = 0
                 for info in jsonstr:
+                    count += 1
                     pub_time = ''.join(re.findall("<span.*>(.*)</span>", info)).strip()
-                    info_url = self.domain_url + re.findall("<a .*? href='(.*?)'>", info)[0]
+                    info_url = self.domain_url + re.findall("<a .*? href='(.*?)' .*?>", info)[0]
                     title_name = re.findall("<a .* title='(.*?)'>", info)[0]
-                    yield scrapy.Request(url=info_url, callback=self.parse_item, priority=200,
+                    yield scrapy.Request(url=info_url, callback=self.parse_item, priority=(len(jsonstr)-count)*2,
                                          meta={'category': response.meta['category'],
                                                'notice': response.meta['notice'],
                                                'pub_time': pub_time,
