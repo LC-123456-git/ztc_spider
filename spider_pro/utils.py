@@ -27,26 +27,35 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36'
 }
 
-def get_keywords(cf, area_id, field):
+
+def get_keywords(cf, field):
     """
-    - 根据yaml对象获取关键字列表
+    - 根据yaml对象获取对应字段值列表
     """
-    keywords = []
     try:
-        keywords = cf.get(area_id).get(field)
+        vs = cf.get(field)
     except Exception as e:
-        pass
-    return keywords
+        vs = []
+    return vs if vs else []
 
 
-def init_yaml():
-    config_path = os.path.join(os.path.join(os.path.dirname(__file__), 'conf'), 'keywords.yaml')
+def init_yaml(doc_name, area_id):
+    try:
+        file_path = os.path.join(
+            os.path.join(os.path.join(os.path.dirname(__file__), 'conf'), doc_name),
+            '{doc_name}_{area_id}.yaml'.format(
+                doc_name=doc_name,
+                area_id=area_id
+            )
+        )
+        with open(file_path, 'rb') as f:
+            cont = f.read()
 
-    with open(config_path, 'rb') as f:
-        cont = f.read()
-
-    cf = yaml.load(cont, Loader=yaml.FullLoader)
+        cf = yaml.load(cont, Loader=yaml.FullLoader)
+    except Exception as e:
+        cf = {}
     return cf
+
 
 def file_notout_time(pub_time):
     today = datetime.datetime.now()
@@ -165,10 +174,10 @@ def remove_specific_element(content, ele_name, attr_name=None, attr_value=None, 
                             el.getparent().remove(el)
 
         else:
-            if len(els) + 1 != index:      # 无属性元素 删除all
+            if len(els) + 1 != index:  # 无属性元素 删除all
                 for n, el in enumerate(els):
                     el.getparent().remove(el)
-            else:    # 无属性元素 指定索引删除
+            else:  # 无属性元素 指定索引删除
                 for n, el in enumerate(els):
                     if n + 1 == index:
                         el.getparent().remove(el)
@@ -228,6 +237,7 @@ def do_files_dec(days=30):
         + pub_time 方法传参
         + days 装饰器传参(默认只对30天内的文件做处理)
     """
+
     def decorator(func):
         @wraps(func)
         def inner(*arg, **kwargs):
@@ -248,6 +258,7 @@ def do_files_dec(days=30):
                 return func(*arg, **kwargs)
 
         return inner
+
     return decorator
 
 
@@ -546,6 +557,7 @@ def get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffi
                 files_path[key] = value
     return files_path
 
+
 @do_files_dec(days=90)
 def get_table_files(query_url, origin, content, keys_a=None, domain_url=None, **kwargs):
     files_path = {}
@@ -575,6 +587,7 @@ def get_table_files(query_url, origin, content, keys_a=None, domain_url=None, **
     # 处理 img
     files_path = get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffix_list)
     return files_path, content
+
 
 @do_files_dec(days=90)
 def get_files(domain_url, origin, files_text, keys_a=None, **kwargs):
@@ -621,12 +634,14 @@ def get_files(domain_url, origin, files_text, keys_a=None, **kwargs):
 
     return files_path
 
+
 def get_time(pub_time):
     from datetime import datetime
     present_time = datetime.strptime(time.strftime("%Y-%m-%d", time.localtime()), '%Y-%m-%d')
     new_time = datetime.strptime(pub_time, '%Y-%m-%d')
     if (present_time - new_time).days <= 10:
         return True
+
 
 def get_timestamp(timeStamp):
     """
@@ -644,18 +659,19 @@ def get_timestamp(timeStamp):
     except Exception as e:
         print('时间戳格式不正确', e)
 
+
 def get_notice_type(title_name, notice):
-    if re.search(r'变更|更正|澄清|补充|取消|延期', title_name):        # 招标变更
+    if re.search(r'变更|更正|澄清|补充|取消|延期', title_name):  # 招标变更
         notice_type = const.TYPE_ZB_ALTERATION
-    elif re.search(r'终止|中止|废标|流标', title_name):               # 招标异常
+    elif re.search(r'终止|中止|废标|流标', title_name):  # 招标异常
         notice_type = const.TYPE_ZB_ABNORMAL
-    elif re.search(r'候选人', title_name):                          # 中标预告
+    elif re.search(r'候选人', title_name):  # 中标预告
         notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-    elif re.search(r'采购意向|需求公示|意见征询', title_name):                 # 招标预告
+    elif re.search(r'采购意向|需求公示|意见征询', title_name):  # 招标预告
         notice_type = const.TYPE_ZB_ADVANCE_NOTICE
     elif re.search(r'单一来源|询价|竞争性谈判|竞争性磋商', title_name):  # 招标公告
         notice_type = const.TYPE_ZB_NOTICE
-    elif re.search(r'预审', title_name):                            # 资格预审公告
+    elif re.search(r'预审', title_name):  # 资格预审公告
         notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
     else:
         notice_type = notice
