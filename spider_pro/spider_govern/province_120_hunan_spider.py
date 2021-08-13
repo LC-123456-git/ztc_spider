@@ -108,7 +108,7 @@ class Province119HubeiSpiderSpider(CrawlSpider):
                     notice_list.append(self.list_qita_num[notice_name])
                 else:
                     notice = ''
-                if notice and notice_name == '中标(成交)公告':
+                if notice:
                     for value in notice_list:
                         r_dict = time_dict | {'nType': value}
                         yield scrapy.FormRequest(url=self.base_url, callback=self.parse_data_info,
