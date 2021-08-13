@@ -26,6 +26,7 @@ class Province118HenanSpiderSpider(scrapy.Spider):
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
+        '中标结果': '中标公告',
     }
     url_map = {
         '招标预告': [
