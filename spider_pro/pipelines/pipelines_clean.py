@@ -676,9 +676,11 @@ if __name__ == "__main__":
     # cp.run_clean_ex(table_name="notices_00", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
     # cp.run_clean(table_name="notices_00", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
 
+    cp.test_file = True  # 本地测试清洗test_file为true 是测试库 反之 正式库
+    engine = 'test2_data_collection' if cp.test_file else 'data_collection'
     cp.run_clean(
         table_name="notices_3337",
-        engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'
+        engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/{}?charset=utf8mb4'.format(engine),
     )
 
     # # 测试洗数据 默认测试

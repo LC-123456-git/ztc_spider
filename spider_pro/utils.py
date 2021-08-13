@@ -669,7 +669,7 @@ def get_notice_type(title_name, notice):
         notice_type = const.TYPE_WIN_ADVANCE_NOTICE
     elif re.search(r'采购意向|需求公示|意见征询', title_name):         # 招标预告
         notice_type = const.TYPE_ZB_ADVANCE_NOTICE
-    elif re.search(r'成交公告', title_name):                        # 中标公告
+    elif re.search(r'成交公告|结果公告', title_name):                 # 中标公告
         notice_type = const.TYPE_WIN_NOTICE
     elif re.search(r'单一来源|询价|竞争性谈判|竞争性磋商', title_name):  # 招标公告
         notice_type = const.TYPE_ZB_NOTICE

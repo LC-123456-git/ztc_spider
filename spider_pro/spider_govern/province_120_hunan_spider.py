@@ -31,17 +31,17 @@ class Province119HubeiSpiderSpider(CrawlSpider):
     # 招标公告
     list_notice_category_name = {'采购公告': 'prcmNotices'}
     # 招标变更
-    list_zb_abnormal_name = {"更正公告": 'dealNotices'}
+    list_zb_abnormal_name = {"更正公告": 'modfiyNotices'}
     # 中标预告
     list_win_advance_notice_name = {}
     # 中标公告
-    list_win_notice_category_name = {'中标(成交)公告': 'invalidNotices'}
+    list_win_notice_category_name = {'中标(成交)公告': 'dealNotices'}
     # 招标异常
-    list_alteration_category_name = {'终止公告': 'contractNotices', '废标公告': 'modfiyNotices'}
+    list_alteration_category_name = {'终止公告': 'endNotices', '废标公告': 'invalidNotices'}
     # 资格预审
     list_qualifiction_advance_num = {}
     # 其他
-    list_qita_num = {'其他公告': 'endNotices', '合同公告': 'otherNotices'}
+    list_qita_num = {'其他公告': 'otherNotices', '合同公告': 'contractNotices'}
 
     r_dict = {
         'nType': 'prcmNotices',
@@ -108,7 +108,7 @@ class Province119HubeiSpiderSpider(CrawlSpider):
                     notice_list.append(self.list_qita_num[notice_name])
                 else:
                     notice = ''
-                if notice:
+                if notice and notice_name == '中标(成交)公告':
                     for value in notice_list:
                         r_dict = time_dict | {'nType': value}
                         yield scrapy.FormRequest(url=self.base_url, callback=self.parse_data_info,
@@ -222,4 +222,4 @@ class Province119HubeiSpiderSpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
     # cmdline.execute("scrapy crawl province_120_hunan_spider".split(" "))
-    cmdline.execute("scrapy crawl province_120_hunan_spider -a sdt=2021-07-20 -a edt=2021-08-11".split(" "))
+    cmdline.execute("scrapy crawl province_120_hunan_spider -a sdt=2021-07-20 -a edt=2021-08-15".split(" "))
