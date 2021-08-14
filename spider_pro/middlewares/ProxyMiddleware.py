@@ -111,7 +111,7 @@ class ProxyMiddleware(RetryMiddleware):
         if request.meta.get('retry_times', 0) >= self.max_retry_times:
             if not self.enable_proxy_infinite and self.enable_proxy_use:
                 self.logger.info('移除代理:{0}'.format(request.meta.get("proxy")))
-                # self.delete_redis_ip_from(request.meta.get("proxy"))
+                self.delete_redis_ip_from(request.meta.get("proxy"))
             self.logger.error(
                 f"捕获失败 重试次数用完: {request.url=} {spider.area_id=} {exception=}")
         elif isinstance(exception, self.EXCEPTIONS_TO_RETRY):
