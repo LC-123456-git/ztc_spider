@@ -89,7 +89,7 @@ class Province118HenanSpiderSpider(scrapy.Spider):
 
     @staticmethod
     def get_proxies(resp):
-        proxy = resp.meta.get('proxy', None) if resp else None
+        proxy = resp.request.meta.get('proxy', None) if resp else None
         proxies = None
         if proxy:
             if proxy.startswith('https'):
@@ -230,15 +230,20 @@ class Province118HenanSpiderSpider(scrapy.Spider):
                 page_no=page,
             )])
 
-            judge_status = self.judge_in_interval(
-                c_url, method='GET', ancestor_el='div', ancestor_attr='class',
-                ancestor_val='Top10 PaddingLR15',
-                child_el='/span[@class="Gray Right"]', resp=resp,
-            )
-            if judge_status == 0:
-                break
-            elif judge_status == 2:
-                continue
+            if all([self.start_time, self.end_time]):
+                judge_status = self.judge_in_interval(
+                    c_url, method='GET', ancestor_el='div', ancestor_attr='class',
+                    ancestor_val='Top10 PaddingLR15',
+                    child_el='/span[@class="Gray Right"]', resp=resp,
+                )
+                if judge_status == 0:
+                    break
+                elif judge_status == 2:
+                    continue
+                else:
+                    yield scrapy.Request(url=c_url, callback=self.parse_urls, meta={
+                        'notice_type': resp.meta.get('notice_type', ''),
+                    }, priority=max_age - page, dont_filter=True)
             else:
                 yield scrapy.Request(url=c_url, callback=self.parse_urls, meta={
                     'notice_type': resp.meta.get('notice_type', ''),
@@ -247,7 +252,6 @@ class Province118HenanSpiderSpider(scrapy.Spider):
     def parse_urls(self, resp):
         url_els = resp.xpath('//div[@class="Top10 PaddingLR15"]/div[1]/ul/li/a/@href').extract()
         pub_time_els = resp.xpath('//div[@class="Top10 PaddingLR15"]//span[@class="Gray Right"]/text()').extract()
-
         for n, href in enumerate(url_els):
             if href:
                 pub_time = pub_time_els[n]
@@ -257,7 +261,7 @@ class Province118HenanSpiderSpider(scrapy.Spider):
                     yield scrapy.Request(url=''.join([self.base_url, href]), callback=self.parse_detail_url, meta={
                         'notice_type': resp.meta.get('notice_type'),
                         'pub_time': pub_time,
-                    }, priority=(len(url_els) - n) * 1000)
+                    }, priority=(len(url_els) - n) * 10000)
 
     def parse_detail_url(self, resp):
         """
@@ -284,7 +288,7 @@ class Province118HenanSpiderSpider(scrapy.Spider):
                 'title_name': title_name,
             }, headers={
                 "If-Modified-Since": ""  # 取消访问缓存
-            }, priority=10000000)
+            }, priority=999999999)
 
     def parse_detail(self, resp):
         content = resp.xpath('//body').get()
@@ -324,5 +328,5 @@ class Province118HenanSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_118_henan_spider -a sdt=2021-05-01 -a edt=2021-08-11".split(" "))
-    # cmdline.execute("scrapy crawl province_118_henan_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_118_henan_spider -a sdt=2021-05-01 -a edt=2021-08-11".split(" "))
+    cmdline.execute("scrapy crawl province_118_henan_spider".split(" "))
