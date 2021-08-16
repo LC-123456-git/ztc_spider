@@ -331,7 +331,10 @@ class ProxyMiddleware(RetryMiddleware):
             time.sleep(10)
 
         self.logger.info('长时间阻塞，强制终止爬虫.')
-        crawler.engine.close_spider(self, '长时间阻塞，强制终止爬虫.')
+        try:
+            crawler.engine.close_spider(self, '长时间阻塞，强制终止爬虫:{}.'.format(crawler.spider.name))
+        except Exception as e:
+            self.logger.info(e)
 
 
 if __name__ == "__main__":

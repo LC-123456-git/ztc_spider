@@ -460,27 +460,30 @@ def catch_files(content, base_url, **kwargs):
             file_name = href_el.xpath('.//text()')
 
             if file_name:
-                file_name = ''.join(file_name).strip()
+                try:
+                    file_name = ''.join(file_name).strip()
 
-                # 封装
-                if has_suffix:
-                    file_name = clean_file_name(file_name, file_types)
+                    # 封装
+                    if has_suffix:
+                        file_name = clean_file_name(file_name, file_types)
 
-                file_name = '{0}{1}'.format(n, file_name)
-                # check file_name exists zip|doc|docx|xls|xlsx
-                # RECORDS ALL LINKS EXCEPT CONTENT-TYPE CONTAINS 'text/html'
-                file_url = href_el.get('href', '')
-                if not check_if_http_based(file_url):
-                    file_url = base_url + file_url
+                    file_name = '{0}{1}'.format(n, file_name)
+                    # check file_name exists zip|doc|docx|xls|xlsx
+                    # RECORDS ALL LINKS EXCEPT CONTENT-TYPE CONTAINS 'text/html'
+                    file_url = href_el.get('href', '')
+                    if not check_if_http_based(file_url):
+                        file_url = base_url + file_url
 
-                if re.search(search_regex, file_name):
-                    files_path[file_name.strip()] = file_url
-                else:
-                    content_type = requests.get(
-                        url=file_url, headers=headers, proxies=proxies
-                    ).headers.get('Content-Type')
-                    if 'text/html' not in content_type:
+                    if re.search(search_regex, file_name):
                         files_path[file_name.strip()] = file_url
+                    else:
+                        content_type = requests.get(
+                            url=file_url, headers=headers, proxies=proxies
+                        ).headers.get('Content-Type')
+                        if 'text/html' not in content_type:
+                            files_path[file_name.strip()] = file_url
+                except Exception as e:
+                    msg = e
     except Exception as e:
         msg = e
     return msg, files_path
@@ -769,7 +772,7 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id in ["8", "08"]:
+    elif area_id in ["8", "08", "124"]:
         area_dict = const.ji_lin
         province_name = area_dict["name"]
         province_code = area_dict["code"]

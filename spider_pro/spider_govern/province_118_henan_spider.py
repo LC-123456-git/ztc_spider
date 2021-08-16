@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+# @file           :province_118_henan_spider.py
+# @description    :中国河南政府采购网
+# @date           :2021/08/10 16:56:29
+# @author         :miaokela
+# @version        :1.0
 import re
 import random
 import requests
@@ -221,11 +226,11 @@ class Province118HenanSpiderSpider(scrapy.Spider):
         try:
             p_com = re.compile(r'pageNo=(\d+)')
             max_pages = p_com.findall(last_page)
-            max_age = int(max_pages[0])
+            max_page = int(max_pages[0])
         except Exception as e:
             print(e)
-            max_age = 1
-        for page in range(1, max_age + 1):
+            max_page = 1
+        for page in range(1, max_page + 1):
             c_url = ''.join([self.query_url, params.format(
                 page_no=page,
             )])
@@ -243,11 +248,11 @@ class Province118HenanSpiderSpider(scrapy.Spider):
                 else:
                     yield scrapy.Request(url=c_url, callback=self.parse_urls, meta={
                         'notice_type': resp.meta.get('notice_type', ''),
-                    }, priority=max_age - page, dont_filter=True)
+                    }, priority=max_page - page, dont_filter=True)
             else:
                 yield scrapy.Request(url=c_url, callback=self.parse_urls, meta={
                     'notice_type': resp.meta.get('notice_type', ''),
-                }, priority=max_age - page, dont_filter=True)
+                }, priority=max_page - page, dont_filter=True)
 
     def parse_urls(self, resp):
         url_els = resp.xpath('//div[@class="Top10 PaddingLR15"]/div[1]/ul/li/a/@href').extract()
