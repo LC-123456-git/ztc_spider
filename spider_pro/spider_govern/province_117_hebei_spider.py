@@ -34,8 +34,8 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
     }
     url_map = {
         '招标预告': [
-            {'params': 'channelid=218195&lanmu=zfcgyx&city=province'},  # 政府采购意向 省级  TODO js混淆内容 规则1
-            {'params': 'channelid=218195&lanmu=zfcgyxAAAA&city=sjz_ys'},  # 政府采购意向 县市  TODO js混淆内容 规则1
+            {'params': 'channelid=218195&lanmu=zfcgyx&city=province'},  # 政府采购意向 省级
+            {'params': 'channelid=218195&lanmu=zfcgyxAAAA&city=sjz_ys'},  # 政府采购意向 县市
         ],
         '招标公告': [
             {'params': 'channelid=240117&lanmu=zbgg&syprovince=0'},  # 招标采购 省级
@@ -43,9 +43,9 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
             {'params': 'channelid=228483&lanmu=fgw_zbfggg&syprovince=0'},  # 招标采购 其他
         ],
         '招标变更': [
-            {'params': 'channelid=218195&lanmu=zfcgyxbg&city=province'},  # 政府采购意向变更 省级   TODO js混淆内容 规则1
-            {'params': 'channelid=240117&lanmu=gzgg&syprovince=0'},  # 变更 省级   TODO js混淆内容 规则3
-            {'params': 'channelid=218195&lanmu=zfcgyxbgAAAS&city=sjz'},  # 政府采购意向变更 县市  TODO js混淆内容 规则1
+            {'params': 'channelid=218195&lanmu=zfcgyxbg&city=province'},  # 政府采购意向变更 省级 
+            {'params': 'channelid=240117&lanmu=gzgg&syprovince=0'},  # 变更 省级
+            {'params': 'channelid=218195&lanmu=zfcgyxbgAAAS&city=sjz'},  # 政府采购意向变更 县市
             {'params': 'channelid=240117&lanmu=gzgg&syprovince=0'},  # 变更 县市
             {'params': 'channelid=228483&lanmu=fgw_gzfggg&syprovince=0'},  # 变更 其他
         ],
@@ -87,6 +87,21 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
         headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
         return headers
 
+    @staticmethod
+    def get_proxies(resp):
+        proxy = resp.request.meta.get('proxy', None) if resp else None
+        proxies = None
+        if proxy:
+            if proxy.startswith('https'):
+                proxies = {
+                    'https': proxy,
+                }
+            else:
+                proxies = {
+                    'http': proxy,
+                }
+        return proxies
+
     def judge_in_interval(self, url, method='GET', resp=None, ancestor_el='table', ancestor_attr='id', ancestor_val='',
                           child_el='tr', time_sep='-', doc_type='html', **kwargs):
         """
@@ -112,15 +127,16 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
         """
         status = 0
         headers = Province117HebeiSpiderSpider.get_headers(resp)
+        proxies = Province118HenanSpiderSpider.get_proxies(resp)
         if all([self.start_time, self.end_time]):
             try:
                 text = ''
                 if method == 'GET':
-                    text = requests.get(url=url, headers=headers, proxies=resp.meta.get('proxy') if resp else None).text
+                    text = requests.get(url=url, headers=headers, proxies=proxies if resp else None).text
                 if method == 'POST':
                     text = requests.post(url=url, data=kwargs.get(
                         'data'
-                    ), headers=headers, proxies=resp.meta.get('proxy') if resp else None).text
+                    ), headers=headers, proxies=proxies if resp else None).text
                 if text:
                     els = []
                     if doc_type == 'html':
