@@ -103,7 +103,6 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
             for pub_time, suffix_url in c_com.findall(content):
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                     c_url = ''.join([self.query_url, suffix_url])
-                    c_url = 'http://www.panan.gov.cn/art/2021/6/18/art_1229170823_59236367.html'
                     yield scrapy.Request(url=c_url, callback=self.parse_detail, meta={
                         'notice_type': resp.meta.get('notice_type', ''),
                         'category': resp.meta.get('category', ''),
