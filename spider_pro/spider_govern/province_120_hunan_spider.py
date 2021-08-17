@@ -16,7 +16,7 @@ from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, 
     remove_specific_element, get_back_date, remove_element_by_xpath
 
 
-class Province119HubeiSpiderSpider(CrawlSpider):
+class Province120HunanSpiderSpider(CrawlSpider):
     name = 'province_120_hunan_spider'
     allowed_domains = ['ccgp-hunan.gov.cn']
     start_urls = 'http://www.ccgp-hunan.gov.cn'
@@ -57,7 +57,7 @@ class Province119HubeiSpiderSpider(CrawlSpider):
     }
 
     def __init__(self, *args, **kwargs):
-        super(Province119HubeiSpiderSpider, self).__init__()
+        super(Province120HunanSpiderSpider, self).__init__()
         if kwargs.get("sdt") and kwargs.get("edt"):
             self.enable_incr = True
             self.sdt_time = kwargs.get("sdt")

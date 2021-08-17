@@ -591,9 +591,8 @@ def get_table_files(query_url, origin, content, keys_a=None, domain_url=None, **
     files_path = get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffix_list)
     return files_path, content
 
-
 @do_files_dec(days=90)
-def get_files(domain_url, origin, files_text, keys_a=None, **kwargs):
+def get_files(domain_url, origin, files_text, start_urls=None, keys_a=None, **kwargs):
     files_path = {}
     key_name = 'pdf/img/doc'
     suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##', 'cn:8080/', 'htm', 'gif']
@@ -607,7 +606,10 @@ def get_files(domain_url, origin, files_text, keys_a=None, **kwargs):
             if files_list[cont].xpath('./@href'):
                 values = files_list[cont].xpath('./@href')[0]
                 if ''.join(values).split('.')[-1] not in suffix_list:
-                    if 'http' not in values:
+                    if 'javascript' in values:
+                        code_id = re.findall(".*\('(.*)\'\)", values)[0]
+                        value = start_urls + base64.b64encode(code_id.encode('utf-8')).decode('utf-8')
+                    elif 'http' not in values:
                         value = domain_url + ''.join(values).replace('./', origin[:origin.rindex('/') + 1])
                     else:
                         value = values
