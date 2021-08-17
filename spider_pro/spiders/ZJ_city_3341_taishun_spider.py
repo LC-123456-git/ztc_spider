@@ -117,7 +117,7 @@ class MySpider(CrawlSpider):
                                              meta={'category': response.meta['category'],
                                                    'notice': response.meta['notice']})
             else:
-                pages = re.findall('^\/(\d+)页', response.xpath('//div[@class="pagemargin"]//td[@class="huifont"]/text()').get())[0]
+                pages = re.findall('^\/(\d+)', response.xpath('//div[@class="pagemargin"]//td[@class="huifont"]/text()').get())[0]
                 total = int(pages) * 15
                 self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
                 for num in range(1, int(pages) + 1):
