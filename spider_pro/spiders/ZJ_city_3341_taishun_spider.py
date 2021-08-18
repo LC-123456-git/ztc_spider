@@ -88,7 +88,7 @@ class MySpider(CrawlSpider):
 
     def parse_data_info(self, response):
         try:
-            info_url = response.url.replace(''.join(response.url).split('/')[-1], 'Paging={}')
+            info_url = response.url.replace(''.join(response.url).split('&')[-1], 'Paging={}')
             if self.enable_incr:
                 li_list = response.xpath('//div[@id="infolist"]/table/tr')[:-1]
                 num = 0
@@ -117,11 +117,14 @@ class MySpider(CrawlSpider):
                                              meta={'category': response.meta['category'],
                                                    'notice': response.meta['notice']})
             else:
-                pages = re.findall('^\/(\d+)', response.xpath('//div[@class="pagemargin"]//td[@class="huifont"]/text()').get())[0]
+                pages = re.findall('/(\d+)', response.xpath('//div[@class="pagemargin"]//td[@class="huifont"]/text()').get())[0]
                 total = int(pages) * 15
                 self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                count = 0
                 for num in range(1, int(pages) + 1):
+                    count += 1
                     yield scrapy.Request(url=info_url.format(num), callback=self.parse_data_check,
+                                         priority=(int(pages)-num)*10, dont_filter=True,
                                          meta={'category': response.meta['category'],
                                                'notice': response.meta['notice']})
         except Exception as e:
@@ -130,11 +133,13 @@ class MySpider(CrawlSpider):
     def parse_data_check(self, response):
         try:
             li_list = response.xpath('//div[@id="infolist"]/table/tr')[:-1]
+            count = 0
             for info in li_list:
-                info_url = self.domain_url + info.xpath('./td[2]/a/@href').get()
+                count += 1
+                info_url = self.start_url + info.xpath('./td[2]/a/@href').get()
                 title_name = info.xpath('./td[2]/a/@title').get()
                 pub_time = ''.join(info.xpath('./td[last()]/text()').get()).strip()
-                yield scrapy.Request(url=info_url, callback=self.parse_item, priority=200,
+                yield scrapy.Request(url=info_url, callback=self.parse_item, priority=(len(li_list)-count)*100, dont_filter=True,
                                      meta={'category': response.meta['category'],
                                            'notice': response.meta['notice'],
                                            'pub_time': pub_time,
@@ -174,7 +179,7 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    # cmdline.execute("scrapy crawl ZJ_city_3341_taishun_spider".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3341_taishun_spider -a sdt=2021-06-01 -a edt=2021-07-20".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3341_taishun_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3341_taishun_spider -a sdt=2021-06-01 -a edt=2021-07-20".split(" "))
 
 
