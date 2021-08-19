@@ -46,22 +46,22 @@ class Province123HeilongjiangSpiderSpider(scrapy.Spider):
 
         self.page_size = 10
         self.url_map = {
-            # '招标预告': [
-            #     # 采购需求公告(例外)
-            #     {
-            #         'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
-            #                   '&currPage={curr_page}&pageSize=%d&noticeType=001072&operationStartTime=%s'
-            #                   '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
-            #         'is_json_detail': True,
-            #     },
-            #     # 采购需求和意向公开
-            #     {
-            #         'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
-            #                   '&currPage={curr_page}&pageSize=%d&noticeType=59&operationStartTime=%s'
-            #                   '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
-            #         'is_json_detail': False,
-            #     },
-            # ],
+            '招标预告': [
+                # 采购需求公告(例外)
+                {
+                    'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
+                              '&currPage={curr_page}&pageSize=%d&noticeType=001072&operationStartTime=%s'
+                              '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
+                    'is_json_detail': True,
+                },
+                # 采购需求和意向公开
+                {
+                    'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
+                              '&currPage={curr_page}&pageSize=%d&noticeType=59&operationStartTime=%s'
+                              '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
+                    'is_json_detail': False,
+                },
+            ],
             '招标公告': [
                 # 采购公告 项目采购公告
                 {
@@ -70,69 +70,69 @@ class Province123HeilongjiangSpiderSpider(scrapy.Spider):
                               '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
                     'is_json_detail': False,
                 },
-                # # 采购公告 定点采购公告
-                # {
-                #     'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
-                #               '&currPage={curr_page}&pageSize=%d&noticeType=00107D,201111&operationStartTime=%s'
-                #               '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
-                #     'is_json_detail': False,
-                # },
-                # # 单一来源公示
-                # {
-                #     'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
-                #               '&currPage={curr_page}&pageSize=%d&noticeType=001051&operationStartTime=%s'
-                #               '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
-                #     'is_json_detail': False,
-                # },
+                # 采购公告 定点采购公告
+                {
+                    'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
+                              '&currPage={curr_page}&pageSize=%d&noticeType=00107D,201111&operationStartTime=%s'
+                              '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
+                    'is_json_detail': False,
+                },
+                # 单一来源公示
+                {
+                    'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
+                              '&currPage={curr_page}&pageSize=%d&noticeType=001051&operationStartTime=%s'
+                              '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
+                    'is_json_detail': False,
+                },
             ],
-            # '招标变更': [
-            #     # 更正公告 项目采购公告
-            #     {
-            #         'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
-            #                   '&currPage={curr_page}&pageSize=%d&noticeType=00103&operationStartTime=%s'
-            #                   '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
-            #         'is_json_detail': False,
-            #     },
-            #     # 中标（成交）更正公告 项目采购公告
-            #     {
-            #         'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
-            #                   '&currPage={curr_page}&pageSize=%d&noticeType=001032&operationStartTime=%s'
-            #                   '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
-            #         'is_json_detail': False,
-            #     },
-            # ],
-            # '招标异常': [
-            #     # 废标（终止）公告
-            #     {
-            #         'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
-            #                   '&currPage={curr_page}&pageSize=%d&noticeType=001004,001006&operationStartTime=%s'
-            #                   '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
-            #         'is_json_detail': False,
-            #     },
-            # ],
-            # '中标公告': [
-            #     # 中标（成交）公告
-            #     {
-            #         'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
-            #                   '&currPage={curr_page}&pageSize=%d&noticeType=00102&operationStartTime=%s'
-            #                   '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
-            #         'is_json_detail': False,
-            #     },
-            #     # 结果公告
-            #     {
-            #         'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
-            #                   '&currPage={curr_page}&pageSize=%d&noticeType=001076&operationStartTime=%s'
-            #                   '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
-            #         'is_json_detail': False,
-            #     },
-            #     # 采购成交公告(例外)
-            #     {
-            #         'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
-            #                   '&currPage={curr_page}&pageSize=%d&noticeType=001073&operationStartTime=%s'
-            #                   '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
-            #         'is_json_detail': True,
-            #     },
-            # ],
+            '招标变更': [
+                # 更正公告 项目采购公告
+                {
+                    'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
+                              '&currPage={curr_page}&pageSize=%d&noticeType=00103&operationStartTime=%s'
+                              '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
+                    'is_json_detail': False,
+                },
+                # 中标（成交）更正公告 项目采购公告
+                {
+                    'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
+                              '&currPage={curr_page}&pageSize=%d&noticeType=001032&operationStartTime=%s'
+                              '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
+                    'is_json_detail': False,
+                },
+            ],
+            '招标异常': [
+                # 废标（终止）公告
+                {
+                    'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
+                              '&currPage={curr_page}&pageSize=%d&noticeType=001004,001006&operationStartTime=%s'
+                              '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
+                    'is_json_detail': False,
+                },
+            ],
+            '中标公告': [
+                # 中标（成交）公告
+                {
+                    'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
+                              '&currPage={curr_page}&pageSize=%d&noticeType=00102&operationStartTime=%s'
+                              '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
+                    'is_json_detail': False,
+                },
+                # 结果公告
+                {
+                    'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
+                              '&currPage={curr_page}&pageSize=%d&noticeType=001076&operationStartTime=%s'
+                              '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
+                    'is_json_detail': False,
+                },
+                # 采购成交公告(例外)
+                {
+                    'params': 'siteId=94c965cc-c55d-4f92-8469-d5875c68bd04&channel=c5bff13f-21ca-4dac-b158-cb40accd3035'
+                              '&currPage={curr_page}&pageSize=%d&noticeType=001073&operationStartTime=%s'
+                              '&operationEndTime=%s&selectTimeName=noticeTime' % (self.page_size, start_time, end_time),
+                    'is_json_detail': True,
+                },
+            ],
         }
 
     def match_title(self, title_name):
@@ -252,10 +252,10 @@ class Province123HeilongjiangSpiderSpider(scrapy.Spider):
                 content = ''
         else:
             content = resp.xpath('//div[@class="noticeArea" or @id="noticeArea"]').get()
-            
+
         _, content = utils.remove_element_by_xpath(
             content,
-            xpath_rule='//div[@id="noticeArea"]/div[position()=1]'
+            xpath_rule='//div[@id="noticeArea"]/div[contains(string(), "项目概况")]'
         )
         
         matched, match_notice_type = self.match_title(title_name)
