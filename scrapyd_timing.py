@@ -209,17 +209,20 @@ if __name__ == "__main__":
         "ZJ_city_3339_dongtou_spider",
         "ZJ_city_3340_wencheng_spider",
         "ZJ_city_3341_taishun_spider",
-
+        
         "ZJ_city_3346_huzhouwuxing_spider",
         "ZJ_city_3356_jinhuayiwu_spider",
         "ZJ_city_3361_jinhuapujiang_spider",
         "ZJ_city_3362_jinhuapanan_spider",
         "ZJ_city_3360_wuyi_spider",
-
-        "province_117_hebei_spider",
+        
+        # "province_117_hebei_spider",
         "province_118_henan_spider",
-
+        
         "qcc_crawler",
+        
+        "province_123_heilongjiang_spider",
+        "province_124_jilin_spider",
     ]
 
     # 优先判断运行状态
