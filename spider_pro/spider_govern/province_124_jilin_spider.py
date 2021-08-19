@@ -237,8 +237,7 @@ class Province124JilinSpiderSpider(scrapy.Spider):
                 'categoryId': category_id,
             }
             if all([self.start_time, self.end_time]):
-                # for page in range(1, max_page + 1):
-                for page in range(1, 2):
+                for page in range(1, max_page + 1):
                     c_form_data['currentPage'] = str(page)
                     judge_status = self.judge_in_interval(
                         self.query_url, method='POST', data=c_form_data, ancestor_el='div', ancestor_attr='id',
