@@ -313,7 +313,6 @@ class Province124JilinSpiderSpider(scrapy.Spider):
         notice_item["area_id"] = self.area_id
         notice_item["category"] = '政府采购'
         print(resp.meta.get('pub_time'), resp.url)
-
         return notice_item
 
 
