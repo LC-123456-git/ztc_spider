@@ -80,128 +80,6 @@ class Province124JilinSpiderSpider(scrapy.Spider):
                 break
         return matched, notice_type
 
-    @staticmethod
-    def get_headers(resp):
-        default_headers = resp.request.headers
-        headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
-        return headers
-
-    @staticmethod
-    def get_proxies(resp):
-        proxy = resp.request.meta.get('proxy', None) if resp else None
-        proxies = None
-        if proxy:
-            if proxy.startswith('https'):
-                proxies = {
-                    'https': proxy,
-                }
-            else:
-                proxies = {
-                    'http': proxy,
-                }
-        return proxies
-
-    def judge_in_interval(self, url, method='GET', resp=None, ancestor_el='table', ancestor_attr='id', ancestor_val='',
-                          child_el='tr', time_sep='-', doc_type='html', **kwargs):
-        """
-        判断最末一条数据是否在区间内
-        Args:
-            resp: scrapy请求响应
-            url: 分页链接
-            method: 请求方式
-            ancestor_el: 祖先元素
-            ancestor_attr: 属性
-            ancestor_val: 属性值
-            child_el: 子孙元素
-            time_sep: 时间中间分隔符 默认：-
-            doc_type: 文档类型
-            **kwargs:
-                @data: POST请求体
-                @enhance_els: 扩展xpath匹配子节点细节['table', 'tbody'] 连续节点
-        Returns:
-            status: 结果状态
-                1 首条在区间内 可抓、可以翻页
-                0 首条不在区间内 停止翻页
-                2 末条大于最大时间 continue
-        """
-        status = 0
-        headers = Province124JilinSpiderSpider.get_headers(resp)
-        proxies = Province124JilinSpiderSpider.get_proxies(resp)
-        if all([self.start_time, self.end_time]):
-            try:
-                text = ''
-                if method == 'GET':
-                    text = requests.get(url=url, headers=headers, proxies=proxies if resp else None).text
-                if method == 'POST':
-                    text = requests.post(url=url, data=kwargs.get(
-                        'data'
-                    ), headers=headers, proxies=proxies if resp else None).text
-                if text:
-                    els = []
-                    if doc_type == 'html':
-                        doc = etree.HTML(text)
-
-                        # enhance_els
-                        enhance_els = kwargs.get('enhance_els', [])
-
-                        enhance_condition = ''
-                        if enhance_els:
-                            for enhance_el in enhance_els:
-                                enhance_condition += '/{0}'.format(enhance_el)
-
-                        _path = '//{ancestor_el}[contains(@{ancestor_attr},"{ancestor_val}")]{enhance_condition}/{child_el}[last()]/text()[not(normalize-space()="")]'.format(
-                            **{
-                                'ancestor_el': ancestor_el,
-                                'ancestor_attr': ancestor_attr,
-                                'ancestor_val': ancestor_val,
-                                'child_el': child_el,
-                                'enhance_condition': enhance_condition
-                            })
-                        els = doc.xpath(_path)
-                    if doc_type == 'xml':
-                        doc = etree.XML(text)
-                        _path = '//{child_el}/text()'.format(**{
-                            'child_el': child_el,
-                        })
-                        els = doc.xpath(_path)
-                    if els:
-                        first_el = els[0]
-                        final_el = els[-1]
-
-                        # 解析出时间
-                        t_com = re.compile('(\d+%s\d+%s\d+)' % (time_sep, time_sep))
-
-                        first_pub_time = t_com.findall(first_el)
-                        final_pub_time = t_com.findall(final_el)
-
-                        if all([first_pub_time, final_pub_time]):
-                            first_pub_time = datetime.strptime(
-                                first_pub_time[0], '%Y{0}%m{1}%d'.format(time_sep, time_sep)
-                            )
-                            final_pub_time = datetime.strptime(
-                                final_pub_time[0], '%Y{0}%m{1}%d'.format(time_sep, time_sep)
-                            )
-                            start_time = datetime.strptime(
-                                self.start_time, '%Y-%m-%d')
-                            end_time = datetime.strptime(
-                                self.end_time, '%Y-%m-%d')
-                            # 比最大时间大 continue
-                            # 比最小时间小 break
-                            # 1 首条在区间内 可抓、可以翻页
-                            # 0 首条不在区间内 停止翻页
-                            # 2 末条大于最大时间 continue
-                            if first_pub_time < start_time:
-                                status = 0
-                            elif final_pub_time > end_time:
-                                status = 2
-                            else:
-                                status = 1
-            except Exception as e:
-                self.log(e)
-        else:
-            status = 1  # 没有传递时间
-        return status
-
     def start_requests(self):
         for notice_type, params in self.url_map.items():
             for param in params:
@@ -219,6 +97,9 @@ class Province124JilinSpiderSpider(scrapy.Spider):
                 })
 
     def parse_list(self, resp, notice_type_id, category_id):
+        headers = utils.get_headers(resp)
+        proxies = utils.get_proxies(resp)
+
         last_page_loca = resp.xpath('//form[@id="formModule"]/p/a[text()="末页"]/@onclick').get()
         notice_type = resp.meta.get('notice_type', '')
         com = re.compile(r'(\d+)')
@@ -239,9 +120,10 @@ class Province124JilinSpiderSpider(scrapy.Spider):
             if all([self.start_time, self.end_time]):
                 for page in range(1, max_page + 1):
                     c_form_data['currentPage'] = str(page)
-                    judge_status = self.judge_in_interval(
-                        self.query_url, method='POST', data=c_form_data, ancestor_el='div', ancestor_attr='id',
-                        ancestor_val='list_right', child_el='/li/span', resp=resp,
+                    judge_status = utils.judge_in_interval(
+                        self.query_url, start_time=self.start_time, end_time=self.end_time, method='POST',
+                        data=c_form_data, proxies=proxies, headers=headers,
+                        rule='//div[@id="list_right"]//li/span[last()]/text()[not(normalize-space()="")]'
                     )
                     if judge_status == 0:
                         break
@@ -319,5 +201,5 @@ class Province124JilinSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_124_jilin_spider -a sdt=2021-06-01 -a edt=2021-08-16".split(" "))
+    cmdline.execute("scrapy crawl province_124_jilin_spider -a sdt=2021-06-01 -a edt=2021-08-20".split(" "))
     # cmdline.execute("scrapy crawl province_124_jilin_spider".split(" "))

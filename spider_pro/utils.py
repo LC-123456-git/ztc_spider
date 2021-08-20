@@ -28,6 +28,106 @@ headers = {
 }
 
 
+def get_headers(resp):
+    default_headers = resp.request.headers
+    headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
+    return headers
+
+
+def get_proxies(resp):
+    proxy = resp.request.meta.get('proxy', None) if resp else None
+    proxies = None
+    if proxy:
+        if proxy.startswith('https'):
+            proxies = {
+                'https': proxy,
+            }
+        else:
+            proxies = {
+                'http': proxy,
+            }
+    return proxies
+
+
+def check_range_time(start_time, end_time, content_time):
+    """
+    check if time between start_time and end_time
+    """
+    msg = ''
+    status = 1
+
+    if all([start_time, end_time]):
+        try:
+            start_time = convert_to_strptime(start_time)
+            end_time = convert_to_strptime(end_time) + datetime.timedelta(days=1, seconds=-1)
+            content_time = convert_to_strptime(content_time)
+
+            if start_time <= content_time <= end_time:
+                pass
+            elif start_time > end_time:
+                msg = 'params error!'
+                status = 0
+            else:
+                msg = 'not in this period!'
+                status = 0
+
+        except Exception as e:
+            msg = e
+            status = 0
+
+    return status, msg
+
+
+def judge_in_interval(url, start_time=None, end_time=None, method='GET', headers=None, proxies=None, doc_type='html',
+                      data=None, rule=None):
+    status = 0
+    if all([start_time, end_time]):
+        try:
+            text = ''
+            if method == 'GET':
+                text = requests.get(url=url, headers=headers, proxies=proxies).content.decode('utf-8')
+            if method == 'POST':
+                text = requests.post(url=url, data=data, headers=headers, proxies=proxies).content.decode('utf-8')
+            if text:
+                els = []
+                if doc_type == 'html':
+                    doc = etree.HTML(text)
+                    els = doc.xpath(rule)
+                if doc_type == 'xml':
+                    doc = etree.XML(text)
+                    els = doc.xpath(rule)
+                if els:
+                    first_el = els[0]
+                    final_el = els[-1]
+
+                    t_com = re.compile(r'(\d+[.\-/]\d+[.\-/]\d+)')
+
+                    first_pub_time = t_com.findall(first_el)
+                    final_pub_time = t_com.findall(final_el)
+
+                    if all([first_pub_time, final_pub_time]):
+                        first_pub_time = convert_to_strptime(first_pub_time[0])
+                        final_pub_time = convert_to_strptime(final_pub_time[0])
+                        start_time = convert_to_strptime(start_time)
+                        end_time = convert_to_strptime(end_time)
+                        # 比最大时间大 continue
+                        # 比最小时间小 break
+                        # 1 首条在区间内 可抓、可以翻页
+                        # 0 首条不在区间内 停止翻页
+                        # 2 末条大于最大时间 continue
+                        if first_pub_time < start_time:
+                            status = 0
+                        elif final_pub_time > end_time:
+                            status = 2
+                        else:
+                            status = 1
+        except Exception as e:
+            pass
+    else:
+        status = 1  # 没有传递时间
+    return status
+
+
 def get_keywords(cf, field):
     """
     - 根据yaml对象获取对应字段值列表
@@ -489,35 +589,6 @@ def catch_files(content, base_url, **kwargs):
     return msg, files_path
 
 
-def check_range_time(start_time, end_time, content_time):
-    """
-    check if time between start_time and end_time
-    """
-    msg = ''
-    status = 1
-
-    if all([start_time, end_time]):
-        try:
-            start_time = convert_to_strptime(start_time)
-            end_time = convert_to_strptime(end_time) + datetime.timedelta(days=1, seconds=-1)
-            content_time = convert_to_strptime(content_time)
-
-            if start_time <= content_time <= end_time:
-                pass
-            elif start_time > end_time:
-                msg = 'params error!'
-                status = 0
-            else:
-                msg = 'not in this period!'
-                status = 0
-
-        except Exception as e:
-            msg = e
-            status = 0
-
-    return status, msg
-
-
 def add_to_16(s):
     while len(s) % 16 != 0:
         s += (16 - len(s) % 16) * chr(16 - len(s) % 16)
@@ -590,6 +661,7 @@ def get_table_files(query_url, origin, content, keys_a=None, domain_url=None, **
     # 处理 img
     files_path = get_files_img(files_path, domain_url, keys_list, key_name, files_text, suffix_list)
     return files_path, content
+
 
 @do_files_dec(days=90)
 def get_files(domain_url, origin, files_text, start_urls=None, keys_a=None, **kwargs):
@@ -666,19 +738,19 @@ def get_timestamp(timeStamp):
 
 
 def get_notice_type(title_name, notice):
-    if re.search(r'变更|更正|澄清|补充|取消|延期', title_name):        # 招标变更
+    if re.search(r'变更|更正|澄清|补充|取消|延期', title_name):  # 招标变更
         notice_type = const.TYPE_ZB_ALTERATION
-    elif re.search(r'终止|中止|废标|流标|暂停', title_name):          # 招标异常
+    elif re.search(r'终止|中止|废标|流标|暂停', title_name):  # 招标异常
         notice_type = const.TYPE_ZB_ABNORMAL
-    elif re.search(r'候选人', title_name):                          # 中标预告
+    elif re.search(r'候选人', title_name):  # 中标预告
         notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-    elif re.search(r'采购意向|需求公示|意见征询', title_name):         # 招标预告
+    elif re.search(r'采购意向|需求公示|意见征询', title_name):  # 招标预告
         notice_type = const.TYPE_ZB_ADVANCE_NOTICE
-    elif re.search(r'成交公告|结果公告', title_name):                 # 中标公告
+    elif re.search(r'成交公告|结果公告', title_name):  # 中标公告
         notice_type = const.TYPE_WIN_NOTICE
     elif re.search(r'单一来源|询价|竞争性谈判|竞争性磋商', title_name):  # 招标公告
         notice_type = const.TYPE_ZB_NOTICE
-    elif re.search(r'预审', title_name):                            # 资格预审公告
+    elif re.search(r'预审', title_name):  # 资格预审公告
         notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
     else:
         notice_type = notice
