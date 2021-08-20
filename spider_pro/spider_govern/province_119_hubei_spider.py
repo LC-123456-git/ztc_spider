@@ -11,7 +11,7 @@ import json, math
 from lxml import etree
 from scrapy.spiders import CrawlSpider
 from spider_pro.items import NoticesItem
-from spider_pro import constans as const
+from spider_pro import constans as const, utils
 from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, get_files, get_notice_type, \
      remove_specific_element, get_back_date
 
@@ -209,6 +209,8 @@ class Province119HubeiSpiderSpider(CrawlSpider):
             if notice_type and content:
                 # 去除title  去除时间
                 _, content = remove_specific_element(content, 'div', 'style', 'margin: 0 20px 30px;font-family:微软雅黑;')
+                _, content = utils.remove_element_by_xpath(content, xpath_rule='//div[@class="art_con"]/p[contains(string(), "项目概况")]/following-sibling::p[1]')
+                _, content = utils.remove_element_by_xpath(content, xpath_rule='//div[@class="art_con"]/p[contains(string(), "项目概况")]')
                 # 去除相关公告
                 _, content = remove_specific_element(content, 'div', 'class', 'col-lg-12 col-sm-12 col-md-12 col-xs-12 margin-top-20')
                 # 去除相关合同
