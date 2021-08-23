@@ -19,6 +19,7 @@ from Crypto.Cipher import AES
 from dateutil.relativedelta import relativedelta
 from lxml import etree
 from functools import wraps
+import xmltodict
 
 from spider_pro import rules_clean
 from spider_pro import constans as const
@@ -78,8 +79,23 @@ def check_range_time(start_time, end_time, content_time):
     return status, msg
 
 
+def get_page(url, method='GET', headers=None, proxies=None, data=None, set_decode=True):
+    content = ''
+    if method == 'GET':
+        content = requests.get(url=url, headers=headers, proxies=proxies).content
+    if method == 'POST':
+        content = requests.post(url=url, data=data, headers=headers, proxies=proxies).content
+    if set_decode and content:
+        content = content.decode('utf-8')
+    return content
+
+
 def judge_in_interval(url, start_time=None, end_time=None, method='GET', headers=None, proxies=None, doc_type='html',
                       data=None, rule=None):
+    """
+    翻页
+    @rule: xpath解析规则
+    """
     status = 0
     if all([start_time, end_time]):
         try:
@@ -89,13 +105,16 @@ def judge_in_interval(url, start_time=None, end_time=None, method='GET', headers
             if method == 'POST':
                 text = requests.post(url=url, data=data, headers=headers, proxies=proxies).content.decode('utf-8')
             if text:
-                els = []
+                doc = None
                 if doc_type == 'html':
                     doc = etree.HTML(text)
-                    els = doc.xpath(rule)
                 if doc_type == 'xml':
                     doc = etree.XML(text)
-                    els = doc.xpath(rule)
+                if doc_type == 'json':
+                    text = xmltodict.unparse({"root": json.loads(text)}).encode('utf-8')
+                    doc = etree.XML(text)
+                    
+                els = doc.xpath(rule) if doc else []
                 if els:
                     first_el = els[0]
                     final_el = els[-1]
@@ -970,6 +989,16 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
             elif re.search(province_name, data):
                 deal_area_dict = temp_area_data(province_name, province_code, province, data)
                 return deal_area_dict
+    elif area_id in ['125']:
+        area_dict = const.liao_ning
+        province_name = area_dict["name"]
+        province_code = area_dict["code"]
+        if re.search(province_name, info_source):
+            deal_area_dict = temp_area_data(province_name, province_code, area_dict, info_source)
+            return deal_area_dict
+        elif re.search(province_name, data):
+            deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
+            return deal_area_dict
     else:
         for province in const.PROVINCE_LIST:
             province_name = province["name"]

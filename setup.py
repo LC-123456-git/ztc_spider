@@ -7,5 +7,5 @@ setup(
     version='1.0',
     packages=find_packages(),
     entry_points={'scrapy': ['settings = spider_pro.settings_scrapyd']},
-    package_data={'': ['conf/*.yaml']}
+    package_data={'': ['conf/*.yaml', 'statics/images/*.jpeg']}
 )

@@ -374,28 +374,64 @@ scp  D:\ztx_clone\ztx_spider\scrapyd_clean_data.py root@192.168.1.248:/home/pyth
 
   - requirements.txt
     ```
+    attrs==21.2.0
+    Automat==20.2.0
+    beautifulsoup4==4.9.3
+    certifi==2020.12.5
+    cffi==1.14.5
+    chardet==3.0.4
+    constantly==15.1.0
+    cryptography==3.4.7
+    cssselect==1.1.0
     DBUtils==2.0.1
+    et-xmlfile==1.1.0
     gevent==21.1.2
+    greenlet==1.1.0
+    hiredis==2.0.0
+    html-table-extractor==1.4.1
+    hyperlink==21.0.0
+    idna==2.5
+    incremental==21.3.0
+    itemadapter==0.2.0
+    itemloaders==1.0.4
+    jmespath==0.10.0
     lxml==4.6.3
     numpy==1.20.2
     openpyxl==3.0.7
     pandas==1.2.3
+    parsel==1.6.0
+    Protego==0.1.16
+    pyasn1==0.4.8
+    pyasn1-modules==0.2.8
+    pycparser==2.20
+    pycryptodome==3.10.1
+    PyDispatcher==2.0.5
     PyMySQL==1.0.2
-    python-dateutil
+    pyOpenSSL==20.0.1
+    python-dateutil==2.8.1
     pytz==2021.1
+    PyYAML==5.4.1
+    queuelib==1.6.1
     redis==3.5.3
-    requests==2.5.0
+    redisbloom==0.4.0
+    requests==2.25.1
+    rmtest==0.7.0
     Scrapy==2.4.1
+    scrapy-redis==0.7.1
+    scrapy-splash==0.7.2
+    scrapyd==1.2.1
+    scrapyd-client==1.1.0
+    service-identity==21.1.0
+    six==1.16.0
+    soupsieve==2.2.1
     SQLAlchemy==1.4.0
     Twisted==21.2.0
-    urllib3==1.26.4
+    urllib3==1.21.1
+    w3lib==1.22.0
     xlwt==1.3.0
     xmltodict==0.12.0
-    scrapyd
-    scrapyd-client
-    scrapy-redis
-    redisbloom
-    pycryptodome
+    zope.event==4.5.0
+    zope.interface==5.4.0
     ```
   - Dockerfile
     ```

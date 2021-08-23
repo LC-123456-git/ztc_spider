@@ -31,7 +31,7 @@ DOWNLOADER_MIDDLEWARES = {
     # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
     'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
     'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-    'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+    # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
     # Splash
     'scrapy_splash.SplashCookiesMiddleware': 770,
     'scrapy_splash.SplashMiddleware': 780,
@@ -71,49 +71,54 @@ spider_pro_path = os.path.dirname(os.getcwd())
 # Scrapy Log setting
 logs_spider_path = os.path.join(spider_pro_path, "logs")
 os.makedirs(logs_spider_path, 0o777, exist_ok=True)
-# logging.config.dictConfig({
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {'simple': {'class': 'logging.Formatter',
-#                               'format': '%(asctime)s [%(name)s] %(levelname)s | %(message)s',
-#                               'datefmt': '%Y-%m-%d %H:%M:%S'}},
-#     'handlers': {'console': {'class': 'logging.StreamHandler',
-#                              'level': 'INFO',
-#                              'formatter': 'simple',
-#                              'stream': 'ext://sys.stdout'},
-#                  'pipelines_mysql_handler': {
-#                      'class': "logging.handlers.TimedRotatingFileHandler",
-#                      'level': "INFO",
-#                      'formatter': "simple",
-#                      'filename': os.path.join(logs_spider_path, 'pipelines_mysql.log'),
-#                      'when': "MIDNIGHT",
-#                      'interval': 1,
-#                      'backupCount': 3,
-#                      'encoding': "utf8",
-#                  },
-#                  'proxy_handle': {
-#                      'class': "logging.handlers.TimedRotatingFileHandler",
-#                      'level': "INFO",
-#                      'formatter': "simple",
-#                      'filename': os.path.join(logs_spider_path, 'middleware_proxy.log'),
-#                      'when': "MIDNIGHT",
-#                      'interval': 1,
-#                      'backupCount': 3,
-#                      'encoding': "utf8",
-#                  }
-#                  },
-#     'loggers': {'pipelines_mysql': {'handlers': ['pipelines_mysql_handler'],
-#                                     'level': 'INFO',
-#                                     'propagate': True},
-#                 'middleware_proxy': {'handlers': ['proxy_handle'],
-#                                      'level': 'INFO',
-#                                      'propagate': False}
-#                 },
-#     'root': {
-#         'handlers': ['console'],
-#         'level': 'INFO'
-#     }
-# })
+print(spider_pro_path)
+# 静态文件目录statics
+IMAGES_PATH = os.path.join(os.path.join(spider_pro_path, "statics"), "images")
+os.makedirs(IMAGES_PATH, 0o777, exist_ok=True)
+
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {'simple': {'class': 'logging.Formatter',
+                              'format': '%(asctime)s [%(name)s] %(levelname)s | %(message)s',
+                              'datefmt': '%Y-%m-%d %H:%M:%S'}},
+    'handlers': {'console': {'class': 'logging.StreamHandler',
+                             'level': 'INFO',
+                             'formatter': 'simple',
+                             'stream': 'ext://sys.stdout'},
+                 'pipelines_mysql_handler': {
+                     'class': "logging.handlers.TimedRotatingFileHandler",
+                     'level': "INFO",
+                     'formatter': "simple",
+                     'filename': os.path.join(logs_spider_path, 'pipelines_mysql.log'),
+                     'when': "MIDNIGHT",
+                     'interval': 1,
+                     'backupCount': 3,
+                     'encoding': "utf8",
+                 },
+                 'proxy_handle': {
+                     'class': "logging.handlers.TimedRotatingFileHandler",
+                     'level': "INFO",
+                     'formatter': "simple",
+                     'filename': os.path.join(logs_spider_path, 'middleware_proxy.log'),
+                     'when': "MIDNIGHT",
+                     'interval': 1,
+                     'backupCount': 3,
+                     'encoding': "utf8",
+                 }
+                 },
+    'loggers': {'pipelines_mysql': {'handlers': ['pipelines_mysql_handler'],
+                                    'level': 'INFO',
+                                    'propagate': True},
+                'middleware_proxy': {'handlers': ['proxy_handle'],
+                                     'level': 'INFO',
+                                     'propagate': False}
+                },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO'
+    }
+})
 today_date = datetime.datetime.now()
 LOG_ENABLED = True
 LOG_ENCODING = 'utf-8'
@@ -142,9 +147,9 @@ RETRY_TIMES = 3
 RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 400, 403, 404]
 
 # concurrent
-CONCURRENT_REQUESTS = 16  # 32 理论上可以支持 每小时10w数据 调式环境设置为1
+CONCURRENT_REQUESTS = 8  # 32 理论上可以支持 每小时10w数据 调式环境设置为1
 CONCURRENT_REQUESTS_PER_IP = 1     # 1
-REACTOR_THREADPOOL_MAXSIZE = 20
+REACTOR_THREADPOOL_MAXSIZE = 1
 
 # download delay   延时下载
 DOWNLOAD_DELAY = 2
