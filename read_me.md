@@ -149,14 +149,14 @@
 
 - [] 116 湖南招标网 http://www.hnbidding.com/
 
-- [] 117 河北政府采购网 http://www.ccgp-hebei.gov.cn/
-- [] 118 河南省政府采购网 http://www.ccgp-henan.gov.cn/
-- [] 119 湖北省政府采购网 http://www.ccgp-hubei.gov.cn/
-- [] 120 湖南省政府采购网 http://www.ccgp-hunan.gov.cn/
-- [] 121 山西省政府采购网 http://www.ccgp-shanxi.gov.cn/
-- [] 122 山东省政府采购网 http://www.ccgp-shandong.gov.cn/
-- [] 123 黑龙江政府采购网 http://www.ccgp-heilongj.gov.cn/
-- [] 124 吉林省政府采购网 http://www.ccgp-jilin.gov.cn/
+- [x] 117 河北政府采购网 http://www.ccgp-hebei.gov.cn/
+- [x] 118 河南省政府采购网 http://www.ccgp-henan.gov.cn/
+- [x] 119 湖北省政府采购网 http://www.ccgp-hubei.gov.cn/
+- [x] 120 湖南省政府采购网 http://www.ccgp-hunan.gov.cn/
+- [x] 121 山西省政府采购网 http://www.ccgp-shanxi.gov.cn/
+- [x] 122 山东省政府采购网 http://www.ccgp-shandong.gov.cn/
+- [x] 123 黑龙江政府采购网 http://www.ccgp-heilongj.gov.cn/
+- [x] 124 吉林省政府采购网 http://www.ccgp-jilin.gov.cn/
 - [] 125 辽宁省政府采购网 http://www.ccgp-liaoning.gov.cn/
 - [] 126 海南省政府采购网 https://www.ccgp-hainan.gov.cn/
 - [] 127 内蒙古自治区政府采购网 http://www.ccgp-neimenggu.gov.cn/
