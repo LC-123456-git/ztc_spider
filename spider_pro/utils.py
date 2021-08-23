@@ -692,17 +692,17 @@ def get_files(domain_url, origin, files_text, start_urls=None, keys_a=None, **kw
                             if '.' in keys:  # 在判断 keys 有后缀 点
                                 suffix_keys = keys[keys.rindex('.') + 1:]
                                 if suffix_keys not in keys_list:  # 判断 keys后缀在不在 列表中
-                                    key = keys + value[value.rindex('.'):]
+                                    key = '{}_'.format(cont) + keys + value[value.rindex('.'):]
                                 else:
-                                    key = keys
+                                    key = str(cont) + '_' + keys
                             else:
-                                key = keys + value[value.rindex('.'):]
+                                key = '{}_'.format(cont) + keys + value[value.rindex('.'):]
                             files_path[key] = value
                         else:  # value 的后缀不在 列表中
                             if '.' in keys:  # 在判断 keys 有后缀 点
                                 suffix_keys = keys[keys.rindex('.') + 1:]
                                 if suffix_keys in keys_list:  # 判断 keys后缀在不在 列表中
-                                    key = keys[:keys.rindex('.')] + str(cont + 1) + '.' + suffix_keys
+                                    key = str(cont) + '_' + keys[:keys.rindex('.')] + '.' + suffix_keys
                                 else:
                                     key = ''
                                 if key:
