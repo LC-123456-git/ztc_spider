@@ -76,49 +76,49 @@ os.makedirs(logs_spider_path, 0o777, exist_ok=True)
 IMAGES_PATH = os.path.join(os.path.join(spider_pro_path, "statics"), "images")
 os.makedirs(IMAGES_PATH, 0o777, exist_ok=True)
 
-logging.config.dictConfig({
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {'simple': {'class': 'logging.Formatter',
-                              'format': '%(asctime)s [%(name)s] %(levelname)s | %(message)s',
-                              'datefmt': '%Y-%m-%d %H:%M:%S'}},
-    'handlers': {'console': {'class': 'logging.StreamHandler',
-                             'level': 'INFO',
-                             'formatter': 'simple',
-                             'stream': 'ext://sys.stdout'},
-                 'pipelines_mysql_handler': {
-                     'class': "logging.handlers.TimedRotatingFileHandler",
-                     'level': "INFO",
-                     'formatter': "simple",
-                     'filename': os.path.join(logs_spider_path, 'pipelines_mysql.log'),
-                     'when': "MIDNIGHT",
-                     'interval': 1,
-                     'backupCount': 3,
-                     'encoding': "utf8",
-                 },
-                 'proxy_handle': {
-                     'class': "logging.handlers.TimedRotatingFileHandler",
-                     'level': "INFO",
-                     'formatter': "simple",
-                     'filename': os.path.join(logs_spider_path, 'middleware_proxy.log'),
-                     'when': "MIDNIGHT",
-                     'interval': 1,
-                     'backupCount': 3,
-                     'encoding': "utf8",
-                 }
-                 },
-    'loggers': {'pipelines_mysql': {'handlers': ['pipelines_mysql_handler'],
-                                    'level': 'INFO',
-                                    'propagate': True},
-                'middleware_proxy': {'handlers': ['proxy_handle'],
-                                     'level': 'INFO',
-                                     'propagate': False}
-                },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO'
-    }
-})
+# logging.config.dictConfig({
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {'simple': {'class': 'logging.Formatter',
+#                               'format': '%(asctime)s [%(name)s] %(levelname)s | %(message)s',
+#                               'datefmt': '%Y-%m-%d %H:%M:%S'}},
+#     'handlers': {'console': {'class': 'logging.StreamHandler',
+#                              'level': 'INFO',
+#                              'formatter': 'simple',
+#                              'stream': 'ext://sys.stdout'},
+#                  'pipelines_mysql_handler': {
+#                      'class': "logging.handlers.TimedRotatingFileHandler",
+#                      'level': "INFO",
+#                      'formatter': "simple",
+#                      'filename': os.path.join(logs_spider_path, 'pipelines_mysql.log'),
+#                      'when': "MIDNIGHT",
+#                      'interval': 1,
+#                      'backupCount': 3,
+#                      'encoding': "utf8",
+#                  },
+#                  'proxy_handle': {
+#                      'class': "logging.handlers.TimedRotatingFileHandler",
+#                      'level': "INFO",
+#                      'formatter': "simple",
+#                      'filename': os.path.join(logs_spider_path, 'middleware_proxy.log'),
+#                      'when': "MIDNIGHT",
+#                      'interval': 1,
+#                      'backupCount': 3,
+#                      'encoding': "utf8",
+#                  }
+#                  },
+#     'loggers': {'pipelines_mysql': {'handlers': ['pipelines_mysql_handler'],
+#                                     'level': 'INFO',
+#                                     'propagate': True},
+#                 'middleware_proxy': {'handlers': ['proxy_handle'],
+#                                      'level': 'INFO',
+#                                      'propagate': False}
+#                 },
+#     'root': {
+#         'handlers': ['console'],
+#         'level': 'INFO'
+#     }
+# })
 today_date = datetime.datetime.now()
 LOG_ENABLED = True
 LOG_ENCODING = 'utf-8'
