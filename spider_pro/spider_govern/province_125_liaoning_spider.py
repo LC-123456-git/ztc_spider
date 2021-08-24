@@ -199,7 +199,6 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
         content = utils.get_page(pic_url, proxies=proxies, headers=headers, set_decode=False)
 
         img_path = os.path.join(self.settings.get('IMAGES_PATH'), 'captcha.jpeg')
-        print(img_path)
         with open(img_path, 'wb') as f:
             f.write(content)
 
@@ -335,5 +334,5 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_125_liaoning_spider -a sdt=2021-06-01 -a edt=2021-08-20".split(" "))
-    # cmdline.execute("scrapy crawl province_125_liaoning_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_125_liaoning_spider -a sdt=2021-06-01 -a edt=2021-08-20".split(" "))
+    cmdline.execute("scrapy crawl province_125_liaoning_spider".split(" "))
