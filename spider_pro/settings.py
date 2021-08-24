@@ -71,7 +71,7 @@ spider_pro_path = os.path.dirname(os.getcwd())
 # Scrapy Log setting
 logs_spider_path = os.path.join(spider_pro_path, "logs")
 os.makedirs(logs_spider_path, 0o777, exist_ok=True)
-print(spider_pro_path)
+
 # 静态文件目录statics
 IMAGES_PATH = os.path.join(os.path.join(spider_pro_path, "statics"), "images")
 os.makedirs(IMAGES_PATH, 0o777, exist_ok=True)

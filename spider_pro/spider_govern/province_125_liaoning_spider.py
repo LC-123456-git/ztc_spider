@@ -103,6 +103,7 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
         return matched, notice_type
 
     def start_requests(self):
+        n = 0
         for notice_type, params in self.url_map.items():
             for param in params:
                 info_type_code = param['info_type_code']
@@ -111,13 +112,13 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
                 form_data = self.get_form_data(**{
                     'infoTypeCode': info_type_code,
                 })
-
+                n += 1
                 yield scrapy.FormRequest(url=self.query_url, formdata=form_data, callback=self.parse_list, meta={
                     'notice_type': notice_type,
                     'specific_category': specific_category,
                     'row_count': form_data.get('rowCount', 0),
                     'info_type_code': info_type_code,
-                }, dont_filter=True)
+                }, dont_filter=True, priority=n)
 
     def parse_list(self, resp):
         info_type_code = resp.meta.get('info_type_code', '')
@@ -152,7 +153,7 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
                 yield scrapy.FormRequest(url=self.query_url, formdata=form_data, callback=self.parse_urls, meta={
                     'notice_type': notice_type,
                     'specific_category': specific_category,
-                }, dont_filter=True, priority=max_page - page)
+                }, dont_filter=True, priority=(max_page - page) * 10)
 
     def parse_urls(self, resp):
         notice_type = resp.meta.get('notice_type', '')
@@ -237,7 +238,8 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
                     'j_jcaptcha': str(pic_code)
                 })
 
-                check_auth_url = self.check_auth_url.format(r_t='%s%s' % (str(round(time.time() * 1000)), random.random()*1000))
+                check_auth_url = self.check_auth_url.format(
+                    r_t='%s%s' % (str(round(time.time() * 1000)), random.random() * 1000))
                 result = utils.get_page(check_auth_url, method='POST', data=c_data, proxies=proxies,
                                         headers=headers)
 

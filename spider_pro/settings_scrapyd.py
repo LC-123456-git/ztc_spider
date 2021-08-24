@@ -74,6 +74,10 @@ os.makedirs(FILES_STORE_PATH, 0o777, exist_ok=True)
 FILES_STORE = FILES_STORE_PATH
 IMAGES_STORE = FILES_STORE_PATH
 
+# 静态文件目录statics
+IMAGES_PATH = os.path.join(os.path.join(FILES_STORE_PATH, "statics"), "images")
+os.makedirs(IMAGES_PATH, 0o777, exist_ok=True)
+
 # download timeout
 DOWNLOAD_TIMEOUT = 30
 
