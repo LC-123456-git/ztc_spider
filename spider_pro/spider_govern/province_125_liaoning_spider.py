@@ -43,9 +43,6 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
         '候选人': '中标预告',
     }
     url_map = {
-        '招标预告': [
-            {'info_type_code': '1007', 'specific_category': ['征求社会公众意见公示']},  # 其他公告【征求社会公众意见公示】
-        ],
         '招标公告': [
             {'info_type_code': '1001', 'specific_category': []},  # 采购公告
             {'info_type_code': '1008', 'specific_category': []},  # 单一来源公示  文件通过验证码输入下载
@@ -58,6 +55,9 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
         ],
         '中标公告': [
             {'info_type_code': '1002', 'specific_category': ['中标公告', '成交公告']},  # 结果公告【中标公告】,结果公告【成交公告】
+        ],
+        '招标预告': [
+            {'info_type_code': '1007', 'specific_category': ['征求社会公众意见公示']},  # 其他公告【征求社会公众意见公示】
         ],
     }
     FORM_DATA = {
@@ -103,7 +103,7 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
         return matched, notice_type
 
     def start_requests(self):
-        n = 0
+        n = 100
         for notice_type, params in self.url_map.items():
             for param in params:
                 info_type_code = param['info_type_code']
@@ -112,7 +112,7 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
                 form_data = self.get_form_data(**{
                     'infoTypeCode': info_type_code,
                 })
-                n += 1
+                n -= 1
                 yield scrapy.FormRequest(url=self.query_url, formdata=form_data, callback=self.parse_list, meta={
                     'notice_type': notice_type,
                     'specific_category': specific_category,
@@ -134,22 +134,33 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
         max_page = math.ceil(total / int(row_count)) if row_count else 0
 
         # for page in range(3):
-        for page in range(max_page):
-            form_data = self.get_form_data(**{
-                'infoTypeCode': info_type_code,
-                'current': str(page + 1)
-            })
+        if all([self.start_time, self.end_time]):
+            for page in range(max_page):
+                form_data = self.get_form_data(**{
+                    'infoTypeCode': info_type_code,
+                    'current': str(page + 1)
+                })
 
-            judge_status = utils.judge_in_interval(
-                self.query_url, start_time=self.start_time, end_time=self.end_time, method='POST',
-                data=form_data, proxies=proxies, headers=headers,
-                rule='//rows/releaseDate/text()', doc_type='json'
-            )
-            if judge_status == 0:
-                break
-            elif judge_status == 2:
-                continue
-            else:
+                judge_status = utils.judge_in_interval(
+                    self.query_url, start_time=self.start_time, end_time=self.end_time, method='POST',
+                    data=form_data, proxies=proxies, headers=headers,
+                    rule='//rows/releaseDate/text()', doc_type='json'
+                )
+                if judge_status == 0:
+                    break
+                elif judge_status == 2:
+                    continue
+                else:
+                    yield scrapy.FormRequest(url=self.query_url, formdata=form_data, callback=self.parse_urls, meta={
+                        'notice_type': notice_type,
+                        'specific_category': specific_category,
+                    }, dont_filter=True, priority=(max_page - page) * 10)
+        else:
+            for page in range(max_page):
+                form_data = self.get_form_data(**{
+                    'infoTypeCode': info_type_code,
+                    'current': str(page + 1)
+                })
                 yield scrapy.FormRequest(url=self.query_url, formdata=form_data, callback=self.parse_urls, meta={
                     'notice_type': notice_type,
                     'specific_category': specific_category,
