@@ -853,13 +853,13 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id in ["5", "05"]:
+    elif area_id in ["5", "05", "121"]:
         area_dict = const.shan_xi_jing
         province_name = area_dict["name"]
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id in ["6", "06"]:
+    elif area_id in ["6", "06", "127"]:
         area_dict = const.nei_meng_gu
         province_name = area_dict["name"]
         province_code = area_dict["code"]
@@ -901,14 +901,14 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         elif re.search(province_name, data):
             deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
             return deal_area_dict
-    elif area_id == "16":
+    elif area_id in ["16"]:
         area_dict = const.an_hui
         province_name = area_dict["name"]
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
     elif area_id == "18":
-        area_dict = const.an_hui
+        area_dict = const.fu_jian
         province_name = area_dict["name"]
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
@@ -919,7 +919,7 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id in ["21", "68"]:
+    elif area_id in ["21", "68", "122"]:
         area_dict = const.shan_dong
         province_name = area_dict["name"]
         province_code = area_dict["code"]
@@ -931,8 +931,20 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
         return deal_area_dict
-    elif area_id == "26":
+    elif area_id in ["26", "119"]:
         area_dict = const.hu_bei
+        province_name = area_dict["name"]
+        province_code = area_dict["code"]
+        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
+        return deal_area_dict
+    elif area_id in ["28", "120"]:
+        area_dict = const.hu_nan
+        province_name = area_dict["name"]
+        province_code = area_dict["code"]
+        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
+        return deal_area_dict
+    elif area_id in ["126"]:
+        area_dict = const.hai_nan
         province_name = area_dict["name"]
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
