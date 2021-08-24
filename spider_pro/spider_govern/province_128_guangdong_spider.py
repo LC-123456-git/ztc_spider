@@ -26,7 +26,7 @@ class Province128GuangdongSpiderSpider(scrapy.Spider):
     query_url = 'https://gdgpo.czt.gd.gov.cn/freecms/rest/v1/notice/selectInfoMoreChannel.do?'
     base_url = 'http://gdgpo.czt.gd.gov.cn'
 
-    area_id = 123
+    area_id = 128
     keywords_map = {
         '采购意向|需求公示': '招标预告',
         '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
