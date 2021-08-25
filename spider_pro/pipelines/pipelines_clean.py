@@ -3,10 +3,6 @@
 # @Time : 2021/01/14
 # @Author : wwj
 # @Describe: notices item数据清洗
-import os
-import sys
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 import re
 import html
 import time
@@ -242,6 +238,7 @@ class CleanPipeline(object):
 
         except Exception as e:
             self.logger.error(f"文件服务替换失败 {e} ")
+            item['is_have_file'] = "2"
         return {
             "source_url": item["origin"],
             "title": item["title_name"],
@@ -508,7 +505,7 @@ class CleanPipeline(object):
                 'inspect_dept': inspect_dept,
                 'review_dept': review_dept,
                 'notice_nature': notice_nature,
-                 'bid_file': bid_file,
+                'bid_file': bid_file,
                 'bid_file_start_time': bid_file_start_time,
                 'bid_file_end_time': bid_file_end_time,
                 'apply_end_time': apply_end_time,
