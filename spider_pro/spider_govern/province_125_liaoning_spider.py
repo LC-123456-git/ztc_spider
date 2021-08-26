@@ -7,18 +7,15 @@ import re
 import random
 import os
 import time
-from datetime import datetime
 from lxml import etree
 import copy
 import json
 import math
 import html
-import requests
 import pytesseract
 from PIL import Image
 
 import scrapy
-from scrapy.http import headers
 
 from spider_pro import utils, constans, items
 

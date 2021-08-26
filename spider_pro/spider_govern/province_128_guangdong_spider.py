@@ -7,10 +7,6 @@
 import json
 import math
 import re
-import random
-import requests
-from datetime import datetime
-from lxml import etree
 
 import scrapy
 

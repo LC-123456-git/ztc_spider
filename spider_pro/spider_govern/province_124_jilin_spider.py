@@ -5,10 +5,6 @@
 # @author         :miaokela
 # @version        :1.0
 import re
-import random
-import requests
-from datetime import datetime
-from lxml import etree
 
 import scrapy
 

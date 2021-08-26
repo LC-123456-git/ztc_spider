@@ -27,6 +27,7 @@ async def main():
             "--disable-infobars",   # 不显示信息栏
             "--log-level=3",
             "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",
+            '--disable-gpu',  # macos上加上避免报错：system_snapshot_mac.cc(42)] sysctlbyname kern.nx: No such file or directory (2)
         ],
         "dumpio": True,
         "userDataDir": "",  # 当界面开多了时会卡住，设置这个参数就不会了
