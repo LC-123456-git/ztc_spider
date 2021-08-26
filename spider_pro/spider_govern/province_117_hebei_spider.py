@@ -127,7 +127,7 @@ class Province117HebeiSpiderSpider(scrapy.Spider):
         """
         status = 0
         headers = Province117HebeiSpiderSpider.get_headers(resp)
-        proxies = Province118HenanSpiderSpider.get_proxies(resp)
+        proxies = Province117HebeiSpiderSpider.get_proxies(resp)
         if all([self.start_time, self.end_time]):
             try:
                 text = ''
