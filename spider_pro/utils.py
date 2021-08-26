@@ -30,12 +30,18 @@ headers = {
 
 
 def get_headers(resp):
+    """
+    - 根据响应对象获取请求头
+    """
     default_headers = resp.request.headers
     headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
     return headers
 
 
 def get_proxies(resp):
+    """
+    - 根据响应对象获取代理
+    """
     proxy = resp.request.meta.get('proxy', None) if resp else None
     proxies = None
     if proxy:
@@ -52,7 +58,7 @@ def get_proxies(resp):
 
 def check_range_time(start_time, end_time, content_time):
     """
-    check if time between start_time and end_time
+    - 检查是否在某个区间内
     """
     msg = ''
     status = 1
@@ -80,6 +86,10 @@ def check_range_time(start_time, end_time, content_time):
 
 
 def get_page(url, method='GET', headers=None, proxies=None, data=None, set_decode=True):
+    """
+    - 获取页面信息
+    @set_decode: True 字符串 False 字节码
+    """
     content = ''
     if method == 'GET':
         content = requests.get(url=url, headers=headers, proxies=proxies).content
@@ -95,6 +105,19 @@ def judge_in_interval(url, start_time=None, end_time=None, method='GET', headers
     """
     翻页
     @rule: xpath解析规则
+    参考示例：
+    - JSON/XML:(xml只需要将doc_type修改成xml)
+        judge_status = utils.judge_in_interval(
+            self.query_url, start_time=self.start_time, end_time=self.end_time, method='POST',
+            data=form_data, proxies=proxies, headers=headers,
+            rule='//rows/releaseDate/text()', doc_type='json'
+        )
+    - HTML:
+        judge_status = utils.judge_in_interval(
+            self.query_url, start_time=self.start_time, end_time=self.end_time, method='POST',
+            data=c_form_data, proxies=proxies, headers=headers,
+            rule='//div[@id="list_right"]//li/span[last()]/text()[not(normalize-space()="")]'
+        )
     """
     status = 0
     if all([start_time, end_time]):
@@ -159,6 +182,9 @@ def get_keywords(cf, field):
 
 
 def init_yaml(doc_name, area_id):
+    """
+    - 获取yaml文件处理对象
+    """
     try:
         file_path = os.path.join(
             os.path.join(os.path.join(os.path.dirname(__file__), 'conf'), doc_name),
