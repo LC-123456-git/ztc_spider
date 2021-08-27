@@ -131,7 +131,8 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
         max_page = math.ceil(total / int(row_count)) if row_count else 0
 
         if all([self.start_time, self.end_time]):
-            for page in range(max_page):
+            # for page in range(max_page):
+            for page in range(2):
                 form_data = self.get_form_data(**{
                     'infoTypeCode': info_type_code,
                     'current': str(page + 1)
@@ -168,7 +169,7 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
         content = json.loads(resp.text)
         rows = content.get('rows', [])
 
-        for n, row in enumerate(rows):
+        for n, row in enumerate(rows[0:1]):
             info_id = row.get('id', '')
             title = row.get('title', '')
             info_type_name = row.get('infoTypeName', '')
@@ -178,6 +179,7 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
 
             if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                 # 判断当前文章类型
+                c_url = "http://www.ccgp-liaoning.gov.cn/portalindex.do?method=getPubInfoViewOpenNew&infoId=-6896d51f17b727b4e8b-79a7"
                 if not specific_category or info_type_name in specific_category:
                     yield scrapy.Request(url=c_url, callback=self.parse_detail, meta={
                         'notice_type': notice_type,
@@ -290,7 +292,18 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
                 content,
                 xpath_rule='//span[contains(text(), "公告信息")]'
             )
-
+            _, content = utils.remove_element_by_xpath(
+                content,
+                xpath_rule='//tr[@id="bidType"]'
+            )
+            _, content = utils.remove_element_by_xpath(
+                content,
+                xpath_rule='//tr[@id="planRel"]'
+            )
+            _, content = utils.remove_element_by_xpath(
+                content,
+                xpath_rule='//div[contains(./div/span/b/text(), "项目概况")]'
+            )
             # Title
             _, content = utils.remove_element_by_xpath(
                 content,

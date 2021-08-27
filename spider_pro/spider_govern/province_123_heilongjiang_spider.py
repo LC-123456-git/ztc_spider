@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# @file           :province_124_jilin_spider.py
+# @file           :province_123_heilongjiang_spider.py
 # @description    :黑龙江省政府采购网
-# @date           :2021/08/16
+# @date           :2021/08/27 15:09:42
 # @author         :miaokela
 # @version        :1.0
 import json
