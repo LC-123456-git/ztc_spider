@@ -131,8 +131,7 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
         max_page = math.ceil(total / int(row_count)) if row_count else 0
 
         if all([self.start_time, self.end_time]):
-            # for page in range(max_page):
-            for page in range(2):
+            for page in range(max_page):
                 form_data = self.get_form_data(**{
                     'infoTypeCode': info_type_code,
                     'current': str(page + 1)
@@ -179,7 +178,6 @@ class Province125LiaoningSpiderSpider(scrapy.Spider):
 
             if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                 # 判断当前文章类型
-                c_url = "http://www.ccgp-liaoning.gov.cn/portalindex.do?method=getPubInfoViewOpenNew&infoId=-6896d51f17b727b4e8b-79a7"
                 if not specific_category or info_type_name in specific_category:
                     yield scrapy.Request(url=c_url, callback=self.parse_detail, meta={
                         'notice_type': notice_type,
