@@ -1039,6 +1039,16 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         elif re.search(province_name, data):
             deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
             return deal_area_dict
+    elif area_id in ['42']:
+        area_dict = const.yun_nan
+        province_name = area_dict["name"]
+        province_code = area_dict["code"]
+        if re.search(province_name, info_source):
+            deal_area_dict = temp_area_data(province_name, province_code, area_dict, info_source)
+            return deal_area_dict
+        elif re.search(province_name, data):
+            deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
+            return deal_area_dict
     else:
         for province in const.PROVINCE_LIST:
             province_name = province["name"]
