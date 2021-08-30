@@ -14,10 +14,8 @@ from lxml import etree
 from scrapy.spiders import Spider
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
-from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, remove_specific_element
+from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, remove_specific_element, get_files
 
-
-# TODO 完成
 
 class MySpider(Spider):
     name = "province_51_bingtuan_spider"
@@ -25,7 +23,7 @@ class MySpider(Spider):
     allowed_domains = ['ggzy.xjbt.gov.cn']
     start_url = 'http://ggzy.xjbt.gov.cn'
     domain_url = "http://ggzy.xjbt.gov.cn/TPFront/jyxx/"
-    area_province = "兵团公共资源交易网"
+    area_province = "新疆兵团公共资源交易网"
 
     #招标公告
     list_notice_category_num = ['招标公告', '单一来源公示', '采购公告', '交易公告']
@@ -54,23 +52,20 @@ class MySpider(Spider):
 
 
     def start_requests(self):
-        info_url = 'http://ggzy.xjbt.gov.cn/TPFront/infodetail/?infoid=6bb01a91-3b84-490d-8daf-0de63e515b26&CategoryNum=004001002'
-        yield scrapy.Request(url=info_url, callback=self.parse_itme)
-        # yield scrapy.Request(url=self.domain_url, callback=self.parse_categoy_urls)
+        yield scrapy.Request(url=self.domain_url, callback=self.parse_categoy_urls)
 
     def parse_categoy_urls(self, response):
         try:
             li_list = response.xpath('//td[@class="LeftMenu"]/a')
             for li in li_list:
                 categoy = li.xpath('./font/text()').get()
-                classify_url_list = self.url + li.xpath('./@href').get()
-                # print(categoy, classify_url_list)
-                yield scrapy.Request(url=classify_url_list, callback=self.parse_categoy_data_urls,
+                classify_url_list = self.start_url + li.xpath('./@href').get()
+                yield scrapy.Request(url=classify_url_list, callback=self.parse_urls,
                                      meta={'categoy': categoy})
         except Exception as e:
-            self.logger.error(f"获取的url错误 {response.meta=} {e} {response.url=}")
+            self.logger.error(f"获取的parse_categoy_urls错误 {response.meta=} {e} {response.url=}")
 
-    def parse_categoy_data_urls(self, response):
+    def parse_urls(self, response):
         try:
             li_list = response.xpath('//td[@background="/TPFront/webimages/sub_01_bg.gif"]/table/tr')
             for li in li_list:
@@ -92,74 +87,67 @@ class MySpider(Spider):
                     else:
                         notice = ''
                     if notice:
-                        yield scrapy.Request(url=type_url, callback=self.parse_all_urls, priority=50,
+                        yield scrapy.Request(url=type_url, callback=self.parse_data_info, priority=50,
                                              meta={'categoy': response.meta.get('categoy'), 'notice': notice})
         except Exception as e:
-            self.logger.error(f"发起数据请求失败 {e} {response.url=}")
+            self.logger.error(f"发起数据请求失败parse_categoy_data_urls {e} {response.url=}")
 
-    def parse_all_urls(self, response):
+    def parse_data_info(self, response):
         try:
             urls_list = response.url + '?Paging={}'
             if self.enable_incr:
                 nums = 1
                 page = 1
+                count = 0
                 li_list = response.xpath('//div[@align="center"]/table/tr')[:-1:2]
                 for li in range(len(li_list)):
+                    title_name = li_list[li].xpath('./td[2]/a/@title').get()
+                    info_url = self.start_url + li_list[li].xpath('./td[2]/a/@href').get()
                     pub_time = li_list[li].xpath('./td[3]/text()').get()
                     pub_time = get_accurate_pub_time(pub_time)
                     x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
                     if x:
                         nums += 1
+                        count += 1
+                        yield scrapy.Request(url=info_url, callback=self.parse_itme, priority=(len(li_list)-count) * 10,
+                                             meta={'title_name': title_name,
+                                                   'pub_time': pub_time,
+                                                   'categoy': response.meta['categoy'],
+                                                   'notice': response.meta['notice']})
+
+                    if li >= nums:
                         total = int(len(li_list))
                         if total == None:
                             return
                         self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-                    if li >= nums:
                         page += 1
-                    else:
-                        page = 1
-                    yield scrapy.Request(url=urls_list.format(page), callback=self.parse_all_data, priority=100,
-                                         meta={'categoy': response.meta.get('categoy'),
-                                               'notice': response.meta['notice']})
+                        yield scrapy.Request(url=urls_list.format(page), callback=self.parse_data_info, priority=100,
+                                             meta={'categoy': response.meta.get('categoy'),
+                                                   'notice': response.meta['notice']})
 
             else:
                 pages = re.findall('/(\d+)', response.xpath('//div[@class="pagemargin"]/div/table/tr/td[@class="huifont"]/text()').get())[0]    #总页数
                 total = int(pages) * 20              #总条数
                 self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
                 for i in range(1, int(pages) + 1):
-                    yield scrapy.Request(url=urls_list.format(i), callback=self.parse_all_data, priority=100,
+                    yield scrapy.Request(url=urls_list.format(i), callback=self.parse_data, priority=100,
                                          meta={'categoy': response.meta.get('categoy'),
                                                'notice': response.meta['notice']})
 
         except Exception as e:
-            self.logger.error(f"发起数据请求失败 {e} {response.url=}")
+            self.logger.error(f"发起数据请求失败parse_all_urls {e} {response.url=}")
 
-    def parse_all_data(self, response):
+    def parse_data(self, response):
         try:
             name_list = response.xpath('//div[@align="center"]/table/tr')[:-1:2]
             for name in name_list:
-                title_url = self.url + name.xpath('./td[2]/a/@href').get()
+                title_url = self.start_url + name.xpath('./td[2]/a/@href').get()
                 title_name = name.xpath('./td[2]/a/@title').get()
                 pub_time = ''.join(name.xpath('./td[3]/text()').get()).replace('[', '').replace(']', '')
-                info_source = ''.join(name.xpath('./td[2]/a/font/text()').get()).replace('[', '').replace(']', '')
-                if re.search(r'变更|更正|澄清', title_name):                              # 招标变更
-                    notice_type = const.TYPE_ZB_ALTERATION
-                elif re.search(r'中标候选人公示', title_name):                               # 中标预告
-                    notice_type = const.TYPE_WIN_ADVANCE_NOTICE
-                elif re.search(r'资格预审', title_name):                                     # 资格预审结果公告
-                    notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
-                elif re.search(r'终止|中止|异常|废标|流标', title_name):                 # 招标异常
-                    notice_type = const.TYPE_ZB_ABNORMAL
-                elif re.search(r'终止|中止|异常|废标|流标', title_name):                  # 招标异常
-                    notice_type = const.TYPE_ZB_ABNORMAL
-                else:
-                    notice_type = response.meta['notice']
-                # print(title_url, title_name, notice_type, pub_time)
                 yield scrapy.Request(url=title_url, callback=self.parse_itme, priority=150,
                                      meta={'categoy': response.meta.get('categoy'),
-                                           'notice_type': notice_type,
+                                           'notice': response.meta['notice'],
                                            'pub_time': pub_time,
-                                           'info_source': info_source,
                                            'title_name': title_name})
 
         except Exception as e:
@@ -171,62 +159,72 @@ class MySpider(Spider):
         :param name: 类别
         :return: 回调函数
         """
-        if response.status == 200:
-            origin = response.url
-            if response.meta['info_source']:
-                info_source = f"{self.area_province}-{response.meta['info_source']}"
-            else:
-                info_source = self.area_province
-            pub_time = response.meta["pub_time"]
-            pub_time = get_accurate_pub_time(pub_time)
+        try:
+            if response.status == 200:
+                origin = response.url
+                title_name = response.meta['title_name']
+                if re.search(r'变更|更正|澄清', title_name):  # 招标变更
+                    notice_type = const.TYPE_ZB_ALTERATION
+                elif re.search(r'中标候选人公示', title_name):  # 中标预告
+                    notice_type = const.TYPE_WIN_ADVANCE_NOTICE
+                elif re.search(r'资格预审', title_name):  # 资格预审结果公告
+                    notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
+                elif re.search(r'终止|中止|异常|废标|流标', title_name):  # 招标异常
+                    notice_type = const.TYPE_ZB_ABNORMAL
+                elif re.search(r'终止|中止|异常|废标|流标', title_name):  # 招标异常
+                    notice_type = const.TYPE_ZB_ABNORMAL
+                else:
+                    notice_type = response.meta['notice']
+                pub_time = response.meta["pub_time"]
+                pub_time = get_accurate_pub_time(pub_time)
+                category = response.meta['categoy']
+                content = response.xpath('//table[@id="tblInfo"]').get()
+                # 去除 title
+                _, content = remove_specific_element(content, 'td', 'id', 'tdTitle')
+                # 去除 下方的文件
+                _, content = remove_specific_element(content, 'td', 'style', 'border:0;margin:0 auto;')
+                _, content = remove_specific_element(content, 'tr', 'id', 'trAttach')
 
-            title_name = response.meta['title_name']
-            category = response.meta['categoy']
-            notice_type = response.meta['notice_type']
-            content = response.xpath('//table[@id="tblInfo"]').get()
-            # 去除 title
-            _, content = remove_specific_element(content, 'td', 'id', 'tdTitle')
 
-            # 去除 下方的文件
-            _, content = remove_specific_element(content, 'td', 'style', 'border:0;margin:0 auto;')
+                files_text = etree.HTML(content)
+                keys_a = []
+                files_path = get_files(self.domain_url, origin, files_text, pub_time=pub_time, keys_a=keys_a)
+                # suffix_list = ['html', 'com', 'com/', 'cn', 'cn/']
+                # if files_cont.xpath('//table[@id="filedown"]//a/@href'):
+                #     cont_list = files_cont.xpath('//table[@id="filedown"]//a')
+                #     for cont in cont_list:
+                #         if cont.xpath('./@href'):
+                #             values = cont.xpath('./@href')[0]
+                #             if ''.join(values).split('.')[-1] not in suffix_list:
+                #                 if 'http://www' not in values:
+                #                     value = self.start_url + values
+                #                 else:
+                #                     value = values
+                #                 if cont.xpath('.//text()'):
+                #                     key = ''.join(cont.xpath('.//text()')).strip()
+                #                     files_path[key] = value
 
-            _, content = remove_specific_element(content, 'p', 'align', 'center', index=1)
+                notice_item = NoticesItem()
+                notice_item["origin"] = origin
+                notice_item["title_name"] = title_name
+                notice_item["pub_time"] = pub_time
+                notice_item["info_source"] = self.area_province
+                notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
+                notice_item["files_path"] = '' if not files_path else files_path
+                notice_item["content"] = content
+                notice_item["area_id"] = self.area_id
+                notice_item["notice_type"] = notice_type
+                notice_item["category"] = category
 
-            files_path = {}
-            files_cont = etree.HTML(content)
-            suffix_list = ['html', 'com', 'com/', 'cn', 'cn/']
-            if files_cont.xpath('//table[@id="filedown"]//a/@href'):
-                cont_list = files_cont.xpath('//table[@id="filedown"]//a')
-                for cont in cont_list:
-                    if cont.xpath('./@href'):
-                        values = cont.xpath('./@href')[0]
-                        if ''.join(values).split('.')[-1] not in suffix_list:
-                            if 'http://www' not in values:
-                                value = self.start_url + values
-                            else:
-                                value = values
-                            if cont.xpath('.//text()'):
-                                key = ''.join(cont.xpath('.//text()')).strip()
-                                files_path[key] = value
-
-            notice_item = NoticesItem()
-            notice_item["origin"] = origin
-            notice_item["title_name"] = title_name
-            notice_item["pub_time"] = pub_time
-            notice_item["info_source"] = info_source
-            notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
-            notice_item["files_path"] = 'NULL' if not files_path else files_path
-            notice_item["content"] = contents
-            notice_item["area_id"] = self.area_id
-            notice_item["notice_type"] = notice_type
-            notice_item["category"] = category
-
-            yield notice_item
+                yield notice_item
+        except Exception as e:
+            self.logger.error(f"发起数据请求失败parse_itme {e} {response.url=}")
 
 
 if __name__ == "__main__":
     from scrapy import cmdline
     cmdline.execute("scrapy crawl province_51_bingtuan_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_51_bingtuan_spider -a sdt=2021-07-20 -a edt=2021-08-20".split(" "))
 
 
 
