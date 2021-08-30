@@ -715,7 +715,8 @@ def get_files(domain_url, origin, files_text, start_urls=None, keys_a=None, **kw
     suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##', 'cn:8080/', 'htm', 'gif']
     keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
                  'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
-                 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX', 'bmp', 'XCZF', 'YCZF', 'XCCF']
+                 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX', 'bmp', 'XCZF', 'YCZF', 'XCCF',
+                 '（下载招标文件）']
     [keys_list.append(k_a) for k_a in keys_a]
     if files_text.xpath('//a/@href'):
         files_list = files_text.xpath('//a')
