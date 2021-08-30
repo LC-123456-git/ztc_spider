@@ -122,9 +122,39 @@ class Province129ShanxiSpiderSpider(scrapy.Spider):
                                     'notice_type': notice_type,
                                 },
                                 priority=(len(notice_els) - n) * (len(region_els) - r),
+                                cb_kwargs={
+                                    'formdata': form_data,
+                                    'notice_type_id': notice_type_id,
+                                }
                             )
 
-    def parse_list(self, resp):
+    def parse_list(self, resp, formdata, notice_type_id):
+        """
+        - 最大页数，翻页
+        """
+        max_page_txt = resp.xpath('//span[contains(@class, "glyphicon-fast-forward")]/parent::a/@href').get()
+        p_com = re.compile(r'(\d+)')
+        max_pages = p_com.findall(max_page_txt)
+        try:
+            max_page = int(max_pages[0])
+        except Exception as e:
+            self.logger.info('parse_list error:{}'.format(e))
+        else:
+            for page in range(1, max_page + 1):
+                formdata['page.pageNum'] = str(page)
+
+                yield scrapy.FormRequest(
+                    url=self.query_url.format(noticetype_id=notice_type_id), callback=self.parse_url,
+                    formdata=formdata, meta={
+                        'notice_type': resp.meta.get('notice_type', ''),
+                    },
+                    priority=(max_page - page) * 100,
+                )
+
+    def parse_url(self, resp):
+        """
+        - 获取详情页
+        """
         els = resp.xpath('//div[@class="list-box"]//tbody/tr')
         for n, el in enumerate(els):
             c_url = el.xpath('./td[3]/a/@href').get()
