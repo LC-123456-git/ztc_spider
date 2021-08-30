@@ -1190,7 +1190,7 @@ def deal_base_notices_data(data, is_hump=False):
 def get_limit_char_from_data(data, name, limit=9999, not_null=False):
     try:
         if data.get(name):
-            return data.get(name)[:limit]
+            return str(data.get(name))[:limit]
             # return pymysql.escape_string(data.get(name)[:limit])
         else:
             return "null" if not_null else ""
@@ -1317,6 +1317,8 @@ def get_accurate_pub_time(pub_time):
         pub_time_a = pub_time_str.group().replace("年", "-").replace("月", "-").replace("日", " ")
     elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日 \d{1,2}:\d{1,2}:\d{1,2}", pub_time):
         pub_time_a = pub_time_str.group().replace("年", "-").replace("月", "-").replace("日", " ")
+    elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日上午\d", pub_time):
+        pub_time_a = pub_time_str.group(0).replace("年", "-").replace("月", "-").replace("日", "").replace('上午', ' ')
     elif pub_time_str := re.search(r"\d{4}年\d{1,2}月\d{1,2}日", pub_time):
         pub_time_a = pub_time_str.group(0).replace("年", "-").replace("月", "-").replace("日", "")
     else:

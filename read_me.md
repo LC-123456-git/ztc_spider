@@ -157,10 +157,10 @@
 - [x] 122 山东省政府采购网 http://www.ccgp-shandong.gov.cn/
 - [x] 123 黑龙江政府采购网 http://www.ccgp-heilongj.gov.cn/
 - [x] 124 吉林省政府采购网 http://www.ccgp-jilin.gov.cn/
-- [] 125 辽宁省政府采购网 http://www.ccgp-liaoning.gov.cn/
-- [] 126 海南省政府采购网 https://www.ccgp-hainan.gov.cn/
-- [] 127 内蒙古自治区政府采购网 http://www.ccgp-neimenggu.gov.cn/
-- [] 128 广东政府采购网 https://gdgpo.czt.gd.gov.cn/
+- [x] 125 辽宁省政府采购网 http://www.ccgp-liaoning.gov.cn/
+- [x] 126 海南省政府采购网 https://www.ccgp-hainan.gov.cn/
+- [x] 127 内蒙古自治区政府采购网 http://www.ccgp-neimenggu.gov.cn/
+- [x] 128 广东政府采购网 https://gdgpo.czt.gd.gov.cn/
 - [] 129 陕西省政府采购网 http://www.ccgp-shaanxi.gov.cn/
 - [] 130 甘肃省政府采购网 http://www.ccgp-gansu.gov.cn/
 - [] 131 青海省政府采购网 http://www.ccgp-qinghai.gov.cn/
