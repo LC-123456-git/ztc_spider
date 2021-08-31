@@ -229,33 +229,34 @@ class Province128GuangdongSpiderSpider(scrapy.Spider):
 
         content = resp.xpath('//div[contains(@class, "info-article")]').get()
 
-        matched, match_notice_type = self.match_title(title_name)
-        if matched:
-            notice_type_ori = match_notice_type
+        if content:
+            matched, match_notice_type = self.match_title(title_name)
+            if matched:
+                notice_type_ori = match_notice_type
 
-        notice_types = list(
-            filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
-        )
+            notice_types = list(
+                filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
+            )
 
-        # 匹配文件
-        _, files_path = utils.catch_files(content, self.base_url, pub_time=pub_time, resp=resp)
+            # 匹配文件
+            _, files_path = utils.catch_files(content, self.base_url, pub_time=pub_time, resp=resp)
 
-        notice_item = items.NoticesItem()
-        notice_item["origin"] = resp.url
+            notice_item = items.NoticesItem()
+            notice_item["origin"] = resp.url
 
-        notice_item["title_name"] = title_name.strip() if title_name else ''
-        notice_item["pub_time"] = pub_time
+            notice_item["title_name"] = title_name.strip() if title_name else ''
+            notice_item["pub_time"] = pub_time
 
-        notice_item["info_source"] = self.basic_area
-        notice_item["is_have_file"] = constans.TYPE_HAVE_FILE if files_path else constans.TYPE_NOT_HAVE_FILE
-        notice_item["files_path"] = files_path
-        notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
-        notice_item["content"] = content
-        notice_item["area_id"] = self.area_id
-        notice_item["category"] = '政府采购'
-        print(resp.meta.get('pub_time'), resp.url)
+            notice_item["info_source"] = self.basic_area
+            notice_item["is_have_file"] = constans.TYPE_HAVE_FILE if files_path else constans.TYPE_NOT_HAVE_FILE
+            notice_item["files_path"] = files_path
+            notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
+            notice_item["content"] = content
+            notice_item["area_id"] = self.area_id
+            notice_item["category"] = '政府采购'
+            print(resp.meta.get('pub_time'), resp.url)
 
-        return notice_item
+            return notice_item
 
 
 if __name__ == "__main__":
