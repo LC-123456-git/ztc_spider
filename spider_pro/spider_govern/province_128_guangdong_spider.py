@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @file           :province_128_guangdong_spider.py
-# @description    :黑龙江省政府采购网
+# @description    :广东省政府采购网
 # @date           :2021/08/24
 # @author         :miaokela
 # @version        :1.0
