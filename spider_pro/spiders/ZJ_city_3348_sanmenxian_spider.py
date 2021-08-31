@@ -44,8 +44,6 @@ class MySpider(Spider):
 
     def __init__(self, *args, **kwargs):
         super(MySpider, self).__init__()
-        self.r_dict = {"col": "1", "appid": "1", "webid": "2760", "sourceContentType": "1",
-        "unitid": "4482116", "webname": "温岭市门户网站", "permissiontype": "0"}
         if kwargs.get("sdt") and kwargs.get("edt"):
             self.enable_incr = True
             self.sdt_time = kwargs.get("sdt")
@@ -58,42 +56,9 @@ class MySpider(Spider):
         self.class_list = ['gcjs', 'zfcg', 'cqjy', 'tdcr', 'tzljy', '/xzpt']
 
     def start_requests(self):
-        if self.enable_incr:
-            callback_url = self.extract_data_urls
-        else:
-            callback_url = self.parse_urls
-
         for item in self.class_list:
             url = self.list_url.format(item)
-            yield scrapy.Request(url=url, priority=2, callback=callback_url, meta={"classifyShow": item})
-
-
-    def extract_data_urls(self, response):
-        temp_list = response.xpath("recordset//record")
-        category_num = response.meta["afficheType"]
-        ttlrow = response.xpath("totalrecord/text()").get()
-        startrecord = 1
-        endrecord = 45
-        count_num = 0
-        for item in temp_list:
-            title_name = re.findall("title='(.*?)'", item.get())[0]
-            info_url = re.findall("href='(.*?)'", item.get())[0]
-            pub_time = re.findall("&gt;(\d+\-\d+\-\d+)&lt;", item.get())[0]
-            pub_time = get_accurate_pub_time(pub_time)
-            x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
-            if x:
-                count_num += 1
-                yield scrapy.Request(url=info_url, callback=self.parse_item,  dont_filter=True,
-                                     priority=10, meta={"category_num": category_num, "pub_time": pub_time,
-                                                        "title_name": title_name})
-            if count_num >= len(temp_list):
-                startrecord += 45
-                endrecord += 45
-                if endrecord <= int(ttlrow):
-                    temp_dict = self.r_dict | {"columnid": "{}".format(category_num)}
-                    yield scrapy.FormRequest(self.count_url.format(str(startrecord), str(endrecord)), formdata=temp_dict,
-                                             dont_filter=True, callback=self.parse_data_urls, priority=8, cookies=self.cookies_dict,
-                                             meta={"afficheType": category_num})
+            yield scrapy.Request(url=url, priority=2, callback=self.parse_urls, meta={"classifyShow": item})
 
     def parse_urls(self, response):
         try:
@@ -106,12 +71,44 @@ class MySpider(Spider):
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
     def parse_son_urls(self, response):
+        if self.enable_incr:
+            callback_url = self.extract_data_urls
+        else:
+            callback_url = self.get_pages_urls
         classifyShow = response.meta["classifyShow"]
         class_url_list = response.xpath("//dl[@class='content-left']//dd/a/@href").getall()
         for i, item in enumerate(class_url_list, start=1):
             class_url = self.domain_url + item
-            yield scrapy.Request(url=class_url, priority=4, callback=self.get_pages_urls,
+            yield scrapy.Request(url=class_url, priority=4, callback=callback_url,
                                  meta={"classifyShow": classifyShow, "info_num": i}, dont_filter=True)
+
+    def extract_data_urls(self, response):
+        url = response.url
+        notice_type = url.split("/")[-1]
+        classifyShow = response.meta["classifyShow"]
+        ttlrow = response.xpath("//ul[@class='pagination']/@data-pagecount").get()
+        count_num = 0
+        endrecord = 1
+        temp_list = response.xpath("//div[@class='list-news']/ul/li")
+        for item in temp_list:
+            info_url = item.xpath("./a/@href").get()
+            title_name = item.xpath("./a/@title").get()
+            pub_time = item.xpath("./a/span[@class='time']/text()").get()
+            pub_time = get_accurate_pub_time(pub_time)
+            x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
+            if x:
+                count_num += 1
+                info_url = self.domain_url + info_url
+                yield scrapy.Request(url=info_url, callback=self.parse_item,
+                                     priority=10, meta={"title_name": title_name, "pub_time": pub_time,
+                                                        "classifyShow": classifyShow, "notice_type": notice_type,
+                                                        "info_num": response.meta["info_num"]})
+            if count_num >= len(temp_list):
+                endrecord += 1
+                if endrecord <= int(ttlrow):
+                    page_url = url + "?pageIndex={}".format(endrecord)
+                    yield scrapy.Request(url=page_url, priority=6, callback=self.get_page_urls, dont_filter=True,
+                                 meta={"classifyShow": classifyShow, "notice_type": notice_type, "info_num": response.meta["info_num"]})
 
     def get_pages_urls(self, response):
         url = response.url
@@ -202,6 +199,8 @@ class MySpider(Spider):
                 notice_type = const.TYPE_ZB_ABNORMAL
             elif re.search(r"变更|更正|澄清|修正|补充|延期|取消", title_name):
                 notice_type = const.TYPE_ZB_ALTERATION
+            elif re.search(r"测试项目", title_name):
+                notice_type = const.TYPE_UNKNOWN_NOTICE
 
             if classifyshow == "gcjs":
                 classifyShow = "工程建设"
@@ -237,5 +236,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    # cmdline.execute("scrapy crawl ZJ_city_3348_sanmenxian_spider -a sdt=2020-01-04 -a edt=2020-01-04".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3348_sanmenxian_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3348_sanmenxian_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3348_sanmenxian_spider".split(" "))

@@ -15,7 +15,7 @@ from scrapy.spiders import Spider
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
 
-from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_time_in_interval,remove_specific_element
+from spider_pro.utils import get_accurate_pub_time, judge_dst_time_in_interval,remove_specific_element, file_notout_time
 
 
 class MySpider(Spider):
@@ -47,11 +47,11 @@ class MySpider(Spider):
             callback_url = self.extract_data_urls
         else:
             callback_url = self.parse_urls
-        # for item in self.type_list:
-        item = "6600801"
-        temp_dict = self.r_dict | {"unitid": "{}".format(item)}
-        yield scrapy.FormRequest(self.count_url.format("1", "60"), formdata=temp_dict, priority=2, cookies=self.cookies_dict,
-                                 callback=callback_url, meta={"afficheType": str(item)})
+        for item in self.type_list:
+        # item = "6600801"
+            temp_dict = self.r_dict | {"unitid": "{}".format(item)}
+            yield scrapy.FormRequest(self.count_url.format("1", "60"), formdata=temp_dict, priority=2, cookies=self.cookies_dict,
+                                     callback=callback_url, meta={"afficheType": str(item)})
 
     def extract_data_urls(self, response):
         temp_list = response.xpath("recordset//record")
@@ -61,9 +61,9 @@ class MySpider(Spider):
         endrecord = 60
         count_num = 0
         for item in temp_list:
-            info_url = re.findall("href='(.*?)'", item.get())[0]
+            info_url = re.findall('href="(.*?)"', item.get())[0]
             pub_time = re.findall("&gt;(\d+\-\d+\-\d+)&lt;", item.get())[0]
-            pub_time = get_accurate_pub_time(pub_time)
+            info_url = self.domain_url + info_url
             x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
             if x:
                 count_num += 1
@@ -133,11 +133,12 @@ class MySpider(Spider):
             _, content = remove_specific_element(content, 'div', 'class', 'fare', index=0)
             content = re.sub("浏览次数: ", "", re.sub("分享到：", "", content))
             files_path = {}
-            if file_list := re.findall("""附件:<a href="(.*)"><strong>""", content):
-                file_suffix = file_list[0].split(".")[1]
-                file_url = self.domain_url + file_list[0]
-                file_name = "附件下载." + file_suffix
-                files_path[file_name] = file_url
+            if file_notout_time(pub_time):
+                if file_list := re.findall("""附件:<a href="(.*)"><strong>""", content):
+                    file_suffix = file_list[0].split(".")[1]
+                    file_url = self.domain_url + file_list[0]
+                    file_name = "附件下载." + file_suffix
+                    files_path[file_name] = file_url
 
             if re.search(r"单一来源|询价|竞争性谈判|竞争性磋商|招标公告", title_name):
                 notice_type = const.TYPE_ZB_NOTICE
@@ -147,8 +148,6 @@ class MySpider(Spider):
                 notice_type = const.TYPE_ZB_ABNORMAL
             elif re.search(r"变更|更正|澄清|修正|补充|延期|取消", title_name):
                 notice_type = const.TYPE_ZB_ALTERATION
-            elif re.search(r"候选人|中标公示", title_name):
-                notice_type = const.TYPE_WIN_ADVANCE_NOTICE
             elif re.search(r"结果公告|出让结果", title_name):
                 notice_type = const.TYPE_WIN_NOTICE
             else:
@@ -182,5 +181,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    # cmdline.execute("scrapy crawl ZJ_city_3359_kechengqu_spider -a sdt=2020-01-04 -a edt=2020-01-04".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3359_kechengqu_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3359_kechengqu_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3359_kechengqu_spider".split(" "))

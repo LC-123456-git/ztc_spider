@@ -14,8 +14,7 @@ from lxml import etree
 from scrapy.spiders import Spider
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
-
-from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_time_in_interval,remove_specific_element
+from spider_pro.utils import get_accurate_pub_time, judge_dst_time_in_interval, remove_specific_element, file_notout_time
 
 
 class MySpider(Spider):
@@ -150,11 +149,12 @@ class MySpider(Spider):
             content = re.sub("浏览次数:", "", content)
 
             files_path = {}
-            if file_list := re.findall("""附件:<a href="(.*)"><strong>""", content):
-                file_suffix = file_list[0].split(".")[1]
-                file_url = self.domain_url + file_list[0]
-                file_name = "附件下载." + file_suffix
-                files_path[file_name] = file_url
+            if file_notout_time(pub_time):
+                if file_list := re.findall("""附件:<a href="(.*)"><strong>""", content):
+                    file_suffix = file_list[0].split(".")[1]
+                    file_url = self.domain_url + file_list[0]
+                    file_name = "附件下载." + file_suffix
+                    files_path[file_name] = file_url
 
             if category_num in self.list_notice_category_num:
                 notice_type = const.TYPE_ZB_NOTICE
@@ -169,13 +169,13 @@ class MySpider(Spider):
             else:
                 notice_type = const.TYPE_UNKNOWN_NOTICE
 
-            if re.search(r"招标|谈判|磋商|出让|招租", title_name):
+            if re.search(r"单一来源|询价|竞争性谈判|竞争性磋商|招标公告", title_name):
                 notice_type = const.TYPE_ZB_NOTICE
-            elif re.search(r"候选人|评标结果", title_name):
+            elif re.search(r"候选人|中标公示", title_name):
                 notice_type = const.TYPE_WIN_ADVANCE_NOTICE
             elif re.search(r"终止|中止|流标|废标|异常", title_name):
                 notice_type = const.TYPE_ZB_ABNORMAL
-            elif re.search(r"变更|更正|澄清|修正|补充", title_name):
+            elif re.search(r"变更|更正|澄清|修正|补充|取消|延期", title_name):
                 notice_type = const.TYPE_ZB_ALTERATION
 
             if category_num in ["1229425427", "1229425428", "1229425429", "1229425430", "1229425431", "1229425432"]:
@@ -206,5 +206,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    # cmdline.execute("scrapy crawl ZJ_city_3357_qujiangqu_spider -a sdt=2020-01-04 -a edt=2020-01-04".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3357_qujiangqu_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3357_qujiangqu_spider -a sdt=2021-08-25 -a edt=2021-08-30".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3357_qujiangqu_spider".split(" "))

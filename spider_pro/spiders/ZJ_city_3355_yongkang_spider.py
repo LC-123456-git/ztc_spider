@@ -15,7 +15,7 @@ from scrapy.spiders import Spider
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
 
-from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_time_in_interval,remove_specific_element
+from spider_pro.utils import get_accurate_pub_time, file_notout_time, judge_dst_time_in_interval,remove_specific_element
 
 
 class MySpider(Spider):
@@ -72,10 +72,9 @@ class MySpider(Spider):
         endrecord = 45
         count_num = 0
         for item in temp_list:
-            title_name = re.findall("title='(.*?)'", item.get())[0]
-            info_url = re.findall("href='(.*?)'", item.get())[0]
-            pub_time = re.findall("&gt;(\d+\-\d+\-\d+)&lt;", item.get())[0]
-            pub_time = get_accurate_pub_time(pub_time)
+            title_name = re.findall('title="(.*?)"', item.get())[0]
+            info_url = re.findall('href="(.*?)"', item.get())[0]
+            pub_time = re.findall('\d+\-\d+\-\d+', item.get())[0]
             x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
             if x:
                 count_num += 1
@@ -143,45 +142,46 @@ class MySpider(Spider):
             _, contents = remove_specific_element(content, 'div', 'class', 'clearfix', index=0)
             files_path = {}
             try:
-                if file_list := re.findall("""href="(/module/download/downfile.jsp.*?)\"""", content):
-                    for i, file_url_str in enumerate(file_list):
-                        if re.search("反馈表.doc", content) and i == 0:
-                            file_name = "反馈表.doc"
-                        else:
-                            file_name = "附件{}".format(i) + ".doc"
-                        file_url = self.domain_url + re.sub("amp;", "", file_url_str)
-                        files_path[file_name] = file_url
+                if file_notout_time(pub_time):
+                    if file_list := re.findall("""href="(/module/download/downfile.jsp.*?)\"""", content):
+                        for i, file_url_str in enumerate(file_list):
+                            if re.search("反馈表.doc", content) and i == 0:
+                                file_name = "反馈表.doc"
+                            else:
+                                file_name = "附件{}".format(i) + ".doc"
+                            file_url = self.domain_url + re.sub("amp;", "", file_url_str)
+                            files_path[file_name] = file_url
 
-                # if file_info := response.xpath("//div[@class='article-fj']"):
-                #     file_url = file_info.xpath("./a/@href").get()
-                #     file_url = self.domain_url + file_url
-                #     file_name = file_info.xpath("./a/text()").get() + ".doc"
-                #     files_path[file_name] = file_url
-                # if picture_list := re.findall('src="(/picture/.*?)"', content):
-                #     file_suffix = picture_list[0].split(".")[1]
-                #     file_url = self.domain_url + picture_list[0]
-                #     file_name = "picture." + file_suffix
-                #     files_path[file_name] = file_url
-                #
-                if picture_url := response.xpath("//div[@class='con_article-con']/img/@src").get():
-                    file_name = "picture.jpg"
-                    files_path[file_name] = picture_url
-                #
-                # if file_list := re.findall("""<a href="(/module/download/downfile.jsp.*?)">.*?png">(.*?)</a>""", content):
-                #     for file_url_str in file_list:
-                #         file_name = file_url_str[1]
-                #         file_url = self.domain_url + re.sub("amp;", "", file_url_str[0])
-                #         files_path[file_name] = file_url
-                if file_list := re.findall("""href="(http://www.jhykztb.cn/fileserver//down.*?)".*?tag">(.*?)</a>""", content):
-                    for file_url_str in file_list:
-                        file_name = file_url_str[1]
-                        file_url = re.sub("amp;", "", file_url_str[0])
-                        files_path[file_name] = file_url
-                if file_list := re.findall("""href="(http://www.jhykztb.cn/fileserver//down.*?)">(.*?)</a>""", content):
-                    for file_url_str in file_list:
-                        file_name = file_url_str[1]
-                        file_url = re.sub("amp;", "", file_url_str[0])
-                        files_path[file_name] = file_url
+                    # if file_info := response.xpath("//div[@class='article-fj']"):
+                    #     file_url = file_info.xpath("./a/@href").get()
+                    #     file_url = self.domain_url + file_url
+                    #     file_name = file_info.xpath("./a/text()").get() + ".doc"
+                    #     files_path[file_name] = file_url
+                    # if picture_list := re.findall('src="(/picture/.*?)"', content):
+                    #     file_suffix = picture_list[0].split(".")[1]
+                    #     file_url = self.domain_url + picture_list[0]
+                    #     file_name = "picture." + file_suffix
+                    #     files_path[file_name] = file_url
+                    #
+                    if picture_url := response.xpath("//div[@class='con_article-con']/img/@src").get():
+                        file_name = "picture.jpg"
+                        files_path[file_name] = picture_url
+                    #
+                    # if file_list := re.findall("""<a href="(/module/download/downfile.jsp.*?)">.*?png">(.*?)</a>""", content):
+                    #     for file_url_str in file_list:
+                    #         file_name = file_url_str[1]
+                    #         file_url = self.domain_url + re.sub("amp;", "", file_url_str[0])
+                    #         files_path[file_name] = file_url
+                    if file_list := re.findall("""href="(http://www.jhykztb.cn/fileserver//down.*?)".*?tag">(.*?)</a>""", content):
+                        for file_url_str in file_list:
+                            file_name = file_url_str[1]
+                            file_url = re.sub("amp;", "", file_url_str[0])
+                            files_path[file_name] = file_url
+                    if file_list := re.findall("""href="(http://www.jhykztb.cn/fileserver//down.*?)">(.*?)</a>""", content):
+                        for file_url_str in file_list:
+                            file_name = file_url_str[1]
+                            file_url = re.sub("amp;", "", file_url_str[0])
+                            files_path[file_name] = file_url
 
             except Exception as e:
                 print(e)
@@ -235,5 +235,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    # cmdline.execute("scrapy crawl ZJ_city_3355_yongkang_spider -a sdt=2020-01-04 -a edt=2020-01-04".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3355_yongkang_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3355_yongkang_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3355_yongkang_spider".split(" "))

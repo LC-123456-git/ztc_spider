@@ -15,7 +15,7 @@ from scrapy.spiders import Spider
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
 
-from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_time_in_interval,remove_specific_element
+from spider_pro.utils import get_accurate_pub_time, judge_dst_time_in_interval, file_notout_time
 
 
 class MySpider(Spider):
@@ -73,9 +73,10 @@ class MySpider(Spider):
         endrecord = 45
         count_num = 0
         for item in temp_list:
-            title_name = re.findall("title='(.*?)'", item.get())[0]
-            info_url = re.findall("href='(.*?)'", item.get())[0]
-            pub_time = re.findall("&gt;(\d+\-\d+\-\d+)&lt;", item.get())[0]
+            title_name = re.findall('title="(.*?)"', item.get())[0]
+            info_url = re.findall('href="(.*?)"', item.get())[0]
+            info_url = re.sub("cnart", "cn/art", info_url)
+            pub_time = re.findall('\d+\-\d+\-\d+', item.get())[0]
             pub_time = get_accurate_pub_time(pub_time)
             x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
             if x:
@@ -126,7 +127,7 @@ class MySpider(Spider):
                 info_url = re.findall('href="(.*?)"', item.get())[0]
                 info_url = re.sub("cnart", "cn/art", info_url)
                 pub_time = re.findall('\d+\-\d+\-\d+', item.get())[0]
-                info_url = "http://www.jindong.gov.cn/art/2021/7/9/art_1229500298_3881415.html"
+                # info_url = "http://www.jindong.gov.cn/art/2021/7/9/art_1229500298_3881415.html"
                 yield scrapy.Request(url=info_url, callback=self.parse_item, dont_filter=True,
                                      priority=10, meta={"category_num": category_num, "pub_time": pub_time,
                                            "title_name": title_name})
@@ -144,31 +145,32 @@ class MySpider(Spider):
             content = response.xpath("//div[@class='body']").get()
             files_path = {}
             try:
-                if picture_list := re.findall('src="(/picture/.*?)"', content):
-                    file_suffix = picture_list[0].split(".")[1]
-                    file_url = self.domain_url + picture_list[0]
-                    file_name = "picture." + file_suffix
-                    files_path[file_name] = file_url
+                if file_notout_time(pub_time):
+                    if picture_list := re.findall('src="(/picture/.*?)"', content):
+                        file_suffix = picture_list[0].split(".")[1]
+                        file_url = self.domain_url + picture_list[0]
+                        file_name = "picture." + file_suffix
+                        files_path[file_name] = file_url
 
-                if picture_url := response.xpath("//div[@class='body']/img/@src").get():
-                    file_name = "picture.jpg"
-                    files_path[file_name] = picture_url
+                    if picture_url := response.xpath("//div[@class='body']/img/@src").get():
+                        file_name = "picture.jpg"
+                        files_path[file_name] = picture_url
 
-                if file_list := re.findall("""<a href="(/module/download/downfile.jsp.*?)">.*?png">(.*?)</a>""", content):
-                    for file_url_str in file_list:
-                        file_name = file_url_str[1]
-                        file_url = self.domain_url + re.sub("amp;", "", file_url_str[0])
-                        files_path[file_name] = file_url
-                elif file_list := re.findall("""href="(http://www.jdjyzx.cn/fileserver//down.*?)">(.*?)</a>""", content):
-                    for file_url_str in file_list:
-                        file_name = file_url_str[1]
-                        file_url = re.sub("amp;", "", file_url_str[0])
-                        files_path[file_name] = file_url
-                elif file_list := re.findall("""href="(http://www.jdjyzx.cn:10086/fileserver//down.*?)">(.*?)</a>""", content):
-                    for file_url_str in file_list:
-                        file_name = file_url_str[1]
-                        file_url = re.sub("amp;", "", file_url_str[0])
-                        files_path[file_name] = file_url
+                    if file_list := re.findall("""<a href="(/module/download/downfile.jsp.*?)">.*?png">(.*?)</a>""", content):
+                        for file_url_str in file_list:
+                            file_name = file_url_str[1]
+                            file_url = self.domain_url + re.sub("amp;", "", file_url_str[0])
+                            files_path[file_name] = file_url
+                    elif file_list := re.findall("""href="(http://www.jdjyzx.cn/fileserver//down.*?)">(.*?)</a>""", content):
+                        for file_url_str in file_list:
+                            file_name = file_url_str[1]
+                            file_url = re.sub("amp;", "", file_url_str[0])
+                            files_path[file_name] = file_url
+                    elif file_list := re.findall("""href="(http://www.jdjyzx.cn:10086/fileserver//down.*?)">(.*?)</a>""", content):
+                        for file_url_str in file_list:
+                            file_name = file_url_str[1]
+                            file_url = re.sub("amp;", "", file_url_str[0])
+                            files_path[file_name] = file_url
             except Exception as e:
                 print(e)
             if category_num in self.list_advance_notice_num:
@@ -188,7 +190,7 @@ class MySpider(Spider):
                 notice_type = const.TYPE_ZB_NOTICE
             elif re.search(r"采购意向|需求公示", title_name):
                 notice_type = const.TYPE_ZB_ADVANCE_NOTICE
-            elif re.search(r"候选人|评标结果", title_name):
+            elif re.search(r"候选人", title_name):
                 notice_type = const.TYPE_WIN_ADVANCE_NOTICE
             elif re.search(r"终止|中止|流标|废标|异常", title_name):
                 notice_type = const.TYPE_ZB_ABNORMAL
@@ -222,5 +224,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    # cmdline.execute("scrapy crawl ZJ_city_3352_jindongqu_spider -a sdt=2020-01-04 -a edt=2020-01-04".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3352_jindongqu_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3352_jindongqu_spider -a sdt=2021-08-03 -a edt=2021-08-30".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3352_jindongqu_spider".split(" "))
