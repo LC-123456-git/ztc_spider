@@ -15,7 +15,7 @@ from scrapy.spiders import Spider
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
 
-from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_time_in_interval,remove_specific_element
+from spider_pro.utils import judge_dst_time_in_interval, file_notout_time
 
 
 class MySpider(Spider):
@@ -72,10 +72,10 @@ class MySpider(Spider):
         endrecord = 45
         count_num = 0
         for item in temp_list:
-            title_name = re.findall("title='(.*?)'", item.get())[0]
-            info_url = re.findall("href='(.*?)'", item.get())[0]
-            pub_time = re.findall("&gt;(\d+\-\d+\-\d+)&lt;", item.get())[0]
-            pub_time = get_accurate_pub_time(pub_time)
+            title_name = re.findall('title="(.*?)"', item.get())[0]
+            info_url = re.findall('href="(.*?)"', item.get())[0]
+            info_url = self.domain_url + "/" + info_url
+            pub_time = re.findall('\d+\-\d+\-\d+', item.get())[0]
             x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
             if x:
                 count_num += 1
@@ -143,21 +143,22 @@ class MySpider(Spider):
             content = response.xpath("//div[@class='Main-p floatL']").get()
             files_path = {}
             try:
-                if file_list := response.xpath("//div[@class='Main-p floatL']//a"):
-                    for item in file_list:
-                        if file_url := item.xpath("./@href").get():
-                            if re.findall("""/module/download/downfile.jsp.*""", file_url):
-                                file_name = item.xpath("./text()").get()
-                                file_url = self.domain_url + file_url
-                                files_path[file_name] = file_url
-                            elif re.findall('http://ggzyjy.dongyang.gov.cn/fileserver//down.*', file_url):
-                                file_name = item.xpath("./text()").get()
-                                # file_url = file_url
-                                files_path[file_name] = file_url
-                # 招标文件正文
-                if picture_url := response.xpath("//div[@class='Main-p floatL']//img[@class='Wzimg']/@src").get():
-                    file_name = "picture.jpg"
-                    files_path[file_name] = picture_url
+                if file_notout_time(pub_time):
+                    if file_list := response.xpath("//div[@class='Main-p floatL']//a"):
+                        for item in file_list:
+                            if file_url := item.xpath("./@href").get():
+                                if re.findall("""/module/download/downfile.jsp.*""", file_url):
+                                    file_name = item.xpath("./text()").get()
+                                    file_url = self.domain_url + file_url
+                                    files_path[file_name] = file_url
+                                elif re.findall('http://ggzyjy.dongyang.gov.cn/fileserver//down.*', file_url):
+                                    file_name = item.xpath("./text()").get()
+                                    # file_url = file_url
+                                    files_path[file_name] = file_url
+                    # 招标文件正文
+                    if picture_url := response.xpath("//div[@class='Main-p floatL']//img[@class='Wzimg']/@src").get():
+                        file_name = "picture.jpg"
+                        files_path[file_name] = picture_url
                 # if QR_code_list := re.findall('src="(/picture.*?)"', content):
                 #     for item in QR_code_list:
                 #         QRcode_url = self.domain_url + item
@@ -217,5 +218,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    # cmdline.execute("scrapy crawl ZJ_city_3354_dongyang_spider -a sdt=2020-01-04 -a edt=2020-01-04".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3354_dongyang_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3354_dongyang_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3354_dongyang_spider".split(" "))

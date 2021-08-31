@@ -14,7 +14,7 @@ from scrapy.spiders import Spider
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
 
-from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_time_in_interval,remove_specific_element,file_notout_time
+from spider_pro.utils import get_accurate_pub_time, judge_dst_time_in_interval, file_notout_time
 
 
 class MySpider(Spider):
@@ -76,16 +76,18 @@ class MySpider(Spider):
         endrecord = 45
         count_num = 0
         for item in temp_list:
-            title_name = re.findall("title='(.*?)'", item.get())[0]
-            info_url = re.findall("href='(.*?)'", item.get())[0]
-            pub_time = re.findall("&gt;(\d+\-\d+\-\d+)&lt;", item.get())[0]
-            pub_time = get_accurate_pub_time(pub_time)
+            # title_name = re.findall("title='(.*?)'", item.get())[0]
+            info_url = re.findall('href="(.*?)"', item.get())[0]
+            if not re.search("http://www.wuch.gov.cn", info_url):
+                info_url = self.domain_url + "/" + info_url
+            else:
+                info_url = re.sub("cnart", "cn/art", info_url)
+            pub_time = re.findall('\d+\-\d+\-\d+', re.findall('&gt;\d+\-\d+\-\d+&lt', item.get())[0])[0]
             x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
             if x:
                 count_num += 1
                 yield scrapy.Request(url=info_url, callback=self.parse_item,  dont_filter=True,
-                                     priority=10, meta={"category_num": category_num, "pub_time": pub_time,
-                                                        "title_name": title_name})
+                                     priority=10, meta={"category_num": category_num, "pub_time": pub_time})
             if count_num >= len(temp_list):
                 startrecord += 45
                 endrecord += 45
@@ -210,7 +212,7 @@ class MySpider(Spider):
                 notice_type = const.TYPE_ZB_NOTICE
             elif re.search(r"采购意向|需求公示", title_name):
                 notice_type = const.TYPE_ZB_ADVANCE_NOTICE
-            elif re.search(r"候选人|评标结果", title_name):
+            elif re.search(r"候选人", title_name):
                 notice_type = const.TYPE_WIN_ADVANCE_NOTICE
             elif re.search(r"终止|中止|流标|废标|异常", title_name):
                 notice_type = const.TYPE_ZB_ABNORMAL
@@ -243,5 +245,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    # cmdline.execute("scrapy crawl ZJ_city_3351_wucheng_spider -a sdt=2020-01-04 -a edt=2020-01-04".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3351_wucheng_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3351_wucheng_spider -a sdt=2021-08-03 -a edt=2021-08-30".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3351_wucheng_spider".split(" "))
