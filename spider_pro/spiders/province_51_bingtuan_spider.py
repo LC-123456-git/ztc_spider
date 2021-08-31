@@ -165,7 +165,7 @@ class MySpider(Spider):
                 title_name = response.meta['title_name']
                 if re.search(r'变更|更正|澄清', title_name):  # 招标变更
                     notice_type = const.TYPE_ZB_ALTERATION
-                elif re.search(r'中标候选人公示', title_name):  # 中标预告
+                elif re.search(r'中标候选人公示|中标公示', title_name):  # 中标预告
                     notice_type = const.TYPE_WIN_ADVANCE_NOTICE
                 elif re.search(r'资格预审', title_name):  # 资格预审结果公告
                     notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
@@ -189,20 +189,6 @@ class MySpider(Spider):
                 files_text = etree.HTML(content)
                 keys_a = []
                 files_path = get_files(self.domain_url, origin, files_text, pub_time=pub_time, keys_a=keys_a)
-                # suffix_list = ['html', 'com', 'com/', 'cn', 'cn/']
-                # if files_cont.xpath('//table[@id="filedown"]//a/@href'):
-                #     cont_list = files_cont.xpath('//table[@id="filedown"]//a')
-                #     for cont in cont_list:
-                #         if cont.xpath('./@href'):
-                #             values = cont.xpath('./@href')[0]
-                #             if ''.join(values).split('.')[-1] not in suffix_list:
-                #                 if 'http://www' not in values:
-                #                     value = self.start_url + values
-                #                 else:
-                #                     value = values
-                #                 if cont.xpath('.//text()'):
-                #                     key = ''.join(cont.xpath('.//text()')).strip()
-                #                     files_path[key] = value
 
                 notice_item = NoticesItem()
                 notice_item["origin"] = origin
