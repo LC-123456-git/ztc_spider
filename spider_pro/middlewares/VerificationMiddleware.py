@@ -13,7 +13,7 @@ from scrapy.downloadermiddlewares.retry import RetryMiddleware
 
 class VerificationMiddleware(RetryMiddleware):
 
-    def __init__(self, logger, **kwargs):
+    def __init__(self, kwargs, logger):
         super(VerificationMiddleware, self).__init__(kwargs)
         self.logger = logger
         self.url = 'http://www.ccgp-ningxia.gov.cn/public/NXGPPNEW/dynamic/contents/CGGG/index.jsp?cid=312&sid=1'
@@ -21,17 +21,13 @@ class VerificationMiddleware(RetryMiddleware):
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36'
         }
-        self.retry_dict = kwargs.get("LOCAL_PROXY_RETRY_TIMES_DICT")
-        self.need_add_dict = {
-            'new_dict',
-        }
         self.settings = kwargs
 
     @classmethod
     def from_crawler(cls, crawler):
         settings = crawler.settings
         logger = crawler.spider.logger
-        return cls(logger, **settings)
+        return cls(settings, logger)
 
     def get_auth_code(self):
         img_content = requests.get(url=self.URL, headers=self.headers)
