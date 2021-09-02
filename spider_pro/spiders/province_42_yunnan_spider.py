@@ -60,6 +60,13 @@ class Province42YunnanSpiderSpider(scrapy.Spider):
     }
     area_id = 42
     basic_area = '云南省公共资源中心'
+    custom_settings = {
+        'DOWNLOADER_MIDDLEWARES': {
+            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+            'spider_pro.middlewares.ProxyMiddlewareWithoutMaintain.ProxyMiddleware': 100,
+        }
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__()
