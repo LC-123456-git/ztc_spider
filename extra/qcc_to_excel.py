@@ -5,7 +5,7 @@
 from datetime import datetime
 import pandas as pd
 import pymysql
-import re
+
 
 
 class QCCToExcel(object):

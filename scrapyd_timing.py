@@ -154,6 +154,7 @@ if __name__ == "__main__":
         "province_30_guangdong_spider",
         # "province_40_sichuan_spider",
         "province_41_guizhou_spider",
+        "province_42_yunnan_spider",
         "province_44_xizang_spider",
         "province_45_shanxi_spider",
         # "province_49_ningxia_spider",
@@ -226,6 +227,9 @@ if __name__ == "__main__":
 
         # "province_125_liaoning_spider",
         "province_128_guangdong_spider",
+
+        "province_129_shanxi_spider",
+        "province_130_gansu_spider",
     ]
 
     # 优先判断运行状态

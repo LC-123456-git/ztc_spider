@@ -123,7 +123,7 @@ class Province129ShanxiSpiderSpider(scrapy.Spider):
                                 },
                                 priority=(len(notice_els) - n) * (len(region_els) - r),
                                 cb_kwargs={
-                                    'formdata': form_data,
+                                    'formdata': copy.deepcopy(form_data),
                                     'notice_type_id': notice_type_id,
                                 }
                             )
