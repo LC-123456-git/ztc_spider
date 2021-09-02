@@ -6,6 +6,7 @@
 # @version        :1.0
 import copy
 import re
+import requests
 
 import scrapy
 
@@ -30,10 +31,11 @@ class Province130GansuSpiderSpider(scrapy.Spider):
         '候选人': '中标预告',
     }
     notice_map = {
-        '招标公告': ['公开招标', '邀请招标', '询价招标', '竞争性谈判', '竞争性磋商', '单一来源公示'],
-        '资格预审结果公告': ['资格预审公告'],
-        '招标变更': ['更正公告', '废标/终止公告'],
-        '中标公告': ['中标公告', '成交公告'],
+        # '招标公告': ['公开招标', '邀请招标', '询价招标', '竞争性谈判', '竞争性磋商', '单一来源公示'],
+        # '资格预审结果公告': ['资格预审公告'],
+        '招标变更': ['更正公告'],
+        # '招标变更': ['更正公告', '废标/终止公告'],
+        # '中标公告': ['中标公告', '成交公告'],
         '其他公告': ['其他公告'],
     }
     form_data = {
@@ -111,15 +113,18 @@ class Province130GansuSpiderSpider(scrapy.Spider):
                     form_data['articleSearchInfoVo.classname'] = notice_type_id
 
                     yield scrapy.FormRequest(
-                        url=self.query_url, callback=self.parse_list,
+                        url=self.query_url.format(start_n=1), callback=self.parse_list,
                         formdata=form_data, meta={
                             'notice_type': notice_type,
                         },
                         priority=(len(notice_els) - n),
+                        cb_kwargs={
+                            'form_data': copy.deepcopy(form_data),
+                        },
                         dont_filter=True,
                     )
 
-    def parse_list(self, resp):
+    def parse_list(self, resp, form_data):
         """
         - 获取响应的cookie
         - 最大页数
@@ -129,13 +134,14 @@ class Province130GansuSpiderSpider(scrapy.Spider):
         try:
             max_page = int(max_page)
         except Exception as e:
-            pass
+            self.logger.info('parse_list:{0}'.format(e))
         else:
             for page in range(1, max_page + 1):
                 start_n = 20 * (page - 1) + 1
-                yield scrapy.Request(
+                form_data['current'] = str(start_n)
+                yield scrapy.FormRequest(
                     url=self.query_url.format(start_n=start_n), callback=self.parse_url,
-                    meta={
+                    formdata=form_data, meta={
                         'notice_type': resp.meta.get('notice_type', ''),
                     },
                     priority=(max_page - page) * 100,
@@ -182,6 +188,10 @@ class Province130GansuSpiderSpider(scrapy.Spider):
         notice_types = list(
             filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
         )
+        _, content = utils.remove_element_by_xpath(
+            content,
+            xpath_rule='//div[@class="page"]/table//tr[contains(./td/font/text(), "附件下载")]'
+        )
 
         # 匹配文件
         _, files_path = utils.catch_files(content, self.base_url, pub_time=pub_time, resp=resp)
@@ -207,5 +217,5 @@ class Province130GansuSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_130_gansu_spider -a sdt=2021-06-01 -a edt=2021-08-30".split(" "))
+    cmdline.execute("scrapy crawl province_130_gansu_spider -a sdt=2021-08-17 -a edt=2021-08-19".split(" "))
     # cmdline.execute("scrapy crawl province_130_gansu_spider".split(" "))
