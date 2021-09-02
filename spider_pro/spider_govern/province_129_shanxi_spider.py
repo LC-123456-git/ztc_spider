@@ -125,7 +125,8 @@ class Province129ShanxiSpiderSpider(scrapy.Spider):
                                 cb_kwargs={
                                     'formdata': copy.deepcopy(form_data),
                                     'notice_type_id': notice_type_id,
-                                }
+                                },
+                                dont_filter=True
                             )
 
     def parse_list(self, resp, formdata, notice_type_id):
@@ -149,6 +150,7 @@ class Province129ShanxiSpiderSpider(scrapy.Spider):
                         'notice_type': resp.meta.get('notice_type', ''),
                     },
                     priority=(max_page - page) * 100,
+                    dont_filter=True,
                 )
 
     def parse_url(self, resp):
