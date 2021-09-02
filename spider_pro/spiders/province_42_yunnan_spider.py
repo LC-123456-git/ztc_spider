@@ -61,10 +61,11 @@ class Province42YunnanSpiderSpider(scrapy.Spider):
     area_id = 42
     basic_area = '云南省公共资源中心'
     custom_settings = {
+        'CONCURRENT_REQUESTS': 8,
+        'ENABLE_PROXY_USE': False,
         'DOWNLOADER_MIDDLEWARES': {
             'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
             'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            'spider_pro.middlewares.ProxyMiddlewareWithoutMaintain.ProxyMiddleware': 100,
         }
     }
 

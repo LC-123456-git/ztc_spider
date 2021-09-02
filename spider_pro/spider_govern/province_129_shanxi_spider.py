@@ -168,7 +168,7 @@ class Province129ShanxiSpiderSpider(scrapy.Spider):
                     'title_name': title_name,
                     'pub_time': pub_time,
                 },
-                priority=10000 * (len(els) - n)
+                priority=1000000 * (len(els) - n)
             )
 
     def parse_detail(self, resp):
