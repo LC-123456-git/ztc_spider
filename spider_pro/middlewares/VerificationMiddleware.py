@@ -41,12 +41,11 @@ class VerificationMiddleware(RetryMiddleware):
         txt = ''.join(txt.split(' '))
         com = re.compile(r'(\d+)')
         img_code = com.findall(txt)
-        return img_code
+        return img_code[0] if img_code else ''
 
     def cookie_to_dic(self, request):
         new_dict = request.meta['new_dict'] | {'authCode': self.get_auth_code()}
         resp = requests.post(url=self.url, data=new_dict, headers=self.headers)
-        # cookie_dict = requests.utils.dict_from_cookiejar(resp.cookies)
         cookie_dict = resp.cookies.get_dict()
         return cookie_dict
 
@@ -55,7 +54,7 @@ class VerificationMiddleware(RetryMiddleware):
             if response.text == 'reload':
                 self.tag += 1
                 if self.tag < 2:
-                    request.cookies = self.cookie_to_dic(request)
+                    request.headers[b'Cookie'] = 'JSESSIONID' + '=' + self.cookie_to_dic(request)['JSESSIONID']
                 return self._retry(request, request.meta['new_dict'], spider)
             return response
         except Exception as e:

@@ -3,8 +3,7 @@
 # @Author: lc
 # @Date: 2021-08-31
 # @Describe: 宁夏回族自治区政府采购网
-import json
-
+import json, copy
 import scrapy, re, math, requests
 from lxml import etree
 from scrapy.spiders import CrawlSpider
@@ -13,12 +12,6 @@ from spider_pro import constans as const
 from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, \
      get_files, get_notice_type, remove_specific_element, get_timestamp
 
-
-def get_cookie(urls):
-    res = requests.get(url=urls)
-    cookies = res.cookies
-    cookie = requests.utils.dict_from_cookiejar(cookies)
-    return cookie
 
 class Province132NingXinSpider(CrawlSpider):
     name = 'province_132_ningxia_spider'
@@ -31,10 +24,9 @@ class Province132NingXinSpider(CrawlSpider):
     area_province = '宁夏回族自治区政府采购网'
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
-            'spider_pro.middlewares.VerificationMiddleware.VerificationMiddleware': 120
+            'spider_pro.middlewares.VerificationMiddleware.VerificationMiddleware': 120,
         }
     }
-
 
     # 招标预告
     list_tender_notice_name = ['采购意向']
@@ -70,11 +62,12 @@ class Province132NingXinSpider(CrawlSpider):
               'planNumber_each': '',
               'date1_each': '',
               'date2_each': '',
-              'regionId_each': '',
+              'regionId_each': '640000',
               'title_cgyx': '',
               'departmentName_cgyx': '',
               'date1_cgyx': '',
               'date2_cgyx': '',
+              'regionId_notice_0': '640000',
               'projectName_cgyxxm': '',
               'departmentName_cgyxxm': '',
               'yjcgsj_cgyxxm': '',
@@ -125,7 +118,8 @@ class Province132NingXinSpider(CrawlSpider):
 
 
     def start_requests(self):
-        yield scrapy.Request(url=self.domain_url, callback=self.parse_urls)
+        yield scrapy.Request(url=self.domain_url, callback=self.parse_urls,
+                             meta={'r_dict': self.r_dict})
 
     def parse_urls(self, resp):
         try:
@@ -134,13 +128,14 @@ class Province132NingXinSpider(CrawlSpider):
             for li in li_list:
                 count += 1
                 code = li.xpath('./@name').get()
-                notice = self.get_category(li.xpath('./a/text()').get())
+                category_name = li.xpath('./a/text()').get()
+                notice = self.get_category(category_name)
                 new_dict = self.r_dict | {'type': code}
                 yield scrapy.FormRequest(url=self.base_url, callback=self.parse_data_info,
                                          priority=(len(li_list)-count)*10,
                                          formdata=new_dict,
-
-                                         meta={'notice': notice, 'new_dict': new_dict})
+                                         meta={'notice': notice, 'new_dict': copy.deepcopy(new_dict),
+                                               'category_name': category_name})
         except Exception as e:
             self.logger.error(f'发起数据请求失败parse_urls {e}')
 
@@ -164,24 +159,24 @@ class Province132NingXinSpider(CrawlSpider):
                             x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
                             if x:
                                 num += 1
-                                yield scrapy.Request(url=info_url, callback=self.parse_item,
+                                yield scrapy.Request(url=info_url, callback=self.parse_item, dont_filter=True,
                                                      priority=(len(data_info) - count) * 100,
                                                      meta={'notice': response.meta['notice'],
                                                            'title_name': title_name,
+                                                           'category_name': response.meta['category_name'],
                                                            'pub_time': pub_time})
-                            if num >= int(len(data_info)):
-                                total = int(len(data_info))
+                            if num >= int(len(json.loads(info_key))):
+                                total = int(len(json.loads(info_key)))
                                 if total == None:
                                     return
                                 self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
                                 page = int(response.meta['new_dict']['page']) + 1
                                 new_dict = response.meta['new_dict'] | {"page": str(page)}
-                                yield scrapy.FormRequest(url=self.domain_url, callback=self.parse_data_info,
-                                                         headers={'Content-Type': 'application/json;charset=UTF-8',
-                                                                  'new_dict': new_dict}, formdata=new_dict,
+                                yield scrapy.FormRequest(url=self.base_url, callback=self.parse_data_info,
+                                                         formdata=new_dict, dont_filter=True,
                                                          meta={'notice': response.meta['notice'],
-                                                               'new_dict': new_dict})
-
+                                                               'new_dict': copy.deepcopy(new_dict),
+                                                               'category_name': response.meta['category_name']})
                 else:
                     for dict_key, dict_value in data_info.items():
                         files_text = etree.HTML(dict_value)
@@ -191,13 +186,11 @@ class Province132NingXinSpider(CrawlSpider):
                         count = 0
                         for page in range(pages):
                             count += 1
-                            new_dict = response.meta['new_dict'] | {'page': str(page)}
-                            yield scrapy.FormRequest(url=self.base_url, callback=self.parse_data_check,
-                                                     formdata=new_dict, priority=((pages + 1) - count) * 100,
-                                                     cookies=response.meta['cookie'],
-                                                     headers={'Content-Type': 'application/json;charset=UTF-8',
-                                                              'new_dict': new_dict},
-                                                     meta={'notice': response.meta['notice']})
+                            new_dicts = response.meta['new_dict'] | {'page': str(page)}
+                            yield scrapy.FormRequest(url=self.base_url, callback=self.parse_data_check, dont_filter=True,
+                                                     formdata=new_dicts, priority=((pages + 1) - count) * 100,
+                                                     meta={'notice': response.meta['notice'],
+                                                           'new_dict': copy.deepcopy(new_dicts)})
         except Exception as e:
             self.logger.error(f'发起数据请求失败parse_data_info {response.url} {e}')
 
@@ -215,7 +208,7 @@ class Province132NingXinSpider(CrawlSpider):
                             pub_time = key['publishTime']
                         info_url = self.query_url + key['url']
                         title_name = key['title']
-                        yield scrapy.Request(url=info_url, callback=self.parse_item,
+                        yield scrapy.Request(url=info_url, callback=self.parse_item, dont_filter=True,
                                              priority=(len(data_info) - count) * 100,
                                              meta={'notice': response.meta['notice'],
                                                    'title_name': title_name,
@@ -242,11 +235,12 @@ class Province132NingXinSpider(CrawlSpider):
                 _, content = remove_specific_element(content, 'h2')
                 _, content = remove_specific_element(content, 'p', 'class', 'tc')
                 _, content = remove_specific_element(content, 'span', 'class', 'blank20')
-
+                _, content = remove_specific_element(content, 'div', 'class', 'vF_detail_content')
 
                 files_text = etree.HTML(content)
                 keys_a = []
-                files_path = get_files(self.domain_url, origin, files_text, pub_time=pub_time, keys_a=keys_a)
+                files_path = get_files(self.start_urls, origin, files_text, pub_time=pub_time,
+                                       keys_a=keys_a, log=self.logger)
 
                 notice_item = NoticesItem()
                 notice_item["origin"] = origin
@@ -267,4 +261,4 @@ if __name__ == "__main__":
     from scrapy import cmdline
 
     # cmdline.execute("scrapy crawl province_132_ningxia_spider".split(" "))
-    cmdline.execute("scrapy crawl province_132_ningxia_spider -a sdt=2020-07-20 -a edt=2021-08-30".split(" "))
+    cmdline.execute("scrapy crawl province_132_ningxia_spider -a sdt=2021-08-20 -a edt=2021-09-06".split(" "))
