@@ -46,7 +46,8 @@ class VerificationMiddleware(RetryMiddleware):
     def cookie_to_dic(self, request):
         new_dict = request.meta['new_dict'] | {'authCode': self.get_auth_code()}
         resp = requests.post(url=self.url, data=new_dict, headers=self.headers)
-        cookie_dict = requests.utils.dict_from_cookiejar(resp.cookies)
+        # cookie_dict = requests.utils.dict_from_cookiejar(resp.cookies)
+        cookie_dict = resp.cookies.get_dict()
         return cookie_dict
 
     def process_response(self, request, response, spider):
