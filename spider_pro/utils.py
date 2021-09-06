@@ -186,12 +186,17 @@ def init_yaml(doc_name, area_id):
     - 获取yaml文件处理对象
     """
     try:
+        if not file_name:
+            file_name = '{doc_name}{area_id}.yaml'.format(
+                doc_name=doc_name,
+                area_id='_%s' % area_id if area_id else ''
+            )
+        else:
+            file_name = '%s.yaml' % file_name
+
         file_path = os.path.join(
             os.path.join(os.path.join(os.path.dirname(__file__), 'conf'), doc_name),
-            '{doc_name}_{area_id}.yaml'.format(
-                doc_name=doc_name,
-                area_id=area_id
-            )
+            file_name
         )
         with open(file_path, 'rb') as f:
             cont = f.read()
