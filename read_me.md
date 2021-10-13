@@ -161,12 +161,12 @@
 - [x] 126 海南省政府采购网 https://www.ccgp-hainan.gov.cn/
 - [x] 127 内蒙古自治区政府采购网 http://www.ccgp-neimenggu.gov.cn/
 - [x] 128 广东政府采购网 https://gdgpo.czt.gd.gov.cn/
-- [] 129 陕西省政府采购网 http://www.ccgp-shaanxi.gov.cn/
-- [] 130 甘肃省政府采购网 http://www.ccgp-gansu.gov.cn/
-- [] 131 青海省政府采购网 http://www.ccgp-qinghai.gov.cn/
-- [] 132 宁夏回族自治区政府采购网 http://www.ccgp-ningxia.gov.cn/
-- [] 133 江西省政府采购网 http://www.ccgp-jiangxi.gov.cn/
-- [] 134 新疆政府采购网 http://www.ccgp-xinjiang.gov.cn/
+- [x] 129 陕西省政府采购网 http://www.ccgp-shaanxi.gov.cn/
+- [x] 130 甘肃省政府采购网 http://www.ccgp-gansu.gov.cn/
+- [x] 131 青海省政府采购网 http://www.ccgp-qinghai.gov.cn/
+- [x] 132 宁夏回族自治区政府采购网 http://www.ccgp-ningxia.gov.cn/
+- [] 133 江西省政府采购网 http://www.ccgp-jiangxi.gov.cn/ TODO Kela
+- [] 134 新疆政府采购网 http://www.ccgp-xinjiang.gov.cn/ TODO Kela
 - [] 135 四川省政府采购网 http://www.ccgp-sichuan.gov.cn/
 - [] 136 江苏省政府采购网 http://www.ccgp-jiangsu.gov.cn/
 - [] 137 广西省政府采购网 http://www.ccgp-guangxi.gov.cn/
