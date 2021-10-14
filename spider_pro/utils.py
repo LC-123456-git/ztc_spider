@@ -101,10 +101,11 @@ def get_page(url, method='GET', headers=None, proxies=None, data=None, set_decod
 
 
 def judge_in_interval(url, start_time=None, end_time=None, method='GET', headers=None, proxies=None, doc_type='html',
-                      data=None, rule=None):
+                      data=None, rule=None, date_type='string'):
     """
     翻页
     @rule: xpath解析规则
+    @date_type: 默认字符串string，可选timestamp时间戳
     参考示例：
     - JSON/XML:(xml只需要将doc_type修改成xml)
         judge_status = utils.judge_in_interval(
@@ -142,10 +143,15 @@ def judge_in_interval(url, start_time=None, end_time=None, method='GET', headers
                     first_el = els[0]
                     final_el = els[-1]
 
-                    t_com = re.compile(r'(\d+[.\-/]\d+[.\-/]\d+)')
-
-                    first_pub_time = t_com.findall(first_el)
-                    final_pub_time = t_com.findall(final_el)
+                    if date_type == 'string':
+                        t_com = re.compile(r'(\d+[.\-/]\d+[.\-/]\d+)')
+                        first_pub_time = t_com.findall(first_el)
+                        final_pub_time = t_com.findall(final_el)
+                    elif date_type == 'timestamp':
+                        first_pub_time = ['{0:%Y-%m-%d}'.format(datetime.datetime.fromtimestamp(int(first_el) / 1000))]
+                        final_pub_time = ['{0:%Y-%m-%d}'.format(datetime.datetime.fromtimestamp(int(final_el) / 1000))]
+                    else:
+                        raise Exception('时间类型不符合')
 
                     if all([first_pub_time, final_pub_time]):
                         first_pub_time = convert_to_strptime(first_pub_time[0])
@@ -181,7 +187,7 @@ def get_keywords(cf, field):
     return vs if vs else []
 
 
-def init_yaml(doc_name, area_id):
+def init_yaml(doc_name, area_id, file_name=None):
     """
     - 获取yaml文件处理对象
     """
