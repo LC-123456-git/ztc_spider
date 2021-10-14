@@ -29,6 +29,26 @@ headers = {
 }
 
 
+def format_referer(url):
+    referer = re.sub(r'[A-Za-z0-9=]+\.html', 'index.html', url)
+    return referer
+
+
+def add_click(base_url, resp, referer=None, **params):
+    # http://www.ccgp-xinjiang.gov.cn/visitor/add-clicks?articleId=9511857
+    err = ''
+    headers = get_headers(resp)
+    headers.update(**{
+        'Referer': referer if referer else resp.url
+    })
+    proxies = get_proxies(resp)
+    try:
+        requests.get(base_url, params=params, headers=headers, proxies=proxies)
+    except Exception as e:
+        err = 'error:{}'.format(e)
+    return err
+
+
 def get_headers(resp):
     """
     - 根据响应对象获取请求头
@@ -137,7 +157,7 @@ def judge_in_interval(url, start_time=None, end_time=None, method='GET', headers
                 if doc_type == 'json':
                     text = xmltodict.unparse({"root": json.loads(text)}).encode('utf-8')
                     doc = etree.XML(text)
-                    
+
                 els = doc.xpath(rule) if doc else []
                 if els:
                     first_el = els[0]
@@ -1025,6 +1045,12 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
         return deal_area_dict
     elif area_id in ["30", "65", "128"]:
         area_dict = const.guang_dong
+        province_name = area_dict["name"]
+        province_code = area_dict["code"]
+        deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
+        return deal_area_dict
+    elif area_id in ['137']:
+        area_dict = const.guang_xi
         province_name = area_dict["name"]
         province_code = area_dict["code"]
         deal_area_dict = temp_area_data(province_name, province_code, area_dict, data)
