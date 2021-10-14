@@ -14,7 +14,7 @@ import datetime
 from urllib import parse
 from lxml import etree
 
-from spider_pro.utils import get_real_url, remove_specific_element
+from spider_pro.utils import get_real_url, remove_specific_element, get_back_date, get_files
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from spider_pro.items import NoticesItem, FileItem
@@ -83,6 +83,14 @@ class MySpider(CrawlSpider):
 
     def parse_urls(self, response):
         try:
+            if self.enable_incr:
+                startDate = self.sdt_time
+                endDate = self.edt_time
+                time_dict = self.dict_data | {'startDate': startDate} | {'endDate': endDate}
+            else:
+                endDate = datetime.datetime.now().strftime("%Y-%m-%d")
+                startDate = get_back_date(365)
+                time_dict = self.dict_data | {'startDate': startDate} | {'endDate': endDate}
             code_list = response.xpath('//div[@style="display:none"]/li/a')[:15]  #获取type 类型的code 拼接url
             for codes, category_code in zip(code_list, self.list_all_category_code):
                 code = codes.xpath('./@catenum').get()
@@ -113,9 +121,9 @@ class MySpider(CrawlSpider):
                 else:
                     notice = ''
                 if notice:
-                    equal_dict = self.dict_data['condition'][0] | {"equal": category_code}
+                    equal_dict = time_dict['condition'][0] | {"equal": category_code}
                     pages_dict = {'condition': [equal_dict]}
-                    type_dict = self.dict_data | pages_dict
+                    type_dict = time_dict | pages_dict
                     yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict), dont_filter=True,
                                          callback=self.parse_data_urls,
                                          meta={'category': category, 'notice': notice,
@@ -127,8 +135,6 @@ class MySpider(CrawlSpider):
         try:
             if json.loads(response.text):
                 if self.enable_incr:
-                    _dict = response.meta['type_dict']['time'][0] | {'startTime': self.sdt_time} | {'endTime': self.edt_time}
-                    type_dict = response.meta['type_dict'] | {'time': [_dict]}
                     if json.loads(response.text)['result']['records']:
                         num_count = json.loads(response.text)['result']['records']
                         nums = 0
@@ -153,13 +159,13 @@ class MySpider(CrawlSpider):
                                                            'info_source': info_source})
 
                             if nums >= len(num_count):
-                                page = response.meta['type_dict']
-                                page += 50
-                                type_dict = type_dict | {'pn': page}
+                                page = response.meta['type_dict']['pn'] + 50
+                                type_dict = response.meta['type_dict'] | {'pn': page}
                                 yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict),
                                                      dont_filter=True, callback=self.parse_data_urls,
                                                      meta={'category': response.meta['category'],
-                                                           'notice': response.meta['notice']})
+                                                           'notice': response.meta['notice'],
+                                                           'type_dict': type_dict})
 
                 else:
                     restul = json.loads(response.text)
@@ -167,9 +173,11 @@ class MySpider(CrawlSpider):
                     self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
                     pages = int(math.ceil(total/50))
                     for num in range(pages):
-                        type_dict = self.dict_data | {'pn': num * 50}
-                        yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict), dont_filter=True, callback=self.parse_info_url,
-                                             meta={'category': response.meta['category'], 'notice': response.meta['notice']})
+                        type_dict = response.meta['type_dict'] | {'pn': num * 50}
+                        yield scrapy.Request(url=self.query_url, method='POST', body=json.dumps(type_dict),
+                                             dont_filter=True, callback=self.parse_info_url,
+                                             meta={'category': response.meta['category'],
+                                                   'notice': response.meta['notice']})
         except Exception as e:
             self.logger.error(f"初始总数提取错误 {response.meta=} {e} {response.url=}")
 
@@ -222,30 +230,31 @@ class MySpider(CrawlSpider):
             content = content.replace(re.findall(pattern, content)[0], '')
             #去除尾部
             _, content = remove_specific_element(content, 'div', 'id', 'pdff')
-            suffix_list = ['html', 'com', 'com/', 'cn', 'cn/', '##']
             files_text = etree.HTML(content)
-            if files_text.xpath('//a/@href'):
-                files_list = files_text.xpath('//a')
-                for cont in files_list:
-                    if cont.xpath('./@href'):
-                        values = cont.xpath('./@href')[0]
-                        if ''.join(values).split('.')[-1] not in suffix_list:
-                            if 'http:' not in values:
-                                value = self.data_url + values
-                                content = ''.join(content).replace(values, value)
-                            else:
-                                value = values
-                            if cont.xpath('.//text()'):
-                                keys = ''.join(cont.xpath('.//text()')).strip()
-                                if ''.join(values).split('.')[-1] not in keys:
-                                    key = keys + '.' + ''.join(values).split('.')[-1]
-                                else:
-                                    key = keys
-                                files_path[key] = value
-            if files_path:
-                content = content
-            else:
-                content = content
+            keys_a = []
+            files_path = get_files(self.domain_url, origin, files_text, keys_a=keys_a)
+            # if files_text.xpath('//a/@href'):
+            #     files_list = files_text.xpath('//a')
+            #     for cont in files_list:
+            #         if cont.xpath('./@href'):
+            #             values = cont.xpath('./@href')[0]
+            #             if ''.join(values).split('.')[-1] not in suffix_list:
+            #                 if 'http:' not in values:
+            #                     value = self.data_url + values
+            #                     content = ''.join(content).replace(values, value)
+            #                 else:
+            #                     value = values
+            #                 if cont.xpath('.//text()'):
+            #                     keys = ''.join(cont.xpath('.//text()')).strip()
+            #                     if ''.join(values).split('.')[-1] not in keys:
+            #                         key = keys + '.' + ''.join(values).split('.')[-1]
+            #                     else:
+            #                         key = keys
+            #                     files_path[key] = value
+            # if files_path:
+            #     content = content
+            # else:
+            #     content = content
 
             notice_item = NoticesItem()
             notice_item["origin"] = origin
@@ -265,5 +274,5 @@ class MySpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
     # cmdline.execute("scrapy crawl province_14_zhejiang_spider".split(" "))
-    cmdline.execute("scrapy crawl province_14_zhejiang_spider -a sdt=2021-06-20 -a edt=2021-07-10".split(" "))
+    cmdline.execute("scrapy crawl province_14_zhejiang_spider -a sdt=2021-07-20 -a edt=2021-08-10".split(" "))
 
