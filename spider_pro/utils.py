@@ -720,7 +720,7 @@ def get_table_files(query_url, origin, content, keys_a=None, domain_url=None, **
 
 
 @do_files_dec(days=90)
-def get_files(domain_url, origin, files_text, start_urls=None, keys_a=None, **kwargs):
+def get_files(domain_url, origin, files_text, start_urls=None, keys_a=None, base_url=None, **kwargs):
     log = kwargs.get('log', None)
     files_path = {}
     key_name = 'pdf/img/doc'
@@ -728,44 +728,61 @@ def get_files(domain_url, origin, files_text, start_urls=None, keys_a=None, **kw
     keys_list = ['前往报名', 'pdf', 'rar', 'zip', 'doc', 'docx', 'xls', 'xlsx', 'xml', 'dwg', 'AJZF',
                  'PDF', 'RAR', 'ZIP', 'DOC', 'DOCX', 'XLS', 'XLSX', 'XML', 'DWG', 'AJZF', 'png',
                  'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG', 'ZJYQCF', 'YQZBX', 'bmp', 'XCZF', 'YCZF', 'XCCF',
-                 '（下载招标文件）']
+                 '（下载招标文件）', 'cqzf']
     [keys_list.append(k_a) for k_a in keys_a]
     try:
         if files_text.xpath('//a/@href'):
-            files_list = files_text.xpath('//a')
+            files_list = files_text.xpath('//a/@href')
+            files_list_text = files_text.xpath('//a/text()')
             for cont in range(len(files_list)):
-                if files_list[cont].xpath('./@href'):
-                    values = files_list[cont].xpath('./@href')[0]
-                    if ''.join(values).split('.')[-1] not in suffix_list:
-                        if 'javascript' in values:
-                            code_id = re.findall(".*\('(.*)\'\)", values)[0]
-                            value = start_urls + base64.b64encode(code_id.encode('utf-8')).decode('utf-8')
-                        elif 'http' not in values:
-                            value = domain_url + ''.join(values).replace('./', origin[:origin.rindex('/') + 1])
-                        else:
-                            value = values
-                        if files_list[cont].xpath('.//text()'):
-                            keys = ''.join(files_list[cont].xpath('.//text()')[0]).strip()
-                            # 先判断 value 有没有 后缀
-                            if value[value.rindex('.') + 1:] in keys_list:  # value 的后缀在 列表中
-                                if '.' in keys:  # 在判断 keys 有后缀 点
-                                    suffix_keys = keys[keys.rindex('.') + 1:]
-                                    if suffix_keys not in keys_list:  # 判断 keys后缀在不在 列表中
-                                        key = '{}_'.format(cont) + keys + value[value.rindex('.'):]
-                                    else:
-                                        key = str(cont) + '_' + keys
-                                else:
+                values = files_list[cont]
+                if ''.join(values).split('.')[-1] not in suffix_list:
+                    if 'javascript' in values:
+                        code_id = re.findall(".*\('(.*)\'\)", values)[0]
+                        value = start_urls + base64.b64encode(code_id.encode('utf-8')).decode('utf-8')
+                    elif 'http' not in values:
+                        value = domain_url + ''.join(values).replace('./', origin[:origin.rindex('/') + 1])
+                    else:
+                        value = values
+                    if files_list_text:
+                        keys = ''.join(files_list_text[cont]).strip()
+                        # 先判断 value 有没有 后缀
+                        if value[value.rindex('.') + 1:] in keys_list:  # value 的后缀在 列表中
+                            if '.' in keys:  # 在判断 keys 有后缀 点
+                                suffix_keys = keys[keys.rindex('.') + 1:]
+                                if suffix_keys not in keys_list:  # 判断 keys后缀在不在 列表中
                                     key = '{}_'.format(cont) + keys + value[value.rindex('.'):]
-                                files_path[key] = value
-                            else:  # value 的后缀不在 列表中
-                                if '.' in keys:  # 在判断 keys 有后缀 点
-                                    suffix_keys = keys[keys.rindex('.') + 1:]
-                                    if suffix_keys in keys_list:  # 判断 keys后缀在不在 列表中
-                                        key = str(cont) + '_' + keys[:keys.rindex('.')] + '.' + suffix_keys
-                                    else:
-                                        key = ''
-                                    if key:
-                                        files_path[key] = value
+                                else:
+                                    key = str(cont) + '_' + keys
+                            else:
+                                key = '{}_'.format(cont) + keys + value[value.rindex('.'):]
+                            files_path[key] = value
+                        else:  # value 的后缀不在 列表中
+                            if '.' in keys:  # 在判断 keys 有后缀 点
+                                suffix_keys = keys[keys.rindex('.') + 1:]
+                                if suffix_keys in keys_list:  # 判断 keys后缀在不在 列表中
+                                    key = str(cont) + '_' + keys[:keys.rindex('.')] + '.' + suffix_keys
+                                else:
+                                    key = ''
+                                if key:
+                                    files_path[key] = value
+        if files_text.xpath('//a/@onclick'):
+            files_list = files_text.xpath('//a/@onclick')
+            files_list_text = files_text.xpath('//a/text()')
+            for cont in range(len(files_list)):
+                values = ast.literal_eval(''.join(files_list[cont]).replace('downloadAttach', ''))
+                value = base_url.format(values[0], values[1], values[2])
+                if files_list_text:
+                    keys = ''.join(files_list_text[cont]).strip()
+                    if '.' in keys:  # 在判断 keys 有后缀 点
+                        suffix_keys = keys[keys.rindex('.') + 1:]
+                        if suffix_keys in keys_list:  # 判断 keys后缀在不在 列表中
+                            key = str(cont) + '_' + keys[:keys.rindex('.')] + '.' + suffix_keys
+                        else:
+                            key = ''
+                        if key:
+                            files_path[key] = value
+
     except Exception as e:
         if log:
             log.error(f'发起数据请求失败get_files {e}')
