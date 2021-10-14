@@ -18,12 +18,13 @@ from spider_pro import utils, constans, items
 
 class Province134XinjiangSpiderSpider(scrapy.Spider):
     name = 'province_134_xinjiang_spider'
-    allowed_domains = ['ccgp-jiangxi.gov.cn']
+    allowed_domains = ['ccgp-xinjiang.gov.cn']
     start_urls = ['http://www.ccgp-xinjiang.gov.cn']
 
     basic_area = '新疆政府采购网'
     query_url = 'http://www.ccgp-xinjiang.gov.cn/front/search/category'
     base_url = 'http://www.ccgp-xinjiang.gov.cn'
+    add_click_url = 'http://www.ccgp-xinjiang.gov.cn/visitor/add-clicks'
 
     area_id = 134
     keywords_map = {
@@ -118,6 +119,7 @@ class Province134XinjiangSpiderSpider(scrapy.Spider):
         """
         翻页
         """
+        utils.add_click(self.add_click_url, resp)
         headers = utils.get_headers(resp)
         headers.update(**{
             'Content-type': 'Application/json'
@@ -157,6 +159,7 @@ class Province134XinjiangSpiderSpider(scrapy.Spider):
                     url=self.query_url, method='POST', callback=self.parse_url,
                     body=json.dumps(data), meta=resp.meta, headers={
                         'Content-Type': 'application/json',
+                        'Referer': resp.request.headers.get('Referer', '')
                     }, dont_filter=True,
                 )
 
@@ -164,6 +167,7 @@ class Province134XinjiangSpiderSpider(scrapy.Spider):
         """
         获取详情页链接
         """
+        utils.add_click(self.add_click_url, resp, referer=resp.request.headers.get('Referer'))
         content = json.loads(resp.text)
 
         hits = content.get('hits', {}).get('hits', [])
@@ -173,13 +177,14 @@ class Province134XinjiangSpiderSpider(scrapy.Spider):
             title_name = _source.get('title', '')
             c_url = _source.get('url', '')
             pub_time = _source.get('publishDate', '')
+            article_id = _source.get('articleId', '')
 
             if pub_time:
                 pub_time = '{0:%Y-%m-%d}'.format(datetime.fromtimestamp(int(pub_time) / 1000))
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                     resp.meta.update(**{
                         'title_name': title_name,
-                        'pub_time': pub_time,
+                        'article_id': article_id,
                     })
 
                     yield scrapy.Request(
@@ -187,9 +192,13 @@ class Province134XinjiangSpiderSpider(scrapy.Spider):
                         meta=resp.meta,
                     )
 
-    def parse_detail(self, resp):
-        content = resp.xpath('input[name="articleDetail"]').get()
-        title_name = resp.meta.get('title', '')
+    def parse_detail(self, resp, article_id):
+        utils.add_click(self.add_click_url, resp, **{'articleId': article_id})
+        ret = resp.xpath('//input[@name="articleDetail"]/@value').get()
+        ret = json.loads(ret)
+
+        content = ret.get('content', '')
+        title_name = ret.get('title', '')
         pub_time = resp.meta.get('pub_time', '')
         notice_type_ori = resp.meta.get('notice_type', '')
 
