@@ -73,11 +73,19 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
     # @patch_id: 补丁号
     # @script_session_id: 未知(~PU!Y8CjFdhM3vA1fbPHobMm8EL5vMvOZNn/BMoQZNn-vp4ikf*Pu)
 
+    # custom_settings = {
+    #     'CONCURRENT_REQUESTS': 1,
+    #     'DOWNLOAD_DELAY': 4
+    # }
+
     def __init__(self, *args, **kwargs):
         super().__init__()
         self.start_time = kwargs.get('sdt', '')
         self.end_time = kwargs.get('edt', '')
         self.patch_id = 1
+        self.cookies = {
+            'DWRSESSIONID': '~PU!Y8CjFdhM3vA1fbPHobMm8EL5vMvOZNn'
+        }
 
     def match_title(self, title_name):
         """
@@ -204,6 +212,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                     }, cb_kwargs={
                         'pay_load': copy.deepcopy(pay_load_data)
                     }, dont_filter=True,
+                    cookies=self.cookies
                 )
 
     def parse_list(self, resp, pay_load):
@@ -230,6 +239,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                 })
                 c_pay_load = self.pay_load.format(**pay_load)
 
+                headers.update(**{'Cookie': '{}={}'.format(list(self.cookies.keys())[0], list(self.cookies.values())[0])})
                 judge_status = Province145QingdaoSpiderSpider.judge_in_interval(
                     self.query_url, start_time=self.start_time, end_time=self.end_time,
                     data=c_pay_load, proxies=proxies, headers=headers,
@@ -250,6 +260,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                         url=self.query_url, method='POST', body=c_pay_load,
                         callback=self.parse_urls, meta=resp.meta,
                         dont_filter=True,
+                        cookies=self.cookies
                     )
         else:
             for i in range(100):
@@ -265,6 +276,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                     url=self.query_url, method='POST', body=c_pay_load,
                     callback=self.parse_urls, meta=resp.meta,
                     dont_filter=True,
+                    cookies=self.cookies
                 )
 
     def parse_urls(self, resp):
