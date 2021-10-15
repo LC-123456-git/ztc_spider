@@ -61,8 +61,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
     c0-e2=string:{index}
     c0-e3=number:10
     c0-e4=string:
-    c0-e5=string:undefined
-    c0-param1=Object_Object:{{_COLCODE:reference:c0-e1, _INDEX:reference:c0-e2, _PAGESIZE:reference:c0-e3, _REGION:reference:c0-e4, _KEYWORD:reference:c0-e5}}
+    c0-param1=Object_Object:{{_COLCODE:reference:c0-e1, _INDEX:reference:c0-e2, _PAGESIZE:reference:c0-e3, _REGION:reference:c0-e4}}
     batchId={patch_id}
     instanceId=0
     page=%2Fsdgp2014%2Fsite%2Fchannelall370200.jsp%3Fcolcode%3D0401%26flag%3D0401
@@ -128,7 +127,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
             'title': y.split(',')[1],
             'pub_time': y.split(',')[2],
             'code': y.split(',')[3],
-        } for y in [x for x in rslt_string.split('?')]]
+        } for y in [x for x in rslt_string.split('?')] if len(y.split(',')) == 4]
 
     @classmethod
     def judge_in_interval(cls, url, start_time=None, end_time=None, headers=None, proxies=None, data=None, rule=None,
@@ -204,7 +203,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                         'notice_type': notice_type,
                     }, cb_kwargs={
                         'pay_load': copy.deepcopy(pay_load_data)
-                    }, dont_filter=True
+                    }, dont_filter=True,
                 )
 
     def parse_list(self, resp, pay_load):
@@ -220,35 +219,52 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
         ...
         """
         index = 0
-        while True:
-            index += 1
-            self.patch_id += 1
-            pay_load.update(**{
-                'index': index,
-                'patch_id': self.patch_id
-            })
-            c_pay_load = self.pay_load.format(**pay_load)
+        if all([self.start_time, self.end_time]):
+            while True:
+                index += 1
+                # print(index)
+                self.patch_id += 1
+                pay_load.update(**{
+                    'index': index,
+                    'patch_id': self.patch_id
+                })
+                c_pay_load = self.pay_load.format(**pay_load)
 
-            judge_status = Province145QingdaoSpiderSpider.judge_in_interval(
-                self.query_url, start_time=self.start_time, end_time=self.end_time,
-                data=c_pay_load, proxies=proxies, headers=headers,
-                rule='//pub_time/text()'
-            )
-            if judge_status == 0:
-                break
-            elif judge_status == 2:
-                continue
-            else:
+                judge_status = Province145QingdaoSpiderSpider.judge_in_interval(
+                    self.query_url, start_time=self.start_time, end_time=self.end_time,
+                    data=c_pay_load, proxies=proxies, headers=headers,
+                    rule='//pub_time/text()'
+                )
+                if judge_status == 0:
+                    break
+                elif judge_status == 2:
+                    continue
+                else:
+                    self.patch_id += 1
+                    pay_load.update(**{
+                        'patch_id': self.patch_id
+                    })
+                    c_pay_load = self.pay_load.format(**pay_load)
+                    # print(c_pay_load)
+                    yield scrapy.Request(
+                        url=self.query_url, method='POST', body=c_pay_load,
+                        callback=self.parse_urls, meta=resp.meta,
+                        dont_filter=True,
+                    )
+        else:
+            for i in range(100):
+                index += 1
+                # print(index)
                 self.patch_id += 1
                 pay_load.update(**{
                     'patch_id': self.patch_id
                 })
                 c_pay_load = self.pay_load.format(**pay_load)
-                print(self.patch_id)
+                self.logger.info(c_pay_load)
                 yield scrapy.Request(
                     url=self.query_url, method='POST', body=c_pay_load,
                     callback=self.parse_urls, meta=resp.meta,
-                    dont_filter=True
+                    dont_filter=True,
                 )
 
     def parse_urls(self, resp):
@@ -258,6 +274,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
             rslt_string = com.findall(resp.text)[0]
             rslt_string = u'{}'.format(rslt_string).encode('utf-8').decode('unicode_escape')
             rslt_string_list = Province145QingdaoSpiderSpider.format_rslt_string(rslt_string)
+            self.logger.info(rslt_string_list)
         except Exception as e:
             self.logger.info('error: {0}, body:{1}'.format(e, resp.body))
         else:
@@ -276,8 +293,8 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                 })
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                     yield scrapy.Request(
-                        url=c_url, callback=self.parse_detail, priority=(len(rslt_string_list) - n) * 10 * 100,
-                        meta=resp.meta
+                        url=c_url, callback=self.parse_detail,
+                        meta=resp.meta,
                     )
 
     def parse_detail(self, resp):
@@ -326,5 +343,5 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_145_qingdao_spider -a sdt=2021-10-08 -a edt=2021-10-15".split(" "))
+    cmdline.execute("scrapy crawl province_145_qingdao_spider -a sdt=2021-09-01 -a edt=2021-10-15".split(" "))
     # cmdline.execute("scrapy crawl province_145_qingdao_spider".split(" "))

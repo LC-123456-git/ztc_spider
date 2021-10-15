@@ -155,6 +155,7 @@ class Province133JiangxiSpiderSpider(scrapy.Spider):
                 title = t.get('title', '')
                 title = re.sub(r'\d{11}', '', title)
                 title = re.sub(r'\[[A-Za-z0-9\-\u4e00-\u9fa5]+]', '', title)
+                title = re.sub(r"<font.*?/font>", '', title)
 
                 prefix = category_num[0:6]
                 date = ''.join(post_date.split('-'))
