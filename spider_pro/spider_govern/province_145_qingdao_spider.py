@@ -26,7 +26,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
     query_url = 'http://www.ccgp-qingdao.gov.cn/sdgp2014/dwr/call/plaincall/dwrmng.queryWithoutUi.dwr'
     base_url = 'http://www.ccgp-qingdao.gov.cn'
     first_url = 'http://www.ccgp-qingdao.gov.cn/sdgp2014/site/channelall370200.jsp?colcode=0401&flag=0401'
-    detail_url = 'http://www.ccgp-qingdao.gov.cn/sdgp2014/site/read{code}.jsp?id={id}&flag=0401'
+    detail_url = 'http://www.ccgp-qingdao.gov.cn/sdgp2014/site/read370200.jsp?id={id}&flag=0401'
 
     area_id = 145
     keywords_map = {
@@ -78,6 +78,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
         super().__init__()
         self.start_time = kwargs.get('sdt', '')
         self.end_time = kwargs.get('edt', '')
+        self.patch_id = 1
 
     def match_title(self, title_name):
         """
@@ -184,7 +185,8 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
     def start_requests(self):
         for notice_type, params in self.url_map.items():
             for param in params:
-                patch_id = param['patch_id']
+                self.patch_id += 1
+                patch_id = self.patch_id
                 category_id = param['category_id']
 
                 pay_load_data = {
@@ -220,7 +222,11 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
         index = 0
         while True:
             index += 1
-            pay_load.update(**{'index': index})
+            self.patch_id += 1
+            pay_load.update(**{
+                'index': index,
+                'patch_id': self.patch_id
+            })
             c_pay_load = self.pay_load.format(**pay_load)
 
             judge_status = Province145QingdaoSpiderSpider.judge_in_interval(
@@ -233,6 +239,12 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
             elif judge_status == 2:
                 continue
             else:
+                self.patch_id += 1
+                pay_load.update(**{
+                    'patch_id': self.patch_id
+                })
+                c_pay_load = self.pay_load.format(**pay_load)
+                print(self.patch_id)
                 yield scrapy.Request(
                     url=self.query_url, method='POST', body=c_pay_load,
                     callback=self.parse_urls, meta=resp.meta,
@@ -242,30 +254,31 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
     def parse_urls(self, resp):
         com = re.compile(r'rsltStringValue:"(.*?)",rsltType')
 
-        rslt_string = com.findall(resp.text)[0]
-        rslt_string = u'{}'.format(rslt_string).encode('utf-8').decode('unicode_escape')
-        rslt_string_list = Province145QingdaoSpiderSpider.format_rslt_string(rslt_string)
+        try:
+            rslt_string = com.findall(resp.text)[0]
+            rslt_string = u'{}'.format(rslt_string).encode('utf-8').decode('unicode_escape')
+            rslt_string_list = Province145QingdaoSpiderSpider.format_rslt_string(rslt_string)
+        except Exception as e:
+            self.logger.info('error: {0}, body:{1}'.format(e, resp.body))
+        else:
+            for n, rs in enumerate(rslt_string_list):
+                pub_time = rs.get('pub_time', '')
+                c_id = rs.get('id', '')
+                title = rs.get('title', '')
 
-        for n, rs in enumerate(rslt_string_list):
-            pub_time = rs.get('pub_time', '')
-            c_id = rs.get('id', '')
-            title = rs.get('title', '')
-            code = rs.get('code', '')
+                c_url = self.detail_url.format(**{
+                    'id': c_id,
+                })
 
-            c_url = self.detail_url.format(**{
-                'id': c_id,
-                'code': code,
-            })
-
-            resp.meta.update(**{
-                'title': title,
-                'pub_time': pub_time,
-            })
-            if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
-                yield scrapy.Request(
-                    url=c_url, callback=self.parse_detail, priority=(len(rslt_string_list) - n) * 10 * 100,
-                    meta=resp.meta
-                )
+                resp.meta.update(**{
+                    'title': title,
+                    'pub_time': pub_time,
+                })
+                if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
+                    yield scrapy.Request(
+                        url=c_url, callback=self.parse_detail, priority=(len(rslt_string_list) - n) * 10 * 100,
+                        meta=resp.meta
+                    )
 
     def parse_detail(self, resp):
         content = resp.xpath('//div[contains(@style, "overflow-x:auto; width:100%;")]').get()
@@ -313,5 +326,5 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_145_qingdao_spider -a sdt=2021-09-10 -a edt=2021-10-14".split(" "))
+    cmdline.execute("scrapy crawl province_145_qingdao_spider -a sdt=2021-10-08 -a edt=2021-10-15".split(" "))
     # cmdline.execute("scrapy crawl province_145_qingdao_spider".split(" "))
