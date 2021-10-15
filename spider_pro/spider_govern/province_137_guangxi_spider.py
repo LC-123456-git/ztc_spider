@@ -9,7 +9,6 @@ from datetime import datetime
 import json
 import re
 import math
-import uuid
 
 import scrapy
 
