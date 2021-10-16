@@ -74,6 +74,10 @@ class Province134XinjiangSpiderSpider(scrapy.Spider):
             "categoryCode": "",
             "utm": "sites_group_front.2ef5001f.0.0.{}".format(''.join(str(uuid.uuid4()).split('-'))),
         }
+        self.cookies = {
+            '_zcy_log_client_uuid': '0312c670-2be5-11ec-ad1f-4bdc39d02be7',
+            'acw_tc': '76b20fe216343693821445620e6daa343a13e1bd8da70c52839f0186eb413e'
+        }
 
     def match_title(self, title_name):
         """
@@ -97,7 +101,7 @@ class Province134XinjiangSpiderSpider(scrapy.Spider):
     def data(self):
         return copy.deepcopy(self._data)
 
-    def parse(self, resp):
+    def start_requests(self):
         for notice_type, sub_notice_info in self.notice_map.items():
             for sni in sub_notice_info:
                 category_code = sni.get('category_code', '')
@@ -112,16 +116,18 @@ class Province134XinjiangSpiderSpider(scrapy.Spider):
                         'Content-Type': 'application/json',
                     }, dont_filter=True, cb_kwargs={
                         'data': c_data,
-                    }
+                    },
+                    cookies=self.cookies,
                 )
 
     def parse_list(self, resp, data):
         """
         翻页
         """
-        utils.add_click(self.add_click_url, resp)
+        # utils.add_click(self.add_click_url, resp)
         headers = utils.get_headers(resp)
         headers.update(**{
+            'Cookie': ';'.join(['{0}={1}'.format(k, v) for k, v in self.cookies.items()]),
             'Content-type': 'Application/json'
         })
         proxies = utils.get_proxies(resp)
@@ -151,6 +157,7 @@ class Province134XinjiangSpiderSpider(scrapy.Spider):
                         body=json.dumps(data), meta=resp.meta, headers={
                             'Content-Type': 'application/json',
                         }, dont_filter=True,
+                        cookies=self.cookies,
                     )
         else:
             for page in range(max_page):
@@ -161,13 +168,14 @@ class Province134XinjiangSpiderSpider(scrapy.Spider):
                         'Content-Type': 'application/json',
                         'Referer': resp.request.headers.get('Referer', '')
                     }, dont_filter=True,
+                    cookies=self.cookies,
                 )
 
     def parse_url(self, resp):
         """
         获取详情页链接
         """
-        utils.add_click(self.add_click_url, resp, referer=resp.request.headers.get('Referer'))
+        # utils.add_click(self.add_click_url, resp, referer=resp.request.headers.get('Referer'))
         content = json.loads(resp.text)
 
         hits = content.get('hits', {}).get('hits', [])
@@ -189,11 +197,14 @@ class Province134XinjiangSpiderSpider(scrapy.Spider):
 
                     yield scrapy.Request(
                         url=''.join([self.base_url, c_url]), callback=self.parse_detail,
-                        meta=resp.meta,
+                        meta=resp.meta, cb_kwargs={
+                            'article_id': article_id,
+                        },
+                        cookies=self.cookies,
                     )
 
     def parse_detail(self, resp, article_id):
-        utils.add_click(self.add_click_url, resp, **{'articleId': article_id})
+        # utils.add_click(self.add_click_url, resp, **{'articleId': article_id})
         ret = resp.xpath('//input[@name="articleDetail"]/@value').get()
         ret = json.loads(ret)
 
@@ -234,5 +245,5 @@ class Province134XinjiangSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_134_xinjiang_spider -a sdt=2021-10-01 -a edt=2021-10-13".split(" "))
+    cmdline.execute("scrapy crawl province_134_xinjiang_spider -a sdt=2021-10-01 -a edt=2021-10-16".split(" "))
     # cmdline.execute("scrapy crawl province_134_xinjiang_spider".split(" "))

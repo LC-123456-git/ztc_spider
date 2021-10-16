@@ -73,11 +73,6 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
     # @patch_id: 补丁号
     # @script_session_id: 未知(~PU!Y8CjFdhM3vA1fbPHobMm8EL5vMvOZNn/BMoQZNn-vp4ikf*Pu)
 
-    # custom_settings = {
-    #     'CONCURRENT_REQUESTS': 1,
-    #     'DOWNLOAD_DELAY': 4
-    # }
-
     def __init__(self, *args, **kwargs):
         super().__init__()
         self.start_time = kwargs.get('sdt', '')
@@ -220,6 +215,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
         翻页
         """
         headers = utils.get_headers(resp)
+        headers.update(**{'Cookie': '{}={}'.format(list(self.cookies.keys())[0], list(self.cookies.values())[0])})
         proxies = utils.get_proxies(resp)
 
         """
@@ -239,7 +235,6 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                 })
                 c_pay_load = self.pay_load.format(**pay_load)
 
-                headers.update(**{'Cookie': '{}={}'.format(list(self.cookies.keys())[0], list(self.cookies.values())[0])})
                 judge_status = Province145QingdaoSpiderSpider.judge_in_interval(
                     self.query_url, start_time=self.start_time, end_time=self.end_time,
                     data=c_pay_load, proxies=proxies, headers=headers,

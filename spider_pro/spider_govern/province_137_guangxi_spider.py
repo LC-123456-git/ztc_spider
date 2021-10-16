@@ -20,7 +20,7 @@ class Province137GuangxiSpiderSpider(scrapy.Spider):
     allowed_domains = ['ccgp-guangxi.gov.cn']
     start_urls = ['http://www.ccgp-guangxi.gov.cn/']
 
-    basic_area = '新疆政府采购网'
+    basic_area = '广西政府采购网'
     query_url = 'http://www.ccgp-guangxi.gov.cn/front/search/category'
     base_url = 'http://www.ccgp-guangxi.gov.cn'
 
@@ -36,40 +36,84 @@ class Province137GuangxiSpiderSpider(scrapy.Spider):
     }
     notice_map = {
         '招标预告': [
-            {'sub_notice': '招标文件预公示', 'category_code': 'ZcyAnnouncement5'},
+            {
+                'sub_notice': '招标文件预公示', 'category_code': 'ZcyAnnouncement5',
+            },
         ],
         '招标公告': [
-            {'sub_notice': '公开招标公告', 'category_code': 'ZcyAnnouncement3001'},
-            {'sub_notice': '竞争性谈判公告', 'category_code': 'ZcyAnnouncement3002'},
-            {'sub_notice': '询价公告', 'category_code': 'ZcyAnnouncement3003'},
-            {'sub_notice': '竞争性磋商公告', 'category_code': 'ZcyAnnouncement3011'},
-            {'sub_notice': '其他采购项目公告', 'category_code': 'ZcyAnnouncement2002'},
-            {'sub_notice': '邀请招标公告', 'category_code': 'ZcyAnnouncement3020'},
-            {'sub_notice': '单一来源公示', 'category_code': 'ZcyAnnouncement6'},
-            {'sub_notice': '建设工程招标公告', 'category_code': 'ZcyAnnouncement8031'},
+            {
+                'sub_notice': '公开招标公告', 'category_code': 'ZcyAnnouncement3001',
+            },
+            {
+                'sub_notice': '竞争性谈判公告', 'category_code': 'ZcyAnnouncement3002',
+            },
+            {
+                'sub_notice': '询价公告', 'category_code': 'ZcyAnnouncement3003',
+            },
+            {
+                'sub_notice': '竞争性磋商公告', 'category_code': 'ZcyAnnouncement3011',
+            },
+            {
+                'sub_notice': '其他采购项目公告', 'category_code': 'ZcyAnnouncement2002',
+            },
+            {
+                'sub_notice': '邀请招标公告', 'category_code': 'ZcyAnnouncement3020',
+            },
+            {
+                'sub_notice': '单一来源公示', 'category_code': 'ZcyAnnouncement6',
+            },
+            {
+                'sub_notice': '建设工程招标公告', 'category_code': 'ZcyAnnouncement8031',
+            },
         ],
         '资格预审公告': [
-            {'sub_notice': '公开招标资格预审公告', 'category_code': 'ZcyAnnouncement2001'},
-            {'sub_notice': '邀请招标资格预审公告', 'category_code': 'ZcyAnnouncement3008'},
+            {
+                'sub_notice': '公开招标资格预审公告', 'category_code': 'ZcyAnnouncement2001',
+            },
+            {
+                'sub_notice': '邀请招标资格预审公告', 'category_code': 'ZcyAnnouncement3008',
+            },
         ],
         '招标变更': [
-            {'sub_notice': '更正公告', 'category_code': 'ZcyAnnouncement4'},
-            {'sub_notice': '建设工程更正公告', 'category_code': 'ZcyAnnouncement8033'},
+            {
+                'sub_notice': '更正公告', 'category_code': 'ZcyAnnouncement4',
+            },
+            {
+                'sub_notice': '建设工程更正公告', 'category_code': 'ZcyAnnouncement8033',
+            },
         ],
         '招标异常': [
-            {'sub_notice': '废标公告', 'category_code': 'ZcyAnnouncement3007'},
-            {'sub_notice': '终止公告', 'category_code': 'ZcyAnnouncement3015'},
+            {
+                'sub_notice': '废标公告', 'category_code': 'ZcyAnnouncement3007',
+            },
+            {
+                'sub_notice': '终止公告', 'category_code': 'ZcyAnnouncement3015',
+            },
         ],
         '中标公告': [
-            {'sub_notice': '中标（成交）结果公告', 'category_code': 'ZcyAnnouncement3004'},
-            {'sub_notice': '中标公告', 'category_code': 'ZcyAnnouncement4005'},
-            {'sub_notice': '成交公告', 'category_code': 'ZcyAnnouncement4006'},
-            {'sub_notice': '其他采购结果公告', 'category_code': 'ZcyAnnouncement4007'},
-            {'sub_notice': '建设工程中标（成交）结果公告', 'category_code': 'ZcyAnnouncement8032'},
+            {
+                'sub_notice': '中标（成交）结果公告', 'category_code': 'ZcyAnnouncement3004',
+            },
+            {
+                'sub_notice': '中标公告', 'category_code': 'ZcyAnnouncement4005',
+            },
+            {
+                'sub_notice': '成交公告', 'category_code': 'ZcyAnnouncement4006',
+            },
+            {
+                'sub_notice': '其他采购结果公告', 'category_code': 'ZcyAnnouncement4007',
+            },
+            {
+                'sub_notice': '建设工程中标（成交）结果公告', 'category_code': 'ZcyAnnouncement8032',
+            },
         ],
         '其他公告': [
-            {'sub_notice': '合同公告', 'category_code': 'ZcyAnnouncement3'},
-            {'sub_notice': '其他公告', 'category_code': 'ZcyAnnouncement9'},
+            {
+                'sub_notice': '合同公告', 'category_code': 'ZcyAnnouncement3',
+            },
+            {
+                'sub_notice': '其他公告', 'category_code': 'ZcyAnnouncement9',
+            },
         ],
     }
 
@@ -82,6 +126,11 @@ class Province137GuangxiSpiderSpider(scrapy.Spider):
             "pageNo": 1,
             "pageSize": self.page_size,
             "categoryCode": "",
+        }
+        # acw_tc=76b20ff116343686876956180e43310a33cb1824fdc2ecfda288de93f3d3f2
+        # acw_tc=76b20feb16343668739862834e311ca78a9db9e031f8a31843d88874b19a65
+        self.cookies = {  # 携带Cookie即可
+            'acw_tc': '76b20ffb16343650431205183e44ecce910ace15e292bb54562c54792ec089'
         }
 
     def match_title(self, title_name):
@@ -106,8 +155,8 @@ class Province137GuangxiSpiderSpider(scrapy.Spider):
     def data(self):
         return copy.deepcopy(self._data)
 
-    def parse(self, resp):
-        utils.add_click(self.add_click_url, resp)
+    def start_requests(self):
+        # utils.add_click(self.add_click_url, resp)
         for notice_type, sub_notice_info in self.notice_map.items():
             for sni in sub_notice_info:
                 category_code = sni.get('category_code', '')
@@ -122,16 +171,18 @@ class Province137GuangxiSpiderSpider(scrapy.Spider):
                         'Content-Type': 'application/json',
                     }, dont_filter=True, cb_kwargs={
                         'data': c_data,
-                    }
+                    },
+                    # cookies=self.cookies,
                 )
 
     def parse_list(self, resp, data):
         """
         翻页
         """
-        utils.add_click(self.add_click_url, resp)
+        # utils.add_click(self.add_click_url, resp)
         headers = utils.get_headers(resp)
         headers.update(**{
+            # 'Cookie': ';'.join(['{0}={1}'.format(k, v) for k, v in self.cookies.items()]),
             'Content-type': 'Application/json'
         })
         proxies = utils.get_proxies(resp)
@@ -161,22 +212,22 @@ class Province137GuangxiSpiderSpider(scrapy.Spider):
                         body=json.dumps(data), meta=resp.meta, headers={
                             'Content-Type': 'application/json',
                         }, dont_filter=True,
+                        # cookies=self.cookies,
                     )
         else:
             for page in range(max_page):
                 data['pageNo'] = page + 1
                 yield scrapy.Request(
                     url=self.query_url, method='POST', callback=self.parse_url,
-                    body=json.dumps(data), meta=resp.meta, headers={
-                        'Content-Type': 'application/json',
-                    }, dont_filter=True,
+                    body=json.dumps(data), meta=resp.meta, headers=headers, dont_filter=True,
+                    cookies=self.cookies,
                 )
 
     def parse_url(self, resp):
         """
         获取详情页链接
         """
-        utils.add_click(self.add_click_url, resp)
+        # utils.add_click(self.add_click_url, resp)
         content = json.loads(resp.text)
 
         hits = content.get('hits', {}).get('hits', [])
@@ -198,11 +249,12 @@ class Province137GuangxiSpiderSpider(scrapy.Spider):
                         url=''.join([self.base_url, c_url]), callback=self.parse_detail,
                         meta=resp.meta, cb_kwargs={
                             'article_id': article_id,
-                        }
+                        },
+                        # cookies=self.cookies,
                     )
 
     def parse_detail(self, resp, article_id):
-        utils.add_click(self.add_click_url, resp, **{'articleId': article_id})
+        # utils.add_click(self.add_click_url, resp, **{'articleId': article_id})
         ret = resp.xpath('//input[@name="articleDetail"]/@value').get()
         ret = json.loads(ret)
 
@@ -243,5 +295,5 @@ class Province137GuangxiSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_137_guangxi_spider -a sdt=2021-09-01 -a edt=2021-10-13".split(" "))
+    cmdline.execute("scrapy crawl province_137_guangxi_spider -a sdt=2021-10-01 -a edt=2021-10-16".split(" "))
     # cmdline.execute("scrapy crawl province_137_guangxi_spider".split(" "))
