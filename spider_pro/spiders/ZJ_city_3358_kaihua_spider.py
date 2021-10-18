@@ -24,7 +24,7 @@ class MySpider(Spider):
     area_id = "3358"
     area_province = "浙江-衢州市开化县公共资源交易服务平台"
     allowed_domains = ['kaihua.gov.cn']
-    domain_url = "http://www.kaihua.gov.cn"
+    domain_url = "www.kaihua.gov.cn"
     count_url = "http://www.kaihua.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=10"
     # 招标公告
     list_notice_category_num = ["1229091438", "1229091458", "1229091464"]
@@ -71,23 +71,20 @@ class MySpider(Spider):
         endrecord = 30
         count_num = 0
         for item in temp_list:
-            title_name = re.findall("title='(.*?)'", item.get())[0]
-            info_url = re.findall("href='(.*?)'", item.get())[0]
+            info_url = re.findall('href="(.*?)"', item.get())[0]
             pub_time = re.findall("&gt;(\d+\-\d+\-\d+)&lt;", item.get())[0]
-            pub_time = get_accurate_pub_time(pub_time)
             x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
             if x:
                 count_num += 1
                 yield scrapy.Request(url=info_url, callback=self.parse_item,  dont_filter=True,
-                                     priority=10, meta={"category_num": category_num, "pub_time": pub_time,
-                                                        "title_name": title_name})
+                                     priority=10, meta={"category_num": category_num, "pub_time": pub_time})
             if count_num >= len(temp_list):
                 startrecord += 30
                 endrecord += 30
                 if endrecord <= int(ttlrow):
                     temp_dict = self.r_dict | {"columnid": "{}".format(category_num)}
                     yield scrapy.FormRequest(self.count_url.format(str(startrecord), str(endrecord)), formdata=temp_dict,
-                                             dont_filter=True, callback=self.parse_data_urls, priority=8, cookies=self.cookies_dict,
+                                             dont_filter=True, callback=self.extract_data_urls, priority=8, cookies=self.cookies_dict,
                                              meta={"afficheType": category_num})
 
     def parse_urls(self, response):
@@ -138,7 +135,7 @@ class MySpider(Spider):
             title_name = response.xpath("//title/text()").get()
             pub_time = response.meta.get("pub_time", "")
             info_source = self.area_province
-            content = response.xpath("//table[@id='c']").get()
+            content = response.xpath("//div[@class='article']").get()
             # _, content = remove_specific_element(content, 'td', 'class', 'bt-heise', index=0)
             _, content = remove_specific_element(content, 'tr', 'align', 'center', index=0)
             _, content = remove_specific_element(content, 'td', 'align', 'right', index=0)
@@ -184,9 +181,9 @@ class MySpider(Spider):
 
             if re.search(r"终止|中止|流标|废标|异常|暂停", title_name):
                 notice_type = const.TYPE_ZB_ABNORMAL
-            elif re.search(r"招标|谈判|磋商|出让|招租", title_name):
+            elif re.search(r"单一来源|询价|竞争性谈判|竞争性磋商", title_name):
                 notice_type = const.TYPE_ZB_NOTICE
-            elif re.search(r"候选人|评标结果", title_name):
+            elif re.search(r"候选人|预中标|评标公示", title_name):
                 notice_type = const.TYPE_WIN_ADVANCE_NOTICE
             elif re.search(r"变更|更正|澄清|修正|补充", title_name):
                 notice_type = const.TYPE_ZB_ALTERATION
@@ -219,5 +216,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    # cmdline.execute("scrapy crawl ZJ_city_3358_kaihua_spider -a sdt=2020-01-04 -a edt=2020-01-04".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3358_kaihua_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3358_kaihua_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3358_kaihua_spider".split(" "))
