@@ -23,7 +23,7 @@ class MySpider(Spider):
     area_id = "3355"
     area_province = "浙江-金华市永康市公共资源交易服务平台"
     allowed_domains = ['yk.gov.cn']
-    domain_url = "http://www.yk.gov.cn"
+    domain_url = "www.yk.gov.cn"
     count_url = "http://www.yk.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=20"
     page_size = "10"
     # 招标预告

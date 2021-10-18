@@ -22,7 +22,7 @@ class MySpider(Spider):
     area_id = "3350"
     area_province = "浙江-台州市仙居县公共资源交易服务平台"
     allowed_domains = ['www.zjxj.gov.cn']
-    domain_url = "http://www.zjxj.gov.cn"
+    domain_url = "www.zjxj.gov.cn"
     count_url = "http://www.zjxj.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=15"
     page_size = "10"
     # 招标预告

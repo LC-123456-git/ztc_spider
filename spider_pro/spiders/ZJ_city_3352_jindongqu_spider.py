@@ -23,7 +23,7 @@ class MySpider(Spider):
     area_id = "3352"
     area_province = "浙江-金华市金东区公共资源交易服务平台"
     allowed_domains = ['jindong.gov.cn']
-    domain_url = "http://www.jindong.gov.cn"
+    domain_url = "www.jindong.gov.cn"
     count_url = "http://www.jindong.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=15"
     page_size = "10"
     # 招标预告
@@ -90,7 +90,7 @@ class MySpider(Spider):
                 if endrecord <= int(ttlrow):
                     temp_dict = self.r_dict | {"columnid": "{}".format(category_num)}
                     yield scrapy.FormRequest(self.count_url.format(str(startrecord), str(endrecord)), formdata=temp_dict,
-                                             dont_filter=True, callback=self.parse_data_urls, priority=8, cookies=self.cookies_dict,
+                                             dont_filter=True, callback=self.extract_data_urls, priority=8, cookies=self.cookies_dict,
                                              meta={"afficheType": category_num})
 
     def parse_urls(self, response):

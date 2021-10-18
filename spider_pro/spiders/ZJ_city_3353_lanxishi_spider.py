@@ -23,7 +23,8 @@ class MySpider(Spider):
     area_id = "3353"
     area_province = "浙江-金华市兰溪市公共资源交易服务平台"
     allowed_domains = ['lanxi.gov.cn']
-    domain_url = "http://www.lanxi.gov.cn"
+    domain_url = "www.lanxi.gov.cn"
+    domain_name_url = "http://www.lanxi.gov.cn"
     count_url = "http://www.lanxi.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=20"
     page_size = "10"
     # 招标预告
@@ -78,7 +79,7 @@ class MySpider(Spider):
         for item in temp_list:
             title_name = re.findall('title="(.*?)"', item.get())[0]
             info_url = re.findall('href="(.*?)"', item.get())[0]
-            info_url = self.domain_url + "/" + info_url
+            info_url = self.domain_name_url + "/" + info_url
             pub_time = re.findall('\d+\-\d+\-\d+', item.get())[0]
             x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
             if x:
@@ -127,7 +128,7 @@ class MySpider(Spider):
             for item in temp_list:
                 title_name = re.findall('title="(.*?)"', item.get())[0]
                 info_url = re.findall('href="(.*?)"', item.get())[0]
-                info_url = self.domain_url + "/" + info_url
+                info_url = self.domain_name_url + "/" + info_url
                 pub_time = re.findall('\d+\-\d+\-\d+', item.get())[0]
                 # info_url = "http://www.lanxi.gov.cn/art/2021/7/16/art_1229499357_59238808.html"
                 yield scrapy.Request(url=info_url, callback=self.parse_item, dont_filter=True,
@@ -153,7 +154,7 @@ class MySpider(Spider):
                             if file_url := item.xpath("./@href").get():
                                 if re.findall("""/module/download/downfile.jsp.*""", file_url):
                                     file_name = item.xpath("./text()").get()
-                                    file_url = self.domain_url + file_url
+                                    file_url = self.domain_name_url + file_url
                                     files_path[file_name] = file_url
                                 elif re.findall('http://ztbapp.lx.gov.cn/fileserver//down.*', file_url):
                                     file_name = item.xpath("./text()").get()
@@ -165,7 +166,7 @@ class MySpider(Spider):
                         files_path[file_name] = picture_url
                     if QR_code_list := re.findall('src="(/picture.*?)"', content):
                         for item in QR_code_list:
-                            QRcode_url = self.domain_url + item
+                            QRcode_url = self.domain_name_url + item
                             file_name = "QR_code"
                             files_path[file_name] = QRcode_url
             except Exception as e:

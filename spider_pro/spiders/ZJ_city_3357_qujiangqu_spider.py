@@ -22,7 +22,7 @@ class MySpider(Spider):
     area_id = "3357"
     area_province = "浙江-衢州市衢江区公共资源交易服务平台"
     allowed_domains = ['qjq.gov.cn']
-    domain_url = "http://www.qjq.gov.cn"
+    domain_url = "www.qjq.gov.cn"
     count_url = "http://www.qjq.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=15"
     # data_url = "https://www.hzctc.cn/afficheshow/Home?"
     # flie_url = "https://www.hzctc.cn:20001/UService/DownloadAndShow.aspx?dirtype=3&filepath="
@@ -76,7 +76,6 @@ class MySpider(Spider):
             title_name = re.findall("title='(.*?)'", item.get())[0]
             info_url = re.findall("href='(.*?)'", item.get())[0]
             pub_time = re.findall("&gt;(\d+\-\d+\-\d+)&lt;", item.get())[0]
-            pub_time = get_accurate_pub_time(pub_time)
             x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
             if x:
                 count_num += 1
@@ -144,8 +143,8 @@ class MySpider(Spider):
             info_source = self.area_province
             content = response.xpath("//table[@id='c']").get()
             # _, content = remove_specific_element(content, 'td', 'class', 'bt-heise', index=0)
-            _, contents = remove_specific_element(content, 'td', 'align', 'right', index=0)
-            _, content = remove_specific_element(contents, 'td', 'align', 'left', index=0)
+            _, contents = remove_specific_element(content, 'div', 'id', 'share-2', index=0)
+            _, content = remove_specific_element(contents, 'div', 'class', 'main-fl-gn bt-padding-right-20 bt-padding-left-20', index=0)
             content = re.sub("浏览次数:", "", content)
 
             files_path = {}

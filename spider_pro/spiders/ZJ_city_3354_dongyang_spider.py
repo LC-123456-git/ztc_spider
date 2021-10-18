@@ -23,7 +23,7 @@ class MySpider(Spider):
     area_id = "3354"
     area_province = "浙江-金华市东阳市公共资源交易服务平台"
     allowed_domains = ['www.dongyang.gov.cn']
-    domain_url = "http://www.dongyang.gov.cn"
+    domain_url = "www.dongyang.gov.cn"
     count_url = "http://www.dongyang.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=15"
     page_size = "10"
     # 招标预告
