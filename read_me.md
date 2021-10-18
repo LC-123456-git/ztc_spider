@@ -166,18 +166,18 @@
 - [x] 131 青海省政府采购网 http://www.ccgp-qinghai.gov.cn/
 - [x] 132 宁夏回族自治区政府采购网 http://www.ccgp-ningxia.gov.cn/
 - [] 133 江西省政府采购网 http://www.ccgp-jiangxi.gov.cn/ TODO Kela
-- [] 134 新疆政府采购网 http://www.ccgp-xinjiang.gov.cn/ TODO Kela
+- [] 134 新疆政府采购网 http://www.ccgp-xinjiang.gov.cn/ TODO 反爬
 - [x] 135 四川省政府采购网 http://www.ccgp-sichuan.gov.cn/  TODO  chaoge
 - [x] 136 江苏省政府采购网 http://www.ccgp-jiangsu.gov.cn/  TODO  chaoge
-- [] 137 广西省政府采购网 http://www.ccgp-guangxi.gov.cn/
+- [] 137 广西省政府采购网 http://www.ccgp-guangxi.gov.cn/ TODO 反爬
 - [] 138 云南省政府采购网 http://www.ccgp-yunnan.gov.cn
 - [] 139 福建省政府采购网 http://www.ccgp-fujian.gov.cn/
 - [] 140 贵州省政府采购网 http://www.ccgp-guizhou.gov.cn/
 - [x] 141 安徽省政府采购网 http://www.ccgp-anhui.gov.cn   TODO  chaoge
 - [] 142 西藏自治区政府采购网 http://www.ccgp-xizang.gov.cn/
-- [] 143 大连市政府采购网 http://www.ccgp-dalian.gov.cn/
-- [] 144 深圳市政府采购网 http://zfcg.sz.gov.cn/
-- [] 145 青岛市政府采购网 http://www.ccgp-qingdao.gov.cn/
+- [] 143 大连市政府采购网 http://www.ccgp-dalian.gov.cn/ TODO Kela
+- [] 144 深圳市政府采购网 http://zfcg.sz.gov.cn/ TODO Kela
+- [] 145 青岛市政府采购网 http://www.ccgp-qingdao.gov.cn/ TODO Kela
 - [] 146 兵团政府采购网 http://www.ccgp-qingdao.gov.cn/
 
 ---
