@@ -23,10 +23,10 @@ class MySpider(Spider):
     area_id = "3359"
     area_province = "浙江-衢州市柯城区公共资源交易服务平台"
     allowed_domains = ['kecheng.gov.cn']
-    domain_url = "http://www.kecheng.gov.cn"
+    domain_url = "www.kecheng.gov.cn"
+    domains_url = "http://www.kecheng.gov.cn"
     count_url = "http://www.kecheng.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=20"
     type_list = ["6600801", "6600802", "6600803", "6600804"]
-
 
     def __init__(self, *args, **kwargs):
         super(MySpider, self).__init__()
@@ -63,7 +63,7 @@ class MySpider(Spider):
         for item in temp_list:
             info_url = re.findall('href="(.*?)"', item.get())[0]
             pub_time = re.findall("&gt;(\d+\-\d+\-\d+)&lt;", item.get())[0]
-            info_url = self.domain_url + info_url
+            info_url = self.domains_url + info_url
             x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
             if x:
                 count_num += 1
@@ -108,20 +108,17 @@ class MySpider(Spider):
             temp_list = response.xpath("recordset//record")
             category_num = response.meta["afficheType"]
             for item in temp_list:
-                info_url = re.findall('href="(.*?)"', item.get())[0]
+                info_url_str = re.findall('href="(.*?)"', item.get())[0]
                 pub_time = re.findall("&gt;(\d+\-\d+\-\d+)&lt;", item.get())[0]
-                info_url = self.domain_url + info_url
+                info_url = self.domains_url + info_url_str
                 yield scrapy.Request(url=info_url, callback=self.parse_item, dont_filter=True,
-                                     priority=10, meta={
-                                           "category_num": category_num, "pub_time": pub_time,
-                                           })
+                                     priority=10, meta={"category_num": category_num, "pub_time": pub_time})
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
     def parse_item(self, response):
         if response.status == 200:
             origin = response.url
-            print(origin)
             category_num = response.meta.get("category_num", "")
             title_name = response.xpath("//td[@class='title']/text()").get()
             title_name = title_name.strip()
@@ -136,7 +133,7 @@ class MySpider(Spider):
             if file_notout_time(pub_time):
                 if file_list := re.findall("""附件:<a href="(.*)"><strong>""", content):
                     file_suffix = file_list[0].split(".")[1]
-                    file_url = self.domain_url + file_list[0]
+                    file_url = self.domains_url + file_list[0]
                     file_name = "附件下载." + file_suffix
                     files_path[file_name] = file_url
 
@@ -181,5 +178,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3359_kechengqu_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3359_kechengqu_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3359_kechengqu_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3359_kechengqu_spider".split(" "))
