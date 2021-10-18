@@ -29,6 +29,27 @@ headers = {
 }
 
 
+def get_crwal_turn_page_command(pub_time, start_time, end_time):
+    """
+    + 不在区间内不采集
+    + 小于等于最小时间，不翻页
+    """
+    do_crawl = True
+    do_turn_page = True
+
+    pub_time = convert_to_strptime(pub_time)
+    start_time = convert_to_strptime(start_time)
+    end_time = convert_to_strptime(end_time)
+
+    if pub_time < start_time or pub_time > end_time:
+        do_crawl = False
+
+    if pub_time <= start_time:
+        do_turn_page = False
+
+    return do_crawl, do_turn_page
+
+
 def format_referer(url):
     referer = re.sub(r'[A-Za-z0-9=]+\.html', 'index.html', url)
     return referer
@@ -121,7 +142,7 @@ def get_page(url, method='GET', headers=None, proxies=None, data=None, set_decod
 
 
 def judge_in_interval(url, start_time=None, end_time=None, method='GET', headers=None, proxies=None, doc_type='html',
-                      data=None, rule=None, date_type='string'):
+                      data=None, rule=None, date_type='string', encoding='utf-8'):
     """
     翻页
     @rule: xpath解析规则
@@ -145,9 +166,9 @@ def judge_in_interval(url, start_time=None, end_time=None, method='GET', headers
         try:
             text = ''
             if method == 'GET':
-                text = requests.get(url=url, headers=headers, proxies=proxies).content.decode('utf-8')
+                text = requests.get(url=url, headers=headers, proxies=proxies).content.decode(encoding)
             if method == 'POST':
-                text = requests.post(url=url, data=data, headers=headers, proxies=proxies).content.decode('utf-8')
+                text = requests.post(url=url, data=data, headers=headers, proxies=proxies).content.decode(encoding)
             if text:
                 doc = None
                 if doc_type == 'html':
@@ -155,8 +176,8 @@ def judge_in_interval(url, start_time=None, end_time=None, method='GET', headers
                 if doc_type == 'xml':
                     doc = etree.XML(text)
                 if doc_type == 'json':
-                    text = xmltodict.unparse({"root": json.loads(text)}).encode('utf-8')
-                    doc = etree.XML(text)
+                    text = xmltodict.unparse({"root": json.loads(text)}).encode(encoding)
+                    doc = etree.XML(text)   # '//*[@id="MoreInfoList_DataGrid1"]/tbody/tr[1]/td[3]/text()'
 
                 els = doc.xpath(rule) if doc else []
                 if els:
@@ -190,7 +211,7 @@ def judge_in_interval(url, start_time=None, end_time=None, method='GET', headers
                         else:
                             status = 1
         except Exception as e:
-            pass
+            print(e)
     else:
         status = 1  # 没有传递时间
     return status
@@ -1101,7 +1122,7 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
             elif re.search(province_name, data):
                 deal_area_dict = temp_area_data(province_name, province_code, province, data)
                 return deal_area_dict
-    elif area_id in ['125']:
+    elif area_id in ['125', 143]:
         area_dict = const.liao_ning
         province_name = area_dict["name"]
         province_code = area_dict["code"]
