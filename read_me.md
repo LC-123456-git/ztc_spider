@@ -178,7 +178,7 @@
 - [] 143 大连市政府采购网 http://www.ccgp-dalian.gov.cn/ TODO Kela
 - [] 144 深圳市政府采购网 http://zfcg.sz.gov.cn/ TODO Kela
 - [] 145 青岛市政府采购网 http://www.ccgp-qingdao.gov.cn/ TODO Kela
-- [] 146 兵团政府采购网 http://www.ccgp-qingdao.gov.cn/
+- [] 146 兵团政府采购网 http://www.ccgp-qingdao.gov.cn/   TODO chaoge 
 
 ---
 
