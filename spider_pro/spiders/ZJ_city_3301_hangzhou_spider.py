@@ -146,7 +146,6 @@ class MySpider(Spider):
     def parse_item(self, response, name):
         if response.status == 200:
             origin = response.url
-            print(origin)
             info_source = response.meta.get("info_source")
             classifyShow = response.meta.get("classifyShow")
             title_name = response.meta.get("title_name")
@@ -176,8 +175,6 @@ class MySpider(Spider):
                 if re.search(r"网上提疑", content):
                     rule = re.compile(r'<table class="MsoNormalTable" style="border: none; border-collapse: collapse;".*?>(.*?)</table>', re.S)
                     content = content.replace(re.findall(rule, content)[0], '')
-
-
                 is_clean = True
             # 判断是pdf页面
                 files_list = []

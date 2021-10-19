@@ -136,7 +136,6 @@ class MySpider(Spider):
     def parse_item(self, response):
         if response.status == 200:
             origin = response.url
-            print(origin)
             category_num = response.meta.get("category_num", "")
             title_name = response.xpath("//td[@class='title']/text()").get()
             pub_time = response.meta.get("pub_time", "")
@@ -154,20 +153,13 @@ class MySpider(Spider):
                                     files_path[file_name] = file_url
                                 elif re.findall('http://ggzyjy.dongyang.gov.cn/fileserver//down.*', file_url):
                                     file_name = item.xpath("./text()").get()
-                                    # file_url = file_url
                                     files_path[file_name] = file_url
                     # 招标文件正文
                     if picture_url := response.xpath("//div[@class='Main-p floatL']//img[@class='Wzimg']/@src").get():
                         file_name = "picture.jpg"
                         files_path[file_name] = picture_url
-                # if QR_code_list := re.findall('src="(/picture.*?)"', content):
-                #     for item in QR_code_list:
-                #         QRcode_url = self.domain_url + item
-                #         file_name = "QR_code"
-                #         files_path[file_name] = QRcode_url
             except Exception as e:
                 print(e)
-            print(files_path)
             if category_num in self.list_advance_notice_num:
                 notice_type = const.TYPE_ZB_ADVANCE_NOTICE
             elif category_num in self.list_notice_category_num:
