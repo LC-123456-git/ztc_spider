@@ -67,7 +67,7 @@ class MySpider(Spider):
         #     temp_dict = self.r_dict | {"afficheType": str(item)} | {'page': '1'}
         #     yield scrapy.FormRequest(self.count_url, formdata=temp_dict, callback=self.parse_urls, priority=7,
         #                              meta={"afficheType": str(item)})
-        # item = 22
+
             temp_dict = self.r_dict | {"afficheType": str(item)} | {'page': '1'}
             yield scrapy.FormRequest(self.count_url, formdata=temp_dict, callback=self.parse_urls, priority=7,
                                      meta={"afficheType": str(item)})
@@ -129,12 +129,12 @@ class MySpider(Spider):
                     self.classifyShow = "综合其他"
 
                 data_dict = {"AfficheID": AfficheID, "IsInner": IsInner, "ModuleID": afficheType}
-                # url = "https://ggzy.hzctc.hangzhou.gov.cn/afficheshow/Home?Affic...sInner=3&ModuleID=32"
-                # yield scrapy.Request(url=url,
+                # url = "https://ggzy.hzctc.hangzhou.gov.cn/afficheshow/Home?AfficheID=e526a16d-76ba-4587-9f47-0affc79ea743&IsInner=0&ModuleID=22"
+                # yield scrapy.Request(url=url, priority=10,
                 #                      callback=self.parse_item, cb_kwargs=self.cb_kwargs, dont_filter=True,
                 #                      meta={"cb_kwargs": self.cb_kwargs, "info_source": info_source,
                 #                            "classifyShow": self.classifyShow, "pub_time": pub_time,
-                #                            "title_name":title_name})
+                #                            "title_name": title_name})
                 yield scrapy.Request(url=f"{self.data_url}{urllib.parse.urlencode(data_dict)}", priority=10,
                                      callback=self.parse_item, cb_kwargs=self.cb_kwargs, dont_filter=True,
                                      meta={"cb_kwargs": self.cb_kwargs, "info_source": info_source,
@@ -256,5 +256,5 @@ class MySpider(Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3301_hangzhou_spider -a sdt=2021-06-04 -a edt=2021-06-18".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3301_hangzhou_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3301_hangzhou_spider -a sdt=2021-06-04 -a edt=2021-06-28".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3301_hangzhou_spider".split(" "))

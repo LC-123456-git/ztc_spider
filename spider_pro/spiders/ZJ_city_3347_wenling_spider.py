@@ -90,7 +90,7 @@ class MySpider(Spider):
                 if endrecord <= int(ttlrow):
                     temp_dict = self.r_dict | {"columnid": "{}".format(category_num)}
                     yield scrapy.FormRequest(self.count_url.format(str(startrecord), str(endrecord)), formdata=temp_dict,
-                                             dont_filter=True, callback=self.parse_data_urls, priority=8, cookies=self.cookies_dict,
+                                             dont_filter=True, callback=self.extract_data_urls, priority=8, cookies=self.cookies_dict,
                                              meta={"afficheType": category_num})
 
     def parse_urls(self, response):
@@ -123,9 +123,9 @@ class MySpider(Spider):
             temp_list = response.xpath("recordset//record")
             category_num = response.meta["afficheType"]
             for item in temp_list:
-                # title_name = re.findall('title="(.*?)"', item.get())[0]
                 info_url = re.findall('href="(.*?)"', item.get())[0]
                 info_url = self.domain_url + "/" + info_url
+
                 pub_time = re.findall('\d+\-\d+\-\d+', item.get())[0]
                 # info_url = "http://www.lanxi.gov.cn/art/2021/7/16/art_1229499357_59238808.html"
                 yield scrapy.Request(url=info_url, callback=self.parse_item, dont_filter=True,
@@ -225,5 +225,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3347_wenling_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3347_wenling_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3347_wenling_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3347_wenling_spider".split(" "))
