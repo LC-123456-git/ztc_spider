@@ -181,7 +181,7 @@ class MySpider(CrawlSpider):
             pub_time = response.meta['pub_time']
             pub_time = get_accurate_pub_time(pub_time)
             if '测试' not in title_name:
-                notice_type = get_notice_type(title_name, response.meta['notice'])
+                notice_type = response.meta['notice']
                 if notice_type:
                     content = response.xpath('//div[@class="con"]').get()
                     # 去除 title
@@ -193,7 +193,7 @@ class MySpider(CrawlSpider):
 
                     files_text = etree.HTML(content)
                     keys_a = []
-                    files_path = get_files(self.domain_url, origin, files_text, keys_a=keys_a)
+                    files_path = get_files(self.domain_url, origin, files_text, pub_time=pub_time, keys_a=keys_a)
 
                     notice_item = NoticesItem()
                     notice_item["origin"] = origin

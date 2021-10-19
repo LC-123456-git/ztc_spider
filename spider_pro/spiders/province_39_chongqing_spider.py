@@ -11,18 +11,8 @@ from lxml import etree
 from scrapy.spiders import Spider
 from spider_pro.items import NoticesItem
 from spider_pro import constans as const
-from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, remove_specific_element, get_files
-
-
-
-def get_time(str):
-    name = ''.join(re.findall('\d{4}-\d{2}-\d{2}', str)).replace('-', '')
-    return name
-
-def get_url(name):
-    str = ''.join(re.findall('(.*)\/\w+.\w+', name)).strip()
-    return str
-
+from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, remove_specific_element, get_files, \
+     remove_element_by_xpath
 
 class MySpider(Spider):
     name = "province_39_chongqing_spider"
@@ -83,10 +73,9 @@ class MySpider(Spider):
 
     def parse_categoy_data_urls(self, response):
         try:
-            pn = 0
             if json.loads(response.text)['result']['totalcount'] != 0:
                 if self.enable_incr:
-                    nums_count = 1
+                    nums_count = 0
                     data_info_count = response.json()['result']['records']
                     for data_info in data_info_count:
                         put_time = data_info['pubinwebdate']
@@ -112,26 +101,25 @@ class MySpider(Spider):
                             total = response.json()['result']['totalcount']  # 总条数
                             if total == None:
                                 return
-                            self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                            # self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
                             yield scrapy.Request(url=info_url, callback=self.parse_itme,
                                                  meta={'put_time': put_time,
                                                        'title_name': title_name,
                                                        'category': category,
                                                        'info_count': info_count})
                         if nums_count >= len(data_info_count):
-                            pn += 50
-                        else:
-                            break
-                        new_dicts = response.meta['new_dict'] | {'pn': pn} | {'time': [response.meta['new_dict']
-                                    ['time'][0] | {'startTime': self.sdt_time} | {'endTime': self.edt_time}]}
-                        yield scrapy.Request(url=self.data_url, dont_filter=True,
-                                             callback=self.parse_categoy_data_urls, method='post',
-                                             body=json.dumps(new_dicts), meta={'new_dict': new_dicts})
+                            pn = response.meta['pn'] + 50
+                            new_dicts = response.meta['new_dict'] | {'pn': pn} | {'time': [response.meta['new_dict']
+                                        ['time'][0] | {'startTime': self.sdt_time} | {'endTime': self.edt_time}]}
+                            yield scrapy.Request(url=self.data_url, dont_filter=True,
+                                                 callback=self.parse_categoy_data_urls, method='post',
+                                                 body=json.dumps(new_dicts), meta={'new_dict': new_dicts})
 
                 else:
                     total = json.loads(response.text)['result']['totalcount']
                     pages = math.ceil(int(total) / 50)
                     self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
+                    pn = 0
                     for num in range(pages):
                         if num == 0:
                             pn = pn
@@ -217,6 +205,12 @@ class MySpider(Spider):
                 _, content = remove_specific_element(content, 'div', 'class', 'ewb-acce')
                 _, content = remove_specific_element(content, 'iframe', 'id', 'wytw')
                 _, content = remove_specific_element(content, 'div', 'id', 'normal')
+                _, content = remove_element_by_xpath(content, xpath_rule='//div[@id="mainContent"]/div/a[contains(string(), "请到原网址下载附件")]')
+
+                _, content = remove_element_by_xpath(content, xpath_rule='//div[@id="mainContent"]/div/h4[contains(string(), "附件")]')
+
+                _, content = remove_specific_element(content, 'div', 'list-name', '附件列表')
+
                 patterns = re.compile(r'<a target="_blank" .*?>(.*?)</div>', re.S)
                 content = content.replace(''.join(re.findall(patterns, content)), '')
 
@@ -225,11 +219,14 @@ class MySpider(Spider):
                 files_path = get_files(self.domain_url, origin, files_text, pub_time=pub_time,
                                        start_urls=self.domain_url, keys_a=keys_a, base_url=self.base_url)
                 num = 1
-                for itme_key in files_path.values():
-                    content = ''.join(content).replace('<a class="ewb-blue-a" onclick="{}">'.format(files_text.xpath('//a[{}]/@onclick'.format(num))[0]),
-                                                       '<a class="ewb-blue-a" href="{}">'.format(itme_key))
-                    num += 1
-
+                if files_path:
+                    for itme_key in files_path.values():
+                        if files_text.xpath('//a/@onclick'):
+                            content = ''.join(content).replace('<a class="ewb-blue-a" onclick="{}">'.format(files_text.xpath('//a[{}]/@onclick'.format(num))[0]),
+                                                           '<a class="ewb-blue-a" href="{}">'.format(itme_key))
+                        else:
+                            content = content
+                        num += 1
 
                 notice_item = NoticesItem()
                 notice_item["origin"] = origin
@@ -249,5 +246,5 @@ class MySpider(Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_39_chongqing_spider".split(" "))
-    # cmdline.execute("scrapy crawl province_39_chongqing_spider -a sdt=2021-05-01 -a edt=2021-10-22".split(" "))
+    # cmdline.execute("scrapy crawl province_39_chongqing_spider".split(" "))
+    cmdline.execute("scrapy crawl province_39_chongqing_spider -a sdt=2021-05-01 -a edt=2021-10-22".split(" "))
