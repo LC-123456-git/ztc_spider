@@ -1122,7 +1122,7 @@ def deal_area_data(title_name=None, info_source=None, area_id=None):
             elif re.search(province_name, data):
                 deal_area_dict = temp_area_data(province_name, province_code, province, data)
                 return deal_area_dict
-    elif area_id in ['125', 143]:
+    elif area_id in ['125', '143']:
         area_dict = const.liao_ning
         province_name = area_dict["name"]
         province_code = area_dict["code"]

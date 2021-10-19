@@ -53,6 +53,11 @@ class Province133JiangxiSpiderSpider(scrapy.Spider):
         '合同公告': '002006006',
     }
 
+    # # 不使用代理
+    # custom_settings = {
+    #     'ENABLE_PROXY_USE': False
+    # }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.start_time = kwargs.get('sdt', '')
@@ -96,7 +101,7 @@ class Province133JiangxiSpiderSpider(scrapy.Spider):
                 break
         return notice_type
 
-    def parse(self, resp):
+    def start_requests(self):
         for sub_notice, category_num in self.notice_code_map.items():
             query_data = self.query_data
             query_data['category_num'] = category_num

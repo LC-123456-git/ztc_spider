@@ -4,8 +4,6 @@
 # @date           :2021/10/18 09:57:50
 # @author         :miaokela
 # @version        :1.0
-import copy
-
 import requests
 import scrapy
 import re
@@ -19,7 +17,7 @@ class Province143DalianSpiderSpider(scrapy.Spider):
     allowed_domains = ['ccgp-dalian.gov.cn']
     start_urls = ['http://ccgp-dalian.gov.cn/']
 
-    basic_area = '大连政府采集网'
+    basic_area = '辽宁省-大连政府采集网'
     area_id = 143
     query_url = 'http://ccgp-dalian.gov.cn'
     url_map = {
@@ -68,7 +66,7 @@ class Province143DalianSpiderSpider(scrapy.Spider):
         '候选人': '中标预告',
     }
     custom_settings = {
-        'CONCURRENT_REQUESTS': 8,
+        'CONCURRENT_REQUESTS': 4,
         'TIME_DELAY_REQUEST': 0.5,
     }
 
@@ -186,7 +184,7 @@ class Province143DalianSpiderSpider(scrapy.Spider):
             notice_item
         }
         """
-        content = resp.xpath('//table[@id="tblInfo"]').get()
+        content = resp.xpath('//table[@id="_Sheet1"]').get()
         title_name = resp.meta.get('title_name')
         notice_type_ori = resp.meta.get('notice_type')
 
@@ -213,7 +211,7 @@ class Province143DalianSpiderSpider(scrapy.Spider):
         notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
         notice_item["content"] = content
         notice_item["area_id"] = self.area_id
-        notice_item["category"] = resp.meta.get('category', '')
+        notice_item["category"] = '政府采购'
         print(resp.meta.get('pub_time'), resp.url)
         return notice_item
 
