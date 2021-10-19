@@ -6,6 +6,7 @@
 # @version        :1.0
 import ast
 import copy
+import datetime
 import json
 import re
 import math
@@ -53,15 +54,10 @@ class Province133JiangxiSpiderSpider(scrapy.Spider):
         '合同公告': '002006006',
     }
 
-    # # 不使用代理
-    # custom_settings = {
-    #     'ENABLE_PROXY_USE': False
-    # }
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.start_time = kwargs.get('sdt', '')
-        self.end_time = kwargs.get('edt', '')
+        self.start_time = kwargs.get('sdt', '2021-01-01')
+        self.end_time = kwargs.get('edt', '{0:%Y-%m-%d}'.format(datetime.datetime.now()))
         self._query_data = {
             "page_index": "1",
             "page_size": "22",
@@ -115,7 +111,7 @@ class Province133JiangxiSpiderSpider(scrapy.Spider):
                     'notice_type': Province133JiangxiSpiderSpider.get_notice(sub_notice),
                     'category_num': category_num,
                 }, cb_kwargs={
-                    'query_data': query_data,
+                    'query_data': copy.deepcopy(query_data),
                 }
             )
 
@@ -137,7 +133,7 @@ class Province133JiangxiSpiderSpider(scrapy.Spider):
                 yield scrapy.Request(
                     url=c_query_url, callback=self.parse_url,
                     dont_filter=True, meta=resp.meta,
-                    priority=max_page - page
+                    priority=(max_page - page) * 10
                 )
 
     def parse_url(self, resp):
@@ -177,7 +173,7 @@ class Province133JiangxiSpiderSpider(scrapy.Spider):
                 })
                 yield scrapy.Request(
                     url=detail_url, callback=self.parse_detail,
-                    meta=resp.meta, priority=10 * 4 * (len(table) - n)
+                    meta=resp.meta, priority=10 ** 4 * (len(table) - n)
                 )
 
     def parse_detail(self, resp):
@@ -219,5 +215,5 @@ class Province133JiangxiSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_133_jiangxi_spider -a sdt=2021-09-01 -a edt=2021-10-10".split(" "))
-    # cmdline.execute("scrapy crawl province_133_jiangxi_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_133_jiangxi_spider -a sdt=2021-09-01 -a edt=2021-10-10".split(" "))
+    cmdline.execute("scrapy crawl province_133_jiangxi_spider".split(" "))

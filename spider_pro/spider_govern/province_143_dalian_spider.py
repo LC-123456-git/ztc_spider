@@ -187,6 +187,7 @@ class Province143DalianSpiderSpider(scrapy.Spider):
         content = resp.xpath('//table[@id="_Sheet1"]').get()
         title_name = resp.meta.get('title_name')
         notice_type_ori = resp.meta.get('notice_type')
+        pub_time = resp.meta.get('pub_time')
 
         # 关键字重新匹配 notice_type
         matched, match_notice_type = self.match_title(title_name)
@@ -197,13 +198,13 @@ class Province143DalianSpiderSpider(scrapy.Spider):
             filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT))
 
         # 匹配文件
-        _, files_path = utils.catch_files(content, self.query_url, resp=resp)
+        _, files_path = utils.catch_files(content, self.query_url, pub_time=pub_time, resp=resp)
 
         notice_item = items.NoticesItem()
         notice_item["origin"] = resp.url
 
         notice_item["title_name"] = title_name
-        notice_item["pub_time"] = resp.meta.get('pub_time')
+        notice_item["pub_time"] = pub_time
 
         notice_item["info_source"] = self.basic_area
         notice_item["is_have_file"] = constans.TYPE_HAVE_FILE if files_path else constans.TYPE_NOT_HAVE_FILE

@@ -67,6 +67,16 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
     page=%2Fsdgp2014%2Fsite%2Fchannelall370200.jsp%3Fcolcode%3D0401%26flag%3D0401
     scriptSessionId={script_session_id}""".replace(' ', '')
 
+    # custom_settings = {
+    #     'DOWNLOADER_MIDDLEWARES': {
+    #         'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+    #         'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+    #     },
+    #
+    #     # 'CONCURRENT_REQUESTS': 4,
+    #     'ENABLE_PROXY_USE': False,
+    # }
+
     # @category_id: 栏目ID
     # @index: 所在页索引
     # @page_size: 当前页总记录数
@@ -78,9 +88,9 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
         self.start_time = kwargs.get('sdt', '')
         self.end_time = kwargs.get('edt', '')
         self.patch_id = 1
-        self.cookies = {
-            'DWRSESSIONID': '~PU!Y8CjFdhM3vA1fbPHobMm8EL5vMvOZNn'
-        }
+        # self.cookies = {
+        #     'DWRSESSIONID': '~PU!Y8CjFdhM3vA1fbPHobMm8EL5vMvOZNn'
+        # }
 
     def match_title(self, title_name):
         """
@@ -207,7 +217,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                     }, cb_kwargs={
                         'pay_load': copy.deepcopy(pay_load_data)
                     }, dont_filter=True,
-                    cookies=self.cookies
+                    # cookies=self.cookies
                 )
 
     def parse_list(self, resp, pay_load):
@@ -215,7 +225,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
         翻页
         """
         headers = utils.get_headers(resp)
-        headers.update(**{'Cookie': '{}={}'.format(list(self.cookies.keys())[0], list(self.cookies.values())[0])})
+        # headers.update(**{'Cookie': '{}={}'.format(list(self.cookies.keys())[0], list(self.cookies.values())[0])})
         proxies = utils.get_proxies(resp)
 
         """
@@ -255,7 +265,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                         url=self.query_url, method='POST', body=c_pay_load,
                         callback=self.parse_urls, meta=resp.meta,
                         dont_filter=True,
-                        cookies=self.cookies
+                        # cookies=self.cookies
                     )
         else:
             for i in range(100):
@@ -263,15 +273,15 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                 # print(index)
                 self.patch_id += 1
                 pay_load.update(**{
-                    'patch_id': self.patch_id
+                    'patch_id': self.patch_id,
+                    'index': index,
                 })
                 c_pay_load = self.pay_load.format(**pay_load)
-                self.logger.info(c_pay_load)
                 yield scrapy.Request(
                     url=self.query_url, method='POST', body=c_pay_load,
                     callback=self.parse_urls, meta=resp.meta,
                     dont_filter=True,
-                    cookies=self.cookies
+                    # cookies=self.cookies
                 )
 
     def parse_urls(self, resp):
@@ -281,7 +291,6 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
             rslt_string = com.findall(resp.text)[0]
             rslt_string = u'{}'.format(rslt_string).encode('utf-8').decode('unicode_escape')
             rslt_string_list = Province145QingdaoSpiderSpider.format_rslt_string(rslt_string)
-            self.logger.info(rslt_string_list)
         except Exception as e:
             self.logger.info('error: {0}, body:{1}'.format(e, resp.body))
         else:
@@ -301,7 +310,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                     yield scrapy.Request(
                         url=c_url, callback=self.parse_detail,
-                        meta=resp.meta,
+                        meta=resp.meta, priority=(len(rslt_string_list) - n) * 10 ** 4
                     )
 
     def parse_detail(self, resp):
@@ -350,5 +359,5 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_145_qingdao_spider -a sdt=2021-09-01 -a edt=2021-10-15".split(" "))
-    # cmdline.execute("scrapy crawl province_145_qingdao_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_145_qingdao_spider -a sdt=2021-09-01 -a edt=2021-10-15".split(" "))
+    cmdline.execute("scrapy crawl province_145_qingdao_spider".split(" "))

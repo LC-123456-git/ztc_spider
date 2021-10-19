@@ -259,7 +259,7 @@ class ProxyMiddleware(RetryMiddleware):
         c_count = 0
         while True:
             try:
-                self.logger.info('强制终止计数{}/180'.format(c_count))
+                # self.logger.info('强制终止计数{}/180'.format(c_count))
                 if c_count == 180:  # 10s 循环一次 半小时请求数不变表示阻塞 强制终止爬虫
                     self.logger.info('正在强制终止爬虫...')
                     break
