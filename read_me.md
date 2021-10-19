@@ -174,9 +174,9 @@
 - [] 139 福建省政府采购网 http://www.ccgp-fujian.gov.cn/
 - [] 140 贵州省政府采购网 http://www.ccgp-guizhou.gov.cn/
 - [x] 141 安徽省政府采购网 http://www.ccgp-anhui.gov.cn   TODO  chaoge
-- [] 142 西藏自治区政府采购网 http://www.ccgp-xizang.gov.cn/
+- [] 142 西藏自治区政府采购网 http://www.ccgp-xizang.gov.cn/ TODO Kela
 - [] 143 大连市政府采购网 http://www.ccgp-dalian.gov.cn/ TODO Kela
-- [] 144 深圳市政府采购网 http://zfcg.sz.gov.cn/ TODO Kela
+- [] 144 深圳市政府采购网 http://zfcg.sz.gov.cn/
 - [x] 145 青岛市政府采购网 http://www.ccgp-qingdao.gov.cn/ TODO Kela
 - [] 146 兵团政府采购网 http://www.ccgp-qingdao.gov.cn/   TODO chaoge 
 
