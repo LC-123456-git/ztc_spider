@@ -6,10 +6,7 @@
 # @version        :1.0
 import json
 import math
-import requests
-import scrapy
 import re
-from lxml import etree
 
 from spider_pro import constans, utils, items
 import scrapy
@@ -24,7 +21,7 @@ class Province142XizangProvinceSpiderSpider(scrapy.Spider):
     area_id = 142
     base_url = 'http://ccgp-xizang.gov.cn'
 
-    PAGE_SIZE = 20
+    PAGE_SIZE = 60
     query_url = 'http://www.ccgp-xizang.gov.cn/freecms/rest/v1/notice/selectInfoMoreChannel.do?' \
                 '&siteId=18de62f0-2fb0-4187-a6c1-cd8fcbfb4585&channel=b541ffff-03ee-4160-be64-b11ccf79660d' \
                 '&currPage={cur_page}&pageSize=%d&noticeType={notice_type_code}&cityOrArea=&noticeName=&operationStartTime=' \
@@ -119,8 +116,7 @@ class Province142XizangProvinceSpiderSpider(scrapy.Spider):
         max_page = math.ceil(total / self.PAGE_SIZE)
 
         if all([self.start_time, self.end_time]):
-            # for i in range(max_page):
-            for i in range(2):
+            for i in range(max_page):
                 c_url = self.query_url.format(
                     notice_type_code=notice_type_code,
                     cur_page=i + 1
