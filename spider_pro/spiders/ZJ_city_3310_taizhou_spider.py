@@ -10,7 +10,9 @@ import json
 import scrapy
 import random
 import datetime
+import requests
 from lxml import etree
+from ast import literal_eval
 from urllib import parse
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
@@ -22,8 +24,8 @@ from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_tim
 class MySpider(CrawlSpider):
     name = 'ZJ_city_3310_taizhou_spider'
     area_id = "3310"
-    domain_url = "http://tzztb.zjtz.gov.cn"
-    query_url = "http://tzztb.zjtz.gov.cn/tzcms/{}/index.htm"
+    domain_url = "https://tzztb.zjtz.gov.cn"
+    query_url = "https://tzztb.zjtz.gov.cn/tzcms/{}/index.htm"
     allowed_domains = ['tzztb.zjtz.gov.cn']
     area_province = "浙江-台州市公共资源交易服务平台"
 
@@ -148,6 +150,7 @@ class MySpider(CrawlSpider):
                         notice = const.TYPE_ZB_ABNORMAL
                     else:
                         notice = 'null'
+                    # info_url = "https://tzztb.zjtz.gov.cn/tzcms/gcjyzhaobgg/330694.htm"
                     yield scrapy.Request(url=info_url, callback=self.parse_item, dont_filter=True, priority=10,
                                          meta={'pub_time': pub_time, 'title_name': title_name,
                                                'info_source': info_source, 'notice_type': notice})
@@ -158,30 +161,50 @@ class MySpider(CrawlSpider):
     def parse_item(self, response):
         if response.status == 200:
             origin = response.url
-            contents = response.xpath('//div[@class="content-box"]')
+            print(origin)
+            contents = response.xpath('//div[@class="content-text"]').get()
             category = response.xpath("//div[@class='outer-content']/p/a[3]/text()").get()
-            doc = etree.HTML(contents.get())
-            el = doc.xpath('//table')[1]
-            el.getparent().remove(el)
-            content = etree.tounicode(doc)
             files_path = {}
-            if Notice_file := response.xpath('//div[@class="content-text"]/p/img/@src'):
-                keys = "notice_file"
-                files_path[keys] = Notice_file
-            if tr_list := response.xpath("//div[@class='content-box']/table[1]/tr"):
-                for n, tr in enumerate(tr_list):
-                    if n == 0:
-                        continue
-                    else:
-                        keys = tr.xpath("./td[1]/a/text()").get()
-                        value = tr.xpath("./td[2]/a/@href").get()
-                        if "http" in value:
-                            files_path[keys] = value
-                        else:
-                            value = self.domain_url + value
-                            files_path[keys] = value
+            files_list = []
+            try:
+                getfile_info_list = re.findall('Cms.attachment\("(.*?)","(.*?)","(.*?)","(.*?)"\)', response.text)
+                for item in getfile_info_list:
+                    base = item[0]
+                    self.cid = item[1]
+                    self.file_num = item[2]
+                    if int(self.file_num) > 0:
+                        file_info_url = "{}{}/attachment_url.jspx?cid={}&n={}".format(self.domain_url, base, self.cid, self.file_num)
+                        response_dict = requests.get(file_info_url)
+                        self.file_list = response_dict.content.decode('utf-8')
+                        literal_eval(self.file_list)
+                        file_neme_list = response.xpath("//table/tr/td/a/@title").getall()
+                        file_neme_list.remove("文件下载")
+                        for i, get_info in enumerate(literal_eval(self.file_list)):
+                            temp_url = "{}/tzcms/attachment.jspx?cid={}&i={}{}".format(self.domain_url, self.cid, i, get_info)
+                            file_path_str = "<a href='{}'>{}</a>".format(temp_url, file_neme_list[i])
+                            files_list.append(file_path_str)
+                            files_path[file_neme_list[i]] = temp_url
+                        file_paths = "<br/>".join(files_list)
+                        contents = re.sub("</div> </div>", "</div>{}</div>".format(file_paths), contents)
 
-            print(content)
+                if Notice_file := response.xpath('//div[@class="content-text"]/p/img/@src'):
+                    keys = "notice_file"
+                    files_path[keys] = Notice_file
+                # if tr_list := response.xpath("//div[@class='content-box']/table[1]/tr"):
+                #     for n, tr in enumerate(tr_list):
+                #         if n == 0:
+                #             continue
+                #         else:
+                #             keys = tr.xpath("./td[1]/a/text()").get()
+                #             value = tr.xpath("./td[2]/a/@href").get()
+                #             if "http" in value:
+                #                 files_path[keys] = value
+                #             else:
+                #                 value = self.domain_url + value
+                #                 files_path[keys] = value
+            except Exception as e:
+                print(e)
+                self.logger.error(f"parse_item:获取文件失败 {e} {response.url=}")
             notice_item = NoticesItem()
             notice_item["origin"] = origin
             notice_item["title_name"] = response.meta["title_name"]
@@ -193,7 +216,6 @@ class MySpider(CrawlSpider):
             notice_item["content"] = contents
             notice_item["area_id"] = self.area_id
             notice_item["category"] = category
-            print(notice_item)
             yield notice_item
 
 
@@ -201,4 +223,4 @@ if __name__ == "__main__":
     from scrapy import cmdline
 
     cmdline.execute("scrapy crawl ZJ_city_3310_taizhou_spider".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3309_wenzhou_spider -a sdt=2015-02-01 -a edt=2021-03-10".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3310_taizhou_spider -a sdt=2015-02-01 -a edt=2021-03-10".split(" "))
