@@ -181,8 +181,8 @@
 - [] 146 兵团政府采购网 http://www.ccgp-qingdao.gov.cn/   TODO chaoge 
 - [] 147 工程电子招标采购平台 http://ebidding.shoukaigufen.com.cn/  TODO zequn
 - [] 148 中国通用招标网 https://www.china-tender.com.cn/  TODO Kela
-- [] 149 中招联合招标采购平台 http://www.365trade.com.cn/
-- [] 150 冀招标全流程电子交易平台 http://www.jizhaobiao.com
+- [] 149 中招联合招标采购平台 http://www.365trade.com.cn/  TODO chaoge 
+- [] 150 冀招标全流程电子交易平台 http://www.jizhaobiao.com TODO chaoge
 - [] 151 中钢招标有限责任公司 https://tendering.sinosteel.com/
 - [] 152 中煤易购 http://www.zmzb.com/
 - [] 153 中化商务电子招投标平台 http://www.e-bidding.org/
