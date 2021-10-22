@@ -171,16 +171,16 @@
 - [x] 136 江苏省政府采购网 http://www.ccgp-jiangsu.gov.cn/  TODO  chaoge
 - [] 137 广西省政府采购网 http://www.ccgp-guangxi.gov.cn/ TODO 反爬
 - [] 138 云南省政府采购网 http://www.ccgp-yunnan.gov.cn
-- [] 139 福建省政府采购网 http://www.ccgp-fujian.gov.cn/
+- [] 139 福建省政府采购网 http://www.ccgp-fujian.gov.cn/ TODO 验证码无法处理
 - [] 140 贵州省政府采购网 http://www.ccgp-guizhou.gov.cn/
 - [x] 141 安徽省政府采购网 http://www.ccgp-anhui.gov.cn   TODO  chaoge
-- [] 142 西藏自治区政府采购网 http://www.ccgp-xizang.gov.cn/ TODO Kela
+- [] 142 西藏自治区政府采购网 http://www.ccgp-xizang.gov.cn/ TODO 网站崩了
 - [] 143 大连市政府采购网 http://www.ccgp-dalian.gov.cn/ TODO Kela
 - [] 144 深圳市政府采购网 http://zfcg.sz.gov.cn/
 - [x] 145 青岛市政府采购网 http://www.ccgp-qingdao.gov.cn/ TODO Kela
 - [] 146 兵团政府采购网 http://www.ccgp-qingdao.gov.cn/   TODO chaoge 
 - [] 147 工程电子招标采购平台 http://ebidding.shoukaigufen.com.cn/  TODO zequn
-- [] 148 中国通用招标网 https://www.china-tender.com.cn/
+- [] 148 中国通用招标网 https://www.china-tender.com.cn/  TODO Kela
 - [] 149 中招联合招标采购平台 http://www.365trade.com.cn/
 - [] 150 冀招标全流程电子交易平台 http://www.jizhaobiao.com
 - [] 151 中钢招标有限责任公司 https://tendering.sinosteel.com/

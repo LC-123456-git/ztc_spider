@@ -99,8 +99,8 @@ class Province139FujianSpiderSpider(scrapy.Spider):
         max_page = int(max_pages[0])
 
         if all([self.start_time, self.end_time]):
-            # for page in range(max_page):
-            for page in range(2):
+            for page in range(max_page):
+                # for page in range(2):
                 c_url = ''.join([
                     self.query_url,
                     '?',
@@ -149,7 +149,7 @@ class Province139FujianSpiderSpider(scrapy.Spider):
                 })
                 yield scrapy.Request(
                     url=c_url, callback=self.parse_detail, meta=resp.meta,
-                    priority=(len(els) - n) * 10 ** 6
+                    priority=(len(els) - n) * 10 ** 8
                 )
 
     def parse_detail(self, resp):
