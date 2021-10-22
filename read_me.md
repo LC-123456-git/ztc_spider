@@ -179,7 +179,7 @@
 - [] 144 深圳市政府采购网 http://zfcg.sz.gov.cn/
 - [x] 145 青岛市政府采购网 http://www.ccgp-qingdao.gov.cn/ TODO Kela
 - [] 146 兵团政府采购网 http://www.ccgp-qingdao.gov.cn/   TODO chaoge 
-- [] 147 工程电子招标采购平台 http://ebidding.shoukaigufen.com.cn/
+- [] 147 工程电子招标采购平台 http://ebidding.shoukaigufen.com.cn/  TODO zequn
 - [] 148 中国通用招标网 https://www.china-tender.com.cn/
 - [] 149 中招联合招标采购平台 http://www.365trade.com.cn/
 - [] 150 冀招标全流程电子交易平台 http://www.jizhaobiao.com
