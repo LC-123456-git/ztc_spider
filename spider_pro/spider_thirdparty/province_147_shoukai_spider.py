@@ -53,7 +53,7 @@ class MySpider(CrawlSpider):
             callback_url = self.parse_urls
         yield scrapy.Request(
             url=f"{self.query_url}{urllib.parse.urlencode(self.notice_category_dict )}",
-            priority=5, callback=callback_url, meta={"tab_name": self.notice_category_dict.get("tabName")})
+            priority=5, callback=callback_url, meta={"tabname": self.notice_category_dict.get("tabName")})
         for url_item in self.url_list:
             yield scrapy.Request(
                 url=f"{self.result_url}{urllib.parse.urlencode(url_item )}",
@@ -106,7 +106,7 @@ class MySpider(CrawlSpider):
                 title_name = item.xpath("./h1/text()").get()
                 year = item.xpath("./div[@class='newsDate']/div/text()").get()
                 data_time_list = item.xpath("./div[@class='newsDate']/text()").getall()
-                data_time = data_time_list[1].strip()
+                data_time = "".join(data_time_list).strip()
                 info_url = item.xpath("./@href").get()
                 pub_time = get_accurate_pub_time(year + "/" + data_time)
                 yield scrapy.Request(url=info_url, callback=self.parse_item, dont_filter=True,
