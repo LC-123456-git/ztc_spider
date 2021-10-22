@@ -212,6 +212,7 @@ def get_back_date_by_month(month):
 
 
 if __name__ == "__main__":
+    # print(scrapyd_cancel(project="spider_pro", job="132-2021-08-31-14-3"))
 
     days_before = get_back_date(10)
     yesterday = get_back_date(1)
@@ -243,6 +244,7 @@ if __name__ == "__main__":
         # "province_45_shanxi_spider",  # error_01
         # "province_49_ningxia_spider",  # error_03
         # "province_50_xinjiang_spider",  # ok + 附件没采
+        # "province_51_bingtuan_spider",
         # "province_52_pinming_spider",  # ok
         # "province_53_bilian_spider",  # ok
         # "province_54_Egongxiang_spider",  # ok + error_09
@@ -257,6 +259,7 @@ if __name__ == "__main__":
         # 'province_65_guoepingtai_spider',
         # "province_71_zhaocaijingbao_spider",  # error_04
         # "province_78_zhuzhaixiushan_spider",  # error_04
+        # "province_82_bide_spider",
         # "province_83_wangcai_spider",
         # "province_85_anzhuangxinxi_spider"
         # "ZJ_city_3302_zjcaigou_spider"
@@ -294,7 +297,17 @@ if __name__ == "__main__":
         # "ZJ_city_3343_xinchang_spider",
         # "ZJ_city_3344_yuecheng_spider",
         # "ZJ_city_3345_shengzhou_spider",
-        "ZJ_city_3360_wuyi_spider",
+        # "ZJ_city_3360_wuyi_spider",
+        # "province_120_hunan_spider",
+        # "province_121_shanxi_spider",
+        # "province_119_hubei_spider",
+        # "province_122_shandong_spider",
+        # "province_126_hainan_spider",
+        # "province_127_neimenggu_spider",
+        # "province_131_qinghai_spider",
+        # "province_132_ningxia_spider",
+        # "province_141_anhui_spider",
+        "province_146_bingtuan_spider"
     ]
 
     # 优先判断运行状态
@@ -304,7 +317,7 @@ if __name__ == "__main__":
         pending_list = []
         running_list = []
 
-    # print(scrapyd_cancel(project="spider_pro", job="62-2021-06-09-16-44"))
+
         for item in r_text.get("pending"):
             pending_list.append(item.get("spider"))
         for item in r_text.get("running"):

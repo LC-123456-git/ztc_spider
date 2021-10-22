@@ -263,7 +263,6 @@ class ScrapyDataPost(object):
                     for item in results:
                         item_dict = dict(item)
                         item_id = item_dict.get("id")
-
                         if item_dict['is_have_file'] != 0:
                             if_push, item_dict['content'] = ScrapyDataPost.reset_file_url(item_dict['content'], item_dict['files_path'])
                             if not if_push:
@@ -548,7 +547,7 @@ if __name__ == "__main__":
     # ])
 
     # 测试推数据
-    cp = ScrapyDataPost(table_name="notices_3345",
+    cp = ScrapyDataPost(table_name="notices_146",
                         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4',
                         post_url="http://192.168.1.243:30007/feign/data/v1/notice/addGatherNotice")
     # cp.run_post(d_time='2021-06-20', e_time='2021-07-08')

@@ -98,7 +98,6 @@ class Province146BingTuanSpider(CrawlSpider):
                         info_url = self.start_urls + info['_source']['url']
                         title_name = info['_source']['title']
                         pub_time = get_timestamp(info['_source']['publishDate'])
-                        pub_time = get_accurate_pub_time(pub_time)
                         x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
                         if x:
                             num += 1
@@ -129,7 +128,7 @@ class Province146BingTuanSpider(CrawlSpider):
                         new_dicts = response.meta['_dict'] | {'pageNo': str(page)}
                         yield scrapy.Request(url=self.base_url, callback=self.parse_data_check, method='post',
                                              dont_filter=True,  headers={'Content-Type': 'application/json'},
-                                             body=json.dumps(new_dicts), priority=((pages + 1) - count) * 100,
+                                             body=json.dumps(new_dicts), priority=((pages + 1) - count) * 50,
                                              meta={'notice': response.meta['notice']})
         except Exception as e:
             self.logger.error(f'发起数据请求失败parse_data {e}')
@@ -138,11 +137,14 @@ class Province146BingTuanSpider(CrawlSpider):
         try:
             if json.loads(response.text):
                 info_data = json.loads(response.text)['hits']
+                count = 0
                 for info in info_data['hits']:
+                    count += 1
                     title_name = info['_source']['title']
-                    pub_time = info['_source']['publishDate']
+                    pub_time = get_timestamp(info['_source']['publishDate'])
                     info_url = self.start_urls + info['_source']['url']
                     yield scrapy.Request(url=info_url, callback=self.parse_item,
+                                         priority=(len(info_data['hits']) - count) * 100,
                                          meta={'notice': response.meta['notice'],
                                                'title_name': title_name,
                                                'pub_time': pub_time})
@@ -156,7 +158,6 @@ class Province146BingTuanSpider(CrawlSpider):
             info_source = self.area_province
             title_name = ''.join(response.meta['title_name'])
             pub_time = response.meta['pub_time']
-            pub_time = get_accurate_pub_time(pub_time)
             content = json.loads(response.xpath('//div[@class="xinjiangbingtuan-detail js-comp"]/input/@value').get())['content']
             if '测试' not in title_name:
                 notice_type = get_notice_type(title_name, response.meta['notice'])
@@ -186,5 +187,5 @@ class Province146BingTuanSpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl province_146_bingtuan_spider".split(" "))
-    cmdline.execute("scrapy crawl province_146_bingtuan_spider -a sdt=2021-09-01 -a edt=2021-10-20".split(" "))
+    cmdline.execute("scrapy crawl province_146_bingtuan_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_146_bingtuan_spider -a sdt=2021-09-01 -a edt=2021-10-20".split(" "))
