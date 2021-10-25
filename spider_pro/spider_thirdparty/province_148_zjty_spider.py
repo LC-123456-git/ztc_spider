@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+# @file           :province_148_zjty_spider.py
+# @description    :中国通用招标网
+# @date           :2021/10/22 15:35:30
+# @author         :miaokela
+# @version        :1.0
 import re
 
 from spider_pro import constans, utils, items
