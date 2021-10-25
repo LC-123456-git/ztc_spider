@@ -220,5 +220,5 @@ class Province143DalianSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_143_dalian_spider -a sdt=2021-09-01 -a edt=2021-10-18".split(" "))
-    # cmdline.execute("scrapy crawl province_143_dalian_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_143_dalian_spider -a sdt=2021-09-01 -a edt=2021-10-18".split(" "))
+    cmdline.execute("scrapy crawl province_143_dalian_spider".split(" "))
