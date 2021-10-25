@@ -65,10 +65,9 @@ class Province143DalianSpiderSpider(scrapy.Spider):
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
     }
-    custom_settings = {
-        'CONCURRENT_REQUESTS': 4,
-        'TIME_DELAY_REQUEST': 0.5,
-    }
+    # custom_settings = {
+    #     'CONCURRENT_REQUESTS': 4,
+    # }
 
     def __init__(self, *args, **kwargs):
         super().__init__()

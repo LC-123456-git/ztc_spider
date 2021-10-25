@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# @file           :province_148_zjty_spider.py
+# @file           :province_148_zhongguoty_spider.py
 # @description    :中国通用招标网
-# @date           :2021/10/22 15:35:30
+# @date           :2021/10/25 13:36:40
 # @author         :miaokela
 # @version        :1.0
 import re
@@ -10,8 +10,8 @@ from spider_pro import constans, utils, items
 import scrapy
 
 
-class Province148ZjtySpiderSpider(scrapy.Spider):
-    name = 'province_148_zjty_spider'
+class Province148ZhongguotySpiderSpider(scrapy.Spider):
+    name = 'province_148_zhongguoty_spider'
     allowed_domains = ['china-tender.com.cn']
     start_urls = ['https://www.china-tender.com.cn/']
 
@@ -48,6 +48,9 @@ class Province148ZjtySpiderSpider(scrapy.Spider):
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
+    }
+    custom_settings = {
+        'ENABLE_PROXY_USE': False,
     }
 
     def __init__(self, *args, **kwargs):
@@ -113,7 +116,7 @@ class Province148ZjtySpiderSpider(scrapy.Spider):
 
                 judge_status = utils.judge_in_interval(
                     c_url, start_time=self.start_time, end_time=self.end_time, method='GET',
-                    proxies=proxies, headers=headers, rule='//span[@class="Gray Right"]/text()',
+                    proxies=proxies, headers=headers, rule='//span[@class="Gray Right"]/text()', verify=False,
                 )
                 if judge_status == 0:
                     break
@@ -202,5 +205,6 @@ class Province148ZjtySpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_148_zjty_spider -a sdt=2021-09-01 -a edt=2021-10-22".split(" "))
-    # cmdline.execute("scrapy crawl province_148_zjty_spider".split(" "))
+    cmdline.execute("scrapy crawl province_148_zhongguoty_spider -a sdt=2021-09-01 -a edt=2021-10-22".split(" "))
+    # cmdline.execute("scrapy crawl province_148_zhongguoty_spider".split(" "))
+

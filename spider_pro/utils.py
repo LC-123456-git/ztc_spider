@@ -142,7 +142,7 @@ def get_page(url, method='GET', headers=None, proxies=None, data=None, set_decod
 
 
 def judge_in_interval(url, start_time=None, end_time=None, method='GET', headers=None, proxies=None, doc_type='html',
-                      data=None, rule=None, date_type='string', encoding='utf-8'):
+                      data=None, rule=None, date_type='string', encoding='utf-8', verify=None):
     """
     翻页
     @rule: xpath解析规则
@@ -166,9 +166,9 @@ def judge_in_interval(url, start_time=None, end_time=None, method='GET', headers
         try:
             text = ''
             if method == 'GET':
-                text = requests.get(url=url, headers=headers, proxies=proxies).content.decode(encoding)
+                text = requests.get(url=url, headers=headers, proxies=proxies, verify=verify).content.decode(encoding)
             if method == 'POST':
-                text = requests.post(url=url, data=data, headers=headers, proxies=proxies).content.decode(encoding)
+                text = requests.post(url=url, data=data, headers=headers, proxies=proxies, verify=verify).content.decode(encoding)
             if text:
                 doc = None
                 if doc_type == 'html':
