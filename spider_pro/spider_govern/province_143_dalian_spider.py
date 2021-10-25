@@ -135,9 +135,7 @@ class Province143DalianSpiderSpider(scrapy.Spider):
                             '__EVENTVALIDATION': init_event_validation,
                             'MoreInfoList$Titletxt': ''
                         }, headers=headers, proxies=proxies).content.decode('gbk')
-                    except Exception as e:
-                        self.logger.info(e)
-                    else:
+
                         doc = etree.HTML(text)
                         # 获取修改默认参数
                         init_view_state = doc.xpath('//input[@name="__VIEWSTATE"]/@value')[0]
@@ -170,6 +168,9 @@ class Province143DalianSpiderSpider(scrapy.Spider):
                                         'pub_time': pub_time,
                                     }, priority=len(li_els) + 1 - n, dont_filter=True)
                         event_argument += 1
+                
+                    except Exception as e:
+                        self.logger.info(e)
                 else:  # 不翻
                     break
 
