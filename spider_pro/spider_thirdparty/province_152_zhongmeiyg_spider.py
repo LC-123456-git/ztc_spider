@@ -99,7 +99,7 @@ class Province152ZhongmeiygSpiderSpider(scrapy.Spider):
         headers = utils.get_headers(resp)
         proxies = utils.get_proxies(resp)
 
-        max_page_str = resp.xpath('//div[contains(@class, "fenye")]/div/a[last()]/@href').get()
+        max_page_str = resp.xpath('//div[@class="pagination"]/div[1]/em[last()]/text()').get()
 
         com = re.compile(r'(\d+)')
         try:
