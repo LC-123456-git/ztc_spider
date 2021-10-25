@@ -132,7 +132,7 @@ class Province152ZhongmeiygSpiderSpider(scrapy.Spider):
             for page in range(max_page):
                 c_url = self.query_url.format(**{
                     'type_code': type_code,
-                    'page': '_%d' % (page + 1) if page > 1 else 1
+                    'page': (page + 1) if page > 0 else 1
                 })
 
                 yield scrapy.Request(
