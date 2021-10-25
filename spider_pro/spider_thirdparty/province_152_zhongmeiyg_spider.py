@@ -112,7 +112,7 @@ class Province152ZhongmeiygSpiderSpider(scrapy.Spider):
             for page in range(max_page):
                 c_url = self.query_url.format(**{
                     'type_code': type_code,
-                    'page': '_%d' % (page + 1) if page > 0 else 1
+                    'page': (page + 1) if page > 0 else 1
                 })
 
                 judge_status = utils.judge_in_interval(
@@ -196,5 +196,5 @@ class Province152ZhongmeiygSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_152_zhongmeiyg_spider -a sdt=2021-09-01 -a edt=2021-10-22".split(" "))
-    # cmdline.execute("scrapy crawl province_152_zhongmeiyg_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_152_zhongmeiyg_spider -a sdt=2021-09-01 -a edt=2021-10-22".split(" "))
+    cmdline.execute("scrapy crawl province_152_zhongmeiyg_spider".split(" "))

@@ -87,7 +87,7 @@ class Province151ZhonggangzbSpiderSpider(scrapy.Spider):
                 form_data = self.form_data
                 form_data.update(params=form_data['params'].format(**{
                     'category_num': code,
-                    'page_index': 1
+                    'page_index': 0
                 }))
 
                 yield scrapy.FormRequest(
