@@ -184,7 +184,7 @@
 - [] 149 中招联合招标采购平台 http://www.365trade.com.cn/  TODO chaoge 
 - [] 150 冀招标全流程电子交易平台 http://www.jizhaobiao.com TODO chaoge
 - [] 151 中钢招标有限责任公司 https://tendering.sinosteel.com/  TODO kela 
-- [] 152 中煤易购 http://www.zmzb.com/  TODO kela 
+- [] 152 中煤易购 http://www.zmzb.com/                        TODO kela 
 - [] 153 中化商务电子招投标平台 http://www.e-bidding.org/
 - [] 154 比比网 http://www.bitbid.cn/
 - [] 155 招标通 http://www.hebztb.com/
@@ -282,6 +282,8 @@
 - 武义                             3360                     克拉
 - 温岭                             3361                     刘超
 - 绍兴                             3312                     刘超
+- 温州                             3309                     克拉
+- 苍南                             3320                     克拉(TODO)
  
 #  备注  3313  未清洗完成    待清洗
 
