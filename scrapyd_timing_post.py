@@ -319,7 +319,7 @@ class ScrapyDataPost(object):
                                 'notices_78',
                             ]:
                                 keys = ["title", "content", "classifyName", "area", "publishTime", "sourceUrl"]
-                            elif table_name in ['notices_79']:
+                            elif table_name in ['notices_79', 'notices_82', 'notices_148']:
                                 keys = ['title', 'content', 'clasaifyName', 'publishTime', 'sourceUrl']
                             else:
                                 keys = ["title", "content", "projectType", "classifyName", "area", "publishTime",

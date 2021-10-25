@@ -114,7 +114,7 @@ class Province151ZhonggangzbSpiderSpider(scrapy.Spider):
                 form_data = self.form_data
                 form_data.update(params=form_data['params'].format(**{
                     'category_num': code,
-                    'page_index': 1
+                    'page_index': i
                 }))
 
                 judge_status = utils.judge_in_interval(
@@ -137,9 +137,9 @@ class Province151ZhonggangzbSpiderSpider(scrapy.Spider):
                 form_data = self.form_data
                 form_data.update(params=form_data['params'].format(**{
                     'category_num': code,
-                    'page_index': 1
+                    'page_index': i
                 }))
-                yield scrapy.Request(
+                yield scrapy.FormRequest(
                     url=self.query_url, callback=self.parse_list, meta=resp.meta, formdata=form_data,
                     priority=(max_page - i) * 10,
                     dont_filter=True
@@ -202,6 +202,6 @@ class Province151ZhonggangzbSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_151_zhonggangzb_spider -a sdt=2021-01-01 -a edt=2021-10-25".split(" "))
-    # cmdline.execute("scrapy crawl province_151_zhonggangzb_province_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_151_zhonggangzb_spider -a sdt=2021-01-01 -a edt=2021-10-25".split(" "))
+    cmdline.execute("scrapy crawl province_151_zhonggangzb_spider".split(" "))
 
