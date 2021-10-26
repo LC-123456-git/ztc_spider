@@ -836,7 +836,7 @@ def get_time(pub_time):
     from datetime import datetime
     present_time = datetime.strptime(time.strftime("%Y-%m-%d", time.localtime()), '%Y-%m-%d')
     new_time = datetime.strptime(pub_time, '%Y-%m-%d')
-    if (present_time - new_time).days <= 10:
+    if (present_time - new_time).days <= 90:
         return True
 
 
