@@ -127,7 +127,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
         """
         js_func = execjs.compile(js_script)
         page_id = '-'.join([
-            js_func.call('tokenify', int(round(time.time() * 10 * 3))),
+            js_func.call('tokenify', int(round(time.time() * 10 ** 3))),
             js_func.call('tokenify', random.random() * 10 ** 16),
         ])
 
