@@ -33,17 +33,17 @@ class Province151ZhonggangzbSpiderSpider(scrapy.Spider):
         '招标公告': [
             {'code': '005001'},  # 招标公告
         ],
-        '中标预告': [
-            {'code': '005003'},  # 中标候选人公示
-        ],
-        '中标公告': [
-            {'code': '005004'},  # 结果公告
-        ],
+        # '中标预告': [
+        #     {'code': '005003'},  # 中标候选人公示
+        # ],
+        # '中标公告': [
+        #     {'code': '005004'},  # 结果公告
+        # ],
     }
     keywords_map = {
         '采购意向|需求公示': '招标预告',
         '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
-        '澄清|变更|补充|取消|更正|延期': '招标变更',
+        '澄清|变更|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
     }
@@ -55,9 +55,10 @@ class Province151ZhonggangzbSpiderSpider(scrapy.Spider):
         self.page_size = 8
         self._form_data = {
             'params': '{{"siteGuid":"7eb5f7f1-9041-43ad-8e13-8fcb82ea831a","categoryNum":"{category_num}","kw":"","con":"",' + \
-                        '"pageIndex":{page_index},"pageSize":%d,"startDate":"%s","endDate":"%s"}}' % (self.page_size, self.start_time, self.end_time)
+                      '"pageIndex":{page_index},"pageSize":%d,"startDate":"%s","endDate":"%s"}}' % (
+                          self.page_size, self.start_time, self.end_time)
         }
-    
+
     @property
     def form_data(self):
         return copy.deepcopy(self._form_data)
@@ -171,6 +172,19 @@ class Province151ZhonggangzbSpiderSpider(scrapy.Spider):
         notice_type_ori = resp.meta.get('notice_type')
         pub_time = resp.meta.get('pub_time')
 
+        content = utils.avoid_escape(content)
+        # 删除指定内容
+        content = re.sub(
+            r'七、其他.*?本项目.*?账号：<span>[0-9\s]+</span>\s*</p>',
+            '七、其他</b></p>', content.replace('\n', ''),
+            re.DOTALL
+        )
+        content = re.sub(
+            r'．发布渠道.*?发布。</span>\s*</p>',
+            '.发布渠道</span></b></p>',
+            content.replace('\n', ''), re.DOTALL
+        )
+
         # 关键字重新匹配 notice_type
         matched, match_notice_type = self.match_title(title_name)
         if matched:
@@ -204,4 +218,3 @@ if __name__ == "__main__":
 
     # cmdline.execute("scrapy crawl province_151_zhonggangzb_spider -a sdt=2021-01-01 -a edt=2021-10-25".split(" "))
     cmdline.execute("scrapy crawl province_151_zhonggangzb_spider".split(" "))
-
