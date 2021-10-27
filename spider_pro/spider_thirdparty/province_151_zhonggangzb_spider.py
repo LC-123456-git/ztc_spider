@@ -33,12 +33,12 @@ class Province151ZhonggangzbSpiderSpider(scrapy.Spider):
         '招标公告': [
             {'code': '005001'},  # 招标公告
         ],
-        # '中标预告': [
-        #     {'code': '005003'},  # 中标候选人公示
-        # ],
-        # '中标公告': [
-        #     {'code': '005004'},  # 结果公告
-        # ],
+        '中标预告': [
+            {'code': '005003'},  # 中标候选人公示
+        ],
+        '中标公告': [
+            {'code': '005004'},  # 结果公告
+        ],
     }
     keywords_map = {
         '采购意向|需求公示': '招标预告',
@@ -181,10 +181,16 @@ class Province151ZhonggangzbSpiderSpider(scrapy.Spider):
         )
         content = re.sub(
             r'．发布渠道.*?发布。</span>\s*</p>',
-            '.发布渠道</span></b></p>',
-            content.replace('\n', ''), re.DOTALL
+            '．发布渠道</span></b></p>',
+            content.replace('\n', ''),
+            re.DOTALL
         )
-
+        content = re.sub(
+            r'．发布渠道.*?发布。<br>',
+            '．发布渠道<br>',
+            content.replace('\n', ''),
+            re.DOTALL
+        )
         # 关键字重新匹配 notice_type
         matched, match_notice_type = self.match_title(title_name)
         if matched:
