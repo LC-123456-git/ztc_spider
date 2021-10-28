@@ -188,6 +188,38 @@
 - [] 153 中化商务电子招投标平台 http://www.e-bidding.org/
 - [] 154 比比网 http://www.bitbid.cn/
 - [x] 155 招标通 http://www.hebztb.com/   TODO zequn
+
+- [] 156 易交在线 http://www.hebztb.com/  TODO下周 kela
+- [] 157 内蒙古宣宇工程电子交易平台 http://www.nmgxuanyu.com/  TODO下周 kela
+- [] 158 河北张家口交易平台 http://hbzjk.86ztb.com/
+- [] 159 惠招标 http://www.hbidding.com/
+- [] 160 金蝉电子招标投标综合交易平台 http://www.jcebid.com/
+- [] 161 云买卖 http://www.eqbidding.com/
+- [] 162 润世和电子招投标交易平台 http://www.rshec.com/
+- [] 163 易土365 http://www.etu365.com/
+- [] 164 一联易招 http://www.ebid.sh.cn/
+- [] 165 高校e采 http://www.ebidding.cn/
+- [] 166 招采信息 http://www.anzhaocai.com/
+- [] 167 安招采 http://www.anzhaocai.com/
+- [] 168 安兆工程技术咨询有限公司电子交易平台 http://www.anzhaobid.com/
+- [] 169 海易招 http://www.hyebid.cn/
+- [] 170 赢标电子招标采购交易平台 https://www.fzbidding.com/
+- [] 171 齐鲁采购与招标网 http://www.qlebid.com/
+- [] 172 中原招采网 http://www.zybtp.com/
+- [] 173 一毂清风 https://www.hbncp.com.cn/
+- [] 174 华杰电子招投标交易平台 http://www.hjztb.com/
+- [] 175 一毂清风 https://www.hbncp.com.cn/
+- [] 176 东风交易中心 https://www.dongfengtc.com/
+- [] 177 易建采 https://www.epc1688.com/
+- [] 178 招采猫电子交易平台 https://www.bidcat.cn/
+- [] 179 广东省机电设备招标中心 https://www.gdebidding.com/
+- [] 180 诚E招电子采购交易平台 https://www.chengezhao.com/
+
+# TODO 206、福易采文档有问题（与207、海易招重复）
+# TODO 211、安招采文档有问题（与204、安招采重复）
+# TODO 195、圣诺联合文档有问题
+# TODO 215、河南豫信文档有问题
+
 ---
 
 ###地方
