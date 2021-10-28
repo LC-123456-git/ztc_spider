@@ -191,8 +191,8 @@
 
 - [] 156 易交在线 http://www.sxyjcg.com/  TODO下周 kela
 - [] 157 内蒙古宣宇工程电子交易平台 http://www.nmgxuanyu.com/  TODO下周 kela
-- [] 158 河北张家口交易平台 http://hbzjk.86ztb.com/
-- [] 159 惠招标 http://www.hbidding.com/
+- [] 158 河北张家口交易平台 http://hbzjk.86ztb.com/   TODO chaoge
+- [] 159 惠招标 http://www.hbidding.com/   TODO chaoge
 - [] 160 金蝉电子招标投标综合交易平台 http://www.jcebid.com/
 - [] 161 云买卖 http://www.eqbidding.com/
 - [] 162 润世和电子招投标交易平台 http://www.rshec.com/
