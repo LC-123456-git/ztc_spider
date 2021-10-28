@@ -187,7 +187,7 @@
 - [] 152 中煤易购 http://www.zmzb.com/                        TODO kela 
 - [] 153 中化商务电子招投标平台 http://www.e-bidding.org/
 - [] 154 比比网 http://www.bitbid.cn/
-- [] 155 招标通 http://www.hebztb.com/
+- [x] 155 招标通 http://www.hebztb.com/   TODO zequn
 ---
 
 ###地方
