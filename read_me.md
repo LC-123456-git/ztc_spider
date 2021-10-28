@@ -189,7 +189,7 @@
 - [] 154 比比网 http://www.bitbid.cn/
 - [x] 155 招标通 http://www.hebztb.com/   TODO zequn
 
-- [] 156 易交在线 http://www.hebztb.com/  TODO下周 kela
+- [] 156 易交在线 http://www.sxyjcg.com/  TODO下周 kela
 - [] 157 内蒙古宣宇工程电子交易平台 http://www.nmgxuanyu.com/  TODO下周 kela
 - [] 158 河北张家口交易平台 http://hbzjk.86ztb.com/
 - [] 159 惠招标 http://www.hbidding.com/
