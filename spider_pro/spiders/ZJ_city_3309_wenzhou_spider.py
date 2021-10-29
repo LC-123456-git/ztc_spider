@@ -22,7 +22,8 @@ class MySpider(CrawlSpider):
     name = 'ZJ_city_3309_wenzhou_spider'
     area_id = "3309"
     domain_url = "https://ggzyjy.wenzhou.gov.cn"
-    query_url = "https://ggzyjy.wenzhou.gov.cn/wzcms/jyxx/index.htm"
+    query_url = "https://ggzyjy.wenzhou.gov.cn/wzcms/jyxx/index_1.htm"
+    base_url = 'https://ggzyjy.wenzhou.gov.cn/wzcms/jyxx/index_{}.htm'
     allowed_domains = ['ggzyjy.wenzhou.gov.cn']
     area_province = "浙江-温州市公共资源交易网"
 
@@ -58,14 +59,12 @@ class MySpider(CrawlSpider):
     def parse_urls(self, response):
         try:
             if self.enable_incr:
-                pn = 1
                 num = 0
                 li_list = response.xpath('//div[@class="List-Li FloatL"]/ul/li')
-                category = response.xpath('//div[@class="List-head"]/h4/a[2]/text()').get()
                 for li in range(len(li_list)):
                     title_name = li_list[li].xpath('./a/@title').get()
                     all_info_url = self.domain_url + li_list[li].xpath('./a/@href').get()
-                    category_name = li_list[li].xpath('./a/em/text()').get()
+                    category_name = li_list[li].xpath('./a/em/text()').get().strip()
                     pub_time = li_list[li].xpath('./span/text()').get()
                     pub_time = get_accurate_pub_time(pub_time)
                     x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
@@ -79,12 +78,10 @@ class MySpider(CrawlSpider):
                         yield scrapy.Request(url=all_info_url, callback=self.parse_item, priority=150,
                                              meta={'pub_time': pub_time,
                                                    'title_name': title_name,
-                                                   'category_name': category_name,
-                                                   'category': category})
+                                                   'category_name': category_name})
                     if num >= len(li_list):
-                        pn += 1
-                        info_url = response.url[:response.url.rindex('/') + 1] + 'index_{}.htm'
-                        yield scrapy.Request(url=info_url.format(pn), callback=self.parse_info, priority=100)
+                        page = int(re.findall('(\d+)', response.url[response.url.rindex('/') + 1:])[0]) + 1
+                        yield scrapy.Request(url=self.base_url.format(page), callback=self.parse_urls, priority=100)
             else:
                 page_list = response.xpath('//div[@class="Zy-Page FloatL"]/div/text()').get()
                 total = re.findall('共(\d+).*', page_list)[0]         #总条数
@@ -99,18 +96,16 @@ class MySpider(CrawlSpider):
     def parse_info(self, response):
         try:
             li_list = response.xpath('//div[@class="List-Li FloatL"]/ul/li')
-            category = response.xpath('//div[@class="List-head"]/h4/a[2]/text()').get()
             for li in li_list:
                 title_name = li.xpath('./a/@title').get()
                 all_info_url = self.domain_url + li.xpath('./a/@href').get()
-                category_name = li.xpath('./a/em/text()').get()
+                category_name = li.xpath('./a/em/text()').get().strip()
                 pub_time = li.xpath('./span/text()').get()
 
                 yield scrapy.Request(url=all_info_url, callback=self.parse_item, priority=150,
                                      meta={'pub_time': pub_time,
                                            'title_name': title_name,
-                                           'category_name': category_name,
-                                           'category': category})
+                                           'category_name': category_name})
         except Exception as e:
             self.logger.error(f"parse_info:发起数据请求失败 {e} {response.url=}")
 
@@ -123,9 +118,9 @@ class MySpider(CrawlSpider):
                 info_source = self.area_province + info_source
             else:
                 info_source = self.area_province
+            category = ''.join(response.xpath('//div[@class="List-head"]/h4/a[3]/text()').getall()).strip()
             category_name = response.meta['category_name']
             title_name = response.meta['title_name']
-            category = response.meta['category']
             pub_time = response.meta['pub_time']
             pub_time = get_accurate_pub_time(pub_time)
 
@@ -191,7 +186,7 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3309_wenzhou_spider".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3309_wenzhou_spider -a sdt=2021-02-01 -a edt=2021-06-15".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3309_wenzhou_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3309_wenzhou_spider -a sdt=2021-09-01 -a edt=2021-11-15".split(" "))
 
 
