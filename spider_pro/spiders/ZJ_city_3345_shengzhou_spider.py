@@ -122,7 +122,7 @@ class MySpider(CrawlSpider):
                     for info in jsonstr:
                         pub_time = ''.join(re.findall('<td width="12%" .*>(.*)</td>', info)).strip()
                         info_url = self.domain_url + re.findall('<a .*? href="(.*?)" .*>', info)[0]
-                        title_name = re.findall('<a title="(.*?)" .*>', info)[0]
+                        title_name = ''.join(re.findall('<a .* title="(.*?)" .*>', info))
                         pub_time = get_accurate_pub_time(pub_time)
                         x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
                         if x:
