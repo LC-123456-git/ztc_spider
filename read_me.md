@@ -185,8 +185,8 @@
 - [x] 150 冀招标全流程电子交易平台 http://www.jizhaobiao.com TODO chaoge
 - [x] 151 中钢招标有限责任公司 https://tendering.sinosteel.com/
 - [x] 152 中煤易购 http://www.zmzb.com/
-- [] 153 中化商务电子招投标平台 http://www.e-bidding.org/
-- [] 154 比比网 http://www.bitbid.cn/
+- [] 153 中化商务电子招投标平台 http://e.sinochemitc.com/cms/channel/ywgg1qb/index.htm    TODO zequn
+- [] 154 比比网 http://www.bitbid.cn/    TODO zequn
 - [x] 155 招标通 http://www.hebztb.com/   TODO zequn
 
 - [] 156 易交在线 http://www.sxyjcg.com/  TODO下周 kela
