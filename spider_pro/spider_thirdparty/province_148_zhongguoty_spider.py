@@ -49,9 +49,6 @@ class Province148ZhongguotySpiderSpider(scrapy.Spider):
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
     }
-    custom_settings = {
-        'ENABLE_PROXY_USE': False,
-    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

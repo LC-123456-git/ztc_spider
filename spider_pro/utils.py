@@ -223,7 +223,7 @@ def get_keywords(cf, field):
     """
     try:
         vs = cf.get(field)
-    except Exception as e:
+    except (Exception,) as e:
         vs = []
     return vs if vs else []
 
@@ -249,7 +249,7 @@ def init_yaml(doc_name, area_id, file_name=None):
             cont = f.read()
 
         cf = yaml.load(cont, Loader=yaml.FullLoader)
-    except Exception as e:
+    except (Exception,) as e:
         cf = {}
     return cf
 
@@ -442,7 +442,7 @@ def do_files_dec(days=30):
             if pub_time:
                 try:
                     c_pub_time = convert_to_strptime(pub_time)
-                except Exception as e:
+                except (Exception,) as e:
                     c_pub_time = None
 
                 # - 处理时间: 3个月外不采集文件
@@ -467,7 +467,7 @@ def catch_files_from_table(resp_url, content, tb_attr=None, tb_attr_val=None, ke
         - 文件名与文件地址所在节点不同
 
     Args:
-        base_url ([string]): [网站域名]
+        resp_url ([string]): [网站域名]
         content ([string]): [HTML文档内容]
         tb_attr ([string]): [表格属性]
         tb_attr_val ([string], optional): [表格属性值]. Defaults to None.
@@ -488,7 +488,7 @@ def catch_files_from_table(resp_url, content, tb_attr=None, tb_attr_val=None, ke
     search_regex = '|'.join(r'\.{0}'.format(file_type) for file_type in file_types)
 
     # http://116.62.168.209/bmzzgg/49232.htm
-    com = re.compile(r'(?P<base_url>http[s]{0,1}://.*?)/.*?/(?P<p_id>\d+)')
+    com = re.compile(r'(?P<base_url>http[s]?://.*?)/.*?/(?P<p_id>\d+)')
     ret = [m.groupdict() for m in re.finditer(com, resp_url)]
     if ret:
         ret = ret[-1]
