@@ -189,12 +189,12 @@
 - [] 154 比比网 http://www.bitbid.cn/    TODO zequn
 - [x] 155 招标通 http://www.hebztb.com/   TODO zequn
 
-- [] 156 易交在线 http://www.sxyjcg.com/  TODO下周 kela
-- [] 157 内蒙古宣宇工程电子交易平台 http://www.nmgxuanyu.com/  TODO下周 kela
+- [x] 156 易交在线 http://www.sxyjcg.com/   TODO miaokela
+- [x] 157 内蒙古宣宇工程电子交易平台 http://www.nmgxuanyu.com/   TODO miaokela
 - [] 158 河北张家口交易平台 http://hbzjk.86ztb.com/   TODO chaoge
 - [] 159 惠招标 http://www.hbidding.com/   TODO chaoge
-- [] 160 金蝉电子招标投标综合交易平台 http://www.jcebid.com/
-- [] 161 云买卖 http://www.eqbidding.com/
+- [] 160 金蝉电子招标投标综合交易平台 http://www.jcebid.com/   TODO 下周 miaokela
+- [] 161 云买卖 http://www.eqbidding.com/   TODO 下周 miaokela
 - [] 162 润世和电子招投标交易平台 http://www.rshec.com/
 - [] 163 易土365 http://www.etu365.com/
 - [] 164 一联易招 http://www.ebid.sh.cn/
