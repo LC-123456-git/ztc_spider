@@ -214,10 +214,11 @@
 - [] 178 招采猫电子交易平台 https://www.bidcat.cn/
 - [] 179 广东省机电设备招标中心 https://www.gdebidding.com/
 - [] 180 诚E招电子采购交易平台 https://www.chengezhao.com/
+- [] 181 圣诺联合 https://www.okzhaobiao.com
+
 
 # TODO 206、福易采文档有问题（与207、海易招重复）
 # TODO 211、安招采文档有问题（与204、安招采重复）
-# TODO 195、圣诺联合文档有问题
 # TODO 215、河南豫信文档有问题
 
 ---
