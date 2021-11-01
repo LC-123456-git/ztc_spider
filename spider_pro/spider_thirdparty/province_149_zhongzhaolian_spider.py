@@ -34,9 +34,16 @@ class Province149ZhongZhaoLianSpider(CrawlSpider):
         else:
             self.enable_incr = False
 
+    custom_settings = {'DOWNLOADER_MIDDLEWARES': {
+                            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+                            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+                            'scrapy_splash.SplashCookiesMiddleware': 770,
+                            'scrapy_splash.SplashMiddleware': 780,
+                            'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+                        }
+                       }
+
     def start_requests(self):
-        # url = 'http://www.365trade.com.cn/zgczb/259648.jhtml'
-        # yield scrapy.Request(url=url, callback=self.parse_item)
         yield scrapy.Request(url=self.start_urls, callback=self.parse_data)
 
     def parse_data(self, response):
@@ -109,17 +116,17 @@ class Province149ZhongZhaoLianSpider(CrawlSpider):
             for info in info_data:
                 count += 1
                 title_name = info.xpath("./a/p/span/@title").get()
-                pub_time = (info.xpath('./a/i/text()').get()).replace('发布日期：', '')
+                pub_time = info.xpath('./a/i/text()').get().replace('发布日期：', '')
                 info_url = self.start_urls + info.xpath('./a[@class="searchBtn fr"]/@href').get()
                 business_category = info.xpath('./a/p/em/text()').get()
                 yield scrapy.Request(url=info_url, callback=self.parse_item,
-                                     priority=(len(info_data['hits']) - count) * 100,
+                                     priority=(len(info_data) - count) * 100,
                                      meta={'notice_type': response.meta['notice_type'],
                                            'title_name': title_name,
                                            'pub_time': pub_time,
                                            'business_category': business_category})
         except Exception as e:
-            self.logger.error(f'发起数据请求失败parse_data_check {e}')
+            self.logger.error(f'发起数据请求失败parse_data_check {e}, {response.url}')
 
     def parse_item(self, response):
         try:
@@ -167,5 +174,5 @@ class Province149ZhongZhaoLianSpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl province_149_zhongzhaolian_spider".split(" "))
-    cmdline.execute("scrapy crawl province_149_zhongzhaolian_spider -a sdt=2021-10-01 -a edt=2021-10-30".split(" "))
+    cmdline.execute("scrapy crawl province_149_zhongzhaolian_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_149_zhongzhaolian_spider -a sdt=2021-10-01 -a edt=2021-10-30".split(" "))

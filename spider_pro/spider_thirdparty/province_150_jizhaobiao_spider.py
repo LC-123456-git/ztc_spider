@@ -4,6 +4,8 @@
 # @Date: 2021-10-25
 # @Describe: 冀招标全流程电子交易平台
 import ast
+import re
+
 import scrapy
 from lxml import etree
 from scrapy.spiders import CrawlSpider
@@ -14,7 +16,7 @@ from spider_pro.utils import get_notice_type, remove_specific_element, remove_el
 
 class Province150JiZhaoBiaoSpider(CrawlSpider):
     name = 'province_150_jizhaobiao_spider'
-    allowed_domains = ['jizhaobiao.com.cn']
+    allowed_domains = ['jizhaobiao.com']
     start_urls = 'http://www.jizhaobiao.com'
     domain_url = 'http://www.jizhaobiao.com/HB/TradeCenter/colTableInfo.do'
     base_url = 'http://www.jizhaobiao.com:9069/jrupload6/downloadFile.html?file={}&fileType='
@@ -46,6 +48,19 @@ class Province150JiZhaoBiaoSpider(CrawlSpider):
               'date2': '', 'projectType': '', 'dealType': '', 'noticType': '',
               'area': '', 'dataSource': '', 'huanJie': 'NOTICE', 'pageIndex': '1'}
 
+    custom_settings = {'DOWNLOAD_DELAY': {
+                            # 'spider_pro.middlewares.DelayedRequestMiddleware.DelayedRequestMiddleware': 50,
+                            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+                            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+                            # 'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 750,
+
+                            # Splash
+                            'scrapy_splash.SplashCookiesMiddleware': 770,
+                            'scrapy_splash.SplashMiddleware': 780,
+                            'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+                    }
+                        }
+
     def get_category(self, notice_name):
         if notice_name in self.list_notice_category_name:         # 招标公告
             notice = const.TYPE_ZB_NOTICE
@@ -67,6 +82,22 @@ class Province150JiZhaoBiaoSpider(CrawlSpider):
             notice = ''
         return notice
 
+    def _monkey_patching_HTTPClientParser_statusReceived(self):
+        from twisted.web._newclient import HTTPClientParser, ParseError
+        old_sr = HTTPClientParser.statusReceived
+
+        def statusReceived(self, status):
+            try:
+                return old_sr(self, status)
+            except ParseError as e:
+                if e.args[0] == 'wrong number of parts':
+                    return old_sr(self, status + ' OK')
+                raise
+
+        statusReceived.__doc__ = old_sr.__doc__
+        HTTPClientParser.statusReceived = statusReceived
+
+
     def __init__(self, *args, **kwargs):
         super(Province150JiZhaoBiaoSpider, self).__init__()
         if kwargs.get("sdt") and kwargs.get("edt"):
@@ -77,6 +108,7 @@ class Province150JiZhaoBiaoSpider(CrawlSpider):
             self.enable_incr = False
 
     def start_requests(self):
+        # self._monkey_patching_HTTPClientParser_statusReceived()
         yield scrapy.Request(url=self.start_urls, callback=self.parse_data)
 
     def parse_data(self, response):
@@ -86,7 +118,9 @@ class Province150JiZhaoBiaoSpider(CrawlSpider):
         else:
             begin_time = ''
             end_time = ''
-        info_list = response.xpath('//div[@class="transaction"]/ul/li')[1:]
+        src_html = re.findall('(<!DOCTYPE html>(?:.|\n)*?</html>)', response.text)[0]
+        html = etree.HTML(src_html)
+        info_list = html.xpath('//div[@class="transaction"]/ul/li')[1:]
         for info in info_list:
             notice_name = info.xpath('./text()').get()
             noticType = self.const_dict[notice_name]
@@ -170,8 +204,8 @@ class Province150JiZhaoBiaoSpider(CrawlSpider):
                             sub_el.text = values
 
                             content = etree.tounicode(files_text, method='html')
-                            content = content.replace('<html>', '').replace('<body>', '').replace('</body>', '').replace(
-                                '</html>', '')
+                            content = content.replace(r'<html>', '').replace(r'<body>', '').replace(r'</body>', '').replace(
+                                r'</html>', '')
                             files_path[values] = key
                         if get_time(pub_time):
                             files_path = files_path
