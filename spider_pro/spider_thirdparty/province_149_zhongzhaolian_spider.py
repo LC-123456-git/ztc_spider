@@ -168,7 +168,7 @@ class Province149ZhongZhaoLianSpider(CrawlSpider):
 
                 yield notice_item
         except Exception as e:
-            self.logger.error(f'发起数据请求失败parse_item {e}, {response.meta["info_url"]}')
+            self.logger.error(f'发起数据请求失败parse_item {e}')
 
 
 if __name__ == "__main__":
