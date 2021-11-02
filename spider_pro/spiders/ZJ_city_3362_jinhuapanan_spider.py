@@ -4,12 +4,10 @@
 # @date           :2021/08/03 08:45:58
 # @author         :miaokela
 # @version        :1.0
+import copy
 import re
-import random
-import json
-import requests
-from datetime import datetime
-from math import ceil
+from lxml import etree
+import math
 
 import scrapy
 
@@ -21,8 +19,10 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
     allowed_domains = ['www.panan.gov.cn']
     start_urls = ['http://www.panan.gov.cn/']
     basic_area = '浙江省金华市磐安县人民政府'
-    query_url = 'http://www.panan.gov.cn'
-
+    base_url = 'http://www.panan.gov.cn'
+    query_url = 'http://www.panan.gov.cn/module/jpage/dataproxy.jsp?startrecord={startrecord}&endrecord={endrecord}&perpage=20'
+    # http://www.panan.gov.cn/module/jpage/dataproxy.jsp?startrecord=1&endrecord=60&perpage=20
+    # http://www.panan.gov.cn/module/jpage/dataproxy.jsp?startrecord=61&endrecord=120&perpage=20
     area_id = 3362
     keywords_map = {
         '采购意向|需求公示': '招标预告',
@@ -33,32 +33,29 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
     }
     url_map = {
         '招标预告': [
-            {'category': '建设工程', 'url': 'http://www.panan.gov.cn/col/col1229500305/index.html'},  # 招标公告、文件预公示
+            {'category': '建设工程', 'columnid': '1229500305'},  # 招标公告、文件预公示
         ],
         '招标公告': [
-            {'category': '政府采购', 'url': 'http://www.panan.gov.cn/col/col1229170812/index.html'},  # 采购公告
-            {'category': '建设工程', 'url': 'http://www.panan.gov.cn/col/col1229170806/index.html'},  # 招标公告
-            {'category': '土地交易', 'url': 'http://www.panan.gov.cn/col/col1229170816/index.html'},  # 招标公告
-            {'category': '产权交易', 'url': 'http://www.panan.gov.cn/col/col1229170819/index.html'},  # 招标公告
-            {'category': '乡镇分中心', 'url': 'http://www.panan.gov.cn/col/col1229170822/index.html'},  # 乡镇分中心
-            {'category': '园区分中心', 'url': 'http://www.panan.gov.cn/col/col1229321833/index.html'},  # 交易公告
+            {'category': '政府采购', 'columnid': '1229170812'},  # 采购公告
+            {'category': '建设工程', 'columnid': '1229170806'},  # 招标公告
+            {'category': '土地交易', 'columnid': '1229170816'},  # 招标公告
+            {'category': '产权交易', 'columnid': '1229170819'},  # 招标公告
+            {'category': '乡镇分中心', 'columnid': '1229170822'},  # 招标公告
+            {'category': '园区分中心', 'columnid': '1229321833'},  # 招标公告
         ],
         '招标变更': [
-            {'category': '建设工程', 'url': 'http://www.panan.gov.cn/col/col1229170807/index.html'},  # 更正（补充公告）
-        ],
-        '招标异常': [
-            {'category': '建设工程', 'url': 'http://ggfw.ywjypt.yw.gov.cn/jyxx/070001/070001007/list3gc.html'},  # 废标公告
+            {'category': '建设工程', 'columnid': '1229170807'},  # 更正（补充公告）
         ],
         '中标预告': [
-            {'category': '建设工程', 'url': 'http://www.panan.gov.cn/col/col1229170808/index.html'},  # 预中标公示
+            {'category': '建设工程', 'columnid': '1229170808'},  # 预中标公示
         ],
         '中标公告': [
-            {'category': '建设工程', 'url': 'http://www.panan.gov.cn/col/col1229170809/index.html'},  # 中标公示
-            {'category': '政府采购', 'url': 'http://www.panan.gov.cn/col/col1229170813/index.html'},  # 中标成交公告
-            {'category': '土地交易', 'url': 'http://www.panan.gov.cn/col/col1229170817/index.html'},  # 中标公示
-            {'category': '产权交易', 'url': 'http://www.panan.gov.cn/col/col1229170820/index.html'},  # 中标公示
-            {'category': '乡镇分中心', 'url': 'http://www.panan.gov.cn/col/col1229170823/index.html'},  # 中标公示
-            {'category': '园区分中心', 'url': 'http://www.panan.gov.cn/col/col1229321837/index.html'},  # 中标公示
+            {'category': '建设工程', 'columnid': '1229170809'},  # 中标公示
+            {'category': '政府采购', 'columnid': '1229170813'},  # 中标成交公告
+            {'category': '土地交易', 'columnid': '1229170817'},  # 中标公示
+            {'category': '产权交易', 'columnid': '1229170820'},  # 中标公示
+            {'category': '乡镇分中心', 'columnid': '1229170823'},  # 中标公示
+            {'category': '园区分中心', 'columnid': '1229321837'},  # 中标公示
         ],
     }
 
@@ -66,6 +63,21 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
         super().__init__()
         self.start_time = kwargs.get('sdt', '')
         self.end_time = kwargs.get('edt', '')
+        self._formdata = {
+            'col': '1',
+            'appid': '1',
+            'webid': '3611',
+            'path': '/',
+            'columnid': '',
+            'sourceContentType': '1',
+            'unitid': '6166867',
+            'webname': '磐安县人民政府',
+            'permissiontype': '0',
+        }
+
+    @property
+    def formdata(self):
+        return copy.deepcopy(self._formdata)
 
     def match_title(self, title_name):
         """
@@ -88,32 +100,106 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
     def start_requests(self):
         for notice_type, category_urls in self.url_map.items():
             for cu in category_urls:
-                c_url = cu['url']
-                yield scrapy.Request(url=c_url, callback=self.parse_list, meta={
-                    'notice_type': notice_type,
-                    'category': cu['category'],
+                c_url = self.query_url.format(**{
+                    'startrecord': 1,
+                    'endrecord': 60,
                 })
+                c_formdata = self.formdata
+                c_formdata['columnid'] = cu['columnid']
+                yield scrapy.FormRequest(
+                    url=c_url, formdata=c_formdata, callback=self.turn_page, cb_kwargs={
+                        'data': c_formdata,
+                    }, meta={
+                        'notice_type': notice_type,
+                        'category': cu['category'],
+                    }, dont_filter=True)
 
-    def parse_list(self, resp):
-        txt = resp.text
-        if txt:
-            content = ''.join([t.strip() for t in txt.split(' ')]).replace('\n', '').replace('\t', '')
-            c_com = re.compile(r'<record>.*?<span>(?P<pub_time>[0-9 \-]+)</span><ahref=\"(?P<url>.*?)\"target')
-
-            for pub_time, suffix_url in c_com.findall(content):
-                if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
-                    c_url = ''.join([self.query_url, suffix_url])
-                    yield scrapy.Request(url=c_url, callback=self.parse_detail, meta={
-                        'notice_type': resp.meta.get('notice_type', ''),
-                        'category': resp.meta.get('category', ''),
-                        'pub_time': pub_time,
+    def turn_page(self, resp, data):
+        """
+        翻页
+        """
+        headers = utils.get_headers(resp)
+        proxies = utils.get_proxies(resp)
+        try:
+            doc = etree.XML(resp.text)
+            total_records = doc.xpath('//totalrecord/text()')
+            total_record = int(total_records[0])  # 最后一页
+            max_page = math.ceil(total_record / 60)
+        except (Exception,) as e:
+            self.logger.info('error:{}'.format(e))
+        else:
+            if all([self.start_time, self.end_time]):
+                for i in range(max_page):
+                    start_record = 1 + 60 * i
+                    end_record = 60 * (i + 1) if not i + 1 == max_page else total_record
+                    c_url = self.query_url.format(**{
+                        'startrecord': start_record,
+                        'endrecord': end_record,
                     })
-                    break
+                    judge_status = utils.judge_in_interval(
+                        c_url, start_time=self.start_time, end_time=self.end_time, method='POST',
+                        proxies=proxies, headers=headers, rule='//record/text()', data=data,
+                        doc_type='xml'
+                    )
+                    if judge_status == 0:
+                        break
+                    elif judge_status == 2:
+                        continue
+                    else:
+                        yield scrapy.FormRequest(
+                            url=c_url, formdata=data, callback=self.parse_url,
+                            meta=resp.meta, dont_filter=True, priority=max_page - i
+                        )
+            else:
+                for i in range(max_page):
+                    start_record = 1 + 60 * i
+                    end_record = 60 * (i + 1) if not i + 1 == max_page else total_record
+                    c_url = self.query_url.format(**{
+                        'startrecord': start_record,
+                        'endrecord': end_record,
+                    })
+
+                    yield scrapy.FormRequest(
+                        url=c_url, formdata=data, callback=self.parse_url,
+                        meta=resp.meta, dont_filter=True, priority=max_page - i
+                    )
+
+    def parse_url(self, resp):
+        try:
+            doc = etree.XML(resp.text)
+            records = doc.xpath('//record/text()')
+        except (Exception,) as e:
+            self.logger.info('error:{}'.format(e))
+        else:
+            """
+            <![CDATA[<li style="font-size: 14px;"><span>2021-10-22</span>				 
+            <a href="/art/2021/10/22/art_1229321837_59277057.html" target="_blank" title="磐安工业园区塑料产业园挡墙（一期）工程">磐安工业园区塑料产业园挡墙（一期）工程
+            </a></li>]]>
+            """
+            pub_time_com = re.compile(r'<span>(\d{4}-\d{1,2}-\d{1,2})</span>')
+            href_com = re.compile(r'href="(.*?)"')
+            title_com = re.compile(r'title="(.*?)"')
+            for n, record in enumerate(records):
+                try:
+                    pub_time = pub_time_com.findall(record)[0]
+                    href = href_com.findall(record)[0]
+                    title = title_com.findall(record)[0]
+                except (Exception,) as e:
+                    self.logger.info('error:{}'.format(e))
                 else:
-                    break
+                    if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
+                        title = re.sub(r'【.*?】', '', title)
+                        resp.meta.update(**{
+                            'pub_time': pub_time,
+                            'title': title
+                        })
+                        yield scrapy.Request(
+                            url=''.join([self.base_url, href]), callback=self.parse_detail,
+                            meta=resp.meta, priority=(len(records) - n) * 10 ** 6,
+                        )
 
     def parse_detail(self, resp):
-        title_name = ''.join(resp.xpath('//div[@class="gm_tt"]/text()').extract()).strip()
+        title_name = resp.meta.get('title', '')
         content = resp.xpath('//div[@class="gm_tt3"]').get()
         if content:
             content = content.replace('<body>', '').replace('</body>', '')
@@ -130,7 +216,7 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
         )
 
         # 匹配文件
-        _, files_path = utils.catch_files(content, self.query_url, resp=resp, pub_time=resp.meta.get('pub_time'))
+        _, files_path = utils.catch_files(content, self.base_url, resp=resp, pub_time=resp.meta.get('pub_time'))
 
         notice_item = items.NoticesItem()
         notice_item["origin"] = resp.url
@@ -153,5 +239,5 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl ZJ_city_3362_jinhuapanan_spider -a sdt=2021-01-01 -a edt=2021-06-01".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3362_jinhuapanan_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3362_jinhuapanan_spider -a sdt=2021-01-01 -a edt=2021-11-02".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3362_jinhuapanan_spider".split(" "))

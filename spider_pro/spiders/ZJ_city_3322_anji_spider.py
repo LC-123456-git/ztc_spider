@@ -194,9 +194,10 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
             notice_types = list(
                 filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
             )
+            pub_time = resp.meta.get('pub_time')
 
             # 匹配文件
-            _, files_path = utils.catch_files(content, self.query_url, resp)
+            _, files_path = utils.catch_files(content, self.query_url, pub_time=pub_time, resp=resp)
 
             notice_item = items.NoticesItem()
             notice_item["origin"] = resp.url
