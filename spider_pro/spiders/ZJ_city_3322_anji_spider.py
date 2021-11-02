@@ -123,30 +123,42 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
             max_page = ceil(total / page_size)  # 最大页数
 
             c_url = ''.join([url, 'moreinfo.html'])
-            for i in range(1, max_page + 1):
-                # 最末一条符合时间区间则翻页
-                # 解析详情页时再次根据区间判断去采集
-                judge_status = utils.judge_in_interval(
-                    c_url, start_time=self.start_time, end_time=self.end_time, method='GET',
-                    proxies=proxies, headers=headers, rule='//ul[contains(@class, "notice-items")]/li//span/text()',
-                )
-                if judge_status == 0:
-                    break
-                elif judge_status == 2:
-                    continue
-                else:
+            if all([self.start_time, self.end_time]):
+                for i in range(1, max_page + 1):
+                    # 最末一条符合时间区间则翻页
+                    # 解析详情页时再次根据区间判断去采集
+                    judge_status = utils.judge_in_interval(
+                        c_url, start_time=self.start_time, end_time=self.end_time, method='GET',
+                        proxies=proxies, headers=headers, rule='//ul[contains(@class, "notice-items")]/li//span/text()',
+                    )
+                    if judge_status == 0:
+                        break
+                    elif judge_status == 2:
+                        continue
+                    else:
+                        if i > 1:
+                            c_url = ''.join([url, '{0}.html'.format(i)])
+                        else:
+                            c_url = ''.join([url, 'moreinfo.html'])
+                        yield scrapy.Request(
+                            url=c_url, callback=self.parse_data_urls, meta={
+                                'notice_type': resp.meta.get('notice_type', ''),
+                                'category': resp.meta.get('category', '')
+                            }, priority=(max_page - i) * 10, dont_filter=True
+                        )
+            else:
+                for i in range(1, max_page + 1):
                     if i > 1:
                         c_url = ''.join([url, '{0}.html'.format(i)])
                     else:
                         c_url = ''.join([url, 'moreinfo.html'])
-                    yield scrapy.Request(url=c_url,
-                                            callback=self.parse_data_urls,
-                                            meta={
-                                                'notice_type': resp.meta.get('notice_type', ''),
-                                                'category': resp.meta.get('category', '')
-                                            }, priority=(max_page - i) * 10, dont_filter=True)
+                    yield scrapy.Request(
+                        url=c_url, callback=self.parse_data_urls, meta={
+                            'notice_type': resp.meta.get('notice_type', ''),
+                            'category': resp.meta.get('category', '')
+                        }, priority=(max_page - i) * 10, dont_filter=True
+                    )
         else:
-            # fetch first page
             yield scrapy.Request(url=url, callback=self.parse_data_urls, meta={
                 'notice_type': resp.meta.get('notice_type', ''),
                 'category': resp.meta.get('category', '')
@@ -157,7 +169,7 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
         获取detail_url, pub_time
         """
         els = resp.xpath('//ul[@class="ewb-notice-items"]/li')
-        for el in els:
+        for n, el in enumerate(els):
             href = el.xpath(".//a/@href").get()
             if href:
                 pub_time = el.xpath(".//span[last()]/text()").get()
@@ -167,7 +179,7 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
                         'notice_type': resp.meta.get('notice_type'),
                         'category': resp.meta.get('category'),
                         'pub_time': pub_time,
-                    }, priority=10000)
+                    }, priority=(len(els) - n) * 10 ** 6)
 
     def parse_item(self, resp):
         content = resp.xpath('//div[@class="ewb-container"]').get()
