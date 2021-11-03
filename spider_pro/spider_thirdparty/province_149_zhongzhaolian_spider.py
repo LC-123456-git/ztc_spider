@@ -24,6 +24,14 @@ class Province149ZhongZhaoLianSpider(CrawlSpider):
     query_url = ''
     area_id = "149"
     area_province = '中招联合招标采购网'
+    custom_settings = {'DOWNLOADER_MIDDLEWARES': {
+        'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+        'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+        'scrapy_splash.SplashCookiesMiddleware': 770,
+        'scrapy_splash.SplashMiddleware': 780,
+        'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+    }
+    }
 
     def __init__(self, *args, **kwargs):
         super(Province149ZhongZhaoLianSpider, self).__init__()
@@ -33,15 +41,6 @@ class Province149ZhongZhaoLianSpider(CrawlSpider):
             self.edt_time = kwargs.get("edt")
         else:
             self.enable_incr = False
-
-    custom_settings = {'DOWNLOADER_MIDDLEWARES': {
-                            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
-                            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-                            'scrapy_splash.SplashCookiesMiddleware': 770,
-                            'scrapy_splash.SplashMiddleware': 780,
-                            'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
-                        }
-                       }
 
     def start_requests(self):
         yield scrapy.Request(url=self.domain_url, callback=self.parse_data)
@@ -120,7 +119,7 @@ class Province149ZhongZhaoLianSpider(CrawlSpider):
                 info_url = self.start_urls + info.xpath('./a[@class="searchBtn fr"]/@href').get()
                 business_category = info.xpath('./a/p/em/text()').get()
                 yield scrapy.Request(url=info_url, callback=self.parse_item,
-                                     priority=(len(info_data) - count) * 10 ** 6,
+                                     priority=(len(info_data) - count) * 10 ** 6, dont_filter=True,
                                      meta={'notice_type': response.meta['notice_type'],
                                            'title_name': title_name,
                                            'pub_time': pub_time,
