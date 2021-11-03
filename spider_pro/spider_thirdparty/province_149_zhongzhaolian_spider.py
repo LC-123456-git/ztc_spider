@@ -19,7 +19,7 @@ class Province149ZhongZhaoLianSpider(CrawlSpider):
     name = 'province_149_zhongzhaolian_spider'
     allowed_domains = ['365trade.com']
     start_urls = 'http://www.365trade.com.cn'
-    domain_url = ''
+    domain_url = 'http://www.365trade.com.cn/zbgg/index.jhtml'
     base_url = ''
     query_url = ''
     area_id = "149"
@@ -44,12 +44,12 @@ class Province149ZhongZhaoLianSpider(CrawlSpider):
                        }
 
     def start_requests(self):
-        yield scrapy.Request(url=self.start_urls, callback=self.parse_data)
+        yield scrapy.Request(url=self.domain_url, callback=self.parse_data)
 
     def parse_data(self, response):
-        info_list = response.xpath('//div[@class="TabbedPanels"]/ul')
+        info_list = response.xpath('//div[@class="announcement_type_div cf "]/ul')
         for info in info_list:
-            info_url = self.start_urls + info.xpath('./li[last()]/a/@href').get()
+            info_url = self.start_urls + info.xpath('./li/a/@href').get()
             if 'zbgg' in info_url:
                 notice_type = const.TYPE_ZB_NOTICE
             elif 'bggg' in info_url:
@@ -103,7 +103,7 @@ class Province149ZhongZhaoLianSpider(CrawlSpider):
                     count += 1
                     data_url = response.url.replace(''.join(response.url).split('/')[-1], 'index_{}.htm').format(page)
                     yield scrapy.Request(url=data_url, callback=self.parse_data_check,
-                                         priority=((pages + 1) - count) * 50, dont_filter=True,
+                                         priority=((pages + 1) - count), dont_filter=True,
                                          meta={'notice_type': response.meta['notice_type']})
         except Exception as e:
             self.logger.error(f'发起数据请求失败parse_data {e}')
@@ -120,7 +120,7 @@ class Province149ZhongZhaoLianSpider(CrawlSpider):
                 info_url = self.start_urls + info.xpath('./a[@class="searchBtn fr"]/@href').get()
                 business_category = info.xpath('./a/p/em/text()').get()
                 yield scrapy.Request(url=info_url, callback=self.parse_item,
-                                     priority=(len(info_data) - count) * 100,
+                                     priority=(len(info_data) - count) * 10 ** 6,
                                      meta={'notice_type': response.meta['notice_type'],
                                            'title_name': title_name,
                                            'pub_time': pub_time,
@@ -175,4 +175,4 @@ if __name__ == "__main__":
     from scrapy import cmdline
 
     cmdline.execute("scrapy crawl province_149_zhongzhaolian_spider".split(" "))
-    # cmdline.execute("scrapy crawl province_149_zhongzhaolian_spider -a sdt=2021-10-01 -a edt=2021-10-30".split(" "))
+    # cmdline.execute("scrapy crawl province_149_zhongzhaolian_spider -a sdt=2021-10-01 -a edt=2021-11-30".split(" "))
