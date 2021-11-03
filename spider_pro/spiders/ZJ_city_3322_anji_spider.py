@@ -30,43 +30,43 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
         '中标结果|成交|出让结果|交易结果': '中标公告',
     }
     url_map = {
-        '招标预告': [
-            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001007/'},
-        ],
-        '招标公告': [
-            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001001/'},
-            {'category': '微型工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003011/003011001/'},
-            {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005001/'},
-            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007001/'},
-            {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008001/'},
-            {'category': '其他项目', 'url': 'http://ggzy.anji.gov.cn/jyxx/003012/003012001/'},
-        ],
-        '招标变更': [
-            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001002/'},
-            {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005003/'},
-            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007002/'},
-            {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008003/'},
-            {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005002/'},
-            {'category': '微型工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003011/003011002/'},
-            {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008002/'},
-        ],
-        '招标异常': [],
-        '中标预告': [
-            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001005/'},
-            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007004/'},
-            {'category': '微型工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003011/003011003/'},
-        ],
-        '中标公告': [
-            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001006/'},
-            {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005004/'},
-            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007005/'},
-            {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008004/'},
-            {'category': '其他项目', 'url': 'http://ggzy.anji.gov.cn/jyxx/003012/003012002/'},
-        ],
+        # '招标预告': [
+        #     {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001007/'},
+        # ],
+        # '招标公告': [
+        #     {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001001/'},
+        #     {'category': '微型工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003011/003011001/'},
+        #     {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005001/'},
+        #     {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007001/'},
+        #     {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008001/'},
+        #     {'category': '其他项目', 'url': 'http://ggzy.anji.gov.cn/jyxx/003012/003012001/'},
+        # ],
+        # '招标变更': [
+        #     {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001002/'},
+        #     {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005003/'},
+        #     {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007002/'},
+        #     {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008003/'},
+        #     {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005002/'},
+        #     {'category': '微型工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003011/003011002/'},
+        #     {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008002/'},
+        # ],
+        # '招标异常': [],
+        # '中标预告': [
+        #     {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001005/'},
+        #     {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007004/'},
+        #     {'category': '微型工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003011/003011003/'},
+        # ],
+        # '中标公告': [
+        #     {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001006/'},
+        #     {'category': '产权交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003005/003005004/'},
+        #     {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007005/'},
+        #     {'category': '资源要素交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003008/003008004/'},
+        #     {'category': '其他项目', 'url': 'http://ggzy.anji.gov.cn/jyxx/003012/003012002/'},
+        # ],
         '其他公告': [
             {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001008/'},
-            {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001004/'},
-            {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007003/'},
+            # {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001004/'},
+            # {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007003/'},
         ]
     }
 
@@ -110,7 +110,7 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
         """
         headers = utils.get_headers(resp)
         proxies = utils.get_proxies(resp)
-        max_page_com = re.compile('\<script\>.*?\$\("#page"\).pagination.*?pageSize:\s*(.*?),.*?total:\s*(.*?),')
+        max_page_com = re.compile(r'<script>.*?\$\("#page"\).pagination.*?pageSize:\s*(.*?),.*?total:\s*(.*?),')
 
         match_pages = max_page_com.findall(resp.text.replace('\t', '').replace('\n', '').replace('\r\n', ''))
         if match_pages:
@@ -159,7 +159,8 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
                         }, priority=(max_page - i) * 10, dont_filter=True
                     )
         else:
-            yield scrapy.Request(url=url, callback=self.parse_data_urls, meta={
+            c_url = ''.join([url, 'moreinfo.html'])
+            yield scrapy.Request(url=c_url, callback=self.parse_data_urls, meta={
                 'notice_type': resp.meta.get('notice_type', ''),
                 'category': resp.meta.get('category', '')
             })
@@ -232,5 +233,5 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider -a sdt=2021-05-27 -a edt=2021-11-02".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider -a sdt=2021-05-27 -a edt=2021-11-02".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3322_anji_spider".split(" "))
