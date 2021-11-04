@@ -297,6 +297,12 @@ if __name__ == "__main__":
         # "ZJ_city_3343_xinchang_spider",
         # "ZJ_city_3344_yuecheng_spider",
         # "ZJ_city_3345_shengzhou_spider",
+        # "ZJ_city_3347_wenling_spider",
+        # "ZJ_city_3348_sanmenxian_spider",
+        "ZJ_city_3351_wucheng_spider",
+        "ZJ_city_3352_jindongqu_spider",
+        # "ZJ_city_3353_lanxi_spider",
+        # "ZJ_city_3359_kechengqu_spider",
         # "ZJ_city_3360_wuyi_spider",
         # "province_120_hunan_spider",
         # "province_121_shanxi_spider",
@@ -307,7 +313,7 @@ if __name__ == "__main__":
         # "province_131_qinghai_spider",
         # "province_132_ningxia_spider",
         # "province_141_anhui_spider",
-        "province_146_bingtuan_spider"
+        # "province_146_bingtuan_spider"
     ]
 
     # 优先判断运行状态
