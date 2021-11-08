@@ -1,11 +1,8 @@
 ---
-
 ### TODO功能列表
 
 - [] 49 宁夏回族自治区公共资源交易网 图片功能未完成 - wwj
-
 ---
-
 ### TODO抓取列表
 
 - [X] 0 全国 http://www.ggzy.gov.cn/
@@ -146,53 +143,64 @@
 - [] 113 辽宁建设工程信息网 http://www.hncsmtr.com/zbtb/index.html
 - [] 114 光咨电子招投标交易平台 https://www.gzebid.cn/
 - [] 115 全国招标信息网 https://www.bidnews.cn/zjzd/
-
 - [] 116 湖南招标网 http://www.hnbidding.com/
 
-- [x] 117 河北政府采购网 http://www.ccgp-hebei.gov.cn/
-- [x] 118 河南省政府采购网 http://www.ccgp-henan.gov.cn/
-- [x] 119 湖北省政府采购网 http://www.ccgp-hubei.gov.cn/
-- [x] 120 湖南省政府采购网 http://www.ccgp-hunan.gov.cn/
-- [x] 121 山西省政府采购网 http://www.ccgp-shanxi.gov.cn/
-- [x] 122 山东省政府采购网 http://www.ccgp-shandong.gov.cn/
-- [x] 123 黑龙江政府采购网 http://www.ccgp-heilongj.gov.cn/
-- [x] 124 吉林省政府采购网 http://www.ccgp-jilin.gov.cn/
-- [x] 125 辽宁省政府采购网 http://www.ccgp-liaoning.gov.cn/
-- [x] 126 海南省政府采购网 https://www.ccgp-hainan.gov.cn/
-- [x] 127 内蒙古自治区政府采购网 http://www.ccgp-neimenggu.gov.cn/
-- [x] 128 广东政府采购网 https://gdgpo.czt.gd.gov.cn/
-- [x] 129 陕西省政府采购网 http://www.ccgp-shaanxi.gov.cn/
-- [x] 130 甘肃省政府采购网 http://www.ccgp-gansu.gov.cn/
-- [x] 131 青海省政府采购网 http://www.ccgp-qinghai.gov.cn/
-- [x] 132 宁夏回族自治区政府采购网 http://www.ccgp-ningxia.gov.cn/
-- [x] 133 江西省政府采购网 http://www.ccgp-jiangxi.gov.cn/
-- [] 134 新疆政府采购网 http://www.ccgp-xinjiang.gov.cn/ TODO IP封禁频繁
-- [x] 135 四川省政府采购网 http://www.ccgp-sichuan.gov.cn/  TODO  chaoge
-- [x] 136 江苏省政府采购网 http://www.ccgp-jiangsu.gov.cn/  TODO  chaoge
-- [] 137 广西省政府采购网 http://www.ccgp-guangxi.gov.cn/ TODO IP封禁频繁
+- [X] 117 河北政府采购网 http://www.ccgp-hebei.gov.cn/
+- [X] 118 河南省政府采购网 http://www.ccgp-henan.gov.cn/
+- [X] 119 湖北省政府采购网 http://www.ccgp-hubei.gov.cn/
+- [X] 120 湖南省政府采购网 http://www.ccgp-hunan.gov.cn/
+- [X] 121 山西省政府采购网 http://www.ccgp-shanxi.gov.cn/
+- [X] 122 山东省政府采购网 http://www.ccgp-shandong.gov.cn/
+- [X] 123 黑龙江政府采购网 http://www.ccgp-heilongj.gov.cn/
+- [X] 124 吉林省政府采购网 http://www.ccgp-jilin.gov.cn/
+- [X] 125 辽宁省政府采购网 http://www.ccgp-liaoning.gov.cn/   `需要开启9004文件服务的端口`
+- [X] 126 海南省政府采购网 https://www.ccgp-hainan.gov.cn/
+- [X] 127 内蒙古自治区政府采购网 http://www.ccgp-neimenggu.gov.cn/
+- [X] 128 广东政府采购网 https://gdgpo.czt.gd.gov.cn/
+- [X] 129 陕西省政府采购网 http://www.ccgp-shaanxi.gov.cn/
+- [X] 130 甘肃省政府采购网 http://www.ccgp-gansu.gov.cn/
+- [X] 131 青海省政府采购网 http://www.ccgp-qinghai.gov.cn/
+- [X] 132 宁夏回族自治区政府采购网 http://www.ccgp-ningxia.gov.cn/
+- [X] 133 江西省政府采购网 http://www.ccgp-jiangxi.gov.cn/
+
+- [] 134 新疆政府采购网 http://www.ccgp-xinjiang.gov.cn/ TODO IP封禁频繁，使用了阿里云WEB防火墙
+
+- [X] 135 四川省政府采购网 http://www.ccgp-sichuan.gov.cn/  TODO  chaoge
+- [X] 136 江苏省政府采购网 http://www.ccgp-jiangsu.gov.cn/  TODO  chaoge
+
+- [] 137 广西省政府采购网 http://www.ccgp-guangxi.gov.cn/ TODO IP封禁频繁，使用了阿里云WEB防火墙
 - [] 138 云南省政府采购网 http://www.ccgp-yunnan.gov.cn
 - [] 139 福建省政府采购网 http://www.ccgp-fujian.gov.cn/ TODO 中文验证码无法处理
 - [] 140 贵州省政府采购网 http://www.ccgp-guizhou.gov.cn/
-- [x] 141 安徽省政府采购网 http://www.ccgp-anhui.gov.cn   TODO  chaoge
+
+- [X] 141 安徽省政府采购网 http://www.ccgp-anhui.gov.cn   TODO  chaoge
+
 - [] 142 西藏自治区政府采购网 http://www.ccgp-xizang.gov.cn/ TODO 网站崩了
-- [x] 143 大连市政府采购网 http://www.ccgp-dalian.gov.cn/
+
+- [X] 143 大连市政府采购网 http://www.ccgp-dalian.gov.cn/
+
 - [] 144 深圳市政府采购网 http://zfcg.sz.gov.cn/
-- [x] 145 青岛市政府采购网 http://www.ccgp-qingdao.gov.cn/
-- [x] 146 兵团政府采购网 http://www.ccgp-qingdao.gov.cn/   TODO chaoge 
+
+- [X] 145 青岛市政府采购网 http://www.ccgp-qingdao.gov.cn/
+- [X] 146 兵团政府采购网 http://www.ccgp-qingdao.gov.cn/   TODO chaoge
+
 - [] 147 工程电子招标采购平台 http://ebidding.shoukaigufen.com.cn/  TODO zequn
-- [x] 148 中国通用招标网 https://www.china-tender.com.cn/
-- [x] 149 中招联合招标采购平台 http://www.365trade.com.cn/  TODO chaoge 
-- [x] 150 冀招标全流程电子交易平台 http://www.jizhaobiao.com TODO chaoge
-- [x] 151 中钢招标有限责任公司 https://tendering.sinosteel.com/
-- [x] 152 中煤易购 http://www.zmzb.com/
+
+- [X] 148 中国通用招标网 https://www.china-tender.com.cn/
+- [X] 149 中招联合招标采购平台 http://www.365trade.com.cn/  TODO chaoge
+- [X] 150 冀招标全流程电子交易平台 http://www.jizhaobiao.com TODO chaoge
+- [X] 151 中钢招标有限责任公司 https://tendering.sinosteel.com/
+- [X] 152 中煤易购 http://www.zmzb.com/
+
 - [] 153 中化商务电子招投标平台 http://e.sinochemitc.com/cms/channel/ywgg1qb/index.htm    TODO zequn
 - [] 154 比比网 http://www.bitbid.cn/    TODO zequn
-- [x] 155 招标通 http://www.hebztb.com/   TODO zequn
 
-- [x] 156 易交在线 http://www.sxyjcg.com/   
-- [x] 157 内蒙古宣宇工程电子交易平台 http://www.nmgxuanyu.com/   
-- [x] 158 河北张家口交易平台 http://hbzjk.86ztb.com/   
-- [x] 159 惠招标 http://www.hbidding.com/   
+- [X] 155 招标通 http://www.hebztb.com/   TODO zequn
+- [X] 156 易交在线 http://www.sxyjcg.com/
+- [X] 157 内蒙古宣宇工程电子交易平台 http://www.nmgxuanyu.com/
+- [X] 158 河北张家口交易平台 http://hbzjk.86ztb.com/
+- [X] 159 惠招标 http://www.hbidding.com/
+
 - [] 160 金蝉电子招标投标综合交易平台 http://www.jcebid.com/   TODO 下周 miaokela
 - [] 161 云买卖 http://www.eqbidding.com/   TODO 下周 miaokela
 - [] 162 润世和电子招投标交易平台 http://www.rshec.com/
@@ -216,22 +224,27 @@
 - [] 180 诚E招电子采购交易平台 https://www.chengezhao.com/
 - [] 181 圣诺联合 https://www.okzhaobiao.com
 
-
 # TODO 206、福易采文档有问题（与207、海易招重复）
+
 # TODO 211、安招采文档有问题（与204、安招采重复）
+
 # TODO 215、河南豫信文档有问题
 
 ---
 
 ###地方
+
 # 北京地区
+
 - [] 1101 北京市海淀区人民政府  http://www.bjhd.gov.cn/
 - [] 1102 北京市政府采购网  http://www.ccgp.gov.cn/
 
 # 上海地区
+
 - [] 3101 上海市政府采购网  http://www.ccgp-shanghai.gov.cn/
 
 # 浙江地区
+
 - [] 3301 杭州公共资源交易网  https://www.hzctc.cn/
 - [] 3302 浙江政府采购网  https://zfcg.czt.zj.gov.cn/
 - [] 3303 浙江省能源集团电子招投标平台  https://www.zeec.cn/
@@ -262,24 +275,26 @@
 - [] 3328 常山县公共资源交易网  http://qzcs.zjzwfw.gov.cn/
 - [] 3329 拱墅区公共资源交易中心  http://www.gongshu.gov.cn/
 - [] 3330 江干区公共资源交易中心  http://www.jianggan.gov.cn/
-- [x] 3331 富阳区公共资源交易中心  http://www.fuyang.gov.cn/
-- [x] 3332 淳安县公共资源交易中心  http://www.qdh.gov.cn/
+
+- [X] 3331 富阳区公共资源交易中心  http://www.fuyang.gov.cn/
+- [X] 3332 淳安县公共资源交易中心  http://www.qdh.gov.cn/
+
 - [] 3333 浙江交通运输厅  http://jtyst.zj.gov.cn/
 
-- [x] `3334` 建德市公共资源交易中心  http://www.jiande.gov.cn/
-- [x] 3335 温州市鹿城区公共资源交易中心 http://spgg.lucheng.gov.cn/  `PIC`
-- [x] `3336` 温州市乐清市公共资源交易中心 http://ggzy.yueqing.gov.cn/
-- [x] `3337` 温州市瑞安市公共资源交易中心 http://ggzy.ruian.gov.cn/
-- [x] 3338 温州市永嘉县公共资源交易中心 http://ggzy.yj.gov.cn/  `PIC`
-- [x] 3339 温州市洞头区公共资源交易中心 http://www.dongtou.gov.cn/  `PIC`
-- [x] 3340 温州市文成县公共资源交易中心 http://ggjy.wencheng.gov.cn/  `PIC`
-- [x] `3341` 温州市泰顺县公共资源交易中心 http://www.ts.gov.cn/
+- [X]`3334` 建德市公共资源交易中心  http://www.jiande.gov.cn/
+- [X] 3335 温州市鹿城区公共资源交易中心 http://spgg.lucheng.gov.cn/  `PIC`
+- [X]`3336` 温州市乐清市公共资源交易中心 http://ggzy.yueqing.gov.cn/
+- [X]`3337` 温州市瑞安市公共资源交易中心 http://ggzy.ruian.gov.cn/
+- [X] 3338 温州市永嘉县公共资源交易中心 http://ggzy.yj.gov.cn/  `PIC`
+- [X] 3339 温州市洞头区公共资源交易中心 http://www.dongtou.gov.cn/  `PIC`
+- [X] 3340 温州市文成县公共资源交易中心 http://ggjy.wencheng.gov.cn/  `PIC`
+- [X]`3341` 温州市泰顺县公共资源交易中心 http://www.ts.gov.cn/
+
 - [] `3342` 绍兴市上虞区公共资源交易中心 http://xxgk.shangyu.gov.cn/
 - [] 3343 绍兴市新昌县公共资源交易中心 http://www.zjxc.gov.cn/
 - [] 3344 绍兴市越城区公共资源交易中心 http://www.sxyc.gov.cn/
 - [] 3345 绍兴市嵊州市公共资源交易中心 http://www.szzj.gov.cn/
 - [] 3346 湖州市吴兴区公共资源交易中心 http://www.wl.gov.cn/
-
 - [] 3347 台州市温岭市公共资源交易中心 http://www.wl.gov.cn/
 - [] 3348 台州市三门县公共资源交易中心 http://jyzx.sanmen.gov.cn/   `招标公告就100多条，要跑全量`
 - [] 3349 台州市天台县公共资源交易中心 http://www.zjtt.gov.cn/    `没有表`
@@ -293,14 +308,14 @@
 - [] 3357 衢州市衢江区公共资源交易中心 http://www.qjq.gov.cn/
 - [] 3358 衢州市开化县公共资源交易中心 http://www.kaihua.gov.cn/
 - [] 3359 衢州市柯城区公共资源交易中心 http://www.qjq.gov.cn/
-
 - [] 3360 金华市武义县人民政府 http://www.zjwy.gov.cn/
 - [] `3361` 金华市浦江县人民政府 http://www.pj.gov.cn/
 - [] 3362 金华市磐安县人民政府 http://www.panan.gov.cn/
 
-
 # 清洗地区 集合
-  地区                             code                     清洗人
+
+地区                             code                     清洗人
+
 - 宁波                             3305                     刘超
 - 嘉兴                             3306                     刘超
 - 富阳                             3331                     刘超
@@ -325,15 +340,14 @@
 - 河南                             118                      刘超(TODO)
 - 湖北                             119                      刘超(TODO) 
 
-
-#  备注  3313  未清洗完成    待清洗
+# 备注  3313  未清洗完成    待清洗
 
 ### 反爬策略汇总
 
 > 49 宁夏回族自治区公共资源交易网
 >
->> 问题：提取页面数据时，id是页面加载完之后再添加的`<br>`
->> 解决：提取原始界面分析xpath再提取`<br>`
+>> 问题：提取页面数据时，id是页面加载完之后再添加的 `<br>`
+>> 解决：提取原始界面分析xpath再提取 `<br>`
 >>
 
 > 08 山西省公共资源交易平台
@@ -368,7 +382,7 @@
 > C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts\pip3.9.exe
 
 > pip install --index-url https://pypi.douban.com/simple `<br>`
-> pip --default-timeout=1000 install PyQt5==5.10.1`<br>`
+> pip --default-timeout=1000 install PyQt5==5.10.1 `<br>`
 > pip --default-timeout=1000 install -i https://pypi.tuna.tsinghua.edu.cn/simple scrapy `<br>`
 > pip --default-timeout=1000 install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt `<br>`
 
@@ -388,18 +402,18 @@ request.meta["cb_kwargs"] = rule.cb_kwargs
 
 前置
 
-> 先安装scrapyd-client`<br>`
-> 在该目录下新建scrapyd-deploy.bat 路径如下`<br>`
+> 先安装scrapyd-client `<br>`
+> 在该目录下新建scrapyd-deploy.bat 路径如下 `<br>`
 > C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts
-> 开始写入`<br>`
-> @echo off`<br>`
+> 开始写入 `<br>`
+> @echo off `<br>`
 > "C:\Users\PC\AppData\Local\Programs\Python\Python39\python.exe" "C:\Users\PC\AppData\Local\Programs\Python\Python39\Scripts\scrapyd-deploy" %*`<br>`
-> 写入结束`<br>`
+> 写入结束 `<br>`
 
 命令(暂行，后面改成可视化操作)
 
-> 打包上传spiders`<br>`
-> scrapyd-deploy data-server -p spider_pro`<br>`
+> 打包上传spiders `<br>`
+> scrapyd-deploy data-server -p spider_pro `<br>`
 
 =======
 
@@ -540,12 +554,11 @@ scp  D:\ztx_clone\ztx_spider\scrapyd_clean_data.py root@192.168.1.248:/home/pyth
   docker run -d -p 8060:6801 scrapyd
   ```
 
-
 ### Splash动态js加载服务
+
 ```txt
 docker pull scrapinghub/splash
 docker run -p 4300:8050 --name ztx_splash -d scrapinghub/splash
 ```
 
 > 调用方式: yield SplashRequest(url=href, callback=self.parse_detail, args={'wait': '0.5'})
-
