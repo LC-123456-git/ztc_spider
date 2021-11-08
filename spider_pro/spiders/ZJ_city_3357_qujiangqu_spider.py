@@ -142,6 +142,11 @@ class MySpider(Spider):
             pub_time = response.meta.get("pub_time", "")
             info_source = self.area_province
             content = response.xpath("//table[@id='c']").get()
+            if not content:
+                content = response.xpath("//div[@class='box_wzy_ys']").get()
+                if not content:
+                    content = response.xpath("//div[@class='template-preview-wrap']").get()
+
             # _, content = remove_specific_element(content, 'td', 'class', 'bt-heise', index=0)
             _, contents = remove_specific_element(content, 'div', 'id', 'share-2', index=0)
             _, content = remove_specific_element(contents, 'div', 'class', 'main-fl-gn bt-padding-right-20 bt-padding-left-20', index=0)

@@ -185,7 +185,6 @@ class MySpider(Spider):
 
             except Exception as e:
                 print(e)
-            print(files_path)
             if category_num in self.list_advance_notice_num:
                 notice_type = const.TYPE_ZB_ADVANCE_NOTICE
             elif category_num in self.list_notice_category_num:
@@ -235,5 +234,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3355_yongkang_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3355_yongkang_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3355_yongkang_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3355_yongkang_spider".split(" "))

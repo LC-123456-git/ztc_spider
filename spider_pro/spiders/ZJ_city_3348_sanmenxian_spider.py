@@ -39,8 +39,9 @@ class MySpider(Spider):
     # 其他公告
     list_others_notice_num = ['xmjbxx', 'htgg', 'lyqk', 'lygg']
 
-    list_all_category_num = list_advance_notice_num + list_notice_category_num + list_alteration_category_num \
-                            + list_win_advance_notice_num + list_win_notice_category_num +list_others_notice_num
+    # list_all_category_num = list_advance_notice_num + list_notice_category_num + list_alteration_category_num \
+    #                         + list_win_advance_notice_num + list_win_notice_category_num +list_others_notice_num
+    list_all_category_num = list_notice_category_num
 
     def __init__(self, *args, **kwargs):
         super(MySpider, self).__init__()
@@ -107,7 +108,7 @@ class MySpider(Spider):
                 endrecord += 1
                 if endrecord <= int(ttlrow):
                     page_url = url + "?pageIndex={}".format(endrecord)
-                    yield scrapy.Request(url=page_url, priority=6, callback=self.get_page_urls, dont_filter=True,
+                    yield scrapy.Request(url=page_url, priority=6, callback=self.extract_data_urls, dont_filter=True,
                                  meta={"classifyShow": classifyShow, "notice_type": notice_type, "info_num": response.meta["info_num"]})
 
     def get_pages_urls(self, response):
@@ -173,7 +174,7 @@ class MySpider(Spider):
                             #     file_name = item.xpath("./text()").get()
                             #     files_path[file_name] = file_url
 
-            print(files_path)
+            # print(files_path)
             if notice_type in self.list_advance_notice_num:
                 notice_type = const.TYPE_ZB_ADVANCE_NOTICE
             elif notice_type in self.list_notice_category_num:
@@ -236,5 +237,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3348_sanmenxian_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3348_sanmenxian_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3348_sanmenxian_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3348_sanmenxian_spider".split(" "))

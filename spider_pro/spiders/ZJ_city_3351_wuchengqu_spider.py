@@ -63,7 +63,7 @@ class MySpider(Spider):
             callback_url = self.extract_data_urls
         else:
             callback_url = self.parse_urls
-        for item in self.list_win_notice_category_num:
+        for item in self.list_all_category_num:
             temp_dict = self.r_dict | {"columnid": "{}".format(item)}
             yield scrapy.FormRequest(self.count_url.format("1", "45"), formdata=temp_dict, priority=2, cookies=self.cookies_dict,
                                      callback=callback_url, meta={"afficheType": str(item)})
@@ -245,5 +245,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3351_wucheng_spider -a sdt=2021-08-03 -a edt=2021-08-30".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3351_wucheng_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3351_wucheng_spider -a sdt=2021-08-03 -a edt=2021-08-30".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3351_wucheng_spider".split(" "))

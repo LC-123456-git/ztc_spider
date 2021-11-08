@@ -273,6 +273,7 @@ if __name__ == "__main__":
         # "ZJ_city_3313_zhoushan_spider",  # ok
         # "ZJ_city_3314_yuhang_spider",  # ok
         # "ZJ_city_3315_keqiao_spider",  # ok
+        "ZJ_city_3316_zhuji_spider",
         # "ZJ_city_3318_jinhua_spider",  # ok + error_01
         # "ZJ_city_3319_changxing_spider",  # ok
         # "ZJ_city_3320_cangnan_spider",  # error_01
@@ -299,9 +300,10 @@ if __name__ == "__main__":
         # "ZJ_city_3345_shengzhou_spider",
         # "ZJ_city_3347_wenling_spider",
         # "ZJ_city_3348_sanmenxian_spider",
-        "ZJ_city_3351_wucheng_spider",
-        "ZJ_city_3352_jindongqu_spider",
+        # "ZJ_city_3351_wucheng_spider",
+        # "ZJ_city_3352_jindongqu_spider",
         # "ZJ_city_3353_lanxi_spider",
+        # "ZJ_city_3354_dongyang_spider",
         # "ZJ_city_3359_kechengqu_spider",
         # "ZJ_city_3360_wuyi_spider",
         # "province_120_hunan_spider",

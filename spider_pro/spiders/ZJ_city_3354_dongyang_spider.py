@@ -22,8 +22,8 @@ class MySpider(Spider):
     name = "ZJ_city_3354_dongyang_spider"
     area_id = "3354"
     area_province = "浙江-金华市东阳市公共资源交易服务平台"
-    allowed_domains = ['www.dongyang.gov.cn']
-    domain_url = "www.dongyang.gov.cn"
+    allowed_domains = ['http://www.dongyang.gov.cn/']
+    domain_url = "http://www.dongyang.gov.cn/"
     count_url = "http://www.dongyang.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=15"
     page_size = "10"
     # 招标预告
@@ -40,8 +40,15 @@ class MySpider(Spider):
     list_all_category_num = list_advance_notice_num + list_notice_category_num + list_alteration_category_num \
                             + list_win_advance_notice_num + list_win_notice_category_num
 
+
     def __init__(self, *args, **kwargs):
         super(MySpider, self).__init__()
+        cookies_str = 'zh_choose_undefined=s; SERVERID=e741bbf83b6f24e79f118d965207c05f|1635836000|1635834432'
+        # 将cookies_str转换为cookies_dict
+        cookies_dict = {i.split('=')[0]: i.split('=')[1] for i in cookies_str.split('; ')}
+        self.headers = {"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+               "Cookie": cookies_dict,
+               "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36"}
         self.r_dict = {"col": "1", "appid": "1", "webid": "3557", "sourceContentType": "1",
         "unitid": "6403598", "webname": "东阳市人民政府门户网站", "permissiontype": "0"}
         if kwargs.get("sdt") and kwargs.get("edt"):
@@ -77,19 +84,22 @@ class MySpider(Spider):
             info_url = self.domain_url + "/" + info_url
             pub_time = re.findall('\d+\-\d+\-\d+', item.get())[0]
             x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
-            if x:
-                count_num += 1
-                yield scrapy.Request(url=info_url, callback=self.parse_item,  dont_filter=True,
-                                     priority=10, meta={"category_num": category_num, "pub_time": pub_time,
-                                                        "title_name": title_name})
-            if count_num >= len(temp_list):
-                startrecord += 45
-                endrecord += 45
-                if endrecord <= int(ttlrow):
-                    temp_dict = self.r_dict | {"columnid": "{}".format(category_num)}
-                    yield scrapy.FormRequest(self.count_url.format(str(startrecord), str(endrecord)), formdata=temp_dict,
-                                             dont_filter=True, callback=self.parse_data_urls, priority=8, cookies=self.cookies_dict,
-                                             meta={"afficheType": category_num})
+            try:
+                if x:
+                    count_num += 1
+                    yield scrapy.Request(url=info_url, callback=self.parse_item,  dont_filter=True,
+                                         priority=10, meta={"category_num": category_num, "pub_time": pub_time,
+                                                            "title_name": title_name})
+                    if count_num >= len(temp_list):
+                        startrecord += 45
+                        endrecord += 45
+                        if endrecord <= int(ttlrow):
+                            temp_dict = self.r_dict | {"columnid": "{}".format(category_num)}
+                            yield scrapy.FormRequest(self.count_url.format(str(startrecord), str(endrecord)), formdata=temp_dict,
+                                                     dont_filter=True, callback=self.parse_data_urls, priority=8, cookies=self.cookies_dict,
+                                                     meta={"afficheType": category_num})
+            except Exception as e:
+                print(e)
 
     def parse_urls(self, response):
         try:
@@ -125,10 +135,10 @@ class MySpider(Spider):
                 info_url = re.findall('href="(.*?)"', item.get())[0]
                 info_url = self.domain_url + "/" + info_url
                 pub_time = re.findall('\d+\-\d+\-\d+', item.get())[0]
-                # info_url = "http://www.lanxi.gov.cn/art/2021/7/16/art_1229499357_59238808.html"
-                yield scrapy.Request(url=info_url, callback=self.parse_item, dont_filter=True,
+                yield scrapy.Request(url=info_url, callback=self.parse_item, dont_filter=True, headers=self.headers,
                                      priority=10, meta={"category_num": category_num, "pub_time": pub_time,
                                            "title_name": title_name})
+
         except Exception as e:
             self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
@@ -166,7 +176,7 @@ class MySpider(Spider):
                 #         files_path[file_name] = QRcode_url
             except Exception as e:
                 print(e)
-            print(files_path)
+            # print(files_path)
             if category_num in self.list_advance_notice_num:
                 notice_type = const.TYPE_ZB_ADVANCE_NOTICE
             elif category_num in self.list_notice_category_num:
@@ -218,5 +228,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3354_dongyang_spider -a sdt=2021-08-04 -a edt=2021-08-30".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3354_dongyang_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3354_dongyang_spider -a sdt=2021-08-04 -a edt=2021-11-08".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3354_dongyang_spider".split(" "))

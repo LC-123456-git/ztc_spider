@@ -140,7 +140,6 @@ class MySpider(Spider):
     def parse_item(self, response):
         if response.status == 200:
             origin = response.url
-            print(origin)
             category_num = response.meta.get("category_num", "")
             title_name = response.meta.get("title_name", "")
             pub_time = response.meta.get("pub_time", "")
@@ -171,7 +170,6 @@ class MySpider(Spider):
                             files_path[file_name] = QRcode_url
             except Exception as e:
                 print(e)
-            print(files_path)
             if category_num in self.list_advance_notice_num:
                 notice_type = const.TYPE_ZB_ADVANCE_NOTICE
             elif category_num in self.list_notice_category_num:
@@ -198,10 +196,10 @@ class MySpider(Spider):
             elif re.search(r"开标结果公示", title_name):
                 notice_type = const.TYPE_OTHERS_NOTICE
 
-            if category_num in ["1229499357","1229196154","1229196155","1229196156","1229196157"]:
-                classifyShow = "工程建设"
-            else:
+            if category_num in ["1229196164", "1229196165"]:
                 classifyShow = "产权交易"
+            else:
+                classifyShow = "工程建设"
 
             notice_item = NoticesItem()
             notice_item["origin"] = origin
@@ -224,5 +222,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3353_lanxi_spider -a sdt=2021-08-03 -a edt=2021-08-30".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3353_lanxi_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3353_lanxi_spider -a sdt=2021-08-03 -a edt=2021-08-30".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3353_lanxi_spider".split(" "))

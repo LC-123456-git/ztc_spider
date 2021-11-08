@@ -137,7 +137,6 @@ class MySpider(Spider):
     def parse_item(self, response):
         if response.status == 200:
             origin = response.url
-            print(origin)
             category_num = response.meta.get("category_num", "")
             title_name = response.meta.get("title_name", "")
             pub_time = response.meta.get("pub_time", "")
@@ -224,5 +223,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3352_jindongqu_spider -a sdt=2021-08-03 -a edt=2021-08-30".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3352_jindongqu_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3352_jindongqu_spider -a sdt=2021-08-03 -a edt=2021-08-30".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3352_jindongqu_spider".split(" "))

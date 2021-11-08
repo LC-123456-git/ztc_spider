@@ -46,7 +46,6 @@ class MySpider(CrawlSpider):
         'appid': '1',
         'webid': '2745',
         'path': '/',
-        # 'columnid': '1518855',
         'sourceContentType': '1',
         'unitid': '6167830',
         'webname': '诸暨市政府门户网站',
@@ -61,12 +60,19 @@ class MySpider(CrawlSpider):
             self.edt_time = kwargs.get("edt")
         else:
             self.enable_incr = False
+        cookies_str = "SERVERID=a6d2b4ba439275d89aa9b072a5b72803|1630399182|1630399018"
+        # 将cookies_str转换为cookies_dict
+        self.cookies_dict = {i.split('=')[0]: i.split('=')[1] for i in cookies_str.split('; ')}
 
     def start_requests(self):
+        if self.enable_incr:
+            callback_url = self.extract_data_urls
+        else:
+            callback_url = self.parse_url
         for code in self.all_list:
             info_dict = self.r_dict | {'columnid': str(code)}
-            yield scrapy.FormRequest(url=self.base_url, formdata=info_dict, priority=5, callback=self.parse_url,
-                                     meta={"info_dict": info_dict, "code": code})
+            yield scrapy.FormRequest(url=self.base_url.format("1", "120"), formdata=info_dict, priority=5, callback=callback_url,
+                                     cookies=self.cookies_dict, meta={"info_dict": info_dict, "code": code})
 
     def parse_url(self, response):
         try:
@@ -86,33 +92,51 @@ class MySpider(CrawlSpider):
                     startrecord += 120
                     endrecord += 120
                 yield scrapy.FormRequest(url=self.base_url.format(startrecord, endrecord), priority=8, formdata=info_dict,
-                                         callback=self.parse_data_urls, meta={"info_dict": info_dict,
+                                         cookies=self.cookies_dict, callback=self.parse_data_urls, meta={"info_dict": info_dict,
                                                                          "code": code})
-            # li_gcjs_list = response.xpath("//ul[@id='two_fr_tit']/li")
-            #
-            # li_list = response.xpath('//ul[@class="ty-ul fr"]/li')
-            # for li in li_list:
-            #     type_url = self.domain_url + li.xpath('./a/@href').get()
-            #     code = re.findall('(\d+)', type_url)[0]
-            #     if code in self.list_advance_notice_num:
-            #         noticn = const.TYPE_ZB_ADVANCE_NOTICE
-            #     elif code in self.list_notice_category_num:
-            #         noticn = const.TYPE_ZB_NOTICE
-            #     elif code in self.list_win_notice_category_num:
-            #         noticn = const.TYPE_WIN_NOTICE
-            #
-            #     elif code in self.list_win_advance_notice_num:
-            #         noticn = const.TYPE_WIN_ADVANCE_NOTICE
-            #     elif code in self.list_others_notice_num:
-            #         noticn = const.TYPE_OTHERS_NOTICE
-            #     else:
-            #         noticn = 'null'
-            #     if noticn != 'null':
-            #         info_dict = self.r_dict | {'columnid': str(code)}
-            #         yield scrapy.FormRequest(url=self.base_url, formdata=info_dict, callback=self.parse_data_urls,
-            #                              meta={'noticn': noticn, 'info_dict': info_dict})
+
         except Exception as e:
             self.logger.error(f"发起数据请求失败 parse_url{e} {response.url=}")
+
+    def extract_data_urls(self, response):
+        xmlparse = xmltodict.parse(response.text)
+        temp_list = json.loads(json.dumps(xmlparse))['datastore']['recordset']['record']
+        noticn = response.meta['code']
+        info_dict = self.r_dict | {'columnid': noticn}
+        total = response.xpath('//datastore/totalrecord/text()').get()
+        startrecord = 0
+        endrecord = 120
+        count_num = 0
+        if noticn in self.list_advance_notice_num:
+            notice_type = const.TYPE_ZB_ADVANCE_NOTICE
+        elif noticn in self.list_notice_category_num:
+            notice_type = const.TYPE_ZB_NOTICE
+        elif noticn in self.list_win_notice_category_num:
+            notice_type = const.TYPE_WIN_NOTICE
+        elif noticn in self.list_win_advance_notice_num:
+            notice_type = const.TYPE_WIN_ADVANCE_NOTICE
+        elif noticn in self.list_others_notice_num:
+            notice_type = const.TYPE_OTHERS_NOTICE
+        else:
+            notice_type = const.TYPE_UNKNOWN_NOTICE
+        for item in temp_list:
+            doc = etree.HTML(item)
+            pub_time = doc.xpath("//td[@class='bt_time']")[0].text
+            info_url = doc.xpath("//a/@href")[0]
+            title_name = doc.xpath("//a/@title")[0]
+            info_url = self.domain_url + info_url
+            x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
+            if x:
+                count_num += 1
+                yield scrapy.Request(url=info_url, callback=self.parse_item, priority=10,cookies=self.cookies_dict,
+                                     meta={'pub_time': pub_time, 'noticn': noticn, "title_name": title_name, "notice_type":
+                                         notice_type})
+                if count_num >= len(temp_list):
+                    startrecord += 120
+                    endrecord += 120
+                    if endrecord <= int(total):
+                        yield scrapy.FormRequest(url=self.base_url.format(startrecord, endrecord), priority=8, formdata= info_dict,
+                                                 cookies=self.cookies_dict, callback=self.extract_data_urls, meta={"info_dict": info_dict})
 
     def parse_data_urls(self, response):
         xmlparse = xmltodict.parse(response.text)
@@ -136,72 +160,9 @@ class MySpider(CrawlSpider):
             info_url = doc.xpath("//a/@href")[0]
             title_name = doc.xpath("//a/@title")[0]
             info_url = self.domain_url + info_url
-            yield scrapy.Request(url=info_url, callback=self.parse_item, priority=10,
+            yield scrapy.Request(url=info_url, callback=self.parse_item, priority=10,cookies=self.cookies_dict,
                                  meta={'pub_time': pub_time, 'noticn': noticn, "title_name": title_name, "notice_type":
                                      notice_type})
-    # def parse_data_urls(self, response):
-    #     try:
-    #         print("~~~~~~~~~~~~~~~~~~~~~~~~")
-    #         print(xmltodict.parse(response.text))
-    #         base_url = 'http://ggb.sx.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=40'
-    #         if self.enable_incr:
-    #             pass
-    #             # xmlparse = xmltodict.parse(response.text)
-    #             # jsonstr = json.loads(json.dumps(xmlparse))['datastore']['recordset']['record']
-    #             # num = 0
-    #             # startrecord = 1
-    #             # endrecord = 120
-    #             # for info in jsonstr:
-    #             #     pub_time = ''.join(re.findall('<span>(.*)</span>', info)[0]).replace('[', '').replace(']', '')
-    #             #     pub_time = get_accurate_pub_time(pub_time)
-    #             #     x, y, z = judge_dst_time_in_interval(pub_time, self.sdt_time, self.edt_time)
-    #             #     if x:
-    #             #         num += 1
-    #             #         total = int(len(jsonstr))
-    #             #         if total == None:
-    #             #             return
-    #             #         self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-    #             #     if num >= len(jsonstr):
-    #             #         startrecord += 120
-    #             #         endrecord += 120
-    #             #     else:
-    #             #         startrecord = 1
-    #             #         endrecord = 120
-    #             #     yield scrapy.FormRequest(url=base_url.format(startrecord, endrecord),
-    #             #                              formdata=response.meta['info_dict'],
-    #             #                              callback=self.parse_info, meta={'noticn': response.meta['noticn']})
-    #         else:
-    #             total = response.xpath('//datastore/totalrecord/text()').get()
-    #             self.logger.info(f"初始总数提取成功 {total=} {response.url=} {response.meta.get('proxy')}")
-    #             pages = math.ceil(int(total)/120)
-    #             startrecord = 0
-    #             endrecord = 120
-    #             for num in range(1, int(pages)+1):
-    #                 if num == 1:
-    #                     startrecord = 1
-    #                     endrecord = 120
-    #                 else:
-    #                     startrecord += 120
-    #                     endrecord += 120
-    #                 yield scrapy.FormRequest(url=base_url.format(startrecord, endrecord), formdata=response.meta['info_dict'],
-    #                                      callback=self.parse_info, meta={"info_dict": response.meta["info_dict"],
-    #                                                                      "noticn": response.meta["noticn"]})
-    #     except Exception as e:
-    #         self.logger.error(f"初始总页数提取错误 : {response.meta=} {e} {response.url=}")
-    #
-    # def parse_info(self, response):
-    #     try:
-    #         xmlparse = xmltodict.parse(response.text)
-    #         jsonstr = json.loads(json.dumps(xmlparse))['datastore']['recordset']['record']
-    #         for info in jsonstr:
-    #             pub_time = ''.join(re.findall('<span>(.*)</span>', info)[0]).replace('[', '').replace(']', '')
-    #             info_url = self.domain_url + re.findall('<a href="(.*)" .*>', info)[0]
-    #
-    #             yield scrapy.Request(url=info_url, callback=self.parse_item, meta={'pub_time': pub_time,
-    #                                                                                'noticn': response.meta['noticn']})
-    #
-    #     except Exception as e:
-    #         self.logger.error(f"发起数据请求失败 {e} {response.url=}")
 
     def parse_item(self, response):
         if response.status == 200:
@@ -233,8 +194,6 @@ class MySpider(CrawlSpider):
                 notice_type = const.TYPE_ZB_ALTERATION
             elif re.search(r'成交|成果|中标', title_name):
                 notice_type = const.TYPE_WIN_NOTICE
-            elif re.search(r'招标|谈判|磋商', title_name):
-                notice_type = const.TYPE_ZB_NOTICE
             elif re.search(r'预审结果', title_name):
                 notice_type = const.TYPE_QUALIFICATION_ADVANCE_NOTICE
             else:
@@ -248,9 +207,6 @@ class MySpider(CrawlSpider):
                 el.getparent().remove(el)
                 content = etree.tounicode(doc)
             # content = re.sub(fr'|打印|关闭|', '', content)
-
-
-
             files_path = {}
             if dict := response.xpath("//ul[@class='fjxx']/li"):
                 for itme in dict:
@@ -260,27 +216,17 @@ class MySpider(CrawlSpider):
                         value = self.base_url + itme.xpath('./p/a/@href').get()
                     keys = itme.xpath('./p/a/text()').get()
                     files_path[keys] = value
-            # if dict := response.xpath('//*[@id="dlstAttachFile"]/tbody/tr/td/a') or response.xpath('//table[@id="zfcg_caigouyaosugongshi_detail_dlstattachfile"]//a') or\
-            #         response.xpath('//div[@id="zoom"]//a'):
-            #     dict = response.xpath('//td[@valign="top"]/table[@id="dlstAttachFile"]//a') or response.xpath('//table[@id="zfcg_caigouyaosugongshi_detail_dlstattachfile"]//a') or response.xpath('//div[@id="zoom"]//a')
-            #     num = 1
-            #     for itme in dict:
-            #         if 'http' in itme.xpath("./@href").get():
-            #             value = itme.xpath("./@href").get()
-            #         else:
-            #             value = self.base_url + itme.xpath("./@href").get()
-            #         key_name = ['png', 'jpg', 'jpeg', 'doc', 'docx', 'pdf', 'xls']
-            #         key_list = ['www.sxztb.gov.cn', 'yyz18577@163.com', 'www.zjzfcg.gov.cn', 'http://www.sxztb.gov.cn']
-            #         if itme.xpath("./font/text()").get() or itme.xpath("./span/text()").get() or itme.xpath('./text()').get():
-            #             keys = itme.xpath("./font/text()").get() or itme.xpath("./span/text()").get() or itme.xpath('./text()').get()
-            #             if keys not in key_list:
-            #                 files_path[keys] = value
-            #         elif value[value.rindex('.') + 1:] in key_name:
-            #             keys = value[value.rindex('/') + 1:] + '_' + str(num)
-            #             files_path[keys] = value
-            #         else:
-            #             pass
-            #         num += 1
+            if file_list := response.xpath('//div[@class="main-fl bt-left"]//a'):
+                for item in file_list:
+                    if file_url := item.xpath("./@href").get():
+                        if re.findall("""tpbidder/ZJBMZtbMis_ZJ/Pages/AttachManage/DownloadFile.ashx.*""", file_url):
+                            file_name = item.xpath("./span/text()").get()
+                            file_url = file_url
+                            files_path[file_name] = file_url
+                        elif re.findall("""/EpointWebService_ForWeb/ReadAttachFile.aspx.*""", file_url):
+                            file_name = item.xpath("./font/text()").get()
+                            file_url = file_url
+                            files_path[file_name] = file_url
 
             notice_item = NoticesItem()
             notice_item["origin"] = origin
@@ -293,12 +239,13 @@ class MySpider(CrawlSpider):
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
             notice_item["category"] = classifyShow
-            print(notice_item)
+            # print(notice_item)
             yield notice_item
 
 
 if __name__ == "__main__":
     from scrapy import cmdline
+    # cmdline.execute("scrapy crawl ZJ_city_3316_zhuji_spider -a sdt=2021-08-04 -a edt=2021-09-01".split(" "))
     cmdline.execute("scrapy crawl ZJ_city_3316_zhuji_spider".split(" "))
 
 

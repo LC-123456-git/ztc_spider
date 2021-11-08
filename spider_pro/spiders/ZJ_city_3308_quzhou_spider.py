@@ -289,7 +289,7 @@ class MySpider(Spider):
             notice_item["pub_time"] = pub_time
             notice_item["info_source"] = info_source
             notice_item["is_have_file"] = const.TYPE_HAVE_FILE if files_path else const.TYPE_NOT_HAVE_FILE
-            notice_item["files_path"] = "null" if not files_path else files_path
+            notice_item["files_path"] = "" if not files_path else files_path
             notice_item["notice_type"] = name
             notice_item["content"] = content
             notice_item["area_id"] = self.area_id
