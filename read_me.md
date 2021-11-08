@@ -281,13 +281,13 @@
 - [] 3346 湖州市吴兴区公共资源交易中心 http://www.wl.gov.cn/
 
 - [] 3347 台州市温岭市公共资源交易中心 http://www.wl.gov.cn/
-- [] 3348 台州市三门县公共资源交易中心 http://jyzx.sanmen.gov.cn/
-- [] 3349 台州市天台县公共资源交易中心 http://www.zjtt.gov.cn/ 
+- [] 3348 台州市三门县公共资源交易中心 http://jyzx.sanmen.gov.cn/   `招标公告就100多条，是不是没跑全量`
+- [] 3349 台州市天台县公共资源交易中心 http://www.zjtt.gov.cn/    `没有表`
 - [] `3350` 台州市仙居县公共资源交易中心 http://www.zjxj.gov.cn/
-- [] 3351 金华市婺城区公共资源交易中心 http://www.wuch.gov.cn/
-- [] 3352 金华市金东区公共资源交易中心 http://www.jindong.gov.cn/
-- [] 3353 金华市兰溪市公共资源交易中心 http://www.lanxi.gov.cn/
-- [] 3354 金华市东阳市公共资源交易中心 http://www.dongyang.gov.cn/
+- [] 3351 金华市婺城区公共资源交易中心 http://www.wuch.gov.cn/    `没有招标公告`
+- [] `3352` 金华市金东区公共资源交易中心 http://www.jindong.gov.cn/   `PIC`
+- [] 3353 金华市兰溪市公共资源交易中心 http://www.lanxi.gov.cn/   `数据库没有数据`
+- [] `3354` 金华市东阳市公共资源交易中心 http://www.dongyang.gov.cn/  `PIC`
 - [] 3355 金华市永康市公共资源交易中心 http://www.yk.gov.cn/
 - [] `3356` 金华市义乌市公共资源交易中心 http://ggfw.ywjypt.yw.gov.cn/
 - [] 3357 衢州市衢江区公共资源交易中心 http://www.qjq.gov.cn/
@@ -318,7 +318,9 @@
 - 温州                             3309                     克拉
 - 苍南                             3320                     克拉
 - 嵊州                             3345                     刘超(TODO)
-- 长兴                             3345                     克拉(TODO)
+- 长兴                             3319                     克拉
+- 开化                             3358                     克拉(TODO)
+
 #  备注  3313  未清洗完成    待清洗
 
 ### 反爬策略汇总
