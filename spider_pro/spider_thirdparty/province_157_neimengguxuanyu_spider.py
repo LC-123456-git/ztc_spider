@@ -205,6 +205,7 @@ class Province157NeimengguxuanyuSpiderSpider(scrapy.Spider):
     def parse_detail(self, resp):
         content = resp.xpath('//div[@id="maindiv"]').get()
         title_name = resp.meta.get('title_name')
+        title_name = re.sub(r'<font>.*?</font>', '', title_name)
         notice_type_ori = resp.meta.get('notice_type')
         pub_time = resp.meta.get('pub_time')
 
@@ -245,6 +246,6 @@ class Province157NeimengguxuanyuSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_157_neimengguxuanyu_spider -a sdt=2021-01-01 -a edt=2021-10-28".split(" "))
-    # cmdline.execute("scrapy crawl province_157_neimengguxuanyu_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_157_neimengguxuanyu_spider -a sdt=2021-01-01 -a edt=2021-10-28".split(" "))
+    cmdline.execute("scrapy crawl province_157_neimengguxuanyu_spider".split(" "))
 
