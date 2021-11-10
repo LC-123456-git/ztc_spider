@@ -68,7 +68,7 @@ class Province121ShanxiSpiderSpider(scrapy.Spider):
                 publishDateBegin = get_back_date(365)
                 time_dict = self.r_dict | {"publishDateBegin": publishDateBegin} | {"publishDateEnd": publishDateEnd}
             count = 0
-            li_list = response.xpath('//div[@class="main_content"]/div[4]//ul[@class="tabs"]/li')
+            li_list = response.xpath('///div[@class="main_content"]/div[5]/div[1]//ul[@class="tabs"]/li')
             for li in li_list:
                 count += 1
                 notice_name = ''.join(li.xpath('./text()').get()).strip()
@@ -210,5 +210,5 @@ class Province121ShanxiSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl province_121_shanxi_spider".split(" "))
-    cmdline.execute("scrapy crawl province_121_shanxi_spider -a sdt=2021-07-20 -a edt=2021-08-11".split(" "))
+    cmdline.execute("scrapy crawl province_121_shanxi_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_121_shanxi_spider -a sdt=2021-07-20 -a edt=2021-08-11".split(" "))
