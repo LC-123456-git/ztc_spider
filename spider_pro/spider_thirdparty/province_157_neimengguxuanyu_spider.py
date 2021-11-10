@@ -203,49 +203,57 @@ class Province157NeimengguxuanyuSpiderSpider(scrapy.Spider):
                 )
 
     def parse_detail(self, resp):
-        content = resp.xpath('//div[@id="maindiv"]').get()
-        title_name = resp.meta.get('title_name')
-        title_name = re.sub(r'<font>.*?</font>', '', title_name)
-        notice_type_ori = resp.meta.get('notice_type')
-        pub_time = resp.meta.get('pub_time')
+        try:
+            content = resp.xpath('//div[@class="ewb-article"]').get()
+            title_name = resp.meta.get('title_name')
+            title_name = re.sub(r'<font>.*?</font>', '', title_name)
+            notice_type_ori = resp.meta.get('notice_type')
+            pub_time = resp.meta.get('pub_time')
 
-        # 移除相关信息
-        _, content = utils.remove_element_by_xpath(
-            content,
-            xpath_rule='//div[@id="title"]'
-        )
+            # 移除相关信息
+            _, content = utils.remove_element_by_xpath(
+                content,
+                xpath_rule='//h3'
+            )
+            _, content = utils.remove_element_by_xpath(
+                content,
+                xpath_rule='//div[contains(@class,"ewb-article-sources")]'
+            )
 
-        # 关键字重新匹配 notice_type
-        matched, match_notice_type = self.match_title(title_name)
-        if matched:
-            notice_type_ori = match_notice_type
+            # 关键字重新匹配 notice_type
+            matched, match_notice_type = self.match_title(title_name)
+            if matched:
+                notice_type_ori = match_notice_type
 
-        notice_types = list(
-            filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
-        )
+            notice_types = list(
+                filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_type_ori, constans.TYPE_NOTICE_DICT)
+            )
 
-        # 匹配文件
-        _, files_path = utils.catch_files(content, self.base_url, pub_time=pub_time, resp=resp)
+            # 匹配文件
+            _, files_path = utils.catch_files(content, self.base_url, pub_time=pub_time, resp=resp)
 
-        notice_item = items.NoticesItem()
-        notice_item["origin"] = resp.url
+            notice_item = items.NoticesItem()
+            notice_item["origin"] = resp.url
 
-        notice_item["title_name"] = title_name
-        notice_item["pub_time"] = pub_time
-        notice_item["info_source"] = self.basic_area
-        notice_item["is_have_file"] = constans.TYPE_HAVE_FILE if files_path else constans.TYPE_NOT_HAVE_FILE
-        notice_item["files_path"] = files_path
-        notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
-        notice_item["content"] = content
-        notice_item["area_id"] = self.area_id
-        notice_item["category"] = ''
-        print(resp.meta.get('pub_time'), resp.url)
-        return notice_item
+            notice_item["title_name"] = title_name
+            notice_item["pub_time"] = pub_time
+            notice_item["info_source"] = self.basic_area
+            notice_item["is_have_file"] = constans.TYPE_HAVE_FILE if files_path else constans.TYPE_NOT_HAVE_FILE
+            notice_item["files_path"] = files_path
+            notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
+            notice_item["content"] = content
+            notice_item["area_id"] = self.area_id
+            notice_item["category"] = ''
+            print(resp.meta.get('pub_time'), resp.url)
+            return notice_item
+        except (Exception,) as e:
+            print('出错链接', resp.url)
+            # http://www.nmgxuanyu.com/xmxx/001001/001001006/20211110/3c7d46b4-77b2-4af7-a33d-07bb92b7562b.html
 
 
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl province_157_neimengguxuanyu_spider -a sdt=2021-01-01 -a edt=2021-10-28".split(" "))
-    cmdline.execute("scrapy crawl province_157_neimengguxuanyu_spider".split(" "))
+    cmdline.execute("scrapy crawl province_157_neimengguxuanyu_spider -a sdt=2021-08-01 -a edt=2021-11-10".split(" "))
+    # cmdline.execute("scrapy crawl province_157_neimengguxuanyu_spider".split(" "))
 
