@@ -251,5 +251,5 @@ class Province127NeiMengGuSpiderSpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl province_127_neimenggu_spider".split(" "))
-    cmdline.execute("scrapy crawl province_127_neimenggu_spider -a sdt=2021-07-20 -a edt=2021-11-20".split(" "))
+    cmdline.execute("scrapy crawl province_127_neimenggu_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_127_neimenggu_spider -a sdt=2021-07-20 -a edt=2021-11-20".split(" "))
