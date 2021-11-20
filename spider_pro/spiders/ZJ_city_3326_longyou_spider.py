@@ -23,32 +23,32 @@ class ZjCity3326LongyouSpiderSpider(scrapy.Spider):
         '候选人': '中标预告',
     }
     url_map = {
-        # '招标预告': [
-        #     {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001009'},
-        # ],
+        '招标预告': [
+            {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001009'},
+        ],
         '招标公告': [
             {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001002'},
-            # {'category': '政府采购', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005002002'},
-            # {'category': '土地交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005003001'},
-            # {'category': '产权交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005004001'},
-            # {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007001'},
-            # {'category': '农村产权', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005008001001'},
+            {'category': '政府采购', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005002002'},
+            {'category': '土地交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005003001'},
+            {'category': '产权交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005004001'},
+            {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007001'},
+            {'category': '农村产权', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005008001001'},
         ],
-        # '中标预告': [
-        #     {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007005'},
-        #     {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001003'},
-        # ],
-        # '中标公告': [
-        #     {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001004'},
-        #     {'category': '产权交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005004002'},
-        #     {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007004'},
-        #     {'category': '农村产权', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005008002001'},
-        # ],
-        # '其他公告': [
-        #     {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001008'},
-        #     {'category': '政府采购', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005002005'},
-        #     {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007003'},
-        # ]
+        '中标预告': [
+            {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007005'},
+            {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001003'},
+        ],
+        '中标公告': [
+            {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001004'},
+            {'category': '产权交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005004002'},
+            {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007004'},
+            {'category': '农村产权', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005008002001'},
+        ],
+        '其他公告': [
+            {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001008'},
+            {'category': '政府采购', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005002005'},
+            {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007003'},
+        ]
     }
     payload = {
         "filter": {

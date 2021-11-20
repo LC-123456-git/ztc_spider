@@ -32,21 +32,21 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
         '建设工程': {
             'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341070/index.html',
         },
-        # '政府采购': {
-        #     'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341069/index.html',
-        # },
-        # '综合交易': {  # add
-        #     'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341072/index.html',
-        # },
-        # '土地交易': {
-        #     'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341071/index.html',
-        # },
-        # '农村产权': {
-        #     'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341073/index.html',
-        # },
-        # '乡镇平台': {  # add
-        #     'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341074/index.html',
-        # }
+        '政府采购': {
+            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341069/index.html',
+        },
+        '综合交易': {  # add
+            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341072/index.html',
+        },
+        '土地交易': {
+            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341071/index.html',
+        },
+        '农村产权': {
+            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341073/index.html',
+        },
+        '乡镇平台': {  # add
+            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341074/index.html',
+        }
     }
     form_data = {
         'col': '1',
