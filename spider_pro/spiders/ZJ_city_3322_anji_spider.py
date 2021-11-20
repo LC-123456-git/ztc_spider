@@ -96,7 +96,7 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
     def start_requests(self):
         for notice_type, category_urls in self.url_map.items():
             for cu in category_urls:
-                c_url = ''.join([cu['url'], 'moreinfo.html'])
+                c_url = ''.join([cu['url'], 'list.html'])
                 yield scrapy.Request(url=c_url, callback=self.parse_urls, meta={
                     'notice_type': notice_type,
                     'category': cu['category'],
@@ -110,7 +110,7 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
         """
         headers = utils.get_headers(resp)
         proxies = utils.get_proxies(resp)
-        max_page_com = re.compile(r'<script>.*?\$\("#page"\).pagination.*?pageSize:\s*(.*?),.*?total:\s*(.*?),')
+        max_page_com = re.compile(r'pageSize:\s*(\d+)\s*,\s*total:\s*(\d+),')
 
         match_pages = max_page_com.findall(resp.text.replace('\t', '').replace('\n', '').replace('\r\n', ''))
         if match_pages:
@@ -122,36 +122,23 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
 
             max_page = ceil(total / page_size)  # 最大页数
 
-            c_url = ''.join([url, 'moreinfo.html'])
-            if all([self.start_time, self.end_time]):
-                for i in range(1, max_page + 1):
-                    # 最末一条符合时间区间则翻页
-                    # 解析详情页时再次根据区间判断去采集
-                    judge_status = utils.judge_in_interval(
-                        c_url, start_time=self.start_time, end_time=self.end_time, method='GET',
-                        proxies=proxies, headers=headers, rule='//ul[contains(@class, "notice-items")]/li//span/text()',
-                    )
-                    if judge_status == 0:
-                        break
-                    elif judge_status == 2:
-                        continue
-                    else:
-                        if i > 1:
-                            c_url = ''.join([url, '{0}.html'.format(i)])
-                        else:
-                            c_url = ''.join([url, 'moreinfo.html'])
-                        yield scrapy.Request(
-                            url=c_url, callback=self.parse_data_urls, meta={
-                                'notice_type': resp.meta.get('notice_type', ''),
-                                'category': resp.meta.get('category', '')
-                            }, priority=(max_page - i) * 10, dont_filter=True
-                        )
-            else:
-                for i in range(1, max_page + 1):
+            c_url = ''.join([url, 'list.html'])
+            for i in range(1, max_page + 1):
+                # 最末一条符合时间区间则翻页
+                # 解析详情页时再次根据区间判断去采集
+                judge_status = utils.judge_in_interval(
+                    c_url, start_time=self.start_time, end_time=self.end_time, method='GET',
+                    proxies=proxies, headers=headers, rule='//ul[contains(@class, "notice-items")]/li//span/text()',
+                )
+                if judge_status == 0:
+                    break
+                elif judge_status == 2:
+                    continue
+                else:
                     if i > 1:
                         c_url = ''.join([url, '{0}.html'.format(i)])
                     else:
-                        c_url = ''.join([url, 'moreinfo.html'])
+                        c_url = ''.join([url, 'list.html'])
                     yield scrapy.Request(
                         url=c_url, callback=self.parse_data_urls, meta={
                             'notice_type': resp.meta.get('notice_type', ''),
@@ -159,7 +146,7 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
                         }, priority=(max_page - i) * 10, dont_filter=True
                     )
         else:
-            c_url = ''.join([url, 'moreinfo.html'])
+            c_url = ''.join([url, 'list.html'])
             yield scrapy.Request(url=c_url, callback=self.parse_data_urls, meta={
                 'notice_type': resp.meta.get('notice_type', ''),
                 'category': resp.meta.get('category', '')
@@ -169,11 +156,11 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
         """
         获取detail_url, pub_time
         """
-        els = resp.xpath('//ul[@class="ewb-notice-items"]/li')
+        els = resp.xpath('//ul[@class="notice-items"]/li')
         for n, el in enumerate(els):
             href = el.xpath(".//a/@href").get()
             if href:
-                pub_time = el.xpath(".//span[last()]/text()").get()
+                pub_time = el.xpath(".//span[last()]/text()").get().strip()
                 pub_time = pub_time.replace('.', '-') if pub_time else ''
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                     yield scrapy.Request(url=self.query_url + href, callback=self.parse_item, meta={
@@ -181,6 +168,8 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
                         'category': resp.meta.get('category'),
                         'pub_time': pub_time,
                     }, priority=(len(els) - n) * 10 ** 6)
+            else:
+                self.logger.info('找不到详情页:{}'.format(resp.url))
 
     def parse_item(self, resp):
         content = resp.xpath('//div[@class="ewb-container"]').get()
