@@ -23,32 +23,32 @@ class ZjCity3326LongyouSpiderSpider(scrapy.Spider):
         '候选人': '中标预告',
     }
     url_map = {
-        '招标预告': [
-            {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001009'},
-        ],
+        # '招标预告': [
+        #     {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001009'},
+        # ],
         '招标公告': [
             {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001002'},
-            {'category': '政府采购', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005002002'},
-            {'category': '土地交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005003001'},
-            {'category': '产权交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005004001'},
-            {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007001'},
-            {'category': '农村产权', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005008001001'},
+            # {'category': '政府采购', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005002002'},
+            # {'category': '土地交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005003001'},
+            # {'category': '产权交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005004001'},
+            # {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007001'},
+            # {'category': '农村产权', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005008001001'},
         ],
-        '中标预告': [
-            {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007005'},
-            {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001003'},
-        ],
-        '中标公告': [
-            {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001004'},
-            {'category': '产权交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005004002'},
-            {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007004'},
-            {'category': '农村产权', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005008002001'},
-        ],
-        '其他公告': [
-            {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001008'},
-            {'category': '政府采购', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005002005'},
-            {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007003'},
-        ]
+        # '中标预告': [
+        #     {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007005'},
+        #     {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001003'},
+        # ],
+        # '中标公告': [
+        #     {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001004'},
+        #     {'category': '产权交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005004002'},
+        #     {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007004'},
+        #     {'category': '农村产权', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005008002001'},
+        # ],
+        # '其他公告': [
+        #     {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001008'},
+        #     {'category': '政府采购', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005002005'},
+        #     {'category': '乡镇(部门)交易', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005007003'},
+        # ]
     }
     payload = {
         "filter": {
@@ -184,7 +184,7 @@ class ZjCity3326LongyouSpiderSpider(scrapy.Spider):
                 yield scrapy.Request(url=url, method='POST', body=json.dumps(data), callback=self.parse_list, meta={
                     'notice_type': resp.meta.get('notice_type', ''),
                     'category': resp.meta.get('category', ''),
-                }, cb_kwargs={'url': url}, headers=self.headers, priority=max_pages + 1 - page)
+                }, cb_kwargs={'url': url}, headers=self.headers, priority=max_pages + 1 - page, dont_filter=True)
 
     def parse_list(self, resp, url):
         ret = json.loads(resp.text)
@@ -204,7 +204,9 @@ class ZjCity3326LongyouSpiderSpider(scrapy.Spider):
                                              'notice_type': resp.meta.get('notice_type', ''),
                                              'category': resp.meta.get('category', ''),
                                              'pub_time': pub_time,
-                                         }, priority=(len(rows) + 1 - n) * 10)
+                                         }, priority=(len(rows) + 1 - n) * 10 **4)
+            else:
+                self.logger.info('匹配时间失败:{}'.format(resp.url))
 
     @staticmethod
     def check_has_body(content):
@@ -251,10 +253,12 @@ class ZjCity3326LongyouSpiderSpider(scrapy.Spider):
             })
             print(resp.meta.get('pub_time'), resp.url)
             return notice_item
+        else:
+            self.logger.info("未获取json数据：{}".format(resp.url))
 
 
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3326_longyou_spider -a sdt=2021-05-17 -a edt=2021-06-28".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3326_longyou_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3326_longyou_spider -a sdt=2021-10-26 -a edt=2021-11-20".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3326_longyou_spider".split(" "))

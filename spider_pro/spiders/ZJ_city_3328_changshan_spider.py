@@ -32,21 +32,21 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
         '建设工程': {
             'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341070/index.html',
         },
-        '政府采购': {
-            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341069/index.html',
-        },
-        '综合交易': {  # add
-            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341072/index.html',
-        },
-        '土地交易': {
-            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341071/index.html',
-        },
-        '农村产权': {
-            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341073/index.html',
-        },
-        '乡镇平台': {  # add
-            'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341074/index.html',
-        }
+        # '政府采购': {
+        #     'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341069/index.html',
+        # },
+        # '综合交易': {  # add
+        #     'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341072/index.html',
+        # },
+        # '土地交易': {
+        #     'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341071/index.html',
+        # },
+        # '农村产权': {
+        #     'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341073/index.html',
+        # },
+        # '乡镇平台': {  # add
+        #     'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341074/index.html',
+        # }
     }
     form_data = {
         'col': '1',
@@ -289,7 +289,7 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
         else:
             record_set = doc.xpath('//record')
 
-            for record in record_set:
+            for n, record in enumerate(record_set):
                 # 因内容被注释 正则匹配 (链接 标题 时间)
                 record_com = re.compile("href='(.*?)'.*?46px\">(.*?)</span>")
                 record_infos = record_com.findall(record.text)
@@ -301,7 +301,7 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
                         yield scrapy.Request(url=''.join([self.base_url, url]), callback=self.parse_item, meta={
                             'category_type': resp.meta.get('category_type'),
                             'pub_time': pub_time,
-                        }, priority=1000)
+                        }, priority=(len(record_set) - n) * 10 ** 6)
 
     @staticmethod
     def replace_a_without_href(content, attr_name='span'):
