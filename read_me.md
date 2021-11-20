@@ -396,16 +396,16 @@
 - [] 3306 嘉兴公共资源交易网  http://jxszwsjb.jiaxing.gov.cn/
 - [] 3307 湖州公共资源交易网  http://ggzy.huzhou.gov.cn/
 - [] 3308 衢州公共资源交易中心  http://ggzy.qz.gov.cn/
-- [] 3309 溫州公共资源交易网  https://ggzyjy.wenzhou.gov.cn/
-- [] 3310 台州公共资源交易网  http://tzztb.zjtz.gov.cn/
-- [] 3311 丽水公共资源交易中心  http://lssggzy.lishui.gov.cn/
+- [] 3309 溫州公共资源交易网  https://ggzyjy.wenzhou.gov.cn/    `没有表`
+- [] 3310 台州公共资源交易网  http://tzztb.zjtz.gov.cn/    `没有表`
+- [] 3311 丽水公共资源交易中心  http://lssggzy.lishui.gov.cn/    `详情页地址无法访问`
 - [] 3312 绍兴公共资源交易网  http://ggb.sx.gov.cn/
 - [] 3313 舟山公共资源交易中心  http://zsztb.zhoushan.gov.cn/
 - [] 3314 杭州余杭门户网站  http://www.yuhang.gov.cn/
 - [] 3315 柯桥区公共资源交易中心  https://www.hibidding.com/
 - [] 3316 诸暨公共资源交易网  http://ggb.zhuji.gov.cn/
 - [] 3317 浙江招标网  https://zj.bidcenter.com.cn/
-- [] 3318 金华市公共资源交易中心  http://ggzyjy.jinhua.gov.cn/cms/
+- [] 3318 金华市公共资源交易中心  http://ggzyjy.jinhua.gov.cn/cms/  `PIC`
 - [] 3319 长兴县公共资源交易中心  http://ggzy.zjcx.goc.cn/cxweb/
 - [] 3320 苍南县公共资源交易中心  http://ggzy.cncn.gov.cn/TPFrontNew/
 - [] 3321 临海市公共资源交易中心  http://www.linhai.gov.cn/
@@ -414,15 +414,15 @@
 - [] 3324 南浔区公共资源交易中心  http://ggzy.nanxun.gov.cn/
 - [] 3325 德清县公共资源交易中心  http://116.62.168.209/zbgg/index.htm
 - [] 3326 龙游县公共资源交易中心  http://ztb.longyou.gov.cn/
-- [] 3327 平阳县公共资源交易中心  http://www.zjpy.gov.cn/
-- [] 3328 常山县公共资源交易网  http://qzcs.zjzwfw.gov.cn/
-- [] 3329 拱墅区公共资源交易中心  http://www.gongshu.gov.cn/
-- [] 3330 江干区公共资源交易中心  http://www.jianggan.gov.cn/
+- [] 3327 平阳县公共资源交易中心  http://www.zjpy.gov.cn/    `网站或发生变动需要产品对校文档`
+- [] 3328 常山县公共资源交易网  http://qzcs.zjzwfw.gov.cn/   
+- [] 3329 拱墅区公共资源交易中心  http://www.gongshu.gov.cn/    `没有表`
+- [] 3330 江干区公共资源交易中心  http://www.jianggan.gov.cn/    `没有表`
 
 - [X] 3331 富阳区公共资源交易中心  http://www.fuyang.gov.cn/
 - [X] 3332 淳安县公共资源交易中心  http://www.qdh.gov.cn/
-
-- [] 3333 浙江交通运输厅  http://jtyst.zj.gov.cn/
+ 
+- [] 3333 浙江交通运输厅  http://jtyst.zj.gov.cn/    `没有表`
 
 - [X]`3334` 建德市公共资源交易中心  http://www.jiande.gov.cn/
 - [X] 3335 温州市鹿城区公共资源交易中心 http://spgg.lucheng.gov.cn/  `PIC`
@@ -442,9 +442,9 @@
 - [] 3348 台州市三门县公共资源交易中心 http://jyzx.sanmen.gov.cn/   `招标公告就100多条，要跑全量`
 - [] 3349 台州市天台县公共资源交易中心 http://www.zjtt.gov.cn/    `没有表`
 - [] `3350` 台州市仙居县公共资源交易中心 http://www.zjxj.gov.cn/
-- [] 3351 金华市婺城区公共资源交易中心 http://www.wuch.gov.cn/    `没有招标公告`
+- [] 3351 金华市婺城区公共资源交易中心 http://www.wuch.gov.cn/    `没有招标公告` `PIC`
 - [] `3352` 金华市金东区公共资源交易中心 http://www.jindong.gov.cn/   `PIC`
-- [] 3353 金华市兰溪市公共资源交易中心 http://www.lanxi.gov.cn/   `数据库没有数据`
+- [] 3353 金华市兰溪市公共资源交易中心 http://www.lanxi.gov.cn/
 - [] `3354` 金华市东阳市公共资源交易中心 http://www.dongyang.gov.cn/  `PIC`
 - [] 3355 金华市永康市公共资源交易中心 http://www.yk.gov.cn/
 - [] `3356` 金华市义乌市公共资源交易中心 http://ggfw.ywjypt.yw.gov.cn/
@@ -484,10 +484,17 @@
 - 河南                             118                      刘超
 - 湖北                             119                      刘超(端口未开放)
 - 山东                             122                      刘超
-- 黑龙江政府                        123                      克拉(TODO)
-- 吉林政府                          124                      克拉(TODO)
+- 黑龙江政府                        123                      克拉
+- 吉林政府                          124                      克拉
 - 内蒙古政府                        127                      刘超(TODO)
 - 海南政府                          126                      刘超(TODO)
+- 衢江                             3359                       
+- 新昌                             3343                     
+- 德清                             3325
+- 临海                             3321
+- 余杭                             3314
+- 舟山                             3313
+- 湖州                             3307
 
 # 备注  3313  未清洗完成    待清洗
 
