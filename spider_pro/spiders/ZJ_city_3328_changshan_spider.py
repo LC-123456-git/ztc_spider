@@ -59,6 +59,14 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
         'webname': '浙江政务服务网（衢州市常山县）',
         'permissiontype': '0'
     }
+    custom_settings = {
+        'DOWNLOADER_MIDDLEWARES': {
+            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+        },
+        "ENABLE_PROXY_USE": False,
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -302,6 +310,8 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
                             'category_type': resp.meta.get('category_type'),
                             'pub_time': pub_time,
                         }, priority=(len(record_set) - n) * 10 ** 6)
+                else:
+                    self.logger.info("未找到记录:{}".format(resp.url))
 
     @staticmethod
     def replace_a_without_href(content, attr_name='span'):
