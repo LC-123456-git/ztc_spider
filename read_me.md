@@ -412,7 +412,7 @@
 - [] 3322 安吉公共资源交易中心    http://ggzy.anji.gov.cn/
 - [] 3323 萧山政府门户网站  http://www.xiaoshan.gov.cn/
 - [] 3324 南浔区公共资源交易中心  http://ggzy.nanxun.gov.cn/
-- [] 3325 德清县公共资源交易中心  http://116.62.168.209/zbgg/index.htm
+- [] 3325 德清县公共资源交易中心  http://116.62.168.209/zbgg/index.htm   `PIC`
 - [] 3326 龙游县公共资源交易中心  http://ztb.longyou.gov.cn/
 - [] 3327 平阳县公共资源交易中心  http://www.zjpy.gov.cn/    `网站或发生变动需要产品对校文档`
 - [] 3328 常山县公共资源交易网  http://qzcs.zjzwfw.gov.cn/   
@@ -421,7 +421,7 @@
 
 - [X] 3331 富阳区公共资源交易中心  http://www.fuyang.gov.cn/
 - [X] 3332 淳安县公共资源交易中心  http://www.qdh.gov.cn/
- 
+
 - [] 3333 浙江交通运输厅  http://jtyst.zj.gov.cn/    `没有表`
 
 - [X]`3334` 建德市公共资源交易中心  http://www.jiande.gov.cn/
@@ -478,20 +478,18 @@
 - 嵊州                             3345                     刘超
 - 磐安                             3362                     刘超
 - 长兴                             3319                     克拉
-- 吴兴				               3346			            克拉
+- 吴兴                             3346			          克拉
 - 开化                             3358                     克拉
-- 湖南政府                          120                     克拉
+- 湖南政府                    120                        克拉
 - 河南                             118                      刘超
 - 湖北                             119                      刘超(端口未开放)
 - 山东                             122                      刘超
-- 黑龙江政府                        123                      克拉
-- 吉林政府                          124                      克拉
-- 内蒙古政府                        127                      刘超(TODO)
-- 海南政府                          126                      刘超(TODO)
-- 衢江                             3359                       
-- 新昌                             3343                     
-- 德清                             3325
-- 临海                             3321
+- 黑龙江政府                 123                      克拉
+- 吉林政府                     124                      克拉
+- 内蒙古政府                127                      刘超(TODO)
+- 海南政府                    126                      刘超(TODO)
+- 衢江                             3359                   缪克拉(TODO)                            
+- 临海                             3321                   缪克拉(TODO)              
 - 余杭                             3314
 - 舟山                             3313
 - 湖州                             3307
@@ -717,6 +715,6 @@ scp  D:\ztx_clone\ztx_spider\scrapyd_clean_data.py root@192.168.1.248:/home/pyth
 ```txt
 docker pull scrapinghub/splash
 docker run -p 4300:8050 --name ztx_splash -d scrapinghub/splash
-```
+  ```
 
 > 调用方式: yield SplashRequest(url=href, callback=self.parse_detail, args={'wait': '0.5'})
