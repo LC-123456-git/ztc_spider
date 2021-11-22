@@ -395,8 +395,8 @@
 - [] 3305 宁波公共资源交易网  http://bidding.ningbo.gov.cn/
 - [] 3306 嘉兴公共资源交易网  http://jxszwsjb.jiaxing.gov.cn/
 - [] 3307 湖州公共资源交易网  http://ggzy.huzhou.gov.cn/
-- [] 3308 衢州公共资源交易中心  http://ggzy.qz.gov.cn/
-- [] 3309 溫州公共资源交易网  https://ggzyjy.wenzhou.gov.cn/    `没有表`
+- [] 3308 衢州公共资源交易中心  http://ggzy.qz.gov.cn/  `没有表`
+- [] 3309 溫州公共资源交易网  https://ggzyjy.wenzhou.gov.cn/   
 - [] 3310 台州公共资源交易网  http://tzztb.zjtz.gov.cn/    `没有表`
 - [] 3311 丽水公共资源交易中心  http://lssggzy.lishui.gov.cn/    `详情页地址无法访问`
 - [] 3312 绍兴公共资源交易网  http://ggb.sx.gov.cn/
@@ -486,12 +486,12 @@
 - 山东                             122                      刘超
 - 黑龙江政府                 123                      克拉
 - 吉林政府                     124                      克拉
-- 内蒙古政府                127                      刘超(TODO)
-- 海南政府                    126                      刘超(TODO)         
+- 内蒙古政府                127                           刘超
+- 海南政府                    126                         刘超     
 - 安吉                             3322                   缪克拉(TODO)
 - 龙游                             3326                   缪克拉(TODO)
-- 临海                             3321
-- 余杭                             3314
+- 临海                             3321                   刘超(TODO)
+- 余杭                             3314                   刘超(TODO)
 - 舟山                             3313
 - 湖州                             3307
 

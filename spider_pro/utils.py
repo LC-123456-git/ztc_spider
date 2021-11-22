@@ -21,7 +21,7 @@ from lxml import etree
 from functools import wraps
 import xmltodict
 
-from spider_pro import rules_clean
+from spider_pro import rules_clean111
 from spider_pro import constans as const
 
 headers = {
@@ -1553,7 +1553,7 @@ def regular_match(keys, content, plan=0):
 
     text = ','.join(info_list).replace('\n', '').replace('\r\n', '')
 
-    pl_reg = rules_clean.regular_plans.get(plan, '')
+    pl_reg = rules_clean111.regular_plans.get(plan, '')
     if pl_reg:
         pl_com = re.compile(pl_reg)
         ret = [m.groupdict() for m in re.finditer(pl_com, text)]
