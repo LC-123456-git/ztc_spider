@@ -395,8 +395,8 @@
 - [] 3305 宁波公共资源交易网  http://bidding.ningbo.gov.cn/
 - [] 3306 嘉兴公共资源交易网  http://jxszwsjb.jiaxing.gov.cn/
 - [] 3307 湖州公共资源交易网  http://ggzy.huzhou.gov.cn/
-- [] 3308 衢州公共资源交易中心  http://ggzy.qz.gov.cn/  `没有表`
-- [] 3309 溫州公共资源交易网  https://ggzyjy.wenzhou.gov.cn/   
+- [] 3308 衢州公共资源交易中心  http://ggzy.qz.gov.cn/    `没有表`
+- [] 3309 溫州公共资源交易网  https://ggzyjy.wenzhou.gov.cn/
 - [] 3310 台州公共资源交易网  http://tzztb.zjtz.gov.cn/    `没有表`
 - [] 3311 丽水公共资源交易中心  http://lssggzy.lishui.gov.cn/    `详情页地址无法访问`
 - [] 3312 绍兴公共资源交易网  http://ggb.sx.gov.cn/
@@ -414,7 +414,7 @@
 - [] 3324 南浔区公共资源交易中心  http://ggzy.nanxun.gov.cn/
 - [] 3325 德清县公共资源交易中心  http://116.62.168.209/zbgg/index.htm   `PIC`
 - [] 3326 龙游县公共资源交易中心  http://ztb.longyou.gov.cn/
-- [] 3327 平阳县公共资源交易中心  http://www.zjpy.gov.cn/    `网站或发生变动需要产品对校文档`
+- [] 3327 平阳县公共资源交易中心  http://www.zjpy.gov.cn/    `网站发生变动，待重新安排`
 - [] 3328 常山县公共资源交易网  http://qzcs.zjzwfw.gov.cn/   
 - [] 3329 拱墅区公共资源交易中心  http://www.gongshu.gov.cn/    `没有表`
 - [] 3330 江干区公共资源交易中心  http://www.jianggan.gov.cn/    `没有表`

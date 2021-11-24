@@ -46,9 +46,6 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
              'unitid': '6089351', 'columnid': '1229165987'}
         ]
     }
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36',
-    }
 
     form_data = {
         'col': '1',
@@ -113,12 +110,6 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
                 start_record_list.append(i * 60 + 1)
         return start_record_list
 
-    @staticmethod
-    def get_headers(resp):
-        default_headers = resp.request.headers
-        headers = {k: random.choice(v) if all([isinstance(v, list), v]) else v for k, v in default_headers.items()}
-        return headers
-
     def judge_in_interval(self, url, method='GET', resp=None, ancestor_el='table', ancestor_attr='id', ancestor_val='',
                           child_el='tr', time_sep='-', doc_type='html', **kwargs):
         """
@@ -143,15 +134,17 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
                 2 末条大于最大时间 continue
         """
         status = 0
-        headers = ZjCity3314YuhangSpiderSpider.get_headers(resp)
+
+        headers = utils.get_headers(resp)
+        proxies = utils.get_proxies(resp)
         if all([self.start_time, self.end_time]):
             try:
                 text = ''
                 if method == 'GET':
-                    text = requests.get(url=url, headers=headers).text
+                    text = requests.get(url=url, headers=headers, proxies=proxies).text
                 if method == 'POST':
                     text = requests.post(url=url, data=kwargs.get(
-                        'data'), headers=headers).text
+                        'data'), headers=headers, proxies=proxies).text
                 if text:
                     els = []
                     if doc_type == 'html':
