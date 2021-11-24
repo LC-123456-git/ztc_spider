@@ -21,7 +21,7 @@ from lxml import etree
 from functools import wraps
 import xmltodict
 
-from spider_pro import rules_clean111
+from spider_pro import rules_clean
 from spider_pro import constans as const
 
 headers = {
