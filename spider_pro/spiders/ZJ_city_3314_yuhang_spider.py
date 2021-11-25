@@ -141,10 +141,10 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
             try:
                 text = ''
                 if method == 'GET':
-                    text = requests.get(url=url, headers=headers, proxies=proxies).text
+                    text = requests.get(url=url, headers=headers, proxies=proxies).content.decode('utf-8')
                 if method == 'POST':
                     text = requests.post(url=url, data=kwargs.get(
-                        'data'), headers=headers, proxies=proxies).text
+                        'data'), headers=headers, proxies=proxies).content.decode('utf-8')
                 if text:
                     els = []
                     if doc_type == 'html':
