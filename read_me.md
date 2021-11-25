@@ -397,7 +397,7 @@
 - [] 3307 湖州公共资源交易网  http://ggzy.huzhou.gov.cn/
 - [] 3308 衢州公共资源交易中心  http://ggzy.qz.gov.cn/    `没有表`
 - [] 3309 溫州公共资源交易网  https://ggzyjy.wenzhou.gov.cn/
-- [] 3310 台州公共资源交易网  http://tzztb.zjtz.gov.cn/    `没有表`
+- [] 3310 台州公共资源交易网  http://tzztb.zjtz.gov.cn/    `没数据`
 - [] 3311 丽水公共资源交易中心  http://lssggzy.lishui.gov.cn/    `详情页地址无法访问`
 - [] 3312 绍兴公共资源交易网  http://ggb.sx.gov.cn/
 - [] 3313 舟山公共资源交易中心  http://zsztb.zhoushan.gov.cn/
@@ -422,7 +422,7 @@
 - [X] 3331 富阳区公共资源交易中心  http://www.fuyang.gov.cn/
 - [X] 3332 淳安县公共资源交易中心  http://www.qdh.gov.cn/
 
-- [] 3333 浙江交通运输厅  http://jtyst.zj.gov.cn/    `没有表`
+- [] 3333 浙江交通运输厅  http://jtyst.zj.gov.cn/    `总共200条数据`
 
 - [X]`3334` 建德市公共资源交易中心  http://www.jiande.gov.cn/
 - [X] 3335 温州市鹿城区公共资源交易中心 http://spgg.lucheng.gov.cn/  `PIC`
@@ -439,10 +439,10 @@
 - [] 3345 绍兴市嵊州市公共资源交易中心 http://www.szzj.gov.cn/
 - [] 3346 湖州市吴兴区公共资源交易中心 http://www.wl.gov.cn/
 - [] 3347 台州市温岭市公共资源交易中心 http://www.wl.gov.cn/
-- [] 3348 台州市三门县公共资源交易中心 http://jyzx.sanmen.gov.cn/   `招标公告就100多条，要跑全量`
+- [] 3348 台州市三门县公共资源交易中心 http://jyzx.sanmen.gov.cn/   `招标公告就200多条，要跑全量`
 - [] 3349 台州市天台县公共资源交易中心 http://www.zjtt.gov.cn/    `没有表`
 - [] `3350` 台州市仙居县公共资源交易中心 http://www.zjxj.gov.cn/
-- [] 3351 金华市婺城区公共资源交易中心 http://www.wuch.gov.cn/    `没有招标公告` `PIC`
+- [] 3351 金华市婺城区公共资源交易中心 http://www.wuch.gov.cn/    `PIC`
 - [] `3352` 金华市金东区公共资源交易中心 http://www.jindong.gov.cn/   `PIC`
 - [] 3353 金华市兰溪市公共资源交易中心 http://www.lanxi.gov.cn/
 - [] `3354` 金华市东阳市公共资源交易中心 http://www.dongyang.gov.cn/  `PIC`
