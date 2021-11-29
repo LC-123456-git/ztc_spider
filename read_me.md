@@ -478,22 +478,24 @@
 - 嵊州                             3345                     刘超
 - 磐安                             3362                     刘超
 - 长兴                             3319                     克拉
-- 吴兴                             3346			          克拉
+- 吴兴                             3346			            克拉
 - 开化                             3358                     克拉
-- 湖南政府                    120                        克拉
-- 河南                             118                      刘超
-- 湖北                             119                      刘超(端口未开放)
-- 山东                             122                      刘超
-- 黑龙江政府                 123                      克拉
-- 吉林政府                     124                      克拉
-- 内蒙古政府                127                           刘超
-- 海南政府                    126                         刘超     
-- 安吉                             3322                   缪克拉(TODO)
-- 龙游                             3326                   缪克拉(TODO)
-- 临海                             3321                   刘超(TODO)
-- 余杭                             3314                   刘超(TODO)
+- 安吉                             3322                     缪克拉
+- 龙游                             3326                     缪克拉
+- 临海                             3321                     刘超
+- 余杭                             3314                     刘超
 - 舟山                             3313
 - 湖州                             3307
+
+- 湖南政府                         120                       克拉
+- 河南                             118                       刘超
+- 湖北                             119                       刘超(端口未开放)
+- 山东                             122                       刘超
+- 黑龙江政府                       123                        克拉
+- 吉林政府                         124                       克拉
+- 内蒙古政府                       127                       刘超
+- 海南政府                         126                       刘超     
+- 广东政府                         128                       刘超
 
 # 备注  3313  未清洗完成    待清洗
 
@@ -701,6 +703,7 @@ scp  D:\ztx_clone\ztx_spider\scrapyd_clean_data.py root@192.168.1.248:/home/pyth
   -v $PWD/MYSQL/data:/var/lib/mysql \
   -e MYSQL_ROOT_PASSWORD=Ly3sa%@D0$pJt0y6 \
   -d mysql:5.7
+  ```
 
 
   docker run -p 8090:6379 --restart=always --name ztx_redis \
@@ -711,7 +714,7 @@ scp  D:\ztx_clone\ztx_spider\scrapyd_clean_data.py root@192.168.1.248:/home/pyth
 
 ### Splash动态js加载服务
 
-```txt
+​```txt
 docker pull scrapinghub/splash
 docker run -p 4300:8050 --name ztx_splash -d scrapinghub/splash
   ```
