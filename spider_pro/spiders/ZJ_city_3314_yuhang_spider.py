@@ -18,7 +18,7 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
     start_urls = ['http://www.yuhang.gov.cn/']
     area_id = 3314
     basic_area = '浙江-杭州市-余杭区-门户网站'
-    query_url = 'http://www.yuhang.gov.cn/module/jpage/dataproxy.jsp?startrecord={startrecord}&perpage=20'
+    query_url = 'http://www.yuhang.gov.cn/module/jpage/dataproxy.jsp?startrecord={startrecord}&endrecord={endrecord}&perpage=20'
     base_url = 'http://www.yuhang.gov.cn'
     url_map = {  # columnid unitid 6101313 6089351
         '招标公告': [
@@ -236,7 +236,7 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
 
                     # 判断是否翻下一个记录
                     # 请求获取最后一条记录的时间
-                    c_url = self.query_url.format(startrecord=start_record)
+                    c_url = self.query_url.format(startrecord=start_record, endrecord=start_record + 60)
                     judge_status = self.judge_in_interval(
                         c_url, method='POST', child_el='record', doc_type='xml', data=form_data, resp=resp,
                     )
