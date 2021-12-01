@@ -2,7 +2,6 @@
 import decimal
 import math
 import re
-
 import cn2an
 import pandas
 import copy
@@ -13,8 +12,11 @@ from functools import wraps
 
 from spider_pro import utils
 
+
 def get_keys_value_from_content_ahead(content, keys, area_id="00", _type="", field_name=None, title=None, **kwargs):
-    ke = KeywordsExtract(content, keys, field_name, area_id=area_id, title=title, **kwargs)
+    ke = KeywordsExtract(
+        content, keys, field_name, area_id=area_id, title=title, **kwargs
+    )
     return ke.get_value()
 
 
@@ -36,6 +38,7 @@ def catch_title_before_method(func):
                 if self.area_id in owners:
                     self.get_val_from_title()
         func(self, *arg, **kwargs)
+
     return inner
 
 
@@ -54,7 +57,7 @@ class KeywordsExtract(object):
         self.rm_cf = kwargs.get('rm_cf', '')
         self.before_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.br_cf, field_name)]
         self.common_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.cr_cf, field_name)]
-        self.liaison_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, ' ')]
+        self.liaison_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'LIAISON')]
         self.symbols_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'SYMBOLS')]
         self.head_tail_symbols_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'HEAD_TAIL_SYMBOLS')]
         self.company_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'COMAPNY')]
@@ -65,9 +68,9 @@ class KeywordsExtract(object):
         self.contact_union_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'CONTACT_UNION')]
         self.isolated_unit = utils.get_keywords(self.rm_cf, 'ISOLATED_UNIT')
         self.project_priority = utils.get_keywords(self.rm_cf, 'PROJECT_PRIORITY')
-        self.project_priority_cg = utils.get_keywords(self.rm_cf, 'PROJECT_PRIORITY_CG')
         self.last_part = utils.get_keywords(self.rm_cf, 'LAST_PART')
         self.project_number_from_title = utils.get_keywords(self.rm_cf, 'PROJECT_NUMBER_FROM_TITLE')
+        self.project_priority_cg = utils.get_keywords(self.rm_cf, 'PROJECT_PRIORITY_CG')
         self.project_number = utils.get_keywords(self.rm_cf, 'PROJECT_NUMBER')
         self.wrapped_project_name = utils.get_keywords(self.rm_cf, 'WRAPPED_PROJECT_NAME_REG')
 
@@ -78,15 +81,86 @@ class KeywordsExtract(object):
         self.title = title
         self.msg = ''
         self.keysss = [
-            "招标项目", "中标（成交）金额(元)", "代理机构", "中标供应商名称", "工程名称", "项目名称", "成交价格", "招标工程项目",
-            "项目编号", "招标项目编号", "招标编号", "招标人", "发布时间", "招标单位", "招标代理:", "招标代理：", "招标代理机构",
-            "项目金额", "预算金额（元）", "预算金额（元）", "招标估算价", "中标（成交）金额（元）", "联系人", "项目经理（负责人）",
-            "建设单位", "中标单位", "中标价", "退付类型", "建设单位联系人", "建设单位联系人", "工程名称", "代建单位联系人", "项目负责人",
-            "项目经理", "中标造价", "中标造价（元）", "项目负责人：", "1工程名称", "2招标编号", "中标价（元/年）", "承包价（元）",
-            "竞包报价（元）", "承包金额（元）", "承包价", "中标价（%）", "中标价（元）", "标段（包）编号", "承包单位", "中选单位", "标段编号",
-            "承包人", "成交单位", "入围单位", "备注", "供应商名称", "包号", "中标金额", '代理机构名称', '代理机构地址', '采购方式',
-            "项目联系电话", "项目联系人", "采购需求", "采购人", "采购需求", "开启时间", "开启地点", "审查地点", "审查时间", "中标供应商地址",
-            "中标金额(万元)", "成交供应商", "成交供应商地址", "包名", "中标供应商名称"
+            '成交单位',
+            '成交价格',
+            '成交供应商地址',
+            '项目编号',
+            '项目负责人',
+            '承包价',
+            '包号',
+            '招标项目',
+            '建设单位',
+            '审查地点',
+            '招标估算价',
+            '项目经理（负责人）',
+            '建设单位联系人',
+            '项目经理',
+            '招标代理：',
+            '1.项目名称：',
+            '中标价格',
+            '招标工程项目',
+            '代建单位联系人',
+            '竞包报价（元）',
+            '中标价（元/年）',
+            '采购人',
+            '中标供应商',
+            '项目联系电话',
+            '中标金额',
+            '包名',
+            '中标价（元）',
+            '开启地点',
+            '承包人',
+            '标段（包）编号',
+            '招标代理:',
+            '承包金额（元）',
+            '中标金额(万元)',
+            '项目金额',
+            '中标供应商地址',
+            '中标供应商名称',
+            '招标编号',
+            '开启时间',
+            '备注',
+            '预算金额（元）',
+            '工程名称',
+            '承包单位',
+            '招标人',
+            '招标代理机构',
+            '入围单位',
+            '标段编号',
+            '审查时间',
+            '代理机构',
+            '中选单位',
+            '承包价（元）',
+            '中标价：',
+            '采购项目编号',
+            '采购单位联系人',
+            '成交供应商',
+            '供应商名称',
+            '中标单位',
+            '采购方式',
+            '中标单位：',
+            '项目名称',
+            '招标单位',
+            '代理机构名称',
+            '退付类型',
+            '2.采购文件编号：',
+            '中标（成交）金额(元)',
+            '项目联系人',
+            '中标价（%）',
+            '中标价',
+            '联系人',
+            '代理机构地址',
+            '中标（成交）金额（元）',
+            '发布时间',
+            '2招标编号',
+            '采购项目名称',
+            '采购需求',
+            '项目负责人：',
+            '联系方式',
+            '中标造价（元）',
+            '中标造价',
+            '1工程名称',
+            '招标项目编号',
         ]
         # 各字段对应的规则
         self.fields_regular = {
@@ -141,7 +215,7 @@ class KeywordsExtract(object):
         # 在提取project_name时，指定位置(指定方法前)调用:self.get_val_from_title
         self.before_map = {
             '_extract_from_table': [],
-            'clean_value': ['120', '126', '128', '132']
+            'clean_value': ['120', '123', '124', '131', '126', '128', '132'],
         }
 
     def reset_regular_by_field(self):
@@ -270,7 +344,7 @@ class KeywordsExtract(object):
             if next_val == key:
                 next_val = KeywordsExtract.get_h_val(c_index, key, tr)
 
-            if not next_val and table:
+            if not next_val and table is not None:
                 val_table = table.xpath(
                     './/tr[not(contains(@style, "line-height:0px"))][position()=%d]/td[position()=%d]' % (
                         c_index + 1, tr_index
@@ -314,13 +388,13 @@ class KeywordsExtract(object):
             for tr in trs_without_height:
                 tr.getparent().remove(tr)
 
+            # REMOVE TR WITHOUT TD
             trs_without_td = table_el.xpath('.//tr')
-            for td in trs_without_td:
-                # if not td.xpath('./td') or not td.xpath('./th'):
-                if not td.xpath('./text()'):
-                    td.getparent().remove(td)
-            table_txt = etree.tounicode(table_el, method='html')
+            for tr in trs_without_td:
+                if not tr.xpath('.//text()'):
+                    tr.getparent().remove(tr)
 
+            table_txt = etree.tounicode(table_el, method='html')
             try:
                 t_data = pandas.read_html(table_txt)[0]
             except (Exception,) as e:
@@ -400,6 +474,9 @@ class KeywordsExtract(object):
     def get_val_from_title(self):
         """
         从标题获取项目名称
+            1.从前截取掉一部分丢弃
+            2.关键词匹配包含
+                另外: 如果在self.wrapped_list列表中的站点，先以 "关于... ... 的结果公告" 等来提取
         """
         if self.field_name == 'project_name' and self.title and not self._value.strip():
             # 关于 ... 公告过滤
@@ -408,6 +485,7 @@ class KeywordsExtract(object):
                 if ret:
                     self._value = ret[0]
                     return
+
             # 根据关键字优先级匹配项目名称
             title_list = self.project_priority_cg if '采购' in self.title else self.project_priority
             for name in title_list:
@@ -415,16 +493,19 @@ class KeywordsExtract(object):
                     # 判断项目关键字是否在（）【】 [] 内
                     if self.brackets_contained(name):
                         continue
+
                     self._value = ''.join([self.title.split(name)[0], name])
                     delete_chars = ['【】']
                     for dc in delete_chars:
                         self._value = self._value.replace(dc, '')
                     break
+
             # 标题包含：取后半部分
             for lp in self.last_part:
                 c_v = self._value.split(lp)
                 if len(c_v) == 2:
                     self._value = c_v[1]
+
     @catch_title_before_method
     def done_before_extract(self):
         """
@@ -523,12 +604,24 @@ class KeywordsExtract(object):
                 left_info = {k: v.strip() for k, v in date_dict.items() if k in ['year', 'month', 'day']}
                 right_info = {k: v.strip() for k, v in date_dict.items() if k in ['hour', 'minute', 'second']}
 
-                bf_time = ' '.join(['-'.join(left_info.values()), ':'.join(right_info.values())])
+                bf_time = ' '.join(['-'.join(left_info.values()), ':'.join(right_info.values())]).replace('：', ':')
 
                 if bf_time.strip():
                     break
 
         return bf_time
+
+    @staticmethod
+    def handle_multi_dot(value):
+        """
+        异常示例：1533.1646.61万元
+        处理多个小数点的示例
+        """
+        val_list = value.split('.')
+        if len(val_list) > 2:
+            value = '.'.join([''.join(val_list[:-1]), val_list[-1]])
+
+        return value
 
     @catch_title_before_method
     def clean_value(self):
@@ -551,8 +644,8 @@ class KeywordsExtract(object):
 
             self._value = KeywordsExtract.remove_chars_by_regs(self.amount_regulars, self._value)
             self._value = self.money_ending(self._value)
-            # 删除"元"之后多余字符
             self._value = KeywordsExtract.remove_rest_suffix(self._value)
+            self._value = KeywordsExtract.handle_multi_dot(self._value)
 
             handled = True
             com = re.compile(r'([0-9 .]+)')
@@ -608,7 +701,6 @@ class KeywordsExtract(object):
             if not self._value:
                 self._value = self.title
         if self.field_name == 'project_number':
-            self._value = KeywordsExtract.remove_chars_by_regs(self.project_number, self._value)
             # 从标题中取
             if not self._value:
                 for reg in self.project_number_from_title:
@@ -617,12 +709,12 @@ class KeywordsExtract(object):
                     if pro_ns:
                         self._value = pro_ns[0]
                         break
+            self._value = KeywordsExtract.remove_chars_by_regs(self.project_number_regulars, self._value)
         if self.field_name in ['agent_contact', 'bidding_contact', 'project_leader']:
             # 符合正则列表的内容剔除
             self._value = KeywordsExtract.remove_chars_by_regs(self.liaison_regulars, self._value)
-            # 提取N个联系人，通过逗号连接
+            # 提取N个联系人，通过逗号连接            
             self._value = KeywordsExtract.union_several_vals_by_regs(self.liaison_union_regulars, self._value)
-
         if self.field_name in ['contact_information', 'liaison', 'project_contact_information']:
             self._value = self.remove_chars_by_regs(self.contact_regulars, self._value)
             # N个联系方式
@@ -648,9 +740,148 @@ class KeywordsExtract(object):
 
 if __name__ == '__main__':
     content = """
-    
+        <div class="zw">
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 10.5pt; -ms-layout-grid-mode: char; -ms-text-autospace: ideograph-numeric; -ms-text-justify: inter-ideograph;">
+            </p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <b><span
+                        style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal; font-weight: bold;">
+                        <font face="宋体">湖州市人才集团三号人才公寓设计方案</font>-施工图设计项目
+                    </span></b><b><span
+                        style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal; font-weight: bold;">(重新公告）</span></b><b><span
+                        style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal; font-weight: bold;">
+                        <font face="宋体">比选公告</font>
+                    </span></b></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">项目编号：</font>330502-1719-0583
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">项目单位：湖州立城投资建设有限公司</font>
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">项目名称：湖州市人才集团三号人才公寓设计方案</font>-施工图设计项目
+                </span><span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">（</font>
+                </span><span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">重新公告</font>
+                </span><span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">）</font>
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">招标项目建设地点：本项目拟对湖州市吴兴区高新技术产业园区内。</font>
+                    <font face="宋体">工程规模：总用地面积</font>7亩，总建筑面积10602平方米，本项目总投约1000万元。
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">招标范围：</font> 1、设计阶段： 方案设计（包括方案优化）、施工图设计、施工配合服务等全过程设计工作。 2、设计服务范围：
+                    中标单位实行设计总负责制，承担本项目各设计阶段过程中所有的专业设计工作。
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">服务周期：自合同签订之日起至最终设计成果获得相关部门确认或审批，协助发包人进行工程招标答疑，做好后期配合服务直至完成竣工验收。</font>
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">中介机构资格要求：</font>1、在中华人民共和国境内注册的设计企业，具有独立法人资格；
+                    2、投标人须具备工程设计综合资质或具备建筑装饰工程设计专项乙级及以上资质或建筑行业（建筑工程）设计甲级及以上资质（不接受联合体投标，浙江省外进浙企业须经备案）；
+                    3、省外申请人必须持有浙江省住房和城乡建设厅出具的《外省勘察设计企业进入浙江省承接业务登记备案证明》；
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">项目负责人资格要求：须具备一级注册建筑师资格（浙江省外进浙拟参加投标项目负责人须经备案）</font>
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">选取方式：公开比选</font>
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">服务费用：</font> 700000元
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">选取时间：</font>2021年3月24日9时00分00秒（以电子交易平台时间为准）
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">项目业主联系人：杨若桢、崔伟平</font>
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">项目业主咨询电话：</font>0572-2392963
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">代理公司联系人：毕艳利</font>
+                </span></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 12pt; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;">
+                    <font face="宋体">代理公司联系电话：</font>0572-2557282
+                </span></p>
+            <p
+                style="margin: 0pt; text-align: justify; font-family: Calibri; font-size: 10.5pt; -ms-text-justify: inter-ideograph;">
+            </p>
+            <p></p>
+            <p align="justify"
+                style="background: rgb(255, 255, 255); margin: 0pt; padding: 0pt; text-align: justify; line-height: 200%; font-family: Calibri; font-size: 10.5pt; -ms-layout-grid-mode: char; -ms-text-autospace: ideograph-numeric; -ms-text-justify: inter-ideograph;">
+                <span
+                    style="background: rgb(255, 255, 255); color: rgb(51, 51, 51); text-transform: none; line-height: 200%; letter-spacing: 0pt; font-family: 宋体; font-size: 14pt; font-style: normal;"><br></span>
+            </p>
+            <div id="divDS_F954EF0D_82BC_4BEE_B5FF_904108DD4BE3" class="DSDiv"
+                style="position: absolute; right:400px;top:900px"><img id="imgQianZhang_F954EF0D_82BC_4BEE_B5FF_904108DD4BE3"
+                    alt="金业一 签于 2021/3/17 16:15:24"
+                    src="http://49.4.49.208:8050/Hzztb/NetZtbMis/Pages/Signature/ShowQianZhang.aspx?Type=1&amp;RowGuid=F954EF0D-82BC-4BEE-B5FF-904108DD4BE3&amp;n=8"
+                    width="150" height="150"></div><iframe width="980" style="border:0px;"
+                src="http://49.4.53.110/HZfront/fwzx/CustomQyInfo/GGList.aspx?infoid=5153b879-0db0-41ba-b637-a78a7b8d0665"></iframe><br><a
+                href="http://49.4.53.110/HZfront//AttachStorage/202103/J070/5153b879-0db0-41ba-b637-a78a7b8d0665/ZJWJ/毛坯建筑图.rar"
+                target="_blank">毛坯建筑图.rar</a><br><a
+                href="http://49.4.53.110/HZfront//AttachStorage/202103/J702/5153b879-0db0-41ba-b637-a78a7b8d0665/比选文件--湖州市人才集团三号人才公寓设计方案-施工图设计项目公开选取（重新招标）.docx"
+                target="_blank">比选文件--湖州市人才集团三号人才公寓设计方案-施工图设计项目公开选取（重新招标）.docx</a><br>
+            <br>
+
+        </div>
     """
 
+    # Clean
     area_id = "3309"
     br_cf = utils.init_yaml('before_regular', area_id)
     cr_cf = utils.init_yaml('common_regular', area_id)

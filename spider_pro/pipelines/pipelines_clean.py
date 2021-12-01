@@ -5,14 +5,13 @@
 # @Describe: notices item数据清洗
 import re
 import html
-import threading
 import time
 import urllib
 import requests
 import datetime
 from ast import literal_eval
 from concurrent.futures import ThreadPoolExecutor, as_completed
-# from threading import RLock as lock
+
 from spider_pro.items import NoticesItem
 from spider_pro import constans as const
 from spider_pro.utils import (
@@ -32,7 +31,6 @@ class CleanPipeline(object):
         self.name = name
         self.area_id = area_id
         self.logger = logger
-        self.lock = threading.RLock()
         self.is_have_file = False
         self.test_file = True
         self.clean_all_enable = True if kwargs.get("ENABLE_CLEAN_ALL_WHEN_START") in const.TRUE_LIST else False
@@ -304,21 +302,25 @@ class CleanPipeline(object):
 
             successful_bidder_tags = get_keywords(kw_cf, 'successful_bidder')
             successful_bidder = self.get_keys_value_from_content(
-                data, successful_bidder_tags, area_id=area_id, field_name='successful_bidder', **regular_params)  # √
+                data, successful_bidder_tags, area_id=area_id, field_name='successful_bidder', **regular_params
+            )  # √
             bid_amount_tags = get_keywords(kw_cf, 'bid_amount')
             bid_amount = self.get_keys_value_from_content(
-                data, bid_amount_tags, area_id=area_id, field_name='bid_amount', **regular_params)  # √
-
+                data, bid_amount_tags, area_id=area_id, field_name='bid_amount', **regular_params
+            )  # √
+            
             project_leader_tags = get_keywords(kw_cf, 'project_leader')
 
             project_leader = self.get_keys_value_from_content(
-                data, project_leader_tags, area_id=area_id, field_name='project_leader', **regular_params)  # √
+                data, project_leader_tags, area_id=area_id, field_name='project_leader', **regular_params
+            )  # √
 
             project_contact_information_tags = get_keywords(kw_cf, 'project_contact_information')
 
             project_contact_information = self.get_keys_value_from_content(
                 data, project_contact_information_tags, area_id=area_id, field_name='project_contact_information',
-                **regular_params)  # √
+                **regular_params
+            )  # √
         elif pre_data.get("classify_id") == const.TYPE_QUALIFICATION_ADVANCE_NOTICE:
             pass
         elif pre_data.get("classify_id") == const.TYPE_OTHERS_NOTICE:
@@ -344,44 +346,57 @@ class CleanPipeline(object):
         # 公共提取字段 15
         project_tags = get_keywords(kw_cf, 'project_name')
         project_name = self.get_keys_value_from_content(
-            content, project_tags, area_id=area_id, field_name='project_name', title=title, **regular_params)  # √
+            content, project_tags, area_id=area_id, field_name='project_name', title=title, **regular_params
+        )  # √
 
         project_number_tags = get_keywords(kw_cf, 'project_number')
+
         project_numbers = self.get_keys_value_from_content(
-            content, project_number_tags, area_id=area_id, field_name='project_number', title=title, **regular_params)  # √
+            content, project_number_tags, area_id=area_id, field_name='project_number', title=title,  **regular_params
+        )  # √
         if re.findall(r'.*/(.*)', project_numbers):
             project_number = project_numbers
         else:
             project_number = project_numbers
 
         tenderee_tags = get_keywords(kw_cf, 'tenderee')
+
         tenderee = self.get_keys_value_from_content(
-            content, tenderee_tags, area_id=area_id, field_name='tenderee', **regular_params)  # √
+            content, tenderee_tags, area_id=area_id, field_name='tenderee', **regular_params
+        )  # √
         if len(tenderee) < 2:
             tenderee = ''
 
         liaison_tags = get_keywords(kw_cf, 'liaison')
-        liaison = self.get_keys_value_from_content(content, liaison_tags, area_id=area_id, field_name='liaison', **regular_params)
+
+        liaison = self.get_keys_value_from_content(
+            content, liaison_tags, area_id=area_id, field_name='liaison', **regular_params
+        )
 
         bidding_contact_tags = get_keywords(kw_cf, 'bidding_contact')
         bidding_contact = self.get_keys_value_from_content(
-            content, bidding_contact_tags, area_id=area_id, field_name='bidding_contact', **regular_params)
+            content, bidding_contact_tags, area_id=area_id, field_name='bidding_contact', **regular_params
+        )
 
         bidding_agency_tags = get_keywords(kw_cf, 'bidding_agency')
         bidding_agency = self.get_keys_value_from_content(
-            content, bidding_agency_tags, area_id=area_id, field_name='bidding_agency', **regular_params)  # √
-
+            content, bidding_agency_tags, area_id=area_id, field_name='bidding_agency', **regular_params
+        )  # √
         contact_information_tags = get_keywords(kw_cf, 'contact_information')
         contact_information = self.get_keys_value_from_content(
-            content, contact_information_tags, area_id=area_id, field_name='contact_information', **regular_params)  # √
+            content, contact_information_tags, area_id=area_id, field_name='contact_information', **regular_params
+        )  # √
 
         agent_contact_tags = get_keywords(kw_cf, 'agent_contact')
+
         agent_contact = self.get_keys_value_from_content(
-            content, agent_contact_tags, area_id=area_id, field_name='agent_contact', **regular_params)  # √
+            content, agent_contact_tags, area_id=area_id, field_name='agent_contact', **regular_params
+        )  # √
 
         budget_amount_tags = get_keywords(kw_cf, 'budget_amount')
         budget_amount = self.get_keys_value_from_content(
-            content, budget_amount_tags, area_id=area_id, field_name='budget_amount', **regular_params)  # √
+            content, budget_amount_tags, area_id=area_id, field_name='budget_amount', **regular_params
+        )  # √
 
         email = self.get_keys_value_from_content(content, ["电子邮箱"], area_id=area_id)
         address = self.get_keys_value_from_content(content, ["详细地址", "采购单位地址"], area_id=area_id)
@@ -443,7 +458,8 @@ class CleanPipeline(object):
 
     def get_keys_value_from_content(self, content, keys, area_id="00", field_name=None, title=None, **kwargs):
         value = get_keys_value_from_content_ahead(
-            content, keys, area_id=area_id, field_name=field_name, title=title, **kwargs)
+            content, keys, area_id=area_id, field_name=field_name, title=title, **kwargs
+        )
         # 再次针对性清洗数据
         try:
             if ">" in value:
@@ -460,8 +476,7 @@ class CleanPipeline(object):
                     item_id = str(item["id"])
                     self.is_have_file = False
                     pre_process_dict = self.get_pre_process_data(item)
-                    deal_data = self.extract_data(pre_data=pre_process_dict, area_id=area_id,
-                                                  regular_params=regular_params)
+                    deal_data = self.extract_data(pre_data=pre_process_dict, area_id=area_id, regular_params=regular_params)
                     deal_data = deal_base_notices_data(deal_data, is_hump=False)
 
                     # 指定需要更新的字段
@@ -487,13 +502,14 @@ class CleanPipeline(object):
                         """ , """.join(["""{} = :{}""".format(var, var) for var in update_fields]) +
                         """, is_clean = {} """.format(is_clean_default) +
                         """where id = {} """.format(item_id))
-                    # print('item_id:{0}'.format(item_id))
+                    
                     deal_data = {k: deal_data[k] for k in update_fields}
                     result = conn.execute(update_sql, **deal_data)
                     if result.rowcount != 1:
                         msg = "error"
                     else:
                         msg = "success update.{}".format(item_id)
+                    
         except (Exception,) as e:
             msg = 'error:{}'.format(e)
             import traceback
@@ -514,15 +530,23 @@ class CleanPipeline(object):
         return regular_params
 
     def run_clean(self, table_name, engine_config, is_clean_default=1):
-        self.engine = create_engine(engine_config, pool_size=20)
+        self.engine = create_engine(engine_config, pool_size=20, pool_timeout=5)
         with self.engine.connect() as conn:
             results = conn.execute(
-                f"SELECT * FROM {table_name} WHERE classify_name in ('招标公告')  and id>=900 and id<=2000",
+                # f"SELECT * FROM {table_name} WHERE classify_name in ('招标公告')  and id>=900 and id<=2000",
                 # f"-- SELECT * FROM {table_name} WHERE project_type in (5,6) AND classify_name in ('招标公告') and id>=230 and id<=500",
+                # f"SELECT * FROM {table_name} WHERE project_type in (5,6) AND classify_name in ('招标公告', '中标公告')",
+                # f"SELECT * FROM {table_name} WHERE classify_name in ('招标公告') limit 0, 600",
+                # f"SELECT * FROM {table_name} WHERE project_type in (5,6) AND classify_name in ('招标公告') limit 0, 500",
+                f"SELECT * FROM {table_name} WHERE project_type in (5,6) AND classify_name in ('中标公告')  limit 0, 500",
+                # f"SELECT * FROM {table_name} WHERE classify_name in ('中标公告') limit 0, 600",
+                # f"SELECT * FROM {table_name} WHERE id in (127)",
             ).fetchall()
         results = [dict(zip(result.keys(), result)) for result in results]
         pool = ThreadPoolExecutor(max_workers=5)
+        
         area_id = table_name.split("_")[-1]
+
         regular_params = self.get_yaml_file(area_id)
 
         tasks = [pool.submit(self.clean_task, item, is_clean_default, self.engine, table_name, area_id, regular_params) for item in results]
@@ -597,11 +621,11 @@ if __name__ == "__main__":
     # cp.run_clean(table_name="notices_00", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
 
     cp.run_clean(
-        table_name="notices_132",
+        table_name="notices_131",
         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'
     )
 
     # # 测试洗数据 默认测试
     # cp.run_clean_ex(table_name="notices_47", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4')
-
     print((datetime.datetime.now() - s).total_seconds())
+
