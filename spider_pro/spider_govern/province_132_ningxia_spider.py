@@ -8,10 +8,10 @@ import scrapy, re, math, requests
 from lxml import etree
 from scrapy.spiders import CrawlSpider
 from spider_pro.items import NoticesItem
-from spider_pro import constans as const
+from spider_pro import constans as const, constans
 from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, \
      get_files, get_notice_type, remove_specific_element, get_timestamp
-
+from collections import OrderedDict
 
 class Province132NingXinSpider(CrawlSpider):
     name = 'province_132_ningxia_spider'
@@ -45,6 +45,14 @@ class Province132NingXinSpider(CrawlSpider):
     # 其他
     list_qita_num = ['合同公告']
 
+    keywords_map = OrderedDict({
+        '采购意向|需求公示': '招标预告',
+        '中标公告|结果公告': '中标公告',
+        '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
+        '澄清|变更|补充|取消|更正|延期': '招标变更',
+        '流标|废标|终止|中止': '招标异常',
+        '候选人': '中标预告',
+    })
     r_dict = {'type': 'bid',
               'page': '0',
               'tab': 'QBJ',
@@ -116,6 +124,23 @@ class Province132NingXinSpider(CrawlSpider):
         else:
             self.enable_incr = False
 
+    def match_title(self, title_name):
+        """
+        根据标题匹配关键字 返回招标类别
+        Args:
+            title_name: 标题
+
+        Returns:
+            notice_type: 招标类别
+        """
+        matched = False
+        notice_type = ''
+        for keywords, value in self.keywords_map.items():
+            if re.search(keywords, title_name):
+                notice_type = value
+                matched = True
+                break
+        return matched, notice_type
 
     def start_requests(self):
         yield scrapy.Request(url=self.domain_url, callback=self.parse_urls,
@@ -223,8 +248,16 @@ class Province132NingXinSpider(CrawlSpider):
         title_name = ''.join(response.meta['title_name'])
         pub_time = response.meta['pub_time']
         pub_time = get_accurate_pub_time(pub_time)
+        notice_type_ori = response.meta['notice']
+        matched, match_notice_type = self.match_title(title_name)
+        if matched:
+            notice_types = match_notice_type
+
+            notice_type = list(
+                filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_types, constans.TYPE_NOTICE_DICT))[0]
+        else:
+            notice_type = notice_type_ori
         if '测试' not in title_name:
-            notice_type = get_notice_type(title_name, response.meta['notice'])
             if notice_type and content:
                 # 去除title
                 _, content = remove_specific_element(content, 'h1')
@@ -258,4 +291,4 @@ if __name__ == "__main__":
     from scrapy import cmdline
 
     # cmdline.execute("scrapy crawl province_132_ningxia_spider".split(" "))
-    cmdline.execute("scrapy crawl province_132_ningxia_spider -a sdt=2021-08-20 -a edt=2021-09-06".split(" "))
+    cmdline.execute("scrapy crawl province_132_ningxia_spider -a sdt=2021-08-20 -a edt=2021-12-06".split(" "))

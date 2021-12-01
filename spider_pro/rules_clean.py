@@ -1,1187 +1,45 @@
 # -*- coding:utf-8 -*-
+import decimal
 import math
 import re
+
+import cn2an
 import pandas
 import copy
 from lxml import etree
 from decimal import Decimal
 from html_table_extractor.extractor import Extractor
+from functools import wraps
 
 from spider_pro import utils
 
-regular_plans = {
-    # 0: "代\s*理[,|
-    # ，]名\s*称.*盖\s*章.*[)|）][,|，](?P<tenderee>.*?)[,|，].*?地.*?址[,|，](?P<address>.*?)[,|，].*?联.*?系.*?人[,|，](?P<liaison>.*?)[,|，].*?电.*?话[,|，](?P<contact_information>\d{4}-\d{8}?|\d{11}?)[,|，]",
-    1: '代\s*理[,|，]名\s*称.*盖\s*章.*[)|）].*?[,|，](?P<tenderee>.*?)[,|，].*?地.*?址[,|，](?P<address>.*?)[,|，].*?联.*?系.*?人[,|，](?P<liaison>.*?)[,|，].*?电.*?话[,|，](?P<contact_information>\d{4}-+(.*)?|\d{11})[u4e00-u9fa5]',
-    2: '代\s*理[,|，]名\s*称.*称.*盖\s*章.*[)|）].*?[,|，](?P<tenderee>.*?)[,|，].*?地.*?址[,|，](?P<address>.*?)[,|，].*?联.*?系.*?人[,|，](?P<liaison>.*?)[,|，].*?电.*?话[,|，](?P<contact_information>\d{4}-\d{8}?|\d{11}?)[,|，]',
-    3: '代\s*理[,|，]名\s*称.*盖\s*章.*[)|）].*?[,|，](?P<tenderee>.*?)[,|，].*?地.*?址[,|，](?P<address>.*?)[,|，].*?联.*?系.*?人[,|，](?P<liaison>.*?)[,|，].*?电.*?话[,|，](?P<contact_information>\d{4}-\d{5}[,|，]\d[,|，]\d{2}?|\d{11}?)[,|，]',
-    4: '代\s*理[,|，]名\s*称[,|，].*?[,|，](?P<tenderee>.*?)[,|，].*?地.*?址[,|，](?P<address>.*?)[,|，].*?联.*?系.*?人[,|，](?P<liaison>.*?)[,|，].*?电.*?话[,|，](?P<contact_information>\d{4}-\d{8}?|\d{11}?)[,|，]',
-    5: '名称[(|（].*盖章[)|）][,|，](?P<tenderee>.*?)[,|，].*?地.*?址[,|，](?P<address>.*?)[,|，].*?联.*?系.*?人[,|，](?P<liaison>.*?)[,|，].*?电.*?话[,|，](?P<contact_information>\d{4}-\d{8}?|\d{11}?)[,|，]',
-    6: '招\s*标\s*代\s*理[,|，]名称[,|，](?P<tenderee>.*?)[,|，].*?地.*?址[,|，](?P<address>.*?)[,|，].*?联.*?系.*?人[,|，](?P<liaison>.*?)[,|，].*?电.*?话[,|，](?P<contact_information>\d{4}-\d{8}?|\d{11}?)[,|，]',
-    7: '代\s*理\s*机\s*构[:|：].*?[,|，](?P<tenderee>.*?)[,|，].*?联.*?系.*?人[:|：].*?[,|，](?P<liaison>.*?)[,|，].*?电.*?话[:|：].*?[,|，](?P<contact_information>\d{4}-\d{8}?|\d{11}?)[,|，]',
-    8: '代\s*理\s*机\s*构\s*名\s*称[:|：].*?(?P<tenderee>.*?)[,|，].*?联.*?系.*?人[:|：].*?(?P<liaison>.*?)[,|，].*?电.*?话[:|：].*?(?P<contact_information>\d{4}-\d{6}[,|，]\d{2}?|\d{11}?)[,|，]',
-}
+def get_keys_value_from_content_ahead(content, keys, area_id="00", _type="", field_name=None, title=None, **kwargs):
+    ke = KeywordsExtract(content, keys, field_name, area_id=area_id, title=title, **kwargs)
+    return ke.get_value()
 
 
-def get_keys_value_from_content_ahead(content: str, keys, area_id="00", _type="", field_name=None, title=None, **kwargs):
-    # keys 需要清洗字段名称  例：招标人、项目编号等
-    if area_id == "00":
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
+def catch_title_before_method(func):
+    @wraps(func)
+    def inner(self, *arg, **kwargs):
+        if self.field_name == 'project_name':
+            method_name = func.__name__
+            owners = self.before_map.get(method_name, [])
+
+            # + area_id不在总规则范围内：方法为done_before_extract调用
+            # + 否则规则调用
+            all_rules = []
+            for bv in self.before_map.values():
+                all_rules.extend(bv)
+            if self.area_id not in all_rules and method_name == 'done_before_extract':
+                self.get_val_from_title()
             else:
-                return ""
+                if self.area_id in owners:
+                    self.get_val_from_title()
+        func(self, *arg, **kwargs)
+    return inner
 
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
 
-                    # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    return v_item.strip()
-
-                    # 匹配不带任何开始标记的文本内容
-                    all_results = re.findall(fr"{key}</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            tag = item.split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                else:
-                    return ""
-        except Exception as e:
-            return ""
-
-    elif area_id in ["3300", '3306', '3307', '3313', '3312', '3331', '3334', '3337', '3343', '3344', '3346',
-                     '3347', '3350', '3360', '3361']:
-        ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id, title=title, **kwargs)
-        return ke.get_value()
-    elif area_id in ["3309", "3320", "3319", "3326"]:
-        ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id, title=title, **kwargs)
-        return ke.get_value()
-    # elif area_id == "3306":
-    # # 还需优化
-    #     try:
-    #         if isinstance(keys, str):
-    #             keys_str_list = [keys]
-    #         elif isinstance(keys, list):
-    #             keys_str_list = keys
-    #         else:
-    #             return ""
-    #         contents = content.replace("</td>", " </td>")
-    #         for key in keys_str_list:
-    #             # 先判断content中 是否包含key的文本
-    #             if len(key) == 0 or not content or not key:
-    #                 continue
-    #             if re.search(fr"{key}", content):
-    #                 all_results = re.findall(fr"{key}\s+?(.*?)[(|（]", contents)
-    #                 if all_results:
-    #                     for item in all_results:
-    #                         value = re.findall('<.*>(.*?)</.*>', item)[0]
-    #                         if value.strip():
-    #                             return value.strip()
-    #                             # print({key}, ":  ", value.strip())
-    #                 all_results = re.findall(fr"{key}[:|：].*?</.*?>", contents)
-    #                 if all_results:
-    #                     for item in all_results:
-    #                         if item.split(":")[-1].split("：")[-1]:
-    #                             value = re.findall('<.*>(.*)</.*>', item.split(":")[-1].split("：")[-1])[0]
-    #                         else:
-    #                             value = item.split(":")[-1].split("：")[-1].split("<")[0]
-    #                         if value.strip():
-    #                             return value.strip()
-    #                             # print({key}, ":  ", value.strip())
-    #                         # tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-    #                         # if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-    #                         #     value = value_str.group().split(">")[-2].split("</")[0]
-    #                         #     if value.strip():
-    #                         #         print(value.strip())
-    #
-    #                 # # 匹配带空格开始的文本内容
-    #                 # all_results = re.findall(fr"{key}\s+?<", contents)
-    #                 # if all_results:
-    #                 #     for item in all_results:
-    #                 #         value_list = item.split(" ")
-    #                 #         for v_item in value_list:
-    #                 #             if v_item.strip():
-    #                 #                 return v_item.strip()
-    #
-    #                 all_results = re.findall(fr"{key}</.*?>", contents)
-    #                 if all_results:
-    #                     for item in all_results:
-    #                         tag = item.split("</")[-1].split(">")[0]
-    #                         if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", contents):
-    #                             value = value_str.group().split(">")[-2].split("</")[0]
-    #                             if value.strip():
-    #                                 return value.strip()
-    #                 all_results = re.findall(fr"{key}.*?</.*>\s*<.*>.*?</.*>", contents)
-    #                 if all_results:
-    #                     for itme in all_results:
-    #                         if re.findall(fr'{key}[:|：](.*?)<', itme):
-    #                             value = re.findall(fr'{key}[:|：](.*?)<', itme)[0]
-    #                             if value.strip():
-    #                                 return value.strip()
-    #                         else:
-    #                             value = ''.join(re.findall('<.*>(.*?)</.*>', itme)[-1]).strip()
-    #                             if value.strip():
-    #                                 return value.strip()
-    #                 all_results = re.findall(fr"{key}\s*(.*?)[)|）]", contents)
-    #                 if all_results:
-    #                     for item in all_results:
-    #                         value = re.findall("</.*>(.*)<.*>", item)[0]
-    #                         if value.strip():
-    #                             return value.strip()
-    #
-    #         return ""
-    #     except Exception as e:
-    #         print(e)
-
-    elif area_id == '52':
-        utils.match_key_words(content, regular_plans)
-    # elif area_id == '3305':
-    #     if isinstance(keys, str):
-    #         keys_str_list = [keys]
-    #     elif isinstance(keys, list):
-    #         keys_str_list = keys
-    #     else:
-    #         return ""
-    #
-    #     for key in keys_str_list:
-    #         # print({key}, ': ')
-    #         # 先判断content中 是否包含key的文本
-    #         if len(key) == 0 or not content or not key:
-    #             continue
-    #         if re.search(fr"{key}", content):
-    #             # 匹配带冒号开始的文本内容
-    #             all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-    #             if all_results:
-    #                 for item in all_results:
-    #                     value = item.split(":")[-1].split("：")[-1].split("<")[0]
-    #                     if value.strip():
-    #                         return value.strip()
-    #                     tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-    #                     if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-    #                         value = value_str.group().split(">")[-2].split("</")[0]
-    #                         if value.strip():
-    #                             return value.strip()
-    #
-    #             # 匹配带空格开始的文本内容
-    #             all_results = re.findall(fr"{key}\s+?<", content)
-    #             if all_results:
-    #                 for item in all_results:
-    #                     value_list = item.split(" ")
-    #                     for v_item in value_list:
-    #                         if v_item.strip():
-    #                             return v_item.strip()
-    #
-    #             # 匹配不带任何开始标记的文本内容
-    #             all_results = re.findall(fr"{key}</.*?>", content)
-    #             if all_results:
-    #                 for item in all_results:
-    #                     tag = item.split("</")[-1].split(">")[0]
-    #                     if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-    #                         value = value_str.group().split(">")[-2].split("</")[0]
-    #                         if value.strip():
-    #                             return value.strip()
-    #
-    #             # 匹配table里面有前后两个td的文本内容
-    #             all_results = re.findall(fr"{key}</.*?>(.*?)</.*>", content)
-    #             if all_results:
-    #                 for item in all_results:
-    #                     value = item.split(">")[-1].split(">")[0]
-    #                     if value.strip():
-    #                         return value.strip()
-    #
-    #
-    #         # if key == '项目名称' or key == '招标项目':
-    #         #     regular_plan = {
-    #         #         1: '招\s*标\s*项\s*目\s*[,|，](?P<{}>.*?)[,|，]'.format(keys),
-    #         #         2: '工\s*程\s*名\s*称\s*(?P<{}>.*[u4e00-u9fa5].*?)[,|，]'.format(keys),
-    #         #         3: '项\s*目\s*名\s*称[:|：]\s*[,|，](?P<{}>.*?)[,|，]'.format(keys),
-    #         #     }
-    #         # else:
-    #         #     regular_plan = ''
-    #         # utils.match_key_re(content, regular_plan, keys)
-    #         #
-    #         # return ""
-    elif area_id == "02":
-        # TODO 还需优化
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                    # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    return v_item.strip()
-
-                    # 匹配不带任何开始标记的文本内容
-                    all_results = re.findall(fr"{key}</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            tag = item.split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                return ""
-        except Exception as e:
-            return ""
-    elif area_id == "03":
-        # TODO 还需优化
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                for cont in content:
-                    if re.search(fr"{key}", cont):
-                        # 匹配带冒号开始的文本内容
-                        all_results = re.findall(fr"{key}[:|：].*?</.*?>", cont)
-                        if all_results:
-                            for item in all_results:
-                                value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                                if value.strip():
-                                    return value.strip()
-                                tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                                if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", cont):
-                                    value = value_str.group().split(">")[-2].split("</")[0]
-                                    if value.strip():
-                                        return value.strip()
-
-                        # 匹配带空格开始的文本内容
-                        all_results = re.findall(fr"{key}\s+?<", cont)
-                        if all_results:
-                            for item in all_results:
-                                value_list = item.split(" ")
-                                for v_item in value_list:
-                                    if v_item.strip():
-                                        return v_item.strip()
-
-                        # 匹配不带任何开始标记的文本内容
-                        all_results = re.findall(fr"{key}</.*?>", cont)
-                        if all_results:
-                            for item in all_results:
-                                tag = item.split("</")[-1].split(">")[0]
-                                if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", cont):
-                                    value = value_str.group().split(">")[-2].split("</")[0]
-                                    if value.strip():
-                                        return value.strip()
-
-                return ""
-        except Exception as e:
-            print(e)
-            return ""
-    elif area_id == "04":
-        # TODO 还需优化
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                    # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    return v_item.strip()
-
-                    # 匹配不带任何开始标记的文本内容
-                    all_results = re.findall(fr"{key}</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            tag = item.split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                return ""
-        except Exception as e:
-            return ""
-    elif area_id == "05":
-        # TODO 还需优化
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                    # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    return v_item.strip()
-
-                    # 匹配不带任何开始标记的文本内容
-                    all_results = re.findall(fr"{key}</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            tag = item.split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                return ""
-        except Exception as e:
-            return ""
-    elif area_id == "08":
-        # TODO 还需优化
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                    # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    return v_item.strip()
-
-                    # 匹配不带任何开始标记的文本内容
-                    all_results = re.findall(fr"{key}</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            tag = item.split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                return ""
-        except Exception as e:
-            return ""
-    elif area_id == "11":
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                    # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    return v_item.strip()
-
-                    # 匹配不带任何开始标记的文本内容
-                    all_results = re.findall(fr"{key}</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            tag = item.split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                return ""
-        except Exception as e:
-            return ""
-    elif area_id == "13":
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                    # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    return v_item.strip()
-
-                    # 匹配不带任何开始标记的文本内容
-                    all_results = re.findall(fr"{key}</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            tag = item.split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                return ""
-        except Exception as e:
-            return ""
-    elif area_id == "15":
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                    # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    return v_item.strip()
-
-                    # 匹配不带任何开始标记的文本内容
-                    all_results = re.findall(fr"{key}</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            tag = item.split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                return ""
-        except Exception as e:
-            return ""
-    elif area_id == "19":
-        # TODO 还需优化
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                    # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    return v_item.strip()
-
-                    # 匹配不带任何开始标记的文本内容
-                    all_results = re.findall(fr"{key}</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            tag = item.split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                return ""
-        except Exception as e:
-            return ""
-    elif area_id == "23":
-        # TODO 还需优化
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                    # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    return v_item.strip()
-
-                    # 匹配不带任何开始标记的文本内容
-                    all_results = re.findall(fr"{key}</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            tag = item.split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                return ""
-        except Exception as e:
-            return ""
-    elif area_id == "26":
-        # TODO 还需优化
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                    # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    return v_item.strip()
-
-                    # 匹配不带任何开始标记的文本内容
-                    all_results = re.findall(fr"{key}</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            tag = item.split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                return ""
-        except Exception as e:
-            print(e)
-            return ""
-    elif area_id == "1102":
-        pass
-    elif area_id == "3301":
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-
-                if re.search(fr"{key}", content):
-                    # # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    # print(v_item.strip())
-                                    return v_item.strip()
-
-                    # 匹配带表格标记的文本内容
-                if re.findall(fr"</td>", content):
-                    data_dict = {}
-                    doc = etree.HTML(content)
-                    content_list = doc.xpath("//div[@class='WordSection1']//tr//text()")
-
-                    if not content_list:
-                        content_list = doc.xpath("//div[@class='Section0']//text()")
-                        if "工程概况" in content_list:
-                            content_list.remove("工程概况")
-                        b_list = content_list[1::2]
-                        c_list = content_list[0::2]
-                        for i, t in zip(b_list, c_list):
-                            data_dict[t] = i
-                        for keys in keys_str_list:
-                            value = data_dict.get(keys)
-                            if value:
-                                if re.search("万元", keys):
-                                    value = str(Decimal(value) * 10000)
-                                return value
-                        return value
-                    else:
-                        a_list = []
-                        content_list = re.sub("\n", "", "".join(content_list))
-                        content_list = content_list.strip().split(" ")
-                        for item in content_list:
-                            if re.search(("\S+"), item):
-                                a_list.append(item)
-                        item_str = "ψ".join(a_list)
-                        for keys in keys_str_list:
-                            if info_list := re.search("{}ψ(\w+?)ψ".format(keys), item_str):
-                                info_list = info_list.group().split("ψ")
-                                key = info_list[0]
-                                value = info_list[1]
-                                if key == "开标时间":
-                                    if not re.search("\d+/\d+/\d+ \d+:\d+:\d+", value):
-                                        return ""
-                                return value
-
-                        #         b_list = a_list[1::2]
-                        #         c_list = a_list[0::2]
-                        #         for i, t in zip(b_list, c_list):
-                        #             data_dict[t] = i
-                        # for keys in keys_str_list:
-                        #     value = data_dict.get(keys)
-                        #     if value:
-                        #         if re.search("万元", keys):
-                        #             value = str(Decimal(value) * 10000)
-                        #         return value
-                        # return value
-
-
-            ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id)
-            ke.fields_regular = {
-                'project_name': [
-                    r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                ],
-                'project_number': [
-                    r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                ],
-                'budget_amount': [
-                    r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                ],
-                'tenderee': [
-                    r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                ],
-                'bidding_agency': [
-                    r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                ],
-                'liaison': [
-                    r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
-                ],
-                'contact_information': [
-                    r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
-                ],
-                'successful_bidder': [
-                    r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                ],
-                'bid_amount': [
-                    r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                ],
-                'tenderopen_time': [
-                    r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                ],
-            }
-            return ke.get_value()
-        except Exception as e:
-            print("清洗出错")
-            print(e)
-            return ""
-    elif area_id == "3302":
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                # 匹配带冒号开始的文本内容
-                data_dict = {}
-                doc = etree.HTML(content)
-                # 如果是意向采购需求
-                if doc.xpath(
-                        "//table[@class='template-bookmark uuid-1609312554335 code-publicNoticeOfPurchaseIntentionDetailTable text-意向公开明细']"):
-                    title_header = doc.xpath("//th//text()")
-                    sectionNo_list = doc.xpath("//td[@class='code-sectionNo']//text()")
-                    purchaseProjectName_list = doc.xpath("//td[@class='code-purchaseProjectName']//text()")
-                    purchaseRequirementDetail_list = doc.xpath("//td[@class='code-purchaseRequirementDetail']//text()")
-                    budgetPrice_list = doc.xpath("//td[@class='code-budgetPrice']//text()")
-                    estimatedPurchaseTime_list = doc.xpath("//td[@class='code-estimatedPurchaseTime']//text()")
-                    if len(sectionNo_list) > 1:
-                        p_Name = ";".join(purchaseProjectName_list)
-                        p_Detail = ";".join(purchaseRequirementDetail_list)
-                        p_Time = ";".join(estimatedPurchaseTime_list)
-                        Price = str(sum(list(map(int, budgetPrice_list))) / 10000)
-                        data_dict[title_header[1]] = p_Name
-                        data_dict[title_header[2]] = p_Detail
-                        data_dict[title_header[3]] = Price
-                        data_dict[title_header[4]] = p_Time
-                    else:
-                        p_Name = purchaseProjectName_list[0]
-                        p_Detail = purchaseRequirementDetail_list[0]
-                        p_Time = estimatedPurchaseTime_list[0]
-                        Price = budgetPrice_list[0]
-                        data_dict[title_header[1]] = p_Name
-                        data_dict[title_header[2]] = p_Detail
-                        data_dict[title_header[3]] = str(int(Price) / 10000)
-                        data_dict[title_header[4]] = p_Time
-                    for keys in keys_str_list:
-                        value = data_dict.get(keys)
-                        if value:
-                            return value
-                    # print(title_header)
-
-                ke = KeywordsExtract(content.replace('\xa0', '').replace('\n', ''), keys, field_name, area_id=area_id)
-                ke.fields_regular = {
-                    'project_name': [
-                        r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                    ],
-                    'project_number': [
-                        r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                    ],
-                    'budget_amount': [
-                        r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                    ],
-                    'tenderee': [
-                        r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                    ],
-                    'bidding_agency': [
-                        r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                    ],
-                    'liaison': [
-                        r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
-                    ],
-                    'contact_information': [
-                        r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ。，,]+?)ψ',
-                    ],
-                    'successful_bidder': [
-                        r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                    ],
-                    'bid_amount': [
-                        r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                    ],
-                    'tenderopen_time': [
-                        r'%s[^ψ：:。，,、]*?[: ：]+?\s*?[ψ]*?([^ψ]+?)ψ',
-                    ],
-                }
-                return ke.get_value()
-
-                # 匹配带表格标记的文本内容
-                # if re.findall(fr"</td>", content):
-                #     data_dict = {}
-                #     doc = etree.HTML(content)
-                #     content_list = doc.xpath("//div[@class='WordSection1']//tr//text()")
-                #
-                #     if not content_list:
-                #         content_list = doc.xpath("//div[@class='Section0']//text()")
-                #         content_list.remove("工程概况")
-                #         b_list = content_list[1::2]
-                #         c_list = content_list[0::2]
-                #         for i, t in zip(b_list, c_list):
-                #             data_dict[t] = i
-                #         for keys in keys_str_list:
-                #             value = data_dict.get(keys)
-                #             if value:
-                #                 return value
-                #     else:
-                #         # content_list.remove("工程概况")
-                #         a_list = []
-                #         for item in content_list:
-                #             if re.search(("\S+"), item):
-                #                 a_list.append(item)
-                #                 b_list = a_list[1::2]
-                #                 c_list = a_list[0::2]
-                #                 for i, t in zip(b_list, c_list):
-                #                     data_dict[t] = i
-                #                 for keys in keys_str_list:
-                #                     value = data_dict.get(keys)
-                #                     if value:
-                #                         return value
-                # info_list = content_str.split("\n  \n \n \n  \n  ")
-                # for keys in keys_str_list:
-                #     for item in info_list:
-                #         data_dict[item.split("\n  \n  \n  ")[0]] = item.split("\n  \n  \n  ")[1]
-                #         value = data_dict.get(keys)
-                #         if value:
-                #             return value
-                # return value
-
-                # data_dict = {}
-                # doc = etree.HTML(content)
-                # content_str = doc.xpath("//div[@class='MainList']/div[2]/div//text()")
-        except Exception as e:
-            print("清洗出错")
-            print(e)
-            return ""
-    elif area_id == "3303":
-        # TODO 还需优化
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                    # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    return v_item.strip()
-
-                    # 匹配不带任何开始标记的文本内容
-                    all_results = re.findall(fr"{key}</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            tag = item.split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-                    # 匹配table里面有前后两个td的文本内容
-                    all_results = re.findall(fr"{key}</.*?>(.*?)</.*>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(">")[-1].split(">")[0]
-                            if value.strip():
-                                return value.strip()
-
-                return ""
-        except Exception as e:
-            print(e)
-            return ""
-    elif area_id == "3333":
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</p>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                    if re.findall(fr"</table>", content):
-                        data_dict = {}
-                        doc = etree.HTML(content)
-                        content_list = doc.xpath("//*[@id='zoom']/table//text()")
-                        b_list = content_list[1::2]
-                        c_list = content_list[0::2]
-                        for i, t in zip(b_list, c_list):
-                            data_dict[t] = i
-                        for keys in keys_str_list:
-                            value = data_dict.get(keys)
-                            if value:
-                                return value.strip()
-            return ""
-        except Exception as e:
-            return ""
-    else:
-        try:
-            if isinstance(keys, str):
-                keys_str_list = [keys]
-            elif isinstance(keys, list):
-                keys_str_list = keys
-            else:
-                return ""
-
-            for key in keys_str_list:
-                # 先判断content中 是否包含key的文本
-                if len(key) == 0 or not content or not key:
-                    continue
-                if re.search(fr"{key}", content):
-                    # 匹配带冒号开始的文本内容
-                    all_results = re.findall(fr"{key}[:|：].*?</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(":")[-1].split("：")[-1].split("<")[0]
-                            if value.strip():
-                                return value.strip()
-                            tag = item.split(":")[-1].split("：")[-1].split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}[:|：].*?</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                    # 匹配带空格开始的文本内容
-                    all_results = re.findall(fr"{key}\s+?<", content)
-                    if all_results:
-                        for item in all_results:
-                            value_list = item.split(" ")
-                            for v_item in value_list:
-                                if v_item.strip():
-                                    return v_item.strip()
-
-                    # 匹配不带任何开始标记的文本内容
-                    all_results = re.findall(fr"{key}</.*?>", content)
-                    if all_results:
-                        for item in all_results:
-                            tag = item.split("</")[-1].split(">")[0]
-                            if value_str := re.search(fr"{key}</{tag}>.*?<{tag}.*?>.*?</{tag}>", content):
-                                value = value_str.group().split(">")[-2].split("</")[0]
-                                if value.strip():
-                                    return value.strip()
-
-                    # 匹配table里面有前后两个td的文本内容
-                    all_results = re.findall(fr"{key}</.*?>(.*?)</.*>", content)
-                    if all_results:
-                        for item in all_results:
-                            value = item.split(">")[-1].split(">")[0]
-                            if value.strip():
-                                return value.strip()
-
-                return ""
-        except Exception as e:
-            return ""
-
-
-class KeywordsExtract:
+class KeywordsExtract(object):
     """
     根据若干个关键字 权衡匹配出对应的值 返回首个匹配结果
     规则：
@@ -1196,8 +54,9 @@ class KeywordsExtract:
         self.rm_cf = kwargs.get('rm_cf', '')
         self.before_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.br_cf, field_name)]
         self.common_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.cr_cf, field_name)]
-        self.liaison_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'LIAISON')]
+        self.liaison_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, ' ')]
         self.symbols_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'SYMBOLS')]
+        self.head_tail_symbols_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'HEAD_TAIL_SYMBOLS')]
         self.company_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'COMAPNY')]
         self.amount_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'AMOUNT')]
         self.project_name_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'PROJECT_NAME')]
@@ -1206,9 +65,13 @@ class KeywordsExtract:
         self.contact_union_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'CONTACT_UNION')]
         self.isolated_unit = utils.get_keywords(self.rm_cf, 'ISOLATED_UNIT')
         self.project_priority = utils.get_keywords(self.rm_cf, 'PROJECT_PRIORITY')
+        self.project_priority_cg = utils.get_keywords(self.rm_cf, 'PROJECT_PRIORITY_CG')
         self.last_part = utils.get_keywords(self.rm_cf, 'LAST_PART')
+        self.project_number_from_title = utils.get_keywords(self.rm_cf, 'PROJECT_NUMBER_FROM_TITLE')
+        self.project_number = utils.get_keywords(self.rm_cf, 'PROJECT_NUMBER')
+        self.wrapped_project_name = utils.get_keywords(self.rm_cf, 'WRAPPED_PROJECT_NAME_REG')
 
-        self.content = content
+        self.content = content.replace('\xa0', ' ').replace('\n', '')
         self.keys = keys if isinstance(keys, list) else [keys]
         self.area_id = area_id
         self.field_name = field_name
@@ -1221,7 +84,9 @@ class KeywordsExtract:
             "建设单位", "中标单位", "中标价", "退付类型", "建设单位联系人", "建设单位联系人", "工程名称", "代建单位联系人", "项目负责人",
             "项目经理", "中标造价", "中标造价（元）", "项目负责人：", "1工程名称", "2招标编号", "中标价（元/年）", "承包价（元）",
             "竞包报价（元）", "承包金额（元）", "承包价", "中标价（%）", "中标价（元）", "标段（包）编号", "承包单位", "中选单位", "标段编号",
-            "承包人", "成交单位", "入围单位"
+            "承包人", "成交单位", "入围单位", "备注", "供应商名称", "包号", "中标金额", '代理机构名称', '代理机构地址', '采购方式',
+            "项目联系电话", "项目联系人", "采购需求", "采购人", "采购需求", "开启时间", "开启地点", "审查地点", "审查时间", "中标供应商地址",
+            "中标金额(万元)", "成交供应商", "成交供应商地址", "包名", "中标供应商名称"
         ]
         # 各字段对应的规则
         self.fields_regular = {
@@ -1273,6 +138,11 @@ class KeywordsExtract:
 
         # 倍数
         self.multi_number = 1
+        # 在提取project_name时，指定位置(指定方法前)调用:self.get_val_from_title
+        self.before_map = {
+            '_extract_from_table': [],
+            'clean_value': ['120', '126', '128', '132']
+        }
 
     def reset_regular_by_field(self):
         """
@@ -1341,15 +211,26 @@ class KeywordsExtract:
         if not self._value:
             for key in self.keys:
                 try:
-                    doc = etree.HTML(self.content.replace('&nbsp;', ''))
-                    txt_els = [x.strip() for x in doc.xpath('//*//text()')]
-                    text = 'ψ'.join(txt_els) if with_symbol else ''.join(txt_els).replace(' ', '')
+                    doc = etree.HTML(self.content.replace('&nbsp;', ' '))
+                    txt_els = [x for x in doc.xpath('//*//text()')]
+                    text = 'ψ'.join(txt_els) if with_symbol else ''.join(txt_els)
                     self._value = self._regular_match(text, key, with_symbol=with_symbol)
-                except Exception as e:
+                except (Exception,) as e:
                     self.msg = 'error:{0}'.format(e)
 
-                if self._value:
+                if self._value and KeywordsExtract.u3000_check(self._value):
                     break
+
+    @staticmethod
+    def u3000_check(value):
+        """
+        去除\u3000后仍然存在值的为True，即：避免值为\u3000的出现
+        """
+        status = False
+        value = value.replace('\u3000', '')
+        if value:
+            status = True
+        return status
 
     @property
     def value(self):
@@ -1362,58 +243,57 @@ class KeywordsExtract:
         count = 0
         try:
             t_data = t_data[0]
-        except Exception as e:
+        except (Exception,) as e:
             self.msg = 'error:{0}'.format(e)
         else:
             for t_data_key in t_data:
                 try:
                     t_data_key = ''.join(t_data_key.split())
-                except:
+                except (Exception,):
                     t_data_key = ''
                 if t_data_key in self.keysss:
                     count += 1
         return True if count >= 2 else False
-
-    def is_vertical(self, t_data):
-        """
-        判断 tr下只有一个 td 或者 th
-        """
-        try:
-            count = 0
-            for i in t_data[:1]:
-                if t_data[:1][i][0] in self.keysss:
-                    count += 1
-            return True if count >= 2 else False
-        except Exception as e:
-            print(e)
 
     @staticmethod
     def get_child_tables(doc_el):
         return doc_el.xpath('.//table')
 
     @staticmethod
-    def get_h_val(c_index, key, tr):
+    def get_h_val(c_index, key, tr, table=None, tr_index=None):
         c_index += 1
         try:
-            next_val = ''.join(tr[c_index].split())
-        except Exception:
+            next_val = tr[c_index].replace('\u3000', '')  # 判断值所在td如果是个table，如果还嵌套一个table，直接取所有内容
+        except (Exception,):
             pass
         else:
             if next_val == key:
                 next_val = KeywordsExtract.get_h_val(c_index, key, tr)
 
+            if not next_val and table:
+                val_table = table.xpath(
+                    './/tr[not(contains(@style, "line-height:0px"))][position()=%d]/td[position()=%d]' % (
+                        c_index + 1, tr_index
+                    )
+                )
+                if val_table:
+                    child_table = val_table[0].xpath('./table')
+                    if child_table:
+                        next_val = val_table[0].xpath('string(.)')
+
             return next_val
 
-    def get_val_from_table(self, result, key):
-        for tr in result:
+    def get_val_from_table(self, result, key, table=None):
+        for tr_index, tr in enumerate(result):
             for c_index, td in enumerate(tr):
                 try:
                     td = ''.join(td.split())
-                except:
+                except (Exception,):
                     td = ''
                 if td == key:
                     # next
-                    next_val = KeywordsExtract.get_h_val(c_index, key, tr)
+                    # 需要两个参数 tr_index td_index(tr需要排除height="0px"的情况)
+                    next_val = KeywordsExtract.get_h_val(c_index, key, tr, table=table, tr_index=tr_index + 1)
                     if next_val:
                         self.reload_multi_number(key)
                         return next_val
@@ -1421,7 +301,8 @@ class KeywordsExtract:
 
     def recurse_parse_table(self, table_els, key, doc):
         c_doc = copy.deepcopy(doc)
-        for table_el in table_els:
+        copy_table_els = copy.deepcopy(table_els)
+        for n, table_el in enumerate(table_els):
             c_child_tables = KeywordsExtract.get_child_tables(table_el)
 
             # REMOVE CHILD TABLE
@@ -1433,24 +314,42 @@ class KeywordsExtract:
             for tr in trs_without_height:
                 tr.getparent().remove(tr)
 
+            trs_without_td = table_el.xpath('.//tr')
+            for td in trs_without_td:
+                # if not td.xpath('./td') or not td.xpath('./th'):
+                if not td.xpath('./text()'):
+                    td.getparent().remove(td)
             table_txt = etree.tounicode(table_el, method='html')
+
             try:
                 t_data = pandas.read_html(table_txt)[0]
-            except Exception as e:
+            except (Exception,) as e:
                 self.msg = 'error:{0}'.format(e)
             else:
                 # 判断横向|纵向
                 # tr下td数一致     横向
                 # tr下td数不一致    纵向
+                # 可能存在无法解析的字段(如表格)
+                # 值中再无table，取table所有文本作为值
                 key = ''.join(key.split())
                 extractor = Extractor(table_txt.replace('\n', ''))
                 extractor.parse()
                 result = extractor.return_list()
-                if self.is_horizon(t_data):
-                    self._value = self.get_val_from_table(result, key)
+
+                # table首列
+                # key
+                # t_data = [['序号', '1']]
+                # key = '中标供应商名称'
+                # result = [
+                #     ['序号','中标（成交）金额(元)','中标供应商名称','中标供应商地址'],
+                #     ['1',	'最终报价:1728800.00(元)',	'浙江长兴市政建设有限公司',	'浙江省湖州市长兴县画溪街道城南路1号']
+                # ]
+
+                if self.is_horizon(t_data) or len(result) == 1:
+                    self._value = self.get_val_from_table(result, key, table=copy_table_els[n])
                 else:
                     result = list(zip(*result))
-                    self._value = self.get_val_from_table(result, key)
+                    self._value = self.get_val_from_table(result, key, table=copy_table_els[n])
                 if self._value:
                     return True
             child_tables = KeywordsExtract.get_child_tables(table_el)
@@ -1458,6 +357,7 @@ class KeywordsExtract:
                 self.recurse_parse_table(child_tables, key, c_doc)
         return False
 
+    @catch_title_before_method
     def _extract_from_table(self):
         """
         处理文章中table的信息
@@ -1501,30 +401,35 @@ class KeywordsExtract:
         """
         从标题获取项目名称
         """
-        if self.field_name == 'project_name' and self.title:
-            # 标题包含：取后半部分
-            for lp in self.last_part:
-                c_v = self.title.split(lp)
-                if len(c_v) == 2:
-                    self.title = c_v[1]
+        if self.field_name == 'project_name' and self.title and not self._value.strip():
+            # 关于 ... 公告过滤
+            for wpn_reg in self.wrapped_project_name:
+                ret = re.findall(r'%s' % wpn_reg, self.title)
+                if ret:
+                    self._value = ret[0]
+                    return
             # 根据关键字优先级匹配项目名称
-            for name in self.project_priority:
+            title_list = self.project_priority_cg if '采购' in self.title else self.project_priority
+            for name in title_list:
                 if name in self.title:
                     # 判断项目关键字是否在（）【】 [] 内
                     if self.brackets_contained(name):
                         continue
-
                     self._value = ''.join([self.title.split(name)[0], name])
                     delete_chars = ['【】']
                     for dc in delete_chars:
                         self._value = self._value.replace(dc, '')
                     break
-
+            # 标题包含：取后半部分
+            for lp in self.last_part:
+                c_v = self._value.split(lp)
+                if len(c_v) == 2:
+                    self._value = c_v[1]
+    @catch_title_before_method
     def done_before_extract(self):
         """
         - 通用提取前，根据地区单独提取
         """
-        self.get_val_from_title()
         self._value = self._value if self._value else ''
         if not self._value.strip():
             regular_list = self.before_regulars
@@ -1568,6 +473,17 @@ class KeywordsExtract:
         return val
 
     @staticmethod
+    def remove_head_or_tail_symbols(symbols, val):
+        for symbol in symbols:
+            symbol_length = len(symbol)
+            val_length = len(val)
+            if val.startswith(symbol):
+                val = val[symbol_length:]
+            if val.endswith(symbol):
+                val = val[:val_length - symbol_length]
+        return val
+
+    @staticmethod
     def union_several_vals_by_regs(reg_list, val, union_str="，"):
         """
         - 提供正则匹配出多个值拼接
@@ -1580,6 +496,41 @@ class KeywordsExtract:
                 break
         return val
 
+    def money_ending(self, value):
+        str_bool = value.endswith('元')
+        str_val = value + '整' if str_bool else value
+        if u'\u4e00' <= str_val <= u'\u9fa5':
+            try:
+                value = cn2an.cn2an(str_val)
+                self.multi_number = 1
+            except (Exception,):
+                pass
+        return str(value)
+
+    @staticmethod
+    def format_tenderopen_time(bf_time):
+        regs = [
+            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?\d)[\u4e00-\u9fa5\s]+?(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5](?P<minute>[\d\s]+)',
+            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?\d)[\u4e00-\u9fa5\s]+?(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5](?P<minute>[\d\s]+?)[:：\u4e00-\u9fa5](?P<seconds>[\d\s]+)',
+        ]
+        for reg in regs:
+            com = re.compile(reg)
+            ret = [m.groupdict() for m in re.finditer(com, bf_time)]
+
+            if ret:
+                date_dict = ret[0]
+
+                left_info = {k: v.strip() for k, v in date_dict.items() if k in ['year', 'month', 'day']}
+                right_info = {k: v.strip() for k, v in date_dict.items() if k in ['hour', 'minute', 'second']}
+
+                bf_time = ' '.join(['-'.join(left_info.values()), ':'.join(right_info.values())])
+
+                if bf_time.strip():
+                    break
+
+        return bf_time
+
+    @catch_title_before_method
     def clean_value(self):
         """
         - 对提取的字段数据进行清洗
@@ -1589,15 +540,17 @@ class KeywordsExtract:
         """
         # 多空格转化成单个
         self._value = KeywordsExtract.remove_chars_by_regs([r'\s+'], self._value, replace_str=' ')
-        if self.area_id != '3313':
-            if self.field_name in ['tenderee', 'bidding_agency']:
-                self._value = KeywordsExtract.remove_chars_by_regs(self.company_regulars, self._value)
+        if self.field_name == 'tenderopen_time':
+            self._value = KeywordsExtract.format_tenderopen_time(self._value)
+        if self.field_name in ['tenderee', 'bidding_agency', 'successful_bidder']:
+            self._value = KeywordsExtract.remove_chars_by_regs(self.company_regulars, self._value)
         if self.field_name in ['bid_amount', 'budget_amount']:
             if self.is_isolated_unit():
                 self._value = ''
                 return
 
             self._value = KeywordsExtract.remove_chars_by_regs(self.amount_regulars, self._value)
+            self._value = self.money_ending(self._value)
             # 删除"元"之后多余字符
             self._value = KeywordsExtract.remove_rest_suffix(self._value)
 
@@ -1607,31 +560,31 @@ class KeywordsExtract:
                 try:
                     values = com.findall(self._value)
                     self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0].strip()) * 1000000))
-                except Exception as e:
+                except (Exception,) as e:
                     self.msg = 'error:{0}'.format(e)
             elif re.search('千万元|千万', self._value):
                 try:
                     values = com.findall(self._value)
                     self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0].strip()) * 10000000))
-                except Exception as e:
+                except (Exception,) as e:
                     self.msg = 'error:{0}'.format(e)
             elif re.search('亿元|亿', self._value):
                 try:
                     values = com.findall(self._value)
                     self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0].strip()) * 100000000))
-                except Exception as e:
+                except (Exception,) as e:
                     self.msg = 'error:{0}'.format(e)
             elif re.search('万元|万', self._value):
                 try:
                     values = com.findall(self._value)
                     self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0].strip()) * 10000))
-                except Exception as e:
+                except (Exception,) as e:
                     self.msg = 'error:{0}'.format(e)
             elif re.search('元', self._value):
                 try:
                     values = com.findall(self._value)
                     self._value = str(KeywordsExtract.remove_rest_zero(Decimal(values[0].strip())))
-                except Exception as e:
+                except (Exception,) as e:
                     self.msg = 'error:{0}'.format(e)
             else:
                 handled = False
@@ -1643,31 +596,46 @@ class KeywordsExtract:
             # 数值最终值处理
             try:
                 assert Decimal(self._value), '非数字'
-            except Exception:
+            except (Exception,):
                 pass
             else:
                 self._value = '{}'.format(KeywordsExtract.remove_rest_zero(
                     self.multi_number * Decimal(self._value) if not handled else Decimal(self._value)))
-                if Decimal(self._value) < 100:
+                if Decimal(self._value) < 400:
                     self._value = ''
         if self.field_name == 'project_name':
             self._value = KeywordsExtract.remove_chars_by_regs(self.project_name_regulars, self._value)
             if not self._value:
                 self._value = self.title
+        if self.field_name == 'project_number':
+            self._value = KeywordsExtract.remove_chars_by_regs(self.project_number, self._value)
+            # 从标题中取
+            if not self._value:
+                for reg in self.project_number_from_title:
+                    c_com = re.compile(r'%s' % reg)
+                    pro_ns = c_com.findall(self.title)
+                    if pro_ns:
+                        self._value = pro_ns[0]
+                        break
         if self.field_name in ['agent_contact', 'bidding_contact', 'project_leader']:
             # 符合正则列表的内容剔除
             self._value = KeywordsExtract.remove_chars_by_regs(self.liaison_regulars, self._value)
             # 提取N个联系人，通过逗号连接
             self._value = KeywordsExtract.union_several_vals_by_regs(self.liaison_union_regulars, self._value)
+
         if self.field_name in ['contact_information', 'liaison', 'project_contact_information']:
             self._value = self.remove_chars_by_regs(self.contact_regulars, self._value)
             # N个联系方式
             self._value = KeywordsExtract.union_several_vals_by_regs(self.contact_union_regulars, self._value)
             if not re.findall(r'\d', self._value):  # 联系方式中没有数字清空
                 self._value = ''
-
+            # 联系方式不少于6个符号
+            if len(self._value) < 6:
+                self._value = ''
         # 最终结果去除特殊符号
         self._value = KeywordsExtract.remove_chars_by_regs(self.symbols_regulars, self._value)
+        # 去除收尾连接符
+        self._value = KeywordsExtract.remove_head_or_tail_symbols(self.head_tail_symbols_regulars, self._value)
 
     def get_value(self):
         self.reset_regular_by_field()  # 自定义字段正则列表覆盖默认正则列表
@@ -1675,25 +643,27 @@ class KeywordsExtract:
         self._extract_from_table()  # 表格数据
         self._extract_from_text()  # 默认规则匹配
         self.clean_value()  # 匹配结果清理
-        return self._value
+        return self._value.strip()
 
 
 if __name__ == '__main__':
-    content = '''
+    content = """
+    
+    """
 
-              '''
-    area_id = "3343"
+    area_id = "3309"
     br_cf = utils.init_yaml('before_regular', area_id)
     cr_cf = utils.init_yaml('common_regular', area_id)
     kw_cf = utils.init_yaml('keyword', area_id)
-    rm_cf = utils.init_yaml('public_regular', file_name='remove_chars')
+    rm_cf = utils.init_yaml('public_regular', area_id, file_name='remove_chars')
     regular_params = {
         'br_cf': br_cf,
         'cr_cf': cr_cf,
         'rm_cf': rm_cf,
     }
     ke = KeywordsExtract(
-        content, kw_cf['budget_amount'], field_name='budget_amount', area_id=area_id, **regular_params
+        content, kw_cf['project_name'], field_name='project_name', area_id=area_id, title='[查看招标公告]:泰顺县中医院门诊预检导引系统招标公告',
+        **regular_params
     )
     # ], field_name='project_name', area_id="3319", title='')
     # ke = KeywordsExtract(content, ["项目编号"])

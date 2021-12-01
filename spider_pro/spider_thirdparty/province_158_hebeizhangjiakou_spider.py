@@ -13,7 +13,7 @@ from spider_pro.items import NoticesItem
 from spider_pro import constans as const
 from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, \
     get_files, get_notice_type, remove_specific_element, get_timestamp, remove_element_by_xpath
-
+# TODO 产品未说 文件处不处理   文件名和文件链接均未带后缀
 
 class Province158HeBeiZhangJiaKouSpider(CrawlSpider):
     name = 'province_158_hebeizhangjiakou_spider'
@@ -166,7 +166,6 @@ class Province158HeBeiZhangJiaKouSpider(CrawlSpider):
     def parse_item(self, response):
         try:
             category = ''
-            business_category = response.meta['business_category']
             origin = response.url
             info_source = self.area_province
             title_name = ''.join(response.meta['title_name'])
@@ -194,11 +193,10 @@ class Province158HeBeiZhangJiaKouSpider(CrawlSpider):
                 notice_item["content"] = content
                 notice_item["area_id"] = self.area_id
                 notice_item["category"] = category
-                notice_item['business_category'] = business_category
 
                 yield notice_item
         except Exception as e:
-            self.logger.error(f'发起数据请求失败parse_item {e}, {response.meta["info_url"]}')
+            self.logger.error(f'发起数据请求失败parse_item {e}')
 
 
 if __name__ == "__main__":

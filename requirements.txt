@@ -39,7 +39,8 @@ scrapyd-client==1.1.0
 service-identity==18.1.0
 six==1.15.0
 SQLAlchemy==1.3.21
-Twisted @ file:///D:/chrome_download/Twisted-20.3.0-cp39-cp39-win_amd64.whl
 urllib3==1.26.2
 w3lib==1.22.0
 zope.interface==5.2.0
+# Twisted @ file:///D:/chrome_download/Twisted-20.3.0-cp39-cp39-win_amd64.whl
+

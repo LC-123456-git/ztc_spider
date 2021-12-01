@@ -228,7 +228,7 @@ def get_keywords(cf, field):
     return vs if vs else []
 
 
-def init_yaml(doc_name, area_id, file_name=None):
+def init_yaml(doc_name, area_id=None, file_name=None):
     """
     - 获取yaml文件处理对象
     """

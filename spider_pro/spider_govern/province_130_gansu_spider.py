@@ -32,6 +32,7 @@ class Province130GansuSpiderSpider(scrapy.Spider):
         '成交公告|中标公告': '中标公告',
         '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
     })
+
     notice_map = {
         '招标公告': ['公开招标', '邀请招标', '询价招标', '竞争性谈判', '竞争性磋商', '单一来源公示'],
         '资格预审结果公告': ['资格预审公告'],
@@ -116,9 +117,6 @@ class Province130GansuSpiderSpider(scrapy.Spider):
                 notice_type = k
                 break
         return notice_type
-
-    # def start_requests(self):
-    #     yield SplashRequest(url=self.first_url, callback=self.parse_first, args={'wait': '0.5'})
 
     def parse(self, resp):
         # 公告类型
@@ -243,5 +241,5 @@ class Province130GansuSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl province_130_gansu_spider -a sdt=2021-08-17 -a edt=2021-08-19".split(" "))
-    cmdline.execute("scrapy crawl province_130_gansu_spider".split(" "))
+    cmdline.execute("scrapy crawl province_130_gansu_spider -a sdt=2021-08-17 -a edt=2021-08-19".split(" "))
+    # cmdline.execute("scrapy crawl province_130_gansu_spider".split(" "))
