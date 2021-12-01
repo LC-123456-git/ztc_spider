@@ -12,6 +12,7 @@ import requests
 import random
 from datetime import datetime
 from lxml import etree
+from collections import OrderedDict
 
 from spider_pro import utils, items, constans
 
@@ -23,12 +24,12 @@ class Province80YankuangzhaocaiSpiderSpider(scrapy.Spider):
     query_url = 'http://www.ykjtzb.com'
     basic_area = '山东省-兖矿集团电子招投标采购平台'
     area_id = 80
-    keywords_map = {
+    keywords_map = OrderedDict({
         '资格审查': '资格预审结果公告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
-    }
+    })
     url_map = {
         '招标公告': {
             'url': [

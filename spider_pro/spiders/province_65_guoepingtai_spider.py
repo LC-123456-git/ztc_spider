@@ -14,6 +14,7 @@ from datetime import datetime
 import random
 import time
 import json
+from collections import OrderedDict
 
 from spider_pro import items, constans, utils
 
@@ -29,11 +30,11 @@ class Province65GuoepingtaiSpiderSpider(scrapy.Spider):
     origin = 'https://www.ebidding.com/portal/html/index.html#page=main:notice_details?&tenderType={tender_type}&etId={et_id}&type={sub_notice_code}&htmlContentId={html_content_id}&platform={platform}&_={now_time}'
     area_id = 65
     basic_area = '广东省-国e平台'
-    keywords_map = {
+    keywords_map = OrderedDict({
         '资格审查': '资格预审结果公告',
         '澄清|变更|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
-    }
+    })
     notices_type_map = {
         '招标公告': '10',
         '资格预审': '70',

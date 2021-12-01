@@ -10,8 +10,7 @@ import requests
 import copy
 import random
 from lxml import etree
-from datetime import datetime
-from math import ceil
+from collections import OrderedDict
 
 import scrapy
 
@@ -26,12 +25,12 @@ class ZjCity3323XiaoshanSpiderSpider(scrapy.Spider):
     base_url = 'http://gzjy.xiaoshan.gov.cn'
     basic_area = '浙江省-杭州市-萧山区-萧山政府门户网站'
     area_id = 3323
-    keywords_map = {
+    keywords_map = OrderedDict({
         '变更|答疑|澄清|补充|延期': '招标变更',
         '废标|流标': '招标异常',
         '候选人|预成交': '中标预告',
         '中标|成交|出让结果|交易结果': '中标公告',
-    }
+    })
     url_map = {
         '招标公告': [
             {'category': '区级平台小额建设工程', 'url': 'http://www.xiaoshan.gov.cn/col/col1229181747/index.html'},

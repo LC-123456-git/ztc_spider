@@ -12,6 +12,7 @@ import requests
 from lxml import etree
 from datetime import datetime
 import random
+from collections import OrderedDict
 
 from spider_pro import items, constans, utils
 
@@ -23,7 +24,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
     query_url = 'http://www.sunbidding.com'
     area_id = 67
     basic_area = '河南省-阳光易招公共资源交易平台'
-    keywords_map = {
+    keywords_map = OrderedDict({
         '征求意见': '招标预告',
         '单一来源|询价': '招标公告',
         '资格审查': '资格预审结果公告',
@@ -31,7 +32,7 @@ class Province67YangguangyizhaoSpiderSpider(scrapy.Spider):
         '流标|废标|终止|中止': '招标异常',
         '评标公示|候选人': '中标预告',
         '评审公示': '其他公告',
-    }
+    })
     url_map = {
         '房建市政': [
             {'notice_type': '招标公告', 'url': 'http://www.sunbidding.com/jzbgg/index.jhtml'},

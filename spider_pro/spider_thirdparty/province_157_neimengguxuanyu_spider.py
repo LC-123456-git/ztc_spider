@@ -8,6 +8,7 @@ import json
 import math
 import re
 import copy
+from collections import OrderedDict
 
 import scrapy
 
@@ -76,13 +77,13 @@ class Province157NeimengguxuanyuSpiderSpider(scrapy.Spider):
             {'code': '001001007'},  # 中标公示
         ],
     }
-    keywords_map = {
+    keywords_map = OrderedDict({
         '采购意向|需求公示': '招标预告',
         '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
         '澄清|变更|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
-    }
+    })
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -254,6 +255,6 @@ class Province157NeimengguxuanyuSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_157_neimengguxuanyu_spider -a sdt=2021-08-01 -a edt=2021-11-10".split(" "))
+    cmdline.execute("scrapy crawl province_157_neimengguxuanyu_spider -a sdt=2020-01-01 -a edt=2020-12-29".split(" "))
     # cmdline.execute("scrapy crawl province_157_neimengguxuanyu_spider".split(" "))
 

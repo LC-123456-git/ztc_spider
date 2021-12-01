@@ -9,6 +9,7 @@ import random
 import requests
 from datetime import datetime
 from lxml import etree
+from collections import OrderedDict
 
 import scrapy
 
@@ -25,14 +26,14 @@ class Province118HenanSpiderSpider(scrapy.Spider):
     base_url = 'http://www.ccgp-henan.gov.cn'
 
     area_id = 118
-    keywords_map = {
+    keywords_map = OrderedDict({
         '采购意向|需求公示': '招标预告',
         '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
         '中标结果|成交公告': '中标公告',
-    }
+    })
     url_map = {
         '招标预告': [
             {'params': 'channelCode=9102&pageNo={page_no}&pageSize=16&bz=1&gglx=0'},  # 意向采购 省

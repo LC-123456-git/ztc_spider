@@ -6,6 +6,7 @@
 import re
 import json
 from datetime import datetime
+from collections import OrderedDict
 
 import scrapy
 
@@ -20,13 +21,13 @@ class ZjCity3346HuzhouwuxingSpiderSpider(scrapy.Spider):
 
     basic_area = '浙江省湖州吴兴市人民政府'
     area_id = 3346
-    keywords_map = {
+    keywords_map = OrderedDict({
         '采购意向|需求公示': '招标预告',
         '单一来源|询价|竞争性谈判': '招标公告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
-    }
+    })
     url_map = {
         '招标预告': [
             {'category': '政府采购', 'url': 'http://www.wuxing.gov.cn/hzgov/front/s127/jyxx/zfcg/yjzx/index.html'},  # 意见征询

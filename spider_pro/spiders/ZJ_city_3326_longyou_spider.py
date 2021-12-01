@@ -5,6 +5,8 @@ import scrapy
 import copy
 import json
 from datetime import datetime
+from collections import OrderedDict
+
 from scrapy.utils.project import get_project_settings
 
 from spider_pro import items, constans, utils
@@ -17,11 +19,11 @@ class ZjCity3326LongyouSpiderSpider(scrapy.Spider):
     query_url = 'http://ztb.longyou.gov.cn'
     basic_area = '浙江省-衢州市-龙游县-龙游县公共资源交易平台'
     area_id = 3326
-    keywords_map = {
+    keywords_map = OrderedDict({
         '澄清|变更|补充': '招标变更',
         '废标|流标|终止': '招标异常',
         '候选人': '中标预告',
-    }
+    })
     url_map = {
         '招标预告': [
             {'category': '建设工程', 'url': 'http://ztb.longyou.gov.cn/front/bidcontent/9005001009'},

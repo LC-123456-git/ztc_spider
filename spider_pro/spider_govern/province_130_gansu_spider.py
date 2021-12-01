@@ -6,7 +6,7 @@
 # @version        :1.0
 import copy
 import re
-import requests
+from collections import OrderedDict
 
 import scrapy
 
@@ -17,19 +17,21 @@ class Province130GansuSpiderSpider(scrapy.Spider):
     name = 'province_130_gansu_spider'
     allowed_domains = ['www.ccgp-gansu.gov.cn']
     start_urls = ['http://www.ccgp-gansu.gov.cn/web/doSearchmxarticlelssj.action']
+    first_url = 'http://www.ccgp-gansu.gov.cn/web/doSearchmxarticlelssj.action'
 
     basic_area = '甘肃省政府采购网'
     query_url = 'http://www.ccgp-gansu.gov.cn/web/doSearchmxarticlelssj.action?limit=20&start={start_n}'
     base_url = 'http://www.ccgp-gansu.gov.cn'
 
     area_id = 130
-    keywords_map = {
+    keywords_map = OrderedDict({
         '采购意向|需求公示': '招标预告',
-        '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
-    }
+        '成交公告|中标公告': '中标公告',
+        '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
+    })
     notice_map = {
         '招标公告': ['公开招标', '邀请招标', '询价招标', '竞争性谈判', '竞争性磋商', '单一来源公示'],
         '资格预审结果公告': ['资格预审公告'],
@@ -47,6 +49,28 @@ class Province130GansuSpiderSpider(scrapy.Spider):
         "limit": "20",
         "current": "1"
     }
+
+    custom_settings = {
+        'COOKIES_ENABLED': True
+    }
+
+    """
+    articleSearchInfoVo.releasestarttime: 2021-11-16
+    articleSearchInfoVo.releaseendtime: 2021-11-30
+    articleSearchInfoVo.tflag: 1
+    articleSearchInfoVo.classname: 12804
+    articleSearchInfoVo.dtype: 
+    articleSearchInfoVo.days: 
+    articleSearchInfoVo.releasestarttimeold: 
+    articleSearchInfoVo.releaseendtimeold: 
+    articleSearchInfoVo.title: 
+    articleSearchInfoVo.agentname: 
+    articleSearchInfoVo.bidcode: 
+    articleSearchInfoVo.proj_name: 
+    articleSearchInfoVo.buyername: 
+    total: 1112
+    limit: 20
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -92,6 +116,9 @@ class Province130GansuSpiderSpider(scrapy.Spider):
                 notice_type = k
                 break
         return notice_type
+
+    # def start_requests(self):
+    #     yield SplashRequest(url=self.first_url, callback=self.parse_first, args={'wait': '0.5'})
 
     def parse(self, resp):
         # 公告类型
@@ -216,5 +243,5 @@ class Province130GansuSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_130_gansu_spider -a sdt=2021-08-17 -a edt=2021-08-19".split(" "))
-    # cmdline.execute("scrapy crawl province_130_gansu_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_130_gansu_spider -a sdt=2021-08-17 -a edt=2021-08-19".split(" "))
+    cmdline.execute("scrapy crawl province_130_gansu_spider".split(" "))

@@ -9,11 +9,10 @@
 import re
 import requests
 import scrapy
-import copy
-import json
 import random
 from datetime import datetime
 from lxml import etree
+from collections import OrderedDict
 
 from spider_pro import items, constans, utils
 
@@ -25,13 +24,13 @@ class ZjCity3325DeqingSpiderSpider(scrapy.Spider):
     query_url = 'http://116.62.168.209'
     basic_area = '浙江省-湖州市-德清县-德清县公共资源交易平台'
     area_id = 3325
-    keywords_map = {
+    keywords_map = OrderedDict({
         '变更|答疑|澄清|补充|延期|更正': '招标变更',
         '废标|流标': '招标异常',
         '候选人|预成交': '中标预告',
         '中标|成交': '中标公告',
         '预公示': '招标预告',
-    }
+    })
     url_map = {
         '招标公告': [
             {'category': '工程交易', 'url': 'http://116.62.168.209/zbgg/index.htm'},

@@ -9,6 +9,8 @@ import re
 import requests
 from datetime import datetime
 from lxml import etree
+from collections import OrderedDict
+
 from spider_pro import utils, constans, items
 
 
@@ -27,11 +29,11 @@ class Province55TiangongSpiderSpider(scrapy.Spider):
         '中标预告': ['http://zhaobiao.tgcw.net.cn/cms/channel/bidzbgs/index.htm'],
         '中标公告': ['http://zhaobiao.tgcw.net.cn/cms/channel/bidzbgg/index.htm'],
     }
-    keywords_map = {
+    keywords_map = OrderedDict({
         '变更': '招标变更',
         '候选人': '中标预告',
         '中标': '中标公告',
-    }
+    })
 
     def __init__(self, *args, **kwargs):
         super().__init__()

@@ -9,6 +9,7 @@ import random
 import requests
 from lxml import etree
 from datetime import datetime
+from collections import OrderedDict
 
 from spider_pro import utils, constans, items
 
@@ -21,14 +22,14 @@ class ZjCity3327PingyangSpiderSpider(scrapy.Spider):
     basic_area = '浙江省-温州市-平阳县-平阳县公共交易资源网'
     query_url = 'http://www.zjpy.gov.cn/module/jpage/dataproxy.jsp?startrecord={startrecord}&perpage=25'
     base_url = 'http://www.zjpy.gov.cn'
-    keywords_map = {
+    keywords_map = OrderedDict({
         '结果': '中标公告',
         '流标|废标': '招标异常',
         '澄清|变更|补充': '招标变更',
         '采购公告|询价公告|招标公告|要求|单一来源|磋商|出让公告|转让公告|招租|出租|使用权': '招标公告',
         '意见征询': '招标预告',
         '审批公告|报告': '其他公告',
-    }
+    })
     url_map = {
         '政府采购': {
             'url': 'http://www.zjpy.gov.cn/col/col1250951/index.html',

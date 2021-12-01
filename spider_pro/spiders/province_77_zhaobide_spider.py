@@ -15,6 +15,7 @@ import copy
 import json
 from lxml import etree
 from datetime import datetime
+from collections import OrderedDict
 
 from spider_pro import items, constans, utils
 
@@ -25,12 +26,12 @@ class Province77ZhaobideSpiderSpider(scrapy.Spider):
     start_urls = ['http://www.zhaobide.com/']
     area_id = 77
     basic_area = '浙江省-杭州市-招必得'
-    notice_keywords_map = {
+    notice_keywords_map = OrderedDict({
         '资格审查': '资格预审结果公告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
-    }
+    })
     base_url = 'https://www.zhaobide.com'
     query_url = 'https://www.zhaobide.com/Web/GetAfficheList_detail?afficheType={affiche_type}&type={type}'
     # detail_url = 'https://www.zhaobide.com/Web/WebAfficheIndex?tenderID={tender_id}&afficheID={affiche_id}&moduleID={module_id}&afficheType={affiche_type}'

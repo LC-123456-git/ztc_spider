@@ -6,10 +6,8 @@
 @version       :1.0
 """
 import re
-import requests
-from lxml import etree
-from datetime import datetime
 from math import ceil
+from collections import OrderedDict
 
 import scrapy
 
@@ -23,12 +21,12 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
     query_url = 'http://ggzy.anji.gov.cn'
     basic_area = '浙江省-湖州市-安吉县-安吉公共资源交易中心'
     area_id = 3322
-    keywords_map = {
+    keywords_map = OrderedDict({
         '变更|答疑|澄清|延期': '招标变更',
         '废标|流标': '招标异常',
         '候选人|预成交|中标公示|结果公示': '中标预告',
         '中标结果|成交|出让结果|交易结果': '中标公告',
-    }
+    })
     url_map = {
         '招标预告': [
             {'category': '建设工程', 'url': 'http://ggzy.anji.gov.cn/jyxx/003001/003001007/'},

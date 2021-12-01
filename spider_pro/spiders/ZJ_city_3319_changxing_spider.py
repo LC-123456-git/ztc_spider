@@ -8,6 +8,7 @@ import requests
 import scrapy
 import re
 from lxml import etree
+from collections import OrderedDict
 
 from spider_pro import constans, utils, items
 
@@ -162,12 +163,12 @@ class ZjCity3319ChangxingSpiderSpider(scrapy.Spider):
             },
         ]
     }
-    keywords_map = {
+    keywords_map = OrderedDict({
         '变更|答疑|澄清|补充|延期': '招标变更',
         '废标|流标': '招标异常',
         '候选人|评标结果': '中标预告',
         '中标|成交': '中标公告',
-    }
+    })
 
     def __init__(self, *args, **kwargs):
         super().__init__()

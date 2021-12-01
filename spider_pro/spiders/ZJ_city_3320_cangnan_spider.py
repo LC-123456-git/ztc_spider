@@ -9,6 +9,7 @@ import re
 import requests
 from datetime import datetime
 from lxml import etree
+from collections import OrderedDict
 
 from spider_pro import utils, items, constans
 
@@ -23,12 +24,12 @@ class ZjCity3320CangnanSpiderSpider(scrapy.Spider):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36',
     }
-    keywords_map = {
+    keywords_map = OrderedDict({
         '变更|答疑|澄清|补充|延期': '招标变更',
         '废标|流标': '招标异常',
         '候选人|候选公示': '中标预告',
         '中标|成交|出让结果|交易结果': '中标公告',
-    }
+    })
     url_map = {
         '招标预告': [
             {'category': '建设工程',

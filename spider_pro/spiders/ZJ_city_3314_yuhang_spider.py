@@ -7,7 +7,7 @@ import copy
 import requests
 from lxml import etree
 from datetime import datetime
-import random
+from collections import OrderedDict
 
 from spider_pro import items, constans, utils
 
@@ -60,12 +60,16 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
     }
     record_com = re.compile('href="(.*?)".*?title="(.*?)".*?<i>(.*?)</i>')
     total_record_com = re.compile('function.*totalRecord:(.*),openCookies.*barPosition')
-    keywords_map = {
+    keywords_map = OrderedDict({
         '预审': '资格预审公告',
         '变更|澄清|延期|更正|补充|答疑': '招标变更',
         '废标|流标': '招标异常',
         '评标结果': '中标预告',
         '中标': '中标公告',
+    })
+
+    custom_settings = {
+        "ENABLE_PROXY_USE": False,
     }
 
     def __init__(self, *args, **kwargs):
@@ -343,12 +347,12 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
         notice_item["content"] = content
         notice_item["area_id"] = self.area_id
         notice_item["category"] = category_type
-        print(resp.meta.get('pub_time'), resp.url)
+        self.logger.info('采集成功：{} {}'.format(resp.meta.get('pub_time'), resp.url))
         return notice_item
 
 
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider -a sdt=2021-03-01 -a edt=2021-07-26".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider -a sdt=2021-03-01 -a edt=2021-07-26".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3314_yuhang_spider".split(" "))

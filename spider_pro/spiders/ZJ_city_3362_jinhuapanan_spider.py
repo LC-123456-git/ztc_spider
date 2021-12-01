@@ -8,6 +8,7 @@ import copy
 import re
 from lxml import etree
 import math
+from collections import OrderedDict
 
 import scrapy
 
@@ -24,13 +25,13 @@ class ZjCity3362JinhuapananSpiderSpider(scrapy.Spider):
     # http://www.panan.gov.cn/module/jpage/dataproxy.jsp?startrecord=1&endrecord=60&perpage=20
     # http://www.panan.gov.cn/module/jpage/dataproxy.jsp?startrecord=61&endrecord=120&perpage=20
     area_id = 3362
-    keywords_map = {
+    keywords_map = OrderedDict({
         '采购意向|需求公示': '招标预告',
         '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
-    }
+    })
     url_map = {
         '招标预告': [
             {'category': '建设工程', 'columnid': '1229500305'},  # 招标公告、文件预公示

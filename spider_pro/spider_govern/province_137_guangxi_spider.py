@@ -9,6 +9,7 @@ from datetime import datetime
 import json
 import re
 import math
+from collections import OrderedDict
 
 import scrapy
 
@@ -27,13 +28,13 @@ class Province137GuangxiSpiderSpider(scrapy.Spider):
     add_click_url = 'http://www.ccgp-guangxi.gov.cn/visitor/add-clicks'
 
     area_id = 137
-    keywords_map = {
+    keywords_map = OrderedDict({
         '采购意向|需求公示': '招标预告',
         '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
-    }
+    })
     notice_map = {
         '招标预告': [
             {

@@ -1,46 +1,39 @@
 # -*- coding: utf-8 -*-
-# @file           :province_148_zhongguoty_spider.py
-# @description    :中国通用招标网
-# @date           :2021/10/25 13:36:40
+# @file           :province_160_jinchandzzb_spider.py
+# @description    :金蝉电子招标投标综合交易平台
+# @date           :2021/11/01 16:09:26
 # @author         :miaokela
 # @version        :1.0
 import re
 from collections import OrderedDict
 
-from spider_pro import constans, utils, items
 import scrapy
 
+from spider_pro import constans, utils, items
 
-class Province148ZhongguotySpiderSpider(scrapy.Spider):
-    name = 'province_148_zhongguoty_spider'
-    allowed_domains = ['china-tender.com.cn']
-    start_urls = ['https://www.china-tender.com.cn/']
 
-    basic_area = '中国通用招标网'
-    area_id = 148
-    base_url = 'https://www.china-tender.com.cn'
-    query_url = 'https://www.china-tender.com.cn/{type_code}/index{page}.jhtml'
+class Province160JinchandzzbSpiderSpider(scrapy.Spider):
+    name = 'province_160_jinchandzzb_spider'
+    allowed_domains = ['jcebid.com']
+    start_urls = ['http://www.jcebid.com/']
+
+    basic_area = '金蝉电子招标投标综合交易平台'
+    area_id = 156
+    base_url = 'http://www.jcebid.com'
+    query_url = 'http://www.jcebid.com/announcement/page'
 
     url_map = {
         '招标公告': [
-            {'type_code': 'zbhw', 'type_name': '货物'},  # 货物
-            {'type_code': 'zbgc', 'type_name': '工程'},  # 工程
-            {'type_code': 'zbfw', 'type_name': '服务'},  # 服务
+            # - 招标公告
+            {'type_code': 'hzbgg', 'type': '', 'type_name': '货物'},  # 货物
+            {'type_code': 'hzbgg', 'type': '', 'type_name': '货物'},  # 货物
+            {'type_code': 'hzbgg', 'type': '', 'type_name': '货物'},  # 货物
         ],
-        '资格预审结果公告': [
-            {'type_code': 'zshw', 'type_name': '货物'},  # 货物
-            {'type_code': 'zsgc', 'type_name': '工程'},  # 工程
-            {'type_code': 'zsfw', 'type_name': '服务'},  # 服务
-        ],
-        '招标变更': [
-            {'type_code': 'bghw', 'type_name': '货物'},  # 货物
-            {'type_code': 'bggc', 'type_name': '工程'},  # 工程
-            {'type_code': 'bgfw', 'type_name': '服务'},  # 服务
+        '中标预告': [
+
         ],
         '中标公告': [
-            {'type_code': 'jghw', 'type_name': '货物'},  # 货物
-            {'type_code': 'jggc', 'type_name': '工程'},  # 工程
-            {'type_code': 'jgfw', 'type_name': '服务'},  # 服务
+ 
         ],
     }
     keywords_map = OrderedDict({
@@ -96,7 +89,7 @@ class Province148ZhongguotySpiderSpider(scrapy.Spider):
         headers = utils.get_headers(resp)
         proxies = utils.get_proxies(resp)
 
-        max_page_str = resp.xpath('//div[contains(@class, "fenye")]/div/a[last()]/@href').get()
+        max_page_str = resp.xpath('//div[contains(@class, "fenye")]/a[last()]/@href').get()
 
         com = re.compile(r'(\d+)')
         try:
@@ -114,7 +107,8 @@ class Province148ZhongguotySpiderSpider(scrapy.Spider):
 
                 judge_status = utils.judge_in_interval(
                     c_url, start_time=self.start_time, end_time=self.end_time, method='GET',
-                    proxies=proxies, headers=headers, rule='//span[@class="Gray Right"]/text()', verify=False,
+                    proxies=proxies, headers=headers, rule='//p[@class="Gray"]/span[contains(@class, "Right")]/text()',
+                    verify=False,
                 )
                 if judge_status == 0:
                     break
@@ -140,25 +134,22 @@ class Province148ZhongguotySpiderSpider(scrapy.Spider):
     def parse_list(self, resp):
         t_com = re.compile(r'(\d+[.\-/]\d+[.\-/]\d+)')
 
-        els = resp.xpath('//div[@class="ConBox1"]//li')
+        els = resp.xpath('//li[@class="PaddingLR15 BorderBottomEEE"]')
 
         for n, el in enumerate(els):
             try:
-                pub_time = el.xpath('./p/span[last()]/text()').get()
+                pub_time = el.xpath('./p[@class="Gray"]/span[contains(@class, "Right")]/text()').get()
                 pub_time = t_com.findall(pub_time)[0]
             except Exception as e:
                 self.logger.info('error:{}'.format(e))
             else:
                 title_name = el.xpath('./a/text()').get()
-                area = el.xpath('./p/span[2]/a/text()').get()
-                c_href = el.xpath('./a/@href').get()
-                c_url = ''.join([self.base_url, c_href])
+                c_url = el.xpath('./a/@href').get()
 
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                     resp.meta.update(**{
                         'pub_time': pub_time,
                         'title_name': title_name,
-                        'area': area,
                     })
                     yield scrapy.Request(
                         url=c_url, callback=self.parse_detail, meta=resp.meta,
@@ -166,11 +157,10 @@ class Province148ZhongguotySpiderSpider(scrapy.Spider):
                     )
 
     def parse_detail(self, resp):
-        content = resp.xpath('//div[contains(@class, "Contnet")]').get()
+        content = resp.xpath('//div[@class="Padding10 BorderCCCDot F14"]').get()
         title_name = resp.meta.get('title_name')
         notice_type_ori = resp.meta.get('notice_type')
         pub_time = resp.meta.get('pub_time')
-        area = resp.meta.get('area')
 
         # 关键字重新匹配 notice_type
         matched, match_notice_type = self.match_title(title_name)
@@ -189,7 +179,7 @@ class Province148ZhongguotySpiderSpider(scrapy.Spider):
 
         notice_item["title_name"] = title_name
         notice_item["pub_time"] = pub_time
-        notice_item["info_source"] = '-'.join([area, self.basic_area]) if area else self.basic_area
+        notice_item["info_source"] = self.basic_area
         notice_item["is_have_file"] = constans.TYPE_HAVE_FILE if files_path else constans.TYPE_NOT_HAVE_FILE
         notice_item["files_path"] = files_path
         notice_item["notice_type"] = notice_types[0] if notice_types else constans.TYPE_UNKNOWN_NOTICE
@@ -203,6 +193,6 @@ class Province148ZhongguotySpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_148_zhongguoty_spider -a sdt=2021-09-01 -a edt=2021-10-22".split(" "))
-    # cmdline.execute("scrapy crawl province_148_zhongguoty_spider".split(" "))
+    cmdline.execute("scrapy crawl province_156_yijiaozx_spider -a sdt=2021-09-01 -a edt=2021-10-28".split(" "))
+    # cmdline.execute("scrapy crawl province_156_yijiaozx_spider".split(" "))
 

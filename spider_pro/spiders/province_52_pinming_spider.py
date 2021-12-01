@@ -6,6 +6,7 @@ import re
 import requests
 from lxml import etree
 from datetime import datetime
+from collections import OrderedDict
 
 from spider_pro import items, constans, utils
 
@@ -17,12 +18,12 @@ class Province52PinmingSpiderSpider(scrapy.Spider):
     query_url = 'http://www.hibidding.com'
     area_id = 52
     basic_area = '浙江-嘉兴市-嗨招电子招标采购平台'
-    keywords_map = {
+    keywords_map = OrderedDict({
         '变更': '招标变更',
         '废标|流标': '招标异常',
         '候选人': '中标预告',
         '中标': '中标公告',
-    }
+    })
     url_map = {
         '招标公告': {
             'url': [

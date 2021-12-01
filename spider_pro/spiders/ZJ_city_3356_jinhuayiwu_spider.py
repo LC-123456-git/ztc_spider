@@ -8,6 +8,7 @@ import requests
 from lxml import etree
 import random
 from datetime import datetime
+from collections import OrderedDict
 
 import scrapy
 
@@ -22,13 +23,13 @@ class ZjCity3356JinhuayiwuSpiderSpider(scrapy.Spider):
 
     basic_area = '浙江省金华义乌市公共资源交易中心'
     area_id = 3356
-    keywords_map = {
+    keywords_map = OrderedDict({
         '采购意向|需求公示': '招标预告',
         '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
-    }
+    })
     url_map = {
         '招标预告': [
             {'category': '工程招投标', 'url': 'http://ggfw.ywjypt.yw.gov.cn/jyxx/070001/070001016/list3gc.html'},  # 招标文件公示

@@ -13,8 +13,8 @@ import requests
 import random
 import json
 import math
-from lxml import etree
 from datetime import datetime
+from collections import OrderedDict
 
 from spider_pro import items, constans, utils
 
@@ -28,12 +28,12 @@ class Province3101ShanghaigovSpiderSpider(scrapy.Spider):
     # basic_area = '上海市{district_name}-上海政府采购网'
     base_url = 'http://www.ccgp-shanghai.gov.cn'
     query_url = 'http://www.ccgp-shanghai.gov.cn/front/search/category'
-    notice_keywords_map = {
+    notice_keywords_map = OrderedDict({
         '采购意向': '招标预告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
-    }
+    })
     formdata_map = {
         "招标预告": [
             {"categoryCode": "ZcyAnnouncement10016", "pageSize": "15", "pageNo": "1"},

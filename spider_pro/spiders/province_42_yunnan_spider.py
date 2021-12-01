@@ -4,6 +4,7 @@
 from lxml import etree
 import scrapy
 import re
+from collections import OrderedDict
 
 from spider_pro import items, constans, utils
 
@@ -13,11 +14,11 @@ class Province42YunnanSpiderSpider(scrapy.Spider):
     allowed_domains = ['ggzy.yn.gov.cn']
     start_urls = ['http://ggzy.yn.gov.cn/']
     query_url = 'http://ggzy.yn.gov.cn'
-    keywords_map = {
+    keywords_map = OrderedDict({
         '终止|中止|流标|废标|异常': '招标变更',
         '资格预审': '资格预审结果公告',
         '候选人': '中标预告',
-    }
+    })
     url_map = {
         '招标公告': {
             'url': [

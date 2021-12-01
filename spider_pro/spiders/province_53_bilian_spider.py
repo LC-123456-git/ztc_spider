@@ -4,6 +4,7 @@
 import scrapy
 import copy
 import re
+from collections import OrderedDict
 
 from spider_pro import items, constans, utils
 
@@ -16,13 +17,13 @@ class Province53BilianSpiderSpider(scrapy.Spider):
     query_url = 'https://ss.ebnew.com/tradingSearch/index.html'
     base_url = 'https://ss.ebnew.com'
     basic_area = '必联网'
-    keywords_map = {
+    keywords_map = OrderedDict({
         '意向|需求': '招标预告',
         '变更|澄清|更正|补充': '招标变更',
         '废标|流标': '招标异常',
         '评标结果': '中标预告',
         '中标|结果': '中标公告',
-    }
+    })
     url_map = {
         '招标预告': {
             'info_class_code': ['zbyg'],

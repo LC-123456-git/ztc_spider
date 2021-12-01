@@ -9,6 +9,7 @@ import random
 import requests
 from lxml import etree
 from datetime import datetime
+from collections import OrderedDict
 
 from spider_pro import utils, constans, items
 
@@ -21,13 +22,13 @@ class ZjCity3328ChangshanSpiderSpider(scrapy.Spider):
     basic_area = '浙江省-衢州市-常山县-常山县公共交易资源网'
     query_url = 'http://qzcs.zjzwfw.gov.cn/module/jpage/dataproxy.jsp?startrecord={startrecord}&perpage=15'
     base_url = 'http://qzcs.zjzwfw.gov.cn'
-    keywords_map = {
+    keywords_map = OrderedDict({
         '中标|成交|结果': '中标公告',
         '意向': '招标预告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '评标结果': '中标预告',
-    }
+    })
     url_map = {
         '建设工程': {
             'url': 'http://qzcs.zjzwfw.gov.cn/col/col1341070/index.html',

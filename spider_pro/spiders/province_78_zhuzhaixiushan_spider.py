@@ -13,6 +13,7 @@ import random
 from urllib import parse
 from datetime import datetime
 from lxml import etree
+from collections import OrderedDict
 
 from spider_pro import utils, items, constans
 
@@ -24,12 +25,12 @@ class Province78ZhuzhaixiushanSpiderSpider(scrapy.Spider):
     basic_area = '上海市-住宅修缮工程招投标'
     area_id = 78
     query_url = 'http://xsjypt.fgj.sh.gov.cn'
-    keywords_map = {
+    keywords_map = OrderedDict({
         '资格审核': '资格预审结果公告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
-    }
+    })
     url_map = {
         '招标公告': {
             'category_tag': 'ZBGG',
