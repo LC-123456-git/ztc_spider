@@ -174,10 +174,7 @@ class Province132NingXinSpider(CrawlSpider):
                     for info_key, info_url_value in data_info.items():
                         for key in json.loads(info_key):
                             count += 1
-                            try:
-                                pub_time = key['publish_time']
-                            except:
-                                pub_time = key['publishTime']
+                            pub_time = key.get('createTime', '') or key.get('publishTime', '') or key.get('publish_time', '')
                             info_url = self.query_url + key['url']
                             title_name = key['title']
                             pub_time = get_accurate_pub_time(pub_time)
