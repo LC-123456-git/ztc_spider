@@ -17,6 +17,7 @@ class Province42YunnanSpiderSpider(scrapy.Spider):
     keywords_map = OrderedDict({
         '终止|中止|流标|废标|异常': '招标变更',
         '资格预审': '资格预审结果公告',
+        '结果公告|成交公告|中标公告': '中标公告',
         '候选人': '中标预告',
     })
     url_map = {

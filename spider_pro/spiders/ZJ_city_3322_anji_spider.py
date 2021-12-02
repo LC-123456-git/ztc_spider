@@ -67,14 +67,14 @@ class ZjCity3322AnjiSpiderSpider(scrapy.Spider):
             {'category': '小额交易', 'url': 'http://ggzy.anji.gov.cn/jyxx/003007/003007003/'},
         ]
     }
-    custom_settings = {
-        'DOWNLOADER_MIDDLEWARES': {
-            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
-            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
-        },
-        "ENABLE_PROXY_USE": False,
-    }
+    # custom_settings = {
+    #     'DOWNLOADER_MIDDLEWARES': {
+    #         'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+    #         'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+    #         'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+    #     },
+    #     "ENABLE_PROXY_USE": False,
+    # }
 
     def __init__(self, *args, **kwargs):
         super().__init__()

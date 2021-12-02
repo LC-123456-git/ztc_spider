@@ -364,8 +364,6 @@ class CleanPipeline(object):
         tenderee = self.get_keys_value_from_content(
             content, tenderee_tags, area_id=area_id, field_name='tenderee', **regular_params
         )  # √
-        if len(tenderee) < 2:
-            tenderee = ''
 
         liaison_tags = get_keywords(kw_cf, 'liaison')
 
@@ -537,10 +535,10 @@ class CleanPipeline(object):
                 # f"-- SELECT * FROM {table_name} WHERE project_type in (5,6) AND classify_name in ('招标公告') and id>=230 and id<=500",
                 # f"SELECT * FROM {table_name} WHERE project_type in (5,6) AND classify_name in ('招标公告', '中标公告')",
                 # f"SELECT * FROM {table_name} WHERE classify_name in ('招标公告') limit 0, 600",
-                # f"SELECT * FROM {table_name} WHERE project_type in (5,6) AND classify_name in ('招标公告') limit 0, 500",
-                f"SELECT * FROM {table_name} WHERE project_type in (5,6) AND classify_name in ('中标公告')  limit 0, 500",
+                f"SELECT * FROM {table_name} WHERE project_type in (5,6) AND classify_name in ('招标公告') limit 0, 500",
+                # f"SELECT * FROM {table_name} WHERE project_type in (5,6) AND classify_name in ('中标公告')  limit 0, 500",
                 # f"SELECT * FROM {table_name} WHERE classify_name in ('中标公告') limit 0, 600",
-                # f"SELECT * FROM {table_name} WHERE id in (1153)",
+                # f"SELECT * FROM {table_name} WHERE id in (42)",
             ).fetchall()
         results = [dict(zip(result.keys(), result)) for result in results]
         pool = ThreadPoolExecutor(max_workers=6)
@@ -621,7 +619,7 @@ if __name__ == "__main__":
     # cp.run_clean(table_name="notices_00", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
 
     cp.run_clean(
-        table_name="notices_131",
+        table_name="notices_133",
         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'
     )
 

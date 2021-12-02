@@ -561,6 +561,8 @@ class KeywordsExtract(object):
             self._value = KeywordsExtract.strQ2B(_value)
         if self.field_name in ['tenderee', 'bidding_agency', 'successful_bidder']:
             self._value = KeywordsExtract.remove_chars_by_regs(self.company_regulars, self._value)
+            if len(''.join(self._value.split(' '))) <= 3:
+                self._value = ''
         if self.field_name in ['bid_amount', 'budget_amount']:
             if self.is_isolated_unit():
                 self._value = ''

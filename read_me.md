@@ -725,3 +725,17 @@ docker run -p 4300:8050 --name ztx_splash -d scrapinghub/splash
   ```
 
 > 调用方式: yield SplashRequest(url=href, callback=self.parse_detail, args={'wait': '0.5'})
+
+
+#### 关键字过滤条件
+```
+采集的规则做一些调整：
+关键词筛选优先级
+【预审关键词（新增：预审）】
+大于【变更关键词】
+大于【异常关键词】
+大于【预告关键词】
+大于【中标关键词（新增：中标公告、结果公告、成交公告）】
+大于【招标关键词】
+大于【其他关键词】
+```
