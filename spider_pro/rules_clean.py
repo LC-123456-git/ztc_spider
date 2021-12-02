@@ -54,25 +54,26 @@ class KeywordsExtract(object):
         # - yaml文件配置
         self.br_cf = kwargs.get('br_cf', '')
         self.cr_cf = kwargs.get('cr_cf', '')
-        self.rm_cf = kwargs.get('rm_cf', '')
+        self.pb_cf = kwargs.get('pb_cf', '')
         self.before_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.br_cf, field_name)]
         self.common_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.cr_cf, field_name)]
-        self.liaison_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'LIAISON')]
-        self.symbols_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'SYMBOLS')]
-        self.head_tail_symbols_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'HEAD_TAIL_SYMBOLS')]
-        self.company_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'COMAPNY')]
-        self.amount_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'AMOUNT')]
-        self.project_name_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'PROJECT_NAME')]
-        self.contact_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'CONTACT')]
-        self.liaison_union_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'LIAISON_UNION')]
-        self.contact_union_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.rm_cf, 'CONTACT_UNION')]
-        self.isolated_unit = utils.get_keywords(self.rm_cf, 'ISOLATED_UNIT')
-        self.project_priority = utils.get_keywords(self.rm_cf, 'PROJECT_PRIORITY')
-        self.last_part = utils.get_keywords(self.rm_cf, 'LAST_PART')
-        self.project_number_from_title = utils.get_keywords(self.rm_cf, 'PROJECT_NUMBER_FROM_TITLE')
-        self.project_priority_cg = utils.get_keywords(self.rm_cf, 'PROJECT_PRIORITY_CG')
-        self.project_number = utils.get_keywords(self.rm_cf, 'PROJECT_NUMBER')
-        self.wrapped_project_name = utils.get_keywords(self.rm_cf, 'WRAPPED_PROJECT_NAME_REG')
+        self.liaison_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.pb_cf, 'LIAISON')]
+        self.symbols_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.pb_cf, 'SYMBOLS')]
+        self.head_tail_symbols_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.pb_cf, 'HEAD_TAIL_SYMBOLS')]
+        self.company_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.pb_cf, 'COMAPNY')]
+        self.amount_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.pb_cf, 'AMOUNT')]
+        self.project_name_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.pb_cf, 'PROJECT_NAME')]
+        self.contact_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.pb_cf, 'CONTACT')]
+        self.liaison_union_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.pb_cf, 'LIAISON_UNION')]
+        self.contact_union_regulars = [r'{}'.format(r) for r in utils.get_keywords(self.pb_cf, 'CONTACT_UNION')]
+        self.isolated_unit = utils.get_keywords(self.pb_cf, 'ISOLATED_UNIT')
+        self.project_priority = utils.get_keywords(self.pb_cf, 'PROJECT_PRIORITY')
+        self.last_part = utils.get_keywords(self.pb_cf, 'LAST_PART')
+        self.project_number_from_title = utils.get_keywords(self.pb_cf, 'PROJECT_NUMBER_FROM_TITLE')
+        self.project_priority_cg = utils.get_keywords(self.pb_cf, 'PROJECT_PRIORITY_CG')
+        self.project_number = utils.get_keywords(self.pb_cf, 'PROJECT_NUMBER')
+        self.wrapped_project_name = utils.get_keywords(self.pb_cf, 'WRAPPED_PROJECT_NAME_REG')
+        self.vertical_key = utils.get_keywords(self.pb_cf, 'VERTICAL_KEYS')
 
         self.content = content.replace('\xa0', ' ').replace('\n', '')
         self.keys = keys if isinstance(keys, list) else [keys]
@@ -80,88 +81,6 @@ class KeywordsExtract(object):
         self.field_name = field_name
         self.title = title
         self.msg = ''
-        self.keysss = [
-            '成交单位',
-            '成交价格',
-            '成交供应商地址',
-            '项目编号',
-            '项目负责人',
-            '承包价',
-            '包号',
-            '招标项目',
-            '建设单位',
-            '审查地点',
-            '招标估算价',
-            '项目经理（负责人）',
-            '建设单位联系人',
-            '项目经理',
-            '招标代理：',
-            '1.项目名称：',
-            '中标价格',
-            '招标工程项目',
-            '代建单位联系人',
-            '竞包报价（元）',
-            '中标价（元/年）',
-            '采购人',
-            '中标供应商',
-            '项目联系电话',
-            '中标金额',
-            '包名',
-            '中标价（元）',
-            '开启地点',
-            '承包人',
-            '标段（包）编号',
-            '招标代理:',
-            '承包金额（元）',
-            '中标金额(万元)',
-            '项目金额',
-            '中标供应商地址',
-            '中标供应商名称',
-            '招标编号',
-            '开启时间',
-            '备注',
-            '预算金额（元）',
-            '工程名称',
-            '承包单位',
-            '招标人',
-            '招标代理机构',
-            '入围单位',
-            '标段编号',
-            '审查时间',
-            '代理机构',
-            '中选单位',
-            '承包价（元）',
-            '中标价：',
-            '采购项目编号',
-            '采购单位联系人',
-            '成交供应商',
-            '供应商名称',
-            '中标单位',
-            '采购方式',
-            '中标单位：',
-            '项目名称',
-            '招标单位',
-            '代理机构名称',
-            '退付类型',
-            '2.采购文件编号：',
-            '中标（成交）金额(元)',
-            '项目联系人',
-            '中标价（%）',
-            '中标价',
-            '联系人',
-            '代理机构地址',
-            '中标（成交）金额（元）',
-            '发布时间',
-            '2招标编号',
-            '采购项目名称',
-            '采购需求',
-            '项目负责人：',
-            '联系方式',
-            '中标造价（元）',
-            '中标造价',
-            '1工程名称',
-            '招标项目编号',
-        ]
         # 各字段对应的规则
         self.fields_regular = {
             'project_name': [
@@ -215,7 +134,7 @@ class KeywordsExtract(object):
         # 在提取project_name时，指定位置(指定方法前)调用:self.get_val_from_title
         self.before_map = {
             '_extract_from_table': [],
-            'clean_value': ['120', '123', '124', '131', '126', '128', '132'],
+            'clean_value': ['120', '123', '124', '131', '126', '128', '132', '133'],
         }
 
     def reset_regular_by_field(self):
@@ -325,7 +244,7 @@ class KeywordsExtract(object):
                     t_data_key = ''.join(t_data_key.split())
                 except (Exception,):
                     t_data_key = ''
-                if t_data_key in self.keysss:
+                if t_data_key in self.vertical_key:
                     count += 1
         return True if count >= 2 else False
 
@@ -709,7 +628,7 @@ class KeywordsExtract(object):
                     if pro_ns:
                         self._value = pro_ns[0]
                         break
-            self._value = KeywordsExtract.remove_chars_by_regs(self.project_number_regulars, self._value)
+            self._value = KeywordsExtract.remove_chars_by_regs(self.project_number, self._value)
         if self.field_name in ['agent_contact', 'bidding_contact', 'project_leader']:
             # 符合正则列表的内容剔除
             self._value = KeywordsExtract.remove_chars_by_regs(self.liaison_regulars, self._value)
@@ -886,11 +805,11 @@ if __name__ == '__main__':
     br_cf = utils.init_yaml('before_regular', area_id)
     cr_cf = utils.init_yaml('common_regular', area_id)
     kw_cf = utils.init_yaml('keyword', area_id)
-    rm_cf = utils.init_yaml('public_regular', area_id, file_name='remove_chars')
+    pb_cf = utils.init_yaml('extra_regular', area_id, file_name='remove_chars')
     regular_params = {
         'br_cf': br_cf,
         'cr_cf': cr_cf,
-        'rm_cf': rm_cf,
+        'pb_cf': pb_cf,
     }
     ke = KeywordsExtract(
         content, kw_cf['project_name'], field_name='project_name', area_id=area_id, title='[查看招标公告]:泰顺县中医院门诊预检导引系统招标公告',

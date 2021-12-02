@@ -520,17 +520,17 @@ class CleanPipeline(object):
         br_cf = init_yaml('before_regular', area_id=area_id)
         cr_cf = init_yaml('common_regular', area_id=area_id)
         kw_cf = init_yaml('keyword', area_id=area_id)
-        rm_cf = init_yaml('public_regular', file_name='remove_chars')
+        pb_cf = init_yaml('extra_regular', file_name='public')
         regular_params = {
             'br_cf': br_cf,
             'cr_cf': cr_cf,
-            'rm_cf': rm_cf,
+            'pb_cf': pb_cf,
             'kw_cf': kw_cf
         }
         return regular_params
 
     def run_clean(self, table_name, engine_config, is_clean_default=1):
-        self.engine = create_engine(engine_config, pool_size=20, pool_timeout=5)
+        self.engine = create_engine(engine_config, pool_size=5, pool_timeout=5)
         with self.engine.connect() as conn:
             results = conn.execute(
                 # f"SELECT * FROM {table_name} WHERE classify_name in ('招标公告')  and id>=900 and id<=2000",
@@ -540,10 +540,10 @@ class CleanPipeline(object):
                 # f"SELECT * FROM {table_name} WHERE project_type in (5,6) AND classify_name in ('招标公告') limit 0, 500",
                 f"SELECT * FROM {table_name} WHERE project_type in (5,6) AND classify_name in ('中标公告')  limit 0, 500",
                 # f"SELECT * FROM {table_name} WHERE classify_name in ('中标公告') limit 0, 600",
-                # f"SELECT * FROM {table_name} WHERE id in (127)",
+                # f"SELECT * FROM {table_name} WHERE id in (928)",
             ).fetchall()
         results = [dict(zip(result.keys(), result)) for result in results]
-        pool = ThreadPoolExecutor(max_workers=5)
+        pool = ThreadPoolExecutor(max_workers=6)
         
         area_id = table_name.split("_")[-1]
 
@@ -621,7 +621,7 @@ if __name__ == "__main__":
     # cp.run_clean(table_name="notices_00", engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/data_collection?charset=utf8mb4')
 
     cp.run_clean(
-        table_name="notices_131",
+        table_name="notices_133",
         engine_config='mysql+pymysql://root:Ly3sa%@D0$pJt0y6@114.67.84.76:8050/test2_data_collection?charset=utf8mb4'
     )
 
