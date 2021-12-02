@@ -33,9 +33,9 @@ async def main():
         "userDataDir": "",  # 当界面开多了时会卡住，设置这个参数就不会了
     })
     page = await browser.newPage()
-    await page.evaluate(
-        '() =>{ Object.defineProperties(navigator,{ webdriver:{ get: () => false } }) }'
-    )
+    # await page.evaluate(
+    #     '() =>{ Object.defineProperties(navigator,{ webdriver:{ get: () => false } }) }'
+    # )
     # await page.evaluate(
     #     '() =>{ window.navigator.chrome = { runtime: {}, }; }'
     # )
@@ -45,106 +45,106 @@ async def main():
     # await page.evaluate(
     #     "() =>{ Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5,6], }); }"
     # )
-    tk = tkinter.Tk()
-    width = tk.winfo_screenwidth()
-    height = tk.winfo_screenheight()
-    tk.quit()
-    await page.goto(url='https://www.tianyancha.com/')
-    await page.setViewport(viewport={'width': width, 'height': height})
+    # tk = tkinter.Tk()
+    # width = tk.winfo_screenwidth()
+    # height = tk.winfo_screenheight()
+    # tk.quit()
+    await page.goto(url='http://www.ccgp-gansu.gov.cn')
+    # await page.setViewport(viewport={'width': width, 'height': height})
 
-    await asyncio.sleep(2)
+    # await asyncio.sleep(2)
 
-    # SELECT CLICK
-    right_login = await page.xpath('//a[@onclick="header.loginLink(event)"]')
-    await right_login[0].click()
+    # # SELECT CLICK
+    # right_login = await page.xpath('//a[@onclick="header.loginLink(event)"]')
+    # await right_login[0].click()
 
-    await asyncio.sleep(1)
+    # await asyncio.sleep(1)
 
-    # SELECT LOGIN
-    tab_login = await page.xpath('//div[@active-tab="1"]')
-    await tab_login[0].click()
+    # # SELECT LOGIN
+    # tab_login = await page.xpath('//div[@active-tab="1"]')
+    # await tab_login[0].click()
 
-    await asyncio.sleep(1)
+    # await asyncio.sleep(1)
 
-    # INPUT CREDIT
-    username = await page.xpath('//input[@name="phone"]')
-    await username[0].type('18868271201')
+    # # INPUT CREDIT
+    # username = await page.xpath('//input[@name="phone"]')
+    # await username[0].type('18868271201')
 
-    username = await page.xpath('//input[@name="password"]')
-    await username[0].type('laaimeng2011')
+    # username = await page.xpath('//input[@name="password"]')
+    # await username[0].type('laaimeng2011')
 
-    # SUBMIT
-    submit = await page.xpath(
-        '//div[@class="modal-dialog -login-box animated"]//div[@onclick="loginObj.loginByPhone(event);"]')
-    await submit[0].click()
+    # # SUBMIT
+    # submit = await page.xpath(
+    #     '//div[@class="modal-dialog -login-box animated"]//div[@onclick="loginObj.loginByPhone(event);"]')
+    # await submit[0].click()
 
-    await asyncio.sleep(1)
+    # await asyncio.sleep(1)
 
-    # SHOW FULL PIC
-    full_pic = await page.waitForXPath('//a[@class="gt_fullbg gt_show"]')
-    full_pic_box = await full_pic.boundingBox()
-    await full_pic.screenshot({
-        'path': CHAPTCHA_PIC_1,
-        'clip': {
-            'x': full_pic_box['x'],
-            'y': full_pic_box['y'],
-            'width': full_pic_box['width'],
-            'height': full_pic_box['height'] - 20,
-        }
-    })
+    # # SHOW FULL PIC
+    # full_pic = await page.waitForXPath('//a[@class="gt_fullbg gt_show"]')
+    # full_pic_box = await full_pic.boundingBox()
+    # await full_pic.screenshot({
+    #     'path': CHAPTCHA_PIC_1,
+    #     'clip': {
+    #         'x': full_pic_box['x'],
+    #         'y': full_pic_box['y'],
+    #         'width': full_pic_box['width'],
+    #         'height': full_pic_box['height'] - 20,
+    #     }
+    # })
 
-    # SHOW MISSING BLOCK
-    missing_block = await page.xpath('//div[@class="gt_slider_knob gt_show"]')
-    await missing_block[0].click()
+    # # SHOW MISSING BLOCK
+    # missing_block = await page.xpath('//div[@class="gt_slider_knob gt_show"]')
+    # await missing_block[0].click()
 
-    missing_block_pic = await page.waitForXPath('//div[@class="gt_cut_fullbg gt_show"]')
-    missing_block_pic_box = await missing_block_pic.boundingBox()
+    # missing_block_pic = await page.waitForXPath('//div[@class="gt_cut_fullbg gt_show"]')
+    # missing_block_pic_box = await missing_block_pic.boundingBox()
 
-    await missing_block_pic.screenshot({
-        'path': CHAPTCHA_PIC_2,
-        'clip': {
-            'x': missing_block_pic_box['x'],
-            'y': missing_block_pic_box['y'],
-            'width': missing_block_pic_box['width'],
-            'height': missing_block_pic_box['height'] - 20,
-        }
-    })
+    # await missing_block_pic.screenshot({
+    #     'path': CHAPTCHA_PIC_2,
+    #     'clip': {
+    #         'x': missing_block_pic_box['x'],
+    #         'y': missing_block_pic_box['y'],
+    #         'width': missing_block_pic_box['width'],
+    #         'height': missing_block_pic_box['height'] - 20,
+    #     }
+    # })
 
-    await asyncio.sleep(2)
-    # GET DISTANCE
-    image1 = Image.open(CHAPTCHA_PIC_1)
-    image2 = Image.open(CHAPTCHA_PIC_2)
+    # await asyncio.sleep(2)
+    # # GET DISTANCE
+    # image1 = Image.open(CHAPTCHA_PIC_1)
+    # image2 = Image.open(CHAPTCHA_PIC_2)
 
-    distance = get_gap(image2, image1)
-    # distance += 15
-    print(distance)
-    # GET TRACK
-    track = get_track(distance)
-    # MOVE TO GAP
-    t = random.uniform(0, 0.5)
+    # distance = get_gap(image2, image1)
+    # # distance += 15
+    # print(distance)
+    # # GET TRACK
+    # track = get_track(distance)
+    # # MOVE TO GAP
+    # t = random.uniform(0, 0.5)
 
-    slider = await page.waitForXPath('//div[@class="gt_slider_knob gt_show"]')
-    slider_info = await slider.boundingBox()
-    mouse = page.mouse
+    # slider = await page.waitForXPath('//div[@class="gt_slider_knob gt_show"]')
+    # slider_info = await slider.boundingBox()
+    # mouse = page.mouse
 
-    await mouse.down()
-    c_x, c_y = slider_info['x'], slider_info['y']
-    for x in track:
-        if x:
-            await asyncio.sleep(random.uniform(0, 0.2))
-            c_x += x
-            await mouse.move(c_x, c_y)
+    # await mouse.down()
+    # c_x, c_y = slider_info['x'], slider_info['y']
+    # for x in track:
+    #     if x:
+    #         await asyncio.sleep(random.uniform(0, 0.2))
+    #         c_x += x
+    #         await mouse.move(c_x, c_y)
 
-    await asyncio.sleep(t)
+    # await asyncio.sleep(t)
 
-    await page.mouse.up()
-    await asyncio.sleep(2)
-    await page.screenshot({
-        'path': TYC_PIC,
-    })
+    # await page.mouse.up()
+    # await asyncio.sleep(2)
+    # await page.screenshot({
+    #     'path': TYC_PIC,
+    # })
 
-    await asyncio.sleep(10)
-    # await browser.close()
+    await asyncio.sleep(20)
+    await browser.close()
 
 
 def get_gap(image1, image2):

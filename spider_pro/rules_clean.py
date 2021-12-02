@@ -6,7 +6,6 @@ import cn2an
 import pandas
 import copy
 
-from idna import unichr
 from lxml import etree
 from decimal import Decimal
 from html_table_extractor.extractor import Extractor
@@ -77,7 +76,7 @@ class KeywordsExtract(object):
         self.wrapped_project_name = utils.get_keywords(self.pb_cf, 'WRAPPED_PROJECT_NAME_REG')
         self.vertical_key = utils.get_keywords(self.pb_cf, 'VERTICAL_KEYS')
 
-        self.content = content.replace('\xa0', ' ').replace('\n', '')
+        self.content = content.replace('\xa0', ' ').replace('\n', '').replace('\u3000', ' ')
         self.keys = keys if isinstance(keys, list) else [keys]
         self.area_id = area_id
         self.field_name = field_name
@@ -160,7 +159,7 @@ class KeywordsExtract(object):
             elif (inside_code >= 65281 and inside_code <= 65374):  # 全角字符（除空格）根据关系转化
                 inside_code -= 65248
 
-            rstring += unichr(inside_code)
+            rstring += chr(inside_code)
         return rstring
 
     def reload_multi_number(self, key):
@@ -227,19 +226,8 @@ class KeywordsExtract(object):
                 except (Exception,) as e:
                     self.msg = 'error:{0}'.format(e)
 
-                if self._value and KeywordsExtract.u3000_check(self._value):
+                if self._value:
                     break
-
-    @staticmethod
-    def u3000_check(value):
-        """
-        去除\u3000后仍然存在值的为True，即：避免值为\u3000的出现
-        """
-        status = False
-        value = value.replace('\u3000', '')
-        if value:
-            status = True
-        return status
 
     @property
     def value(self):
