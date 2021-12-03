@@ -29,9 +29,9 @@ class Province132NingXinSpider(CrawlSpider):
     }
 
     # 招标预告
-    list_tender_notice_name = ['采购意向']
+    list_tender_notice_name = ['采购意向', '单一来源']
     # 招标公告
-    list_notice_category_name = ['竞价公告', '公开招标', '邀请招标', '询价', '竞争性谈判', '竞争性磋商', '单一来源']
+    list_notice_category_name = ['竞价公告', '公开招标', '邀请招标', '询价', '竞争性谈判', '竞争性磋商']
     # 招标变更
     list_zb_abnormal_name = ["更正公告"]
     # 中标预告
@@ -46,12 +46,13 @@ class Province132NingXinSpider(CrawlSpider):
     list_qita_num = ['合同公告']
 
     keywords_map = OrderedDict({
-        '采购意向|需求公示': '招标预告',
-        '中标公告|结果公告': '中标公告',
-        '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
+        '预审': '资格预审结果公告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
+        '采购意向|需求公示': '招标预告',
         '候选人': '中标预告',
+        '中标公告|结果公告|成交公告': '中标公告',
+        '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
     })
     r_dict = {'type': 'bid',
               'page': '0',

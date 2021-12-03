@@ -17,6 +17,7 @@ import html
 import uuid
 from Crypto.Cipher import AES
 from dateutil.relativedelta import relativedelta
+from idna import unichr
 from lxml import etree
 from functools import wraps
 import xmltodict
@@ -1506,66 +1507,6 @@ def get_random_name(num=8, simple=False):
 def get_iframe_pdf_div_code(url):
     return f'''<div style="width: 100%; height: 300px;" id="pdf-div"><iframe id="displayPdfIframe" width="100%" height="100%" src="{url}"></iframe></div>'''
 
-
-def match_key_words(content, regular_plans):
-    """
-    根据正则规则库循环匹配关键词
-    Returns:
-    """
-    c_regular = ''
-    for rg in range(1, len(regular_plans) + 1):
-        status, data = regular_match(content, rg)
-        if status:
-            tenderee = data.get('tenderee', '')
-            liaison = data.get('liaison', '')
-            address = data.get('address', '')
-            contact_information = data.get('contact_information', '')
-            c_regular = rg  # 匹配规则
-
-            return tenderee, liaison, address, contact_information
-
-
-def match_key_re(content, regular_plan, keys):
-    for rg in range(1, len(regular_plan) + 1):
-        status, data = regular_match(keys, content, rg)
-        if status:
-            keys = data.get('keys', '')
-        return keys
-
-
-def regular_match(keys, content, plan=0):
-    """
-    正则匹配字段内容
-    Args:
-        plan: 方案
-        content:
-    Returns:
-
-    """
-    status = False  # True表示获取成功 False表示获取失败
-    data = {}
-    doc = etree.HTML(content)
-    p_els = doc.xpath('//div[@class="content-right"]//p/*') or doc.xpath('//div[@class="content-right"]//td/*')
-    info_list = []
-    for data_info in p_els:
-        info = ''.join(data_info.xpath('.//text()'))
-        info_list.append(info)
-
-    text = ','.join(info_list).replace('\n', '').replace('\r\n', '')
-
-    pl_reg = rules_clean111.regular_plans.get(plan, '')
-    if pl_reg:
-        pl_com = re.compile(pl_reg)
-        ret = [m.groupdict() for m in re.finditer(pl_com, text)]
-        if ret:
-            ret = ret[-1]
-            data['keys'] = ret.get('keys', '')
-            # data['tenderee'] = ret.get('tenderee', '')
-            # data['address'] = ''.join(ret.get('address', '')).strip()
-            # data['contact_information'] = ''.join(ret.get('contact_information')).replace(',', '')
-            # data['liaison'] = ret.get('liaison', '')
-            status = True
-    return status, data
 
 
 def get_url(strst_url, cid, num):
