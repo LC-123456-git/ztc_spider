@@ -38,34 +38,26 @@ class Province134XinjiangSpiderSpider(scrapy.Spider):
     })
     notice_map = {
         '招标预告': [
-            {
-                'sub_notice': '采购意向', 'category_code': 'ZcyAnnouncement11',
-                'referer': 'http://www.ccgp-xinjiang.gov.cn/ZcyAnnouncement/ZcyAnnouncement11/index.html?utm=sites_group_front.2ef5001f.0.0.cadaf7502f3611ec8fb19deb0474350c'
-                # acw_tc=76b20fea16344675838274938e7643365eea58d1fce534a9374d62c6e6422d; _zcy_log_client_uuid=7988d4c0-2f37-11ec-a102-652a9c1331cc;
-                # SLG_GWPT_Show_Hide_tmp=1; SLG_wptGlobTipTmp=1
-            },
-            {
-                'sub_notice': '采购文件需求公示', 'category_code': 'ZcyAnnouncement3014',
-
-            },
+            {'sub_notice': '采购意向', 'category_code': 'ZcyAnnouncement11'},
+            {'sub_notice': '采购文件需求公示', 'category_code': 'ZcyAnnouncement3014'},
         ],
-        # '招标公告': [
-        #     {'sub_notice': '采购项目公告', 'category_code': 'ZcyAnnouncement2'},
-        #     {'sub_notice': '非政府采购公告', 'category_code': 'ZcyAnnouncement9'},
-        # ],
-        # '招标变更': [
-        #     {'sub_notice': '澄清变更公告', 'category_code': 'ZcyAnnouncement3'},
-        # ],
-        # '招标异常': [
-        #     {'sub_notice': '废标公告', 'category_code': 'ZcyAnnouncement10'},
-        # ],
-        # '中标公告': [
-        #     {'sub_notice': '采购结果公告', 'category_code': 'ZcyAnnouncement4'},
-        # ],
-        # '其他公告': [
-        #     {'sub_notice': '采购合同公告', 'category_code': 'ZcyAnnouncement5'},
-        #     {'sub_notice': '电子卖场公告', 'category_code': 'ZcyAnnouncement8'},
-        # ],
+        '招标公告': [
+            {'sub_notice': '采购项目公告', 'category_code': 'ZcyAnnouncement2'},
+            {'sub_notice': '非政府采购公告', 'category_code': 'ZcyAnnouncement9'},
+        ],
+        '招标变更': [
+            {'sub_notice': '澄清变更公告', 'category_code': 'ZcyAnnouncement3'},
+        ],
+        '招标异常': [
+            {'sub_notice': '废标公告', 'category_code': 'ZcyAnnouncement10'},
+        ],
+        '中标公告': [
+            {'sub_notice': '采购结果公告', 'category_code': 'ZcyAnnouncement4'},
+        ],
+        '其他公告': [
+            {'sub_notice': '采购合同公告', 'category_code': 'ZcyAnnouncement5'},
+            {'sub_notice': '电子卖场公告', 'category_code': 'ZcyAnnouncement8'},
+        ],
     }
 
     def __init__(self, *args, **kwargs):

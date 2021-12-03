@@ -68,9 +68,9 @@ class ZjCity3314YuhangSpiderSpider(scrapy.Spider):
         '中标': '中标公告',
     })
 
-    custom_settings = {
-        "ENABLE_PROXY_USE": False,
-    }
+    # custom_settings = {
+    #     "ENABLE_PROXY_USE": False,
+    # }
 
     def __init__(self, *args, **kwargs):
         super().__init__()

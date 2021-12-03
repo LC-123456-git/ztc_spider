@@ -64,14 +64,14 @@ class ZjCity3326LongyouSpiderSpider(scrapy.Spider):
     }
     settings = get_project_settings()
 
-    custom_settings = {
-        'DOWNLOADER_MIDDLEWARES': {
-            'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
-            'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-            'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
-        },
-        "ENABLE_PROXY_USE": False,
-    }
+    # custom_settings = {
+    #     'DOWNLOADER_MIDDLEWARES': {
+    #         'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+    #         'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+    #         'spider_pro.middlewares.ProxyMiddleware.ProxyMiddleware': 100,
+    #     },
+    #     "ENABLE_PROXY_USE": False,
+    # }
 
     def __init__(self, *args, **kwargs):
         super().__init__()
