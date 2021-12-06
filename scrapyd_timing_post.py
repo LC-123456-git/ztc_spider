@@ -319,7 +319,8 @@ class ScrapyDataPost(object):
                                 'notices_78',
                             ]:
                                 keys = ["title", "content", "classifyName", "area", "publishTime", "sourceUrl"]
-                            elif table_name in ['notices_79', 'notices_82', 'notices_148', 'notices_149', 'notices_150','notices_151', 'notices_152']:
+                            elif table_name in ['notices_79', 'notices_82', 'notices_148', 'notices_149', 'notices_150','notices_151', 'notices_152',
+                                                'notices_156', 'notices_157']:
                                 keys = ['title', 'content', 'classifyName', 'publishTime', 'sourceUrl']
                             else:
                                 keys = ["title", "content", "projectType", "classifyName", "area", "publishTime",
@@ -661,6 +662,9 @@ if __name__ == "__main__":
 
         "notices_151",
         "notices_152",
+
+        "notices_156",
+        "notices_157",
     ])
     print('{0:%Y-%m-%d %H:%M:%S} post...'.format(datetime.datetime.now()))
     # 正式批量推今天之前的数据 解开注释需要当心！！！

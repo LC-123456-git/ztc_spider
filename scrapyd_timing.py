@@ -254,6 +254,9 @@ if __name__ == "__main__":
         "province_150_jizhaobiao_spider",
         "province_151_zhonggangzb_spider",
         "province_152_zhongmeiyg_spider",
+
+        "province_156_yijiaozx_spider",
+        "province_157_neimengguxuanyu_spider",
     ]
 
     # 优先判断运行状态

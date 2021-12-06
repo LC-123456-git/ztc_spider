@@ -17,7 +17,6 @@ import html
 import uuid
 from Crypto.Cipher import AES
 from dateutil.relativedelta import relativedelta
-from idna import unichr
 from lxml import etree
 from functools import wraps
 import xmltodict

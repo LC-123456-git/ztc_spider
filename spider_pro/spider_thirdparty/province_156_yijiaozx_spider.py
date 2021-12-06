@@ -62,6 +62,9 @@ class Province156YijiaozxSpiderSpider(scrapy.Spider):
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
     })
+    custom_settings = {
+        'ENABLE_PROXY_USE': False,
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -212,5 +215,5 @@ class Province156YijiaozxSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_156_yijiaozx_spider -a sdt=2021-09-01 -a edt=2021-10-28".split(" "))
-    # cmdline.execute("scrapy crawl province_156_yijiaozx_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_156_yijiaozx_spider -a sdt=2021-09-01 -a edt=2021-10-28".split(" "))
+    cmdline.execute("scrapy crawl province_156_yijiaozx_spider".split(" "))

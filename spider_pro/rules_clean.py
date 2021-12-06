@@ -135,7 +135,7 @@ class KeywordsExtract(object):
         # 在提取project_name时，指定位置(指定方法前)调用:self.get_val_from_title
         self.before_map = {
             '_extract_from_table': [],
-            'clean_value': ['120', '123', '124', '131', '126', '128', '132', '133'],
+            'clean_value': ['120', '123', '124', '131', '126', '128', '132', '133', '145'],
         }
 
     def reset_regular_by_field(self):
