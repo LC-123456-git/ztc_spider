@@ -32,9 +32,9 @@ class MySpider(CrawlSpider):
     area_province = "首开工程电子招标采购交易平台"
     # url_info_dict = {"searchDate": "2021-07-20", "dates": "90", "word": "", "categoryId": "91", "tabName": "废标公示"}
     notice_category_dict = {"dates": "300", "categoryId": "88", "tabName": "招标公告", "page": "1"}
-    zb_alteration_dict = {"dates": "300", "categoryId": "88", "tabName": "变更公告", "page": "1"}
-    win_advance_notice_dict = {"dates": "300", "categoryId": "88", "tabName": "中标公示", "page": "1"}
-    zb_abnormal_dict = {"dates": "300", "categoryId": "88", "tabName": "废标公示", "page": "1"}
+    zb_alteration_dict = {"dates": "300", "categoryId": "89", "tabName": "变更公告", "page": "1"}
+    win_advance_notice_dict = {"dates": "300", "categoryId": "90", "tabName": "中标公示", "page": "1"}
+    zb_abnormal_dict = {"dates": "300", "categoryId": "91", "tabName": "废标公示", "page": "1"}
     url_list = [notice_category_dict, zb_alteration_dict, win_advance_notice_dict, zb_abnormal_dict]
 
     def __init__(self, *args, **kwargs):
@@ -88,8 +88,6 @@ class MySpider(CrawlSpider):
     def parse_urls(self, response):
         try:
             res_url = response.url
-            a = quote(res_url,encoding="utf-8")
-            print(a)
             tabname = response.meta["tabname"]
             pages = response.xpath("//div[@class='pages']/label/text()").get()
             self.logger.info(f"本次获取共有{pages}页")
@@ -117,10 +115,11 @@ class MySpider(CrawlSpider):
     def parse_item(self, response):
         if response.status == 200:
             origin = response.url
-            print(origin)
+            # print(origin)
+            tabname = response.xpath("//div[@class='container']/a[2]/text()").get()
             title_name = response.meta["title_name"]
             pub_time = response.meta["pub_time"]
-            tabname = response.meta["tabname"]
+            # tabname = response.meta["tabname"]
             content_1 = response.xpath("//div[@id='main']/div[1]").get()
             content_2 = response.xpath("//div[@id='main']/div[2]").get()
             contents = content_1 + content_2
@@ -145,7 +144,7 @@ class MySpider(CrawlSpider):
                 notice_type = const.TYPE_ZB_ABNORMAL
             else:
                 notice_type = const.TYPE_OTHERS_NOTICE
-
+            print(notice_type, origin, title_name)
             if re.search(r"单一来源|询价|竞争性谈判|竞争性磋商", title_name):
                 notice_type = const.TYPE_ZB_NOTICE
             elif re.search(r"采购意向|需求公示", title_name):
@@ -156,6 +155,7 @@ class MySpider(CrawlSpider):
                 notice_type = const.TYPE_ZB_ABNORMAL
             elif re.search(r"变更|更正|澄清|修正|补充|延期|取消", title_name):
                 notice_type = const.TYPE_ZB_ALTERATION
+
 
 
 
