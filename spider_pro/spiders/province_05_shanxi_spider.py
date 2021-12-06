@@ -18,22 +18,22 @@ def process_request_category(origin):
     if "jyxxgc" in origin:
         classify_show = "工程建设"
         return classify_show
-    elif"jyxxzc" in origin:
+    elif "jyxxzc" in origin:
         classify_show = "政府采购"
         return classify_show
-    elif"jyxxtd" in origin:
+    elif "jyxxtd" in origin:
         classify_show = "土地使用权"
         return classify_show
-    elif"jyxxkc" in origin:
+    elif "jyxxkc" in origin:
         classify_show = "矿业权"
         return classify_show
-    elif"jyxxcq" in origin:
+    elif "jyxxcq" in origin:
         classify_show = "国有产权"
         return classify_show
-    elif"jyxxyx" in origin:
+    elif "jyxxyx" in origin:
         classify_show = "药械采购"
         return classify_show
-    elif"jyxxym" in origin:
+    elif "jyxxym" in origin:
         classify_show = "二类疫苗"
         return classify_show
 
@@ -108,7 +108,8 @@ class MySpider(CrawlSpider):
             "44",  # 其他
         ]:
             yield scrapy.FormRequest(
-                self.query_url, formdata=self.time_dict | {"channelId": item},priority=6, callback=self.parse_urls, meta={
+                self.query_url, formdata=self.time_dict | {"channelId": item}, priority=6, callback=self.parse_urls,
+                meta={
                     "channelId": item
                 })
 

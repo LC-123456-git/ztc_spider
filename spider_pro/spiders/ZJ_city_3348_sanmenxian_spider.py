@@ -39,9 +39,8 @@ class MySpider(Spider):
     # 其他公告
     list_others_notice_num = ['xmjbxx', 'htgg', 'lyqk', 'lygg']
 
-    # list_all_category_num = list_advance_notice_num + list_notice_category_num + list_alteration_category_num \
-    #                         + list_win_advance_notice_num + list_win_notice_category_num +list_others_notice_num
-    list_all_category_num = list_notice_category_num
+    list_all_category_num = list_advance_notice_num + list_notice_category_num + list_alteration_category_num \
+                            + list_win_advance_notice_num + list_win_notice_category_num +list_others_notice_num
 
     def __init__(self, *args, **kwargs):
         super(MySpider, self).__init__()

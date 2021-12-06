@@ -96,8 +96,6 @@ class MySpider(CrawlSpider):
                 info_source_str = info_item.xpath("//div[@class='Row-2']/span[3]/text()").get()
                 info_source = info_source_str.split("项目地区：")[1]
                 title_name = "".join(info_item.xpath("./div[@class='Row-1']/text()").extract()).strip()
-                # pub_time = "".join(info_item.xpath("//div[@class='Row-3']/text()").get()).strip()
-                # pub_time = get_accurate_pub_time(pub_time)
                 info_url = self.domain_url + info_url
                 yield scrapy.Request(url=info_url, callback=self.parse_item, dont_filter=True, priority=10,
                                      cookies=self.cookies_dict,
@@ -165,7 +163,7 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl province_83_wangcai_spider -a sdt=2021-06-11 -a edt=2021-06-16".split(" "))
+    cmdline.execute("scrapy crawl province_83_wangcai_spider -a sdt=2021-08-11 -a edt=2021-08-31".split(" "))
     # cmdline.execute("scrapy crawl province_83_wangcai_spider".split(" "))
 
 

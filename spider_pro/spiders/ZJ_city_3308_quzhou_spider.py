@@ -14,7 +14,7 @@ from lxml import etree
 from scrapy.spiders import Spider
 from spider_pro.items import NoticesItem, FileItem
 from spider_pro import constans as const
-from spider_pro.utils import get_accurate_pub_time, get_back_date, judge_dst_time_in_interval
+from spider_pro.utils import get_accurate_pub_time, file_notout_time, judge_dst_time_in_interval
 
 
 class MySpider(Spider):
@@ -108,6 +108,7 @@ class MySpider(Spider):
                         elif afficheType in ["002007"]:
                             self.classifyShow = "其他交易"
                         info_url = self.domain_url + infourl
+                        # info_url = "http://ggzy.qz.gov.cn/jyxx/002001/002001001/20211108/e75726ac-a635-40c4-8aed-85aceb27b89a.html"
                         yield scrapy.Request(url=info_url, callback=self.parse_item, cb_kwargs=self.cb_kwargs, dont_filter=True,
                                              meta={"cb_kwargs": self.cb_kwargs, "info_source": info_source,
                                                    "classifyShow": self.classifyShow, "pub_time": pub_time,
@@ -169,7 +170,7 @@ class MySpider(Spider):
                 elif afficheType in ["002007"]:
                     self.classifyShow = "其他交易"
                 info_url = self.domain_url + infourl
-                # info_url = "http://ggzy.qz.gov.cn/jyxx/002001/002001001/20171023/72a05665-7405-46bc-a8a2-289f88ceb225.html"
+                info_url = "http://ggzy.qz.gov.cn/jyxx/002001/002001001/20211108/e75726ac-a635-40c4-8aed-85aceb27b89a.html"
                 yield scrapy.Request(url=info_url,callback=self.parse_item, cb_kwargs=self.cb_kwargs, dont_filter=True,
                                      priority=10, meta={"cb_kwargs": self.cb_kwargs, "info_source": info_source,
                                            "classifyShow": self.classifyShow, "pub_time": pub_time,
@@ -212,36 +213,42 @@ class MySpider(Spider):
                 files_path = {}
                 is_clean = True
                 # 判断是pdf页面
-                if jpg_path := response.xpath('//div[@class="ewb-detail-content"]//img'):
-                    info_jpg_url = jpg_path.xpath('./@src').get()
-                    files_path["info_jpg"] = info_jpg_url
-                if response.xpath('//div[@class="file"]'):
-                    if a_list := response.xpath('//div[@class="file"]//a'):
-                        for item in a_list:
-                            if "http" in item.xpath("./@href").get():
-                                value = item.xpath('./@href').get()
-
-                            else:
-                                value = self.domain_url + item.xpath("./@href").get()
-                            key = item.xpath('./text()').get()
-                            files_path[key] = value
-                    else:
-                        content = re.sub("附件:", "", content)
-
-
-                file_text = response.xpath("//div[@class='ewb-detail-content']//p//span")
-                for itmes in file_text:
-                    if itmes.xpath("./text()").get() == "附件：":
-                        if a_list := itmes.xpath('./a'):
+                if file_notout_time(pub_time):
+                    if jpg_path := response.xpath('//div[@class="ewb-detail-content"]/div[2]/div[2]/img'):
+                        info_jpg_url = jpg_path.xpath('./@src').get()
+                        files_path["info_jpg.jpg"] = info_jpg_url
+                    if file_path := response.xpath('//div[@class="ewb-detail-content"]/div[2]/a'):
+                        file_path_list = file_path.xpath("./@href").getall()
+                        file_name_list = file_path.xpath("./text()").getall()
+                        for file_name, file_path in zip(file_name_list, file_path_list):
+                            files_path[file_name] = file_path
+                    if response.xpath('//div[@class="file"]'):
+                        if a_list := response.xpath('//div[@class="file"]//a'):
                             for item in a_list:
                                 if "http" in item.xpath("./@href").get():
                                     value = item.xpath('./@href').get()
+
                                 else:
                                     value = self.domain_url + item.xpath("./@href").get()
                                 key = item.xpath('./text()').get()
                                 files_path[key] = value
                         else:
                             content = re.sub("附件:", "", content)
+
+
+                    file_text = response.xpath("//div[@class='ewb-detail-content']//p//span")
+                    for itmes in file_text:
+                        if itmes.xpath("./text()").get() == "附件：":
+                            if a_list := itmes.xpath('./a'):
+                                for item in a_list:
+                                    if "http" in item.xpath("./@href").get():
+                                        value = item.xpath('./@href').get()
+                                    else:
+                                        value = self.domain_url + item.xpath("./@href").get()
+                                    key = item.xpath('./text()').get()
+                                    files_path[key] = value
+                            else:
+                                content = re.sub("附件:", "", content)
 
                     # if a_list := response.xpath("//div[@style='border-top:1px dashed #d4d4d4;padding:8px 0;']/ul//a"):
                     #     for item in a_list:
@@ -304,5 +311,5 @@ class MySpider(Spider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    # cmdline.execute("scrapy crawl ZJ_city_3308_quzhou_spider -a std=2020-01-04 -a edt=2020-01-04".split(" "))
-    cmdline.execute("scrapy crawl ZJ_city_3308_quzhou_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3308_quzhou_spider -a sdt=2021-01-04 -a edt=2021-11-30".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3308_quzhou_spider".split(" "))

@@ -166,7 +166,7 @@ class MySpider(Spider):
                     if QR_code_list := re.findall('src="(/picture.*?)"', content):
                         for item in QR_code_list:
                             QRcode_url = self.domain_name_url + item
-                            file_name = "QR_code"
+                            file_name = "QR_code.jpg"
                             files_path[file_name] = QRcode_url
             except Exception as e:
                 print(e)

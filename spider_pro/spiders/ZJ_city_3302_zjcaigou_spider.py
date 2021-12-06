@@ -41,8 +41,9 @@ class MySpider(CrawlSpider):
     list_qualification_num = ['3009,4004,3008,2001', ]
     # 其他
     list_qita_code = ['3013', '3010', "3016,6003", '4002,4001,4003,8006', "1995,1996,1997,8008,8009,8013,8014,9002,9003,808030100"]
-    all_list = list_advance_notice + list_notice_category_num + list_zb_abnormal_code + list_alteration_category_num + \
-               list_win_notice_category_code + list_qualification_num + list_qita_code
+    # all_list = list_advance_notice + list_notice_category_num + list_zb_abnormal_code + list_alteration_category_num + \
+    #            list_win_notice_category_code + list_qualification_num + list_qita_code
+    all_list = ['3001,3020']
 
 
     def __init__(self, *args, **kwargs):
@@ -128,7 +129,7 @@ class MySpider(CrawlSpider):
             pub_time = get_accurate_pub_time(pub_time)
             info_source = self.area_province
             title_name = response.meta["title_name"]
-            print(title_name)
+            print(origin + title_name + pub_time)
             notice_type = response.meta["notice_type"]
             project_number = response.meta["project_number"]
             projectName = response.meta["projectName"]
@@ -137,6 +138,8 @@ class MySpider(CrawlSpider):
                 project_number = ""
                 projectName = ""
             districtName = response.meta["districtName"]
+            if districtName:
+                info_source = self.area_province + "_" + districtName
 
             files_path = {}
             if fjxx_list := re.findall('<a href="(.*?)">(.*?)</a>', content):
@@ -184,6 +187,6 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    cmdline.execute("scrapy crawl ZJ_city_3302_zjcaigou_spider".split(" "))
-    # cmdline.execute("scrapy crawl ZJ_city_3302_zjcaigou_spider -a sdt=2021-06-28 -a edt=2021-05-29".split(" "))
+    # cmdline.execute("scrapy crawl ZJ_city_3302_zjcaigou_spider".split(" "))
+    cmdline.execute("scrapy crawl ZJ_city_3302_zjcaigou_spider -a sdt=2021-06-18 -a edt=2021-06-28".split(" "))
 

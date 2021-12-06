@@ -23,7 +23,7 @@ class MySpider(Spider):
     area_id = "3355"
     area_province = "浙江-金华市永康市公共资源交易服务平台"
     allowed_domains = ['yk.gov.cn']
-    domain_url = "www.yk.gov.cn"
+    domain_url = "http://www.yk.gov.cn"
     count_url = "http://www.yk.gov.cn/module/jpage/dataproxy.jsp?startrecord={}&endrecord={}&perpage=20"
     page_size = "10"
     # 招标预告
@@ -81,14 +81,14 @@ class MySpider(Spider):
                 yield scrapy.Request(url=info_url, callback=self.parse_item,  dont_filter=True,
                                      priority=10, meta={"category_num": category_num, "pub_time": pub_time,
                                                         "title_name": title_name})
-            if count_num >= len(temp_list):
-                startrecord += 60
-                endrecord += 60
-                if endrecord <= int(ttlrow):
-                    temp_dict = self.r_dict | {"columnid": "{}".format(category_num)}
-                    yield scrapy.FormRequest(self.count_url.format(str(startrecord), str(endrecord)), formdata=temp_dict,
-                                             dont_filter=True, callback=self.parse_data_urls, priority=8, cookies=self.cookies_dict,
-                                             meta={"afficheType": category_num})
+                if count_num >= len(temp_list):
+                    startrecord += 60
+                    endrecord += 60
+                    if endrecord <= int(ttlrow):
+                        temp_dict = self.r_dict | {"columnid": "{}".format(category_num)}
+                        yield scrapy.FormRequest(self.count_url.format(str(startrecord), str(endrecord)), formdata=temp_dict,
+                                                 dont_filter=True, callback=self.parse_data_urls, priority=8, cookies=self.cookies_dict,
+                                                 meta={"afficheType": category_num})
 
     def parse_urls(self, response):
         try:
@@ -133,7 +133,6 @@ class MySpider(Spider):
     def parse_item(self, response):
         if response.status == 200:
             origin = response.url
-            print(origin)
             category_num = response.meta.get("category_num", "")
             title_name = response.meta.get("title_name", "")
             pub_time = response.meta.get("pub_time", "")
