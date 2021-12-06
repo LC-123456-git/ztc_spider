@@ -9,6 +9,7 @@ import scrapy
 import re
 from lxml import etree
 from collections import OrderedDict
+import traceback
 
 from spider_pro import constans, utils, items
 
@@ -45,14 +46,14 @@ class Province143DalianSpiderSpider(scrapy.Spider):
             },
         ],
         '其他公告': [
-            {  # 采购合同公告
-                'url': 'http://www.ccgp-dalian.gov.cn/dlweb/showinfo/bxmoreinfo.aspx?CategoryNum=003005001',
+            {  # 中标及废标公告
+                'url': 'http://www.ccgp-dalian.gov.cn/dlweb/showinfo/bxmoreinfo.aspx?CategoryNum=003002001',
                 '__EVENTTARGET': 'MoreInfoList$Pager',
                 'table_attr': 'MoreInfoList_DataGrid1',
                 'page_attr': 'MoreInfoList_Pager',
             },
-            {  # 中标及废标公告
-                'url': 'http://www.ccgp-dalian.gov.cn/dlweb/showinfo/bxmoreinfo.aspx?CategoryNum=003002001',
+            {  # 采购合同公告
+                'url': 'http://www.ccgp-dalian.gov.cn/dlweb/showinfo/bxmoreinfo.aspx?CategoryNum=003005001',
                 '__EVENTTARGET': 'MoreInfoList$Pager',
                 'table_attr': 'MoreInfoList_DataGrid1',
                 'page_attr': 'MoreInfoList_Pager',
@@ -60,15 +61,16 @@ class Province143DalianSpiderSpider(scrapy.Spider):
         ]
     }
     keywords_map = OrderedDict({
+        '中标公告': '中标公告',
         '采购意向|需求公示': '招标预告',
         '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
         '澄清|变更|补充|取消|更正|延期': '招标变更',
         '流标|废标|终止|中止': '招标异常',
         '候选人': '中标预告',
     })
-    # custom_settings = {
-    #     'CONCURRENT_REQUESTS': 4,
-    # }
+    custom_settings = {
+        'CONCURRENT_REQUESTS': 1,
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -117,8 +119,8 @@ class Province143DalianSpiderSpider(scrapy.Spider):
 
         try:
             pages = int(pages)
-        except ValueError as e:
-            self.log(e)
+        except ValueError:
+            traceback.print_exc()
         else:
             event_argument = 1
             if_turn_page = True
@@ -135,7 +137,7 @@ class Province143DalianSpiderSpider(scrapy.Spider):
                             '__VIEWSTATEGENERATOR': init_view_state_generator,
                             '__EVENTVALIDATION': init_event_validation,
                             'MoreInfoList$Titletxt': ''
-                        }, headers=headers, proxies=proxies).content.decode('gbk')
+                        }, headers=headers, proxies=proxies, timeout=15).content.decode('gbk')
 
                         doc = etree.HTML(text)
                         # 获取修改默认参数
@@ -150,7 +152,8 @@ class Province143DalianSpiderSpider(scrapy.Spider):
                             for n, li_el in enumerate(li_els):
                                 # for li_el in li_els[0:5]:
                                 title_name = li_el.xpath('.//a/@title')[0]
-                                title_name = re.sub('【.*?】', '', title_name)
+                                # title_name = re.sub('【.*?】', '', title_name)
+
                                 pub_time = li_el.xpath('.//td[position()=3]/text()')[0].strip()
 
                                 if all([self.start_time, self.end_time]):
@@ -167,11 +170,12 @@ class Province143DalianSpiderSpider(scrapy.Spider):
                                         'notice_type': resp.meta.get('notice_type', ''),
                                         'title_name': title_name,
                                         'pub_time': pub_time,
-                                    }, priority=len(li_els) + 1 - n, dont_filter=True)
+                                        'page': i,
+                                    }, priority=1000, dont_filter=True)
                         event_argument += 1
                 
-                    except Exception as e:
-                        self.logger.info(e)
+                    except (Exception,):
+                        traceback.print_exc()
                 else:  # 不翻
                     break
 
