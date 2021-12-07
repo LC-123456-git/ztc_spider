@@ -25,7 +25,9 @@ class Province135SiChuanSpider(CrawlSpider):
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
             'spider_pro.middlewares.VerificationMiddleware.VerificationMiddleware': 120,
-        }
+        },
+        'ENABLE_PROXY_USE': False,
+        'ENABLE_URL_DUP_REMOVE_USE': False,
     }
 
     # 招标预告
