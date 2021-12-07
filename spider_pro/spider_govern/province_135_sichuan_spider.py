@@ -103,7 +103,10 @@ class Province135SiChuanSpider(CrawlSpider):
         try:
             data_info = resp.xpath('//div[@class="info"]/ul/li')
             for data in data_info:
-                data_url = data.xpath('./a/@href').get()
+                if 'http' in data:
+                    data_url = data.xpath('./a/@href').get()
+                else:
+                    data_url = self.start_urls + data.xpath('./a/@href').get()
                 title_name = data.xpath('./a/div[@class="title"]/text()').get()
                 pub_time = ''.join(data.xpath('./div[@class="time curr"]/text()').getall()).strip() + \
                            '-' + data.xpath('./div[@class="time curr"]/span/text()').get()
