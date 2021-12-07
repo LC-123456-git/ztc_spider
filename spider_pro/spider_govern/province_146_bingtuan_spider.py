@@ -5,12 +5,13 @@
 # @Describe: 兵团政府采购网
 import copy
 import json
+from collections import OrderedDict
 
 import scrapy, re, math, time
 from lxml import etree
 from scrapy.spiders import CrawlSpider
 from spider_pro.items import NoticesItem
-from spider_pro import constans as const
+from spider_pro import constans as const, constans
 from spider_pro.utils import judge_dst_time_in_interval, get_accurate_pub_time, \
      get_files, get_notice_type, remove_specific_element, get_timestamp
 
@@ -67,6 +68,32 @@ class Province146BingTuanSpider(CrawlSpider):
         else:
             notice = ''
         return notice
+
+    keywords_map = OrderedDict({
+        '采购意向|需求公示': '招标预告',
+        '单一来源|询价|竞争性谈判|竞争性磋商': '招标公告',
+        '澄清|变更|补充|取消|更正|延期': '招标变更',
+        '流标|废标|终止|中止|异常': '招标异常',
+        '候选人': '中标预告',
+    })
+
+    def match_title(self, title_name):
+        """
+        根据标题匹配关键字 返回招标类别
+        Args:
+            title_name: 标题
+
+        Returns:
+            notice_type: 招标类别
+        """
+        matched = False
+        notice_type = ''
+        for keywords, value in self.keywords_map.items():
+            if re.search(keywords, title_name):
+                notice_type = value
+                matched = True
+                break
+        return matched, notice_type
 
     def __init__(self, *args, **kwargs):
         super(Province146BingTuanSpider, self).__init__()
@@ -159,8 +186,15 @@ class Province146BingTuanSpider(CrawlSpider):
             title_name = ''.join(response.meta['title_name'])
             pub_time = response.meta['pub_time']
             content = json.loads(response.xpath('//div[@class="xinjiangbingtuan-detail js-comp"]/input/@value').get())['content']
+            notice_type_ori = response.meta['notice']
+            matched, match_notice_type = self.match_title(title_name)
+            if matched:
+                notice_types = match_notice_type
+                notice_type = list(
+                    filter(lambda k: constans.TYPE_NOTICE_DICT[k] == notice_types, constans.TYPE_NOTICE_DICT))[0]
+            else:
+                notice_type = notice_type_ori
             if '测试' not in title_name:
-                notice_type = get_notice_type(title_name, response.meta['notice'])
                 files_text = etree.HTML(content)
                 keys_a = []
                 files_path = get_files(self.start_urls, origin, files_text, pub_time=pub_time,
