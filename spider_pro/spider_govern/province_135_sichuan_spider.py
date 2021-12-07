@@ -103,10 +103,11 @@ class Province135SiChuanSpider(CrawlSpider):
         try:
             data_info = resp.xpath('//div[@class="info"]/ul/li')
             for data in data_info:
-                if 'http' in data:
-                    data_url = data.xpath('./a/@href').get()
+                data_url = data.xpath('./a/@href').get()
+                if 'http' in data_url:
+                    data_url = data_url
                 else:
-                    data_url = self.start_urls + data.xpath('./a/@href').get()
+                    data_url = self.start_urls + data_url
                 title_name = data.xpath('./a/div[@class="title"]/text()').get()
                 pub_time = ''.join(data.xpath('./div[@class="time curr"]/text()').getall()).strip() + \
                            '-' + data.xpath('./div[@class="time curr"]/span/text()').get()
@@ -153,5 +154,5 @@ class Province135SiChuanSpider(CrawlSpider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl province_135_sichuan_spider".split(" "))
-    cmdline.execute("scrapy crawl province_135_sichuan_spider -a sdt=2021-10-01 -a edt=2021-10-15".split(" "))
+    cmdline.execute("scrapy crawl province_135_sichuan_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_135_sichuan_spider -a sdt=2021-10-01 -a edt=2021-10-15".split(" "))
