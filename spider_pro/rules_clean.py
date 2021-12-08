@@ -387,7 +387,7 @@ class KeywordsExtract(object):
         :param name:
         :return:
         """
-        c_regular = r'[\[ \( （ 【]\s*[\u4e00-\u9fa5]*?{name}[\u4e00-\u9fa5]*?\s*[\] \) ） 】]'.format(
+        c_regular = r'[\[ \( （ ]\s*[\u4e00-\u9fa5]*?{name}[\u4e00-\u9fa5]*?\s*[\] \) ） ]'.format(
             name=name,
         )
         if re.search(c_regular, self.title) and len(re.findall(name, self.title)) == 1:
@@ -402,6 +402,8 @@ class KeywordsExtract(object):
                 另外: 如果在self.wrapped_list列表中的站点，先以 "关于... ... 的结果公告" 等来提取
         """
         if self.field_name == 'project_name' and self.title and not self._value.strip():
+            self.title = re.sub(r'【.*?】', '', self.title)
+
             # 关于 ... 公告过滤
             for wpn_reg in self.wrapped_project_name:
                 ret = re.findall(r'%s' % wpn_reg, self.title)
@@ -413,14 +415,11 @@ class KeywordsExtract(object):
             title_list = self.project_priority_cg if '采购' in self.title else self.project_priority
             for name in title_list:
                 if name in self.title:
-                    # 判断项目关键字是否在（）【】 [] 内
+                    # 关键词在（） [] 包裹下不匹配
                     if self.brackets_contained(name):
                         continue
-
+                    
                     self._value = ''.join([self.title.split(name)[0], name])
-                    delete_chars = ['【】']
-                    for dc in delete_chars:
-                        self._value = self._value.replace(dc, '')
                     break
 
             # 标题包含：取后半部分

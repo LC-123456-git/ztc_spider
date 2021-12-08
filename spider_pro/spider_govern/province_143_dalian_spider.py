@@ -70,6 +70,7 @@ class Province143DalianSpiderSpider(scrapy.Spider):
     })
     custom_settings = {
         'CONCURRENT_REQUESTS': 1,
+        'ENABLE_PROXY_USE': False,
     }
 
     def __init__(self, *args, **kwargs):
@@ -122,60 +123,57 @@ class Province143DalianSpiderSpider(scrapy.Spider):
         except ValueError:
             traceback.print_exc()
         else:
-            event_argument = 1
+            # event_argument = 1
             if_turn_page = True
             print('当前请求栏目: ', resp.meta.get('notice_type', ''))
             for i in range(1, pages + 1):
                 if if_turn_page:
-                    try:
-                        text = requests.post(url=url, data={
-                            '__VIEWSTATE': init_view_state,
-                            '__EVENTARGUMENT': event_argument,
-                            '__EVENTTARGET': event_target,
-                            '__VIEWSTATEENCRYPTED': '',
-                            # add
-                            '__VIEWSTATEGENERATOR': init_view_state_generator,
-                            '__EVENTVALIDATION': init_event_validation,
-                            'MoreInfoList$Titletxt': ''
-                        }, headers=headers, proxies=proxies, timeout=15).content.decode('gbk')
+                    text = requests.post(url=url, data={
+                        '__VIEWSTATE': init_view_state,
+                        '__EVENTARGUMENT': i + 1,
+                        '__EVENTTARGET': event_target,
+                        '__VIEWSTATEENCRYPTED': '',
+                        # add
+                        '__VIEWSTATEGENERATOR': init_view_state_generator,
+                        '__EVENTVALIDATION': init_event_validation,
+                        'MoreInfoList$Titletxt': ''
+                    }, headers=headers, proxies=proxies).content.decode('gbk')
+                    self.logger.info(f"页{i}，本次翻页请求成功.")
 
-                        doc = etree.HTML(text)
-                        # 获取修改默认参数
-                        init_view_state = doc.xpath('//input[@name="__VIEWSTATE"]/@value')[0]
-                        init_view_state_generator = doc.xpath('//input[@name="__VIEWSTATEGENERATOR"]/@value')[0]
-                        init_event_validation = doc.xpath('//input[@name="__EVENTVALIDATION"]/@value')[0]
+                    doc = etree.HTML(text)
+                    # 获取修改默认参数
+                    init_view_state = doc.xpath('//input[@name="__VIEWSTATE"]/@value')[0]
+                    init_view_state_generator = doc.xpath('//input[@name="__VIEWSTATEGENERATOR"]/@value')[0]
+                    init_event_validation = doc.xpath('//input[@name="__EVENTVALIDATION"]/@value')[0]
 
-                        # 发起详情页请求
-                        li_els = doc.xpath('//table[@id="{table_attr}"]/tr'.format(table_attr=table_attr))
+                    # 发起详情页请求
+                    li_els = doc.xpath('//table[@id="{table_attr}"]/tr'.format(table_attr=table_attr))
 
-                        if li_els:
-                            for n, li_el in enumerate(li_els):
-                                # for li_el in li_els[0:5]:
-                                title_name = li_el.xpath('.//a/@title')[0]
-                                # title_name = re.sub('【.*?】', '', title_name)
+                    if li_els:
+                        for n, li_el in enumerate(li_els):
+                            # for li_el in li_els[0:5]:
+                            title_name = li_el.xpath('.//a/@title')[0]
+                            # title_name = re.sub('【.*?】', '', title_name)
 
-                                pub_time = li_el.xpath('.//td[position()=3]/text()')[0].strip()
+                            pub_time = li_el.xpath('.//td[position()=3]/text()')[0].strip()
 
-                                if all([self.start_time, self.end_time]):
-                                    if_crewled, if_turn_page = utils.get_crwal_turn_page_command(
-                                        pub_time, self.start_time, self.end_time
-                                    )
-                                    if not if_crewled:  # 不采
-                                        break
+                            if all([self.start_time, self.end_time]):
+                                if_crewled, if_turn_page = utils.get_crwal_turn_page_command(
+                                    pub_time, self.start_time, self.end_time
+                                )
+                                if not if_crewled:  # 不采
+                                    break
 
-                                hrefs = li_el.xpath('.//td[position()=2]/a/@href')
-                                if hrefs:
-                                    detail_url = self.query_url + hrefs[0]
-                                    yield scrapy.Request(url=detail_url, callback=self.parse_item, meta={
-                                        'notice_type': resp.meta.get('notice_type', ''),
-                                        'title_name': title_name,
-                                        'pub_time': pub_time,
-                                        'page': i,
-                                    }, priority=1000, dont_filter=True)
-                        event_argument += 1
-                
-                    except (Exception,):
-                        traceback.print_exc()
+                            hrefs = li_el.xpath('.//td[position()=2]/a/@href')
+                            if hrefs:
+                                detail_url = self.query_url + hrefs[0]
+                                yield scrapy.Request(url=detail_url, callback=self.parse_item, meta={
+                                    'notice_type': resp.meta.get('notice_type', ''),
+                                    'title_name': title_name,
+                                    'pub_time': pub_time,
+                                    'page': i,
+                                }, priority=1000, dont_filter=True)
+                    # event_argument += 1
                 else:  # 不翻
                     break
 
@@ -219,11 +217,12 @@ class Province143DalianSpiderSpider(scrapy.Spider):
         notice_item["area_id"] = self.area_id
         notice_item["category"] = '政府采购'
         print(resp.meta.get('pub_time'), resp.url)
+        self.logger.info(f'{resp.url} 采集成功.')
         return notice_item
 
 
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl province_143_dalian_spider -a sdt=2021-09-01 -a edt=2021-10-18".split(" "))
+    # cmdline.execute("scrapy crawl province_143_dalian_spider -a sdt=2021-11-20 -a edt=2021-12-07".split(" "))
     cmdline.execute("scrapy crawl province_143_dalian_spider".split(" "))
