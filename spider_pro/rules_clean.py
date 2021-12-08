@@ -77,7 +77,6 @@ class KeywordsExtract(object):
         self.wrapped_project_name = utils.get_keywords(self.pb_cf, 'WRAPPED_PROJECT_NAME_REG')
         self.vertical_key = utils.get_keywords(self.pb_cf, 'VERTICAL_KEYS')
 
-
         self.content = content.replace('\xa0', ' ').replace('\n', '').replace('\u3000', ' ')
         self.keys = keys if isinstance(keys, list) else [keys]
         self.area_id = area_id
@@ -137,7 +136,7 @@ class KeywordsExtract(object):
         # 在提取project_name时，指定位置(指定方法前)调用:self.get_val_from_title
         self.before_map = {
             '_extract_from_table': [],
-            'clean_value': ['120', '123', '124', '131', '126', '128', '132', '133', '136', '145', '146', '3314'],
+            'clean_value': ['120', '123', '124', '131', '126', '128', '132', '133', '136', '143', '145', '146', '3314'],
         }
 
     def reset_regular_by_field(self):
@@ -419,7 +418,7 @@ class KeywordsExtract(object):
                     # 关键词在（） [] 包裹下不匹配
                     if self.brackets_contained(name):
                         continue
-                    
+
                     self._value = ''.join([self.title.split(name)[0], name])
                     break
 
@@ -568,6 +567,18 @@ class KeywordsExtract(object):
             value = str(round(int(value.split('＄')[1].split('.')[0].replace(',', '')) * 6.3531))
         return value
 
+    @staticmethod
+    def handle_multi_value(value, separator='；'):
+        """
+        提取值出现多个值根据某个字符串分隔，取首个，默认根据"；"拆分
+        100；200；300
+        """
+        if separator in value:
+            value_split = value.split(separator)
+            if len(value_split) > 1:
+                value = value_split[0]
+        return value
+
     @catch_title_before_method
     def clean_value(self):
         """
@@ -593,6 +604,7 @@ class KeywordsExtract(object):
             self._value = KeywordsExtract.remove_chars_by_regs(self.amount_regulars, self._value)
             self._value = self.money_ending(self._value)
             self._value = KeywordsExtract.remove_rest_suffix(self._value)
+            self._value = KeywordsExtract.handle_multi_value(self._value)
             self._value = KeywordsExtract.handle_multi_dot(self._value)
             self._value = KeywordsExtract.us_handle_dot(self._value)
 
@@ -639,7 +651,7 @@ class KeywordsExtract(object):
             try:
                 assert Decimal(self._value), '非数字'
             except (Exception,):
-                pass
+                self._value = ''
             else:
                 self._value = '{}'.format(KeywordsExtract.remove_rest_zero(
                     self.multi_number * Decimal(self._value) if not handled else Decimal(self._value)))
