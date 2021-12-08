@@ -20,8 +20,6 @@ from dateutil.relativedelta import relativedelta
 from lxml import etree
 from functools import wraps
 import xmltodict
-
-from spider_pro import rules_clean
 from spider_pro import constans as const
 
 headers = {
