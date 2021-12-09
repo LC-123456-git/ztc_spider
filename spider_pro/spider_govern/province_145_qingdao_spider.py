@@ -208,7 +208,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                 category_id = param['category_id']
 
                 index = 0
-                for i in range(semaphore):
+                for i in range(offset):
                     index += 1
                     pay_load_data = {
                         'category_id': category_id,
