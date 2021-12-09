@@ -189,11 +189,12 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
         headers = utils.get_headers(resp)
         headers = {k.decode(): v.decode() for k, v in headers.items()}
         proxies = utils.get_proxies(resp)
-        proxy = ''
-        for p, v in proxies.items():
-            if v:
-                proxy = v
-                break
+        proxy = None
+        if proxies:
+            for p, v in proxies.items():
+                if v:
+                    proxy = v
+                    break
 
         script_session_id = Province145QingdaoSpiderSpider.create_script_session_id()
 
@@ -231,6 +232,9 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
             resp.meta.update(**{
                 'title': t['title'],
                 'pub_time': pub_time,
+            })
+            resp.meta.update(**{
+                'notice_type': t['notice_type']
             })
             if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                 yield scrapy.Request(
@@ -346,5 +350,5 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    cmdline.execute("scrapy crawl province_145_qingdao_spider -a sdt=2021-09-01 -a edt=2021-12-09".split(" "))
-    # cmdline.execute("scrapy crawl province_145_qingdao_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_145_qingdao_spider -a sdt=2021-09-01 -a edt=2021-12-09".split(" "))
+    cmdline.execute("scrapy crawl province_145_qingdao_spider".split(" "))
