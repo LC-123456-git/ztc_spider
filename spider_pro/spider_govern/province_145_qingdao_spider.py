@@ -5,6 +5,7 @@
 # @author         :miaokela
 # @version        :1.0
 import copy
+import json
 import random
 import time
 import re
@@ -12,6 +13,7 @@ import execjs
 import requests
 from datetime import datetime
 from collections import OrderedDict
+import traceback
 
 import scrapy
 
@@ -39,16 +41,16 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
         '候选人': '中标预告',
     })
     url_map = {
-        '招标公告': [
-            {'category_id': '0401', 'patch_id': '13'},  # 采购公告
-            {'category_id': '0405', 'patch_id': '15'},  # 单一来源
-        ],
-        '招标变更': [
-            {'category_id': '0403', 'patch_id': '17'},  # 更正公告
-        ],
-        '招标异常': [
-            {'category_id': '0404', 'patch_id': '19'},  # 废标公告
-        ],
+        # '招标公告': [
+        #     {'category_id': '0401', 'patch_id': '13'},  # 采购公告
+        #     {'category_id': '0405', 'patch_id': '15'},  # 单一来源
+        # ],
+        # '招标变更': [
+        #     {'category_id': '0403', 'patch_id': '17'},  # 更正公告
+        # ],
+        # '招标异常': [
+        #     {'category_id': '0404', 'patch_id': '19'},  # 废标公告
+        # ],
         '中标公告': [
             {'category_id': '0402', 'patch_id': '24'},  # 中标公告
         ],
@@ -69,15 +71,16 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
     page=%2Fsdgp2014%2Fsite%2Fchannelall370200.jsp%3Fcolcode%3D0401%26flag%3D0401
     scriptSessionId={script_session_id}""".replace(' ', '')
 
-    # custom_settings = {
-    #     'DOWNLOADER_MIDDLEWARES': {
-    #         'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
-    #         'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
-    #     },
-    #
-    #     # 'CONCURRENT_REQUESTS': 4,
-    #     'ENABLE_PROXY_USE': False,
-    # }
+    custom_settings = {
+        # 'DOWNLOADER_MIDDLEWARES': {
+        #     'spider_pro.middlewares.UrlDuplicateRemovalMiddleware.UrlDuplicateRemovalMiddleware': 300,
+        #     'spider_pro.middlewares.UserAgentMiddleware.UserAgentMiddleware': 500,
+        # },
+
+        # 'CONCURRENT_REQUESTS': 1,
+        # 'COOKIES_ENABLED': True,
+        # 'ENABLE_PROXY_USE': False,
+    }
 
     # @category_id: 栏目ID
     # @index: 所在页索引
@@ -89,10 +92,6 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
         super().__init__()
         self.start_time = kwargs.get('sdt', '')
         self.end_time = kwargs.get('edt', '')
-        self.patch_id = 1
-        # self.cookies = {
-        #     'DWRSESSIONID': '~PU!Y8CjFdhM3vA1fbPHobMm8EL5vMvOZNn'
-        # }
 
     def match_title(self, title_name):
         """
@@ -114,7 +113,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
 
     @staticmethod
     def create_script_session_id():
-        dwr_session_id = '~PU!Y8CjFdhM3vA1fbPHobMm8EL5vMvOZNn'
+        dwr_session_id = 'unoiaZsZ6YVE8vfv!OInBTsVQyPFAGVzsSn'
         js_script = """
         function tokenify(number) {
             var tokenbuf = [];
@@ -144,63 +143,10 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
             'code': y.split(',')[3],
         } for y in [x for x in rslt_string.split('?')] if len(y.split(',')) == 4]
 
-    @classmethod
-    def judge_in_interval(cls, url, start_time=None, end_time=None, headers=None, proxies=None, data=None, rule=None,
-                          date_type='string'):
-        status = 0
-        if all([start_time, end_time]):
-            try:
-                text = requests.post(url=url, data=data, headers=headers, proxies=proxies).content.decode('utf-8')
-                if text:
-                    com = re.compile(r'rsltStringValue:"(.*?)",rsltType')
-
-                    rslt_string = com.findall(text)[0]
-                    rslt_string = u'{}'.format(rslt_string).encode('utf-8').decode('unicode_escape')
-                    els = cls.format_rslt_string(rslt_string)
-
-                    if els:
-                        first_el = els[0]['pub_time']
-                        final_el = els[-1]['pub_time']
-
-                        if date_type == 'string':
-                            t_com = re.compile(r'(\d+[.\-/]\d+[.\-/]\d+)')
-                            first_pub_time = t_com.findall(first_el)
-                            final_pub_time = t_com.findall(final_el)
-                        elif date_type == 'timestamp':
-                            first_pub_time = [
-                                '{0:%Y-%m-%d}'.format(datetime.fromtimestamp(int(first_el) / 1000))]
-                            final_pub_time = [
-                                '{0:%Y-%m-%d}'.format(datetime.fromtimestamp(int(final_el) / 1000))]
-                        else:
-                            raise Exception('时间类型不符合')
-
-                        if all([first_pub_time, final_pub_time]):
-                            first_pub_time = utils.convert_to_strptime(first_pub_time[0])
-                            final_pub_time = utils.convert_to_strptime(final_pub_time[0])
-                            start_time = utils.convert_to_strptime(start_time)
-                            end_time = utils.convert_to_strptime(end_time)
-                            # 比最大时间大 continue
-                            # 比最小时间小 break
-                            # 1 首条在区间内 可抓、可以翻页
-                            # 0 首条不在区间内 停止翻页
-                            # 2 末条大于最大时间 continue
-                            if first_pub_time < start_time:
-                                status = 0
-                            elif final_pub_time > end_time:
-                                status = 2
-                            else:
-                                status = 1
-            except Exception as e:
-                pass
-        else:
-            status = 1  # 没有传递时间
-        return status
-
     def start_requests(self):
         for notice_type, params in self.url_map.items():
             for param in params:
-                self.patch_id += 1
-                patch_id = self.patch_id
+                patch_id = 1
                 category_id = param['category_id']
 
                 pay_load_data = {
@@ -217,84 +163,21 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                     callback=self.parse_list, meta={
                         'notice_type': notice_type,
                     }, cb_kwargs={
-                        'pay_load': copy.deepcopy(pay_load_data)
+                        'pay_load_data': copy.deepcopy(pay_load_data),
+                        'patch_id': patch_id,
                     }, dont_filter=True,
-                    # cookies=self.cookies
                 )
 
-    def parse_list(self, resp, pay_load):
-        """
-        翻页
-        """
-        headers = utils.get_headers(resp)
-        # headers.update(**{'Cookie': '{}={}'.format(list(self.cookies.keys())[0], list(self.cookies.values())[0])})
-        proxies = utils.get_proxies(resp)
-
-        """
-        200065026,青岛市胶州中心医院青岛市胶州中心医院第三方维修服务采购项目公开招标公告,2021-10-15,370200?
-        200065000,青岛财经职业学校2021年青岛财经职业学校环境监测实验室公开招标公告,2021-10-14,370200?
-        ...
-        """
-        index = 0
-        if all([self.start_time, self.end_time]):
-            while True:
-                index += 1
-                # print(index)
-                self.patch_id += 1
-                pay_load.update(**{
-                    'index': index,
-                    'patch_id': self.patch_id
-                })
-                c_pay_load = self.pay_load.format(**pay_load)
-
-                judge_status = Province145QingdaoSpiderSpider.judge_in_interval(
-                    self.query_url, start_time=self.start_time, end_time=self.end_time,
-                    data=c_pay_load, proxies=proxies, headers=headers,
-                    rule='//pub_time/text()'
-                )
-                if judge_status == 0:
-                    break
-                elif judge_status == 2:
-                    continue
-                else:
-                    self.patch_id += 1
-                    pay_load.update(**{
-                        'patch_id': self.patch_id
-                    })
-                    c_pay_load = self.pay_load.format(**pay_load)
-                    # print(c_pay_load)
-                    yield scrapy.Request(
-                        url=self.query_url, method='POST', body=c_pay_load,
-                        callback=self.parse_urls, meta=resp.meta,
-                        dont_filter=True,
-                        # cookies=self.cookies
-                    )
-        else:
-            for i in range(100):
-                index += 1
-                # print(index)
-                self.patch_id += 1
-                pay_load.update(**{
-                    'patch_id': self.patch_id,
-                    'index': index,
-                })
-                c_pay_load = self.pay_load.format(**pay_load)
-                yield scrapy.Request(
-                    url=self.query_url, method='POST', body=c_pay_load,
-                    callback=self.parse_urls, meta=resp.meta,
-                    dont_filter=True,
-                    # cookies=self.cookies
-                )
-
-    def parse_urls(self, resp):
+    def parse_list(self, resp, pay_load_data, patch_id):
         com = re.compile(r'rsltStringValue:"(.*?)",rsltType')
-
+        rslt_string_list = []
         try:
             rslt_string = com.findall(resp.text)[0]
             rslt_string = u'{}'.format(rslt_string).encode('utf-8').decode('unicode_escape')
             rslt_string_list = Province145QingdaoSpiderSpider.format_rslt_string(rslt_string)
-        except Exception as e:
-            self.logger.info('error: {0}, body:{1}'.format(e, resp.body))
+        except (Exception,) as e:
+            traceback.print_exc()
+            print(f'翻页结束，当前请求：{self.pay_load.format(**pay_load_data)}，错误信息：{e}')
         else:
             for n, rs in enumerate(rslt_string_list):
                 pub_time = rs.get('pub_time', '')
@@ -305,15 +188,43 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                     'id': c_id,
                 })
 
-                resp.meta.update(**{
+                tmp_meta = copy.deepcopy(resp.meta)  # 千万不要直接修改resp.meta
+                tmp_meta.update(**{
                     'title': title,
                     'pub_time': pub_time,
                 })
                 if utils.check_range_time(self.start_time, self.end_time, pub_time)[0]:
                     yield scrapy.Request(
                         url=c_url, callback=self.catch_detail_url,
-                        meta=resp.meta, priority=(len(rslt_string_list) - n) * 10 ** 4
+                        meta=tmp_meta,
                     )
+
+            if_turn = True
+            # 最后一条的发布时间早于开始时间终止翻页
+            if all([self.start_time, self.end_time]):
+                if rslt_string_list:
+                    last_pub_time = datetime.strptime(rslt_string_list[-1]['pub_time'], '%Y-%m-%d')
+                    start_time = datetime.strptime(self.start_time, '%Y-%m-%d')
+                    if last_pub_time < start_time:
+                        if_turn = False
+            print(rslt_string_list)
+            if if_turn:
+                patch_id += 1
+                next_index = resp.meta.get('index', 1) + 1
+                resp.meta.update(**{
+                    'index': next_index,
+                })
+                pay_load_data.update(**{
+                    'index': next_index,
+                    'patch_id': patch_id
+                })
+                pay_load = self.pay_load.format(**pay_load_data)
+                yield scrapy.Request(
+                    url=self.query_url, method='POST', body=pay_load,
+                    callback=self.parse_list, meta=resp.meta,
+                    cb_kwargs={'pay_load_data': copy.deepcopy(pay_load_data), 'patch_id': patch_id},
+                    dont_filter=True,
+                )
 
     def catch_detail_url(self, resp):
         """
@@ -331,7 +242,7 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
                 suffix_params = suffix_params[0]
                 yield scrapy.Request(
                     url=''.join([self.notice_base_url, suffix_params]), callback=self.parse_detail,
-                    meta=resp.meta, priority=10 ** 10
+                    meta=resp.meta,
                 )
             else:
                 self.logger.info(f'请求{resp.url}时没有获取到【显示公告正文】链接.')
@@ -423,5 +334,5 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
 if __name__ == "__main__":
     from scrapy import cmdline
 
-    # cmdline.execute("scrapy crawl province_145_qingdao_spider -a sdt=2021-09-01 -a edt=2021-10-15".split(" "))
+    # cmdline.execute("scrapy crawl province_145_qingdao_spider -a sdt=2021-12-07 -a edt=2021-12-9".split(" "))
     cmdline.execute("scrapy crawl province_145_qingdao_spider".split(" "))
