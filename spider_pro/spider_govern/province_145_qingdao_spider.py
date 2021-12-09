@@ -199,12 +199,16 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
 
         data_list = []
 
+        offset = 80
+        if all([self.start_time, self.end_time]):
+            offset = 10
+
         for notice_type, params in self.url_map.items():
             for param in params:
                 category_id = param['category_id']
 
                 index = 0
-                for i in range(80):
+                for i in range(semaphore):
                     index += 1
                     pay_load_data = {
                         'category_id': category_id,
