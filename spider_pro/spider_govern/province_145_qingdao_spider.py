@@ -40,16 +40,16 @@ class Province145QingdaoSpiderSpider(scrapy.Spider):
         '候选人': '中标预告',
     })
     url_map = {
-        # '招标公告': [
-        #     {'category_id': '0401'},  # 采购公告
-        #     {'category_id': '0405'},  # 单一来源
-        # ],
-        # '招标变更': [
-        #     {'category_id': '0403'},  # 更正公告
-        # ],
-        # '招标异常': [
-        #     {'category_id': '0404'},  # 废标公告
-        # ],
+        '招标公告': [
+            {'category_id': '0401'},  # 采购公告
+            {'category_id': '0405'},  # 单一来源
+        ],
+        '招标变更': [
+            {'category_id': '0403'},  # 更正公告
+        ],
+        '招标异常': [
+            {'category_id': '0404'},  # 废标公告
+        ],
         '中标公告': [
             {'category_id': '0402'},  # 中标公告
         ],
