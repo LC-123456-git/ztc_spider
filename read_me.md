@@ -357,7 +357,7 @@
 - 宁夏政府                         132                       刘超
 - 江西政府                         133                       克拉
 - 大连政府				143			     克拉
-- 青岛政府				145			      克拉
+- 青岛政府				145 			     克拉
 
 # 备注  3313  未清洗完成    待清洗
 
@@ -450,7 +450,7 @@ scp  D:\ztx_clone\ztx_spider\scrapyd_timing_post.py root@192.168.1.248:/home/pyt
 
 scp  D:\ztx_clone\ztx_spider\scrapyd_clean_data.py root@192.168.1.248:/home/python/scripts/scrapyd_clean_data.py
 
-### 容器部署
+# 容器部署
 
 * MySQL
   版本：5.7
@@ -567,16 +567,14 @@ scp  D:\ztx_clone\ztx_spider\scrapyd_clean_data.py root@192.168.1.248:/home/pyth
   -d mysql:5.7
   ```
 
-  docker run -p 8090:6379 --restart=always --name ztx_redis 
+  ```
+  docker run -p 8090:6379 --restart=always --name ztx_redis
   -d redislabs/rebloom:latest
 
   docker run -d -p 8060:6801 scrapyd
-
   ```
 
-  ```
-
-### Splash动态js加载服务
+# Splash动态js加载服务
 
 ```txt
 docker pull scrapinghub/splash
@@ -586,8 +584,8 @@ docker run -p 4300:8050 --name ztx_splash -d scrapinghub/splash
 
 > 调用方式: yield SplashRequest(url=href, callback=self.parse_detail, args={'wait': '0.5'})
 
+# 关键字过滤条件
 
-#### 关键字过滤条件
 ```
 
 采集的规则做一些调整：
@@ -599,6 +597,8 @@ docker run -p 4300:8050 --name ztx_splash -d scrapinghub/splash
 大于【中标关键词（新增：中标公告、结果公告、成交公告）】
 大于【招标关键词】
 大于【其他关键词】
+
+```
 
 ```
 
