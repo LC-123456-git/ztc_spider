@@ -10,25 +10,25 @@
 - [] 1 全国 http://www.cebpubservice.com/
 
 - [X] 2 北京 http://ggzyfw.beijing.gov.cn
-- [X] 3 天津 http://ggzy.zwfwb.tj.gov.cn/
-- [X] 4 河北 http://ggzy.hebei.gov.cn/
-- [X] 5 山西 http://prec.sxzwfw.gov.cn
+- [X] 3 天津 http://ggzy.zwfwb.tj.gov.cn/       # 网站无法访问
+- [X] 4 河北 http://ggzy.hebei.gov.cn/          # 没数据
+- [X] 5 山西 http://prec.sxzwfw.gov.cn          # 没有中标公告 
 
-- [] 6 内蒙古 http://ggzyjy.nmg.gov.cn
+- [] 6 内蒙古 http://ggzyjy.nmg.gov.cn           # 没有表
 - [] 7 辽宁 http://www.lnggzy.gov.cn/
 
 - [X] 8 吉林 http://www.jl.gov.cn/ggzy/
 
 - [] 9 吉林 http://www.ggzyzx.jl.gov.cn/
 
-- [X] 10 黑龙江 http://hljggzyjyw.gov.cn
+- [X] 10 黑龙江 http://hljggzyjyw.gov.cn        # 网站崩了
 - [X] 11 上海 http://www.shggzy.com
 
 - [] 12 上海 http://www.shcpe.cn/jyfw/xxfw/index.html
 
-- [X] 13 江苏 http://jsggzy.jszwfw.gov.cn/
+- [X] 13 江苏 http://jsggzy.jszwfw.gov.cn/      # 没有表
 - [X] 14 浙江 http://www.zjpubservice.com
-- [X] 15 浙江 http://www.zmctc.com/zjgcjy/jyxx/
+- [X] 15 浙江 http://www.zmctc.com/zjgcjy/jyxx/ (无项目类型)
 
 - [] 16 安徽 http://ggzy.ah.gov.cn/
 - [] 17 福建 https://ggzyfw.fujian.gov.cn/
@@ -182,7 +182,7 @@
 - [] 144 深圳市政府采购网 http://zfcg.sz.gov.cn/
 
 - [X] 145 青岛市政府采购网 http://www.ccgp-qingdao.gov.cn/
-- [X] 146 兵团政府采购网 http://www.ccgp-qingdao.gov.cn/   TODO chaoge
+- [X] 146 兵团政府采购网 http://ccgp-bingtuan.gov.cn/   TODO chaoge
 
 - [] 147 工程电子招标采购平台 http://ebidding.shoukaigufen.com.cn/  TODO zequn
 
@@ -316,6 +316,7 @@
 
 地区                             code                     清洗人
 
+> 浙江公告资源交易网
 - 宁波                             3305                     刘超
 - 嘉兴                             3306                     刘超
 - 富阳                             3331                     刘超
@@ -347,6 +348,8 @@
 - 河南                             118                       刘超
 - 湖北                             119                       刘超(端口未开放)
 - 山东                             122                       刘超
+
+> 政府采购网
 - 黑龙江政府                       123                        克拉
 - 吉林政府                         124                       克拉
 - 内蒙古政府                       127                       刘超
@@ -357,10 +360,19 @@
 - 宁夏政府                         132                       刘超
 - 江西政府                         133                       克拉
 - 江苏政府                         136                       刘超 
-- 大连政府                         143			            克拉
-- 青岛政府				          145 			            克拉
+- 大连政府                         143			                 克拉
+- 青岛政府				                 145 			                 克拉
 - 兵团政府                         146                       刘超
+
+> 公共资源交易网
 - 北京公共资源                      2                         克拉
+- 吉林公共资源                      8                         克拉
+- 上海公共资源                      12
+- 浙江公共资源                      14
+- 福建公共资源                      18
+- 江西公共资源                      19
+
+
 
 # 备注  3313  未清洗完成    待清洗
 
