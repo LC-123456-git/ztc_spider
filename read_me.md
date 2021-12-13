@@ -26,7 +26,7 @@
 
 - [] 12 上海 http://www.shcpe.cn/jyfw/xxfw/index.html
 
-- [X] 13 江苏 http://jsggzy.jszwfw.gov.cn/      # 没有表
+- [X] 13 江苏 http://jsggzy.jszwfw.gov.cn/
 - [X] 14 浙江 http://www.zjpubservice.com
 - [X] 15 浙江 http://www.zmctc.com/zjgcjy/jyxx/ (无项目类型)
 
@@ -368,6 +368,7 @@
 - 北京公共资源                      2                         克拉
 - 吉林公共资源                      8                         克拉
 - 上海公共资源                      12
+- 江苏公共资源                      13
 - 浙江公共资源                      14
 - 福建公共资源                      18
 - 江西公共资源                      19
