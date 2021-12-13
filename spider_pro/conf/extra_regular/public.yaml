@@ -29,6 +29,7 @@ LIAISON:
   - '有效工期.*'
   - '项目'
   - '工作人员'
+  - '.*?委员会'
 
 SYMBOLS:
   - '？'
@@ -88,7 +89,6 @@ ISOLATED_UNIT:
   - '元/吨'
 
 CONTACT:
-  - '[\u4e00-\u9fa5：:\,\;\；]+'
   - '[\u4e00-\u9fa5]+?/'
   - '[\u4e00-\u9fa5]+?、'
   - '[\u4e00-\u9fa5]+'
@@ -109,6 +109,7 @@ HEAD_TAIL_SYMBOLS:
   - '，'
   - ','
   - '/'
+  - '；'
 
 PROJECT_PRIORITY_CG:
   - '发包公告'

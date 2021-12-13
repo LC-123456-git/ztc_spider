@@ -22,7 +22,7 @@
 - [] 9 吉林 http://www.ggzyzx.jl.gov.cn/
 
 - [X] 10 黑龙江 http://hljggzyjyw.gov.cn        # 网站崩了
-- [X] 11 上海 http://www.shggzy.com
+- [X] 11 上海 http://www.shggzy.com             # 没有表
 
 - [] 12 上海 http://www.shcpe.cn/jyfw/xxfw/index.html
 

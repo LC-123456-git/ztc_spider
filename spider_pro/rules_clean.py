@@ -77,7 +77,7 @@ class KeywordsExtract(object):
         self.wrapped_project_name = utils.get_keywords(self.pb_cf, 'WRAPPED_PROJECT_NAME_REG')
         self.vertical_key = utils.get_keywords(self.pb_cf, 'VERTICAL_KEYS')
 
-        self.content = content.replace('\xa0', ' ').replace('\n', '').replace('\u3000', ' ')
+        self.content = content.replace('\xa0', ' ').replace('\n', ' ').replace('\u3000', ' ')
         self.keys = keys if isinstance(keys, list) else [keys]
         self.area_id = area_id
         self.field_name = field_name
@@ -588,7 +588,7 @@ class KeywordsExtract(object):
             + 特定字段 特殊字符串清理
         """
         # 多空格转化成单个
-        self._value = KeywordsExtract.remove_chars_by_regs([r'\s+'], self._value, replace_str=' ')
+        self._value = KeywordsExtract.remove_chars_by_regs([r'\s+'], self._value, replace_str=' ').strip()
         if self.field_name == 'tenderopen_time':
             _value = KeywordsExtract.format_tenderopen_time(self._value)
             self._value = KeywordsExtract.strQ2B(_value)
