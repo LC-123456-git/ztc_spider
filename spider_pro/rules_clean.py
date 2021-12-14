@@ -5,6 +5,7 @@ import re
 import cn2an
 import pandas
 import copy
+import traceback
 
 from lxml import etree
 from decimal import Decimal
@@ -525,34 +526,48 @@ class KeywordsExtract(object):
     @staticmethod
     def format_tenderopen_time(bf_time):
         """
+        待处理格式 2020年5月21日上午9时00分
+        
         统一格式：2021-12-14 12:48:00
                 2021-12-14 12时
         :param bf_time:
         :return:
         """
         regs = [
-            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?)[\u4e00-\u9fa5\s]+?(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5](?P<minute>[\d\s]+?)[:：\u4e00-\u9fa5](?P<seconds>[\d\s]+)',
-            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?)[\u4e00-\u9fa5\s]+?(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5](?P<minute>[\d\s]+)',
-            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?)[\u4e00-\u9fa5\s]+?(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5]',
+            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?)(?P<check_pm>[\u4e00-\u9fa5\s]+午[\u4e00-\u9fa5\s]+)(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5](?P<minute>[\d\s]+?)[:：\u4e00-\u9fa5](?P<seconds>[\d\s]+)',
+            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?)(?P<check_pm>[\u4e00-\u9fa5\s]+午[\u4e00-\u9fa5\s]+)(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5](?P<minute>[\d\s]+)',
+            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?)(?P<check_pm>[\u4e00-\u9fa5\s]+午[\u4e00-\u9fa5\s]+)(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5]',
+            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?)(?P<check_pm>[\u4e00-\u9fa5\s]+)(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5](?P<minute>[\d\s]+?)[:：\u4e00-\u9fa5](?P<seconds>[\d\s]+)',
+            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?)(?P<check_pm>[\u4e00-\u9fa5\s]+)(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5](?P<minute>[\d\s]+)',
+            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?)(?P<check_pm>[\u4e00-\u9fa5\s]+)(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5]',
         ]
         for reg in regs:
             com = re.compile(reg)
             ret = [m.groupdict() for m in re.finditer(com, bf_time)]
 
             if ret:
-                date_dict = ret[0]
+                try:
+                    date_dict = ret[0]
 
-                left_info = {k: v.strip() for k, v in date_dict.items() if k in ['year', 'month', 'day']}
-                right_info = {k: v.strip() for k, v in date_dict.items() if k in ['hour', 'minute', 'second']}
+                    # 判断 上午|下午
+                    check_pm = ''.join([v for k, v in date_dict.items() if k =='check_pm'])
+                    check_pm = re.sub(r'\s', '', check_pm)
 
-                right_info_str = ':'.join(right_info.values()) if len(
-                    right_info.values()
-                ) > 1 else '{}时'.format(":".join(right_info.values()))
+                    left_info = {k: v.strip() for k, v in date_dict.items() if k in ['year', 'month', 'day']}
+                    right_info = {k: f'{int(v)+12}'.strip() if k=='hour' and '下午' in check_pm else v.strip()  for k, v in date_dict.items() if k in ['hour', 'minute', 'second']}
 
-                bf_time = ' '.join(['-'.join(left_info.values()), right_info_str])
+                    left_info_str = '-'.join(left_info.values())
+                    right_info_str = ':'.join(right_info.values()) if len(
+                        right_info.values()
+                    ) > 1 else '{}时'.format(":".join(right_info.values()))
 
-                if bf_time.strip():
-                    break
+                    bf_time = ' '.join([left_info_str, right_info_str])
+
+                    if bf_time.strip():
+                        break
+                except (Exception,):
+                    traceback.print_exc()
+                    continue
 
         return bf_time
 
