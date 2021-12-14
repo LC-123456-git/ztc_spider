@@ -524,9 +524,16 @@ class KeywordsExtract(object):
 
     @staticmethod
     def format_tenderopen_time(bf_time):
+        """
+        统一格式：2021-12-14 12:48:00
+                2021-12-14 12时
+        :param bf_time:
+        :return:
+        """
         regs = [
-            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?\d)[\u4e00-\u9fa5\s]+?(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5](?P<minute>[\d\s]+)',
             r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?\d)[\u4e00-\u9fa5\s]+?(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5](?P<minute>[\d\s]+?)[:：\u4e00-\u9fa5](?P<seconds>[\d\s]+)',
+            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?\d)[\u4e00-\u9fa5\s]+?(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5](?P<minute>[\d\s]+)',
+            r'(?P<year>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<month>[\d\s]+?)[\u4e00-\u9fa5\-—－一](?P<day>[\d\s]+?\d)[\u4e00-\u9fa5\s]+?(?P<hour>[\d\s]+?)[:：\u4e00-\u9fa5]',
         ]
         for reg in regs:
             com = re.compile(reg)
@@ -538,7 +545,11 @@ class KeywordsExtract(object):
                 left_info = {k: v.strip() for k, v in date_dict.items() if k in ['year', 'month', 'day']}
                 right_info = {k: v.strip() for k, v in date_dict.items() if k in ['hour', 'minute', 'second']}
 
-                bf_time = ' '.join(['-'.join(left_info.values()), ':'.join(right_info.values())]).replace('：', ':')
+                right_info_str = ':'.join(right_info.values()) if len(
+                    right_info.values()
+                ) > 1 else '{}时'.format(":".join(right_info.values()))
+
+                bf_time = ' '.join(['-'.join(left_info.values()), right_info_str])
 
                 if bf_time.strip():
                     break
