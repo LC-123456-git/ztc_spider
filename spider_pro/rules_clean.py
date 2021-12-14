@@ -260,7 +260,7 @@ class KeywordsExtract(object):
     def get_h_val(c_index, key, tr, table=None, tr_index=None):
         c_index += 1
         try:
-            next_val = tr[c_index].replace('\u3000', '')  # 判断值所在td如果是个table，如果还嵌套一个table，直接取所有内容
+            next_val = tr[c_index]  # 判断值所在td如果是个table，如果还嵌套一个table，直接取所有内容
         except (Exception,):
             pass
         else:
