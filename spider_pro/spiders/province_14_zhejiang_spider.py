@@ -86,11 +86,13 @@ class MySpider(CrawlSpider):
             if self.enable_incr:
                 startDate = self.sdt_time
                 endDate = self.edt_time
-                time_dict = self.dict_data | {'startDate': startDate} | {'endDate': endDate}
+                time = self.dict_data['time'][0] | {'startTime': startDate} | {'endTime': endDate}
+                time_dict = self.dict_data | {'time': [time]}
             else:
                 endDate = datetime.datetime.now().strftime("%Y-%m-%d")
                 startDate = get_back_date(365)
-                time_dict = self.dict_data | {'startDate': startDate} | {'endDate': endDate}
+                time = self.dict_data['time'][0] | {'startTime': startDate} | {'endTime': endDate}
+                time_dict = self.dict_data | {'time': [time]}
             code_list = response.xpath('//div[@style="display:none"]/li/a')[:15]  #获取type 类型的code 拼接url
             for codes, category_code in zip(code_list, self.list_all_category_code):
                 code = codes.xpath('./@catenum').get()
@@ -273,6 +275,6 @@ class MySpider(CrawlSpider):
 
 if __name__ == "__main__":
     from scrapy import cmdline
-    # cmdline.execute("scrapy crawl province_14_zhejiang_spider".split(" "))
-    cmdline.execute("scrapy crawl province_14_zhejiang_spider -a sdt=2021-07-20 -a edt=2021-08-10".split(" "))
+    cmdline.execute("scrapy crawl province_14_zhejiang_spider".split(" "))
+    # cmdline.execute("scrapy crawl province_14_zhejiang_spider -a sdt=2021-11-20 -a edt=2021-12-20".split(" "))
 
