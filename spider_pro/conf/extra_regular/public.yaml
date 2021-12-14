@@ -112,6 +112,7 @@ HEAD_TAIL_SYMBOLS:
   - ','
   - '/'
   - '；'
+  - '、'
 
 PROJECT_PRIORITY_CG:
   - '发包公告'
