@@ -137,7 +137,7 @@ class KeywordsExtract(object):
         # 在提取project_name时，指定位置(指定方法前)调用:self.get_val_from_title
         self.before_map = {
             '_extract_from_table': [],
-            'clean_value': ['120', '123', '124', '131', '126', '128', '132', '133', '136', '143', '145', '146', '3314'],
+            'clean_value': ['120', '123', '124', '131', '126', '128', '132', '133', '136', '143', '145', '146', '3314', '02', '08'],
         }
 
     def reset_regular_by_field(self):
@@ -526,10 +526,11 @@ class KeywordsExtract(object):
     @staticmethod
     def format_tenderopen_time(bf_time):
         """
-        待处理格式 2020年5月21日上午9时00分
-        
         统一格式：2021-12-14 12:48:00
+                2021-12-14 12:48
                 2021-12-14 12时
+            处理：下午 +12 小时
+        附：出现其他类型时间，根据样式新增正则
         :param bf_time:
         :return:
         """
